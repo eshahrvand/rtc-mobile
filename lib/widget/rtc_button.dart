@@ -1,15 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 import '../ui/theme/colors.dart';
 import 'rtc_image.dart';
 
-enum RtcButtonSize {
-  small,
-  medium,
-  large,
-}
+enum RtcButtonSize { small, medium, large }
 
 class RtcButton extends StatefulWidget {
   final String? title;
@@ -29,24 +24,25 @@ class RtcButton extends StatefulWidget {
   final RtcButtonSize size;
   final Color? borderColor;
 
-  const RtcButton(
-      {super.key,
-      required this.title,
-      required this.onPressed,
-      this.backgroundColor,
-      this.styleBtn,
-      this.leftIcon,
-      this.rightIcon,
-      this.isActive = true,
-      this.isLoading = false,
-      this.isLoadingBtm = false,
-      this.padding,
-      this.height,
-      this.width,
-      this.leftIconColor,
-      this.rightIconColor,
-      this.size = RtcButtonSize.medium,
-      this.borderColor});
+  const RtcButton({
+    super.key,
+    required this.title,
+    required this.onPressed,
+    this.backgroundColor,
+    this.styleBtn,
+    this.leftIcon,
+    this.rightIcon,
+    this.isActive = true,
+    this.isLoading = false,
+    this.isLoadingBtm = false,
+    this.padding,
+    this.height,
+    this.width,
+    this.leftIconColor,
+    this.rightIconColor,
+    this.size = RtcButtonSize.medium,
+    this.borderColor,
+  });
 
   @override
   State<RtcButton> createState() => _RtcButtonState();
@@ -76,7 +72,7 @@ class _RtcButtonState extends State<RtcButton> {
 
   double _getButtonHeight() {
     if (widget.height != null) return widget.height!;
-    
+
     // According to Figma, active style height is 70 (likely including bar padding)
     // and deactive (disabled) lg style is 44.
     if (isActive ?? true) {
@@ -96,32 +92,31 @@ class _RtcButtonState extends State<RtcButton> {
   TextStyle _getTextStyle(BuildContext context) {
     final bool active = isActive ?? true;
     // Default text colors based on state and background
-    Color textColor = active 
-        ? (widget.backgroundColor == null || widget.backgroundColor == Colors.white 
-            ? AppColors.brandPalette.shade600 
-            : Colors.white)
+    Color textColor = active
+        ? (widget.backgroundColor == null ||
+                  widget.backgroundColor == Colors.white
+              ? AppColors.brandPalette.shade600
+              : Colors.white)
         : AppColors.grayPalette.shade400;
 
     switch (widget.size) {
       case RtcButtonSize.small:
       case RtcButtonSize.medium:
-        return Theme.of(context)
-            .textTheme
-            .titleMedium!
-            .copyWith(color: textColor);
+        return Theme.of(
+          context,
+        ).textTheme.titleMedium!.copyWith(color: textColor);
 
       case RtcButtonSize.large:
-        return Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(color: textColor);
+        return Theme.of(
+          context,
+        ).textTheme.titleLarge!.copyWith(color: textColor);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bool active = isActive ?? true;
-    
+
     // Figma Shadows
     final List<BoxShadow> shadows = active
         ? [
@@ -161,7 +156,7 @@ class _RtcButtonState extends State<RtcButton> {
           borderRadius: BorderRadius.circular(8),
           boxShadow: shadows,
           // Border is removed by default as per Figma spec, but kept if explicitly provided.
-          border: widget.borderColor != null 
+          border: widget.borderColor != null
               ? Border.all(color: widget.borderColor!, width: 1)
               : null,
         ),
@@ -174,50 +169,70 @@ class _RtcButtonState extends State<RtcButton> {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
-            foregroundColor: active ? AppColors.brandPalette.shade600 : AppColors.grayPalette.shade400,
+            foregroundColor: active
+                ? AppColors.brandPalette.shade600
+                : AppColors.grayPalette.shade400,
             elevation: 0,
-            padding: active 
+            padding: active
                 ? const EdgeInsets.fromLTRB(10, 10, 10, 16)
                 : const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           child: isLoading!
               ? Center(
                   child: CircularProgressIndicator(
-                    color: active ? AppColors.brandPalette.shade600 : AppColors.grayPalette.shade400,
+                    color: active
+                        ? AppColors.brandPalette.shade600
+                        : AppColors.grayPalette.shade400,
                   ),
                 )
               : isLoadingBtm!
-                  ? SizedBox(
-                      height: 18,
-                      width: 20,
-                      child: LoadingIndicator(
-                        indicatorType: Indicator.ballPulseSync,
-                        colors: [active ? AppColors.brandPalette.shade600 : AppColors.grayPalette.shade400],
-                        strokeWidth: 4.0,
+              ? SizedBox(
+                  height: 18,
+                  width: 20,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballPulseSync,
+                    colors: [
+                      active
+                          ? AppColors.brandPalette.shade600
+                          : AppColors.grayPalette.shade400,
+                    ],
+                    strokeWidth: 4.0,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (widget.leftIcon != null)
+                      RtcImage(
+                        image: widget.leftIcon ?? "",
+                        color:
+                            widget.leftIconColor ??
+                            (active
+                                ? AppColors.brandPalette.shade600
+                                : AppColors.grayPalette.shade400),
                       ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (widget.leftIcon != null)
-                          AxinoImage(
-                            image: widget.leftIcon ?? "",
-                            color: widget.leftIconColor ?? (active ? AppColors.brandPalette.shade600 : AppColors.grayPalette.shade400),
-                          ),
-                        if (widget.leftIcon != null) SizedBox(width: active ? 10 : 8),
-                        Text(
-                          widget.title ?? "",
-                          style: widget.styleBtn ?? _getTextStyle(context),
-                        ),
-                        if (widget.rightIcon != null) SizedBox(width: active ? 10 : 8),
-                        if (widget.rightIcon != null)
-                          AxinoImage(
-                            image: widget.rightIcon ?? "",
-                            color: widget.rightIconColor ?? (active ? AppColors.brandPalette.shade600 : AppColors.grayPalette.shade400),
-                          ),
-                      ],
+                    if (widget.leftIcon != null)
+                      SizedBox(width: active ? 10 : 8),
+                    Text(
+                      widget.title ?? "",
+                      style: widget.styleBtn ?? _getTextStyle(context),
                     ),
+                    if (widget.rightIcon != null)
+                      SizedBox(width: active ? 10 : 8),
+                    if (widget.rightIcon != null)
+                      RtcImage(
+                        image: widget.rightIcon ?? "",
+                        color:
+                            widget.rightIconColor ??
+                            (active
+                                ? AppColors.brandPalette.shade600
+                                : AppColors.grayPalette.shade400),
+                      ),
+                  ],
+                ),
         ),
       ),
     );

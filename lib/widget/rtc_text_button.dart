@@ -1,8 +1,7 @@
-import 'package:axino/ui/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
-import '../../theme/colors.dart';
+import '../ui/theme/colors.dart';
 import 'rtc_image.dart';
 
 class RtcTextButton extends StatefulWidget {
@@ -74,19 +73,18 @@ class _RtcTextButtonState extends State<RtcTextButton> {
           child: isLoading!
               ? Center(
                   child: Padding(
-                  padding: EdgeInsets.only(right: 40),
-                  child: SizedBox(
-                    height: 18,
-                    width: 20,
-                    child: LoadingIndicator(
-                      indicatorType: Indicator.ballPulseSync,
-                      colors: isDarkMode(context)
-                          ? [AppColors.grayPalette.shade100]
-                          : [Colors.black],
-                      strokeWidth: 4.0,
+                    padding: EdgeInsets.only(right: 40),
+                    child: SizedBox(
+                      height: 18,
+                      width: 20,
+                      child: LoadingIndicator(
+                        indicatorType: Indicator.ballPulseSync,
+                        colors: [Colors.black],
+                        strokeWidth: 4.0,
+                      ),
                     ),
                   ),
-                ))
+                )
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -98,13 +96,13 @@ class _RtcTextButtonState extends State<RtcTextButton> {
                     if (widget.leftIcon != null) const SizedBox(width: 10),
                     Text(
                       widget.title ?? "",
-                      style: widget.styleBtn ??
-                          Theme.of(
-                            context,
-                          ).textTheme.headlineMedium!.copyWith(
-                              color: (widget.isActive ?? true)
-                                  ? AppColors.primaryDark
-                                  : AppColors.grayPalette.shade400),
+                      style:
+                          widget.styleBtn ??
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                            color: (widget.isActive ?? true)
+                                ? AppColors.brandPalette.shade800
+                                : AppColors.grayPalette.shade400,
+                          ),
                     ),
                     if (widget.rightIcon != null) const SizedBox(width: 10),
                     if (widget.rightIcon != null)

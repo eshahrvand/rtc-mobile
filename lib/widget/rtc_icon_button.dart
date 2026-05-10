@@ -1,5 +1,5 @@
-import 'package:axino/ui/presenters/widget/axino_image.dart';
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/widget/rtc_image.dart';
 
 class AxinoIconButton extends StatelessWidget {
   final String icon;
@@ -21,15 +21,11 @@ class AxinoIconButton extends StatelessWidget {
       onTap: onPressed,
       borderRadius: BorderRadius.circular(size / 2),
       child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-          ),
-          child: AxinoImage(
-            image: icon,
-            color: color,
-          )),
+        width: size,
+        height: size,
+        decoration: BoxDecoration(shape: BoxShape.circle),
+        child: RtcImage(image: icon, color: color),
+      ),
     );
   }
 }
