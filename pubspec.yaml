@@ -97,26 +97,14 @@ flutter:
   fonts:
     - family: IranYekan
       fonts:
-        - asset: assets/fonts/IRANYekanMobileThin.ttf
-          weight: 100
-          style: normal
-        - asset: assets/fonts/IRANYekanMobileLight.ttf
-          weight: 300
-          style: normal
-        - asset: assets/fonts/IRANYekanMobileRegular.ttf
-          weight: 400
-          style: normal
-        - asset: assets/fonts/IRANYekanMobileMedium.ttf
-          weight: 500
-          style: normal
-        - asset: assets/fonts/IRANYekanMobileBold.ttf
+        - asset: assets/fonts/IRANYekanXFaNum-Bold.ttf
           weight: 700
           style: normal
-        - asset: assets/fonts/IRANYekanMobileExtraBold.ttf
-          weight: 800
+        - asset: assets/fonts/IRANYekanXFaNum-Medium.ttf
+          weight: 500
           style: normal
-        - asset: assets/fonts/IRANYekanMobileExtraBlack.ttf
-          weight: 900
+        - asset: assets/fonts/IRANYekanXFaNum-Regular.ttf
+          weight: 400
           style: normal
   #
   # For details regarding fonts from package dependencies,

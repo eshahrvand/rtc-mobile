@@ -5,7 +5,7 @@
   "appSubtitle": "پرتال سفارشات نمایندگان اعتباری",
   "loginToSystem": "ورود به سیستم",
   "enterPhoneNumber": "لطفاً شماره همراه خود را وارد کنید",
-  "phoneNumberHint": "۰۹xxxxxxxxx",
+  "phoneNumberHint": "۰۹",
   "getOtpCode": "دریافت کد تایید",
   "enterOtpCode": "کد تایید را وارد کنید",
   "otpSentTo": "کد تایید برای شماره {phoneNumber} ارسال شد.",

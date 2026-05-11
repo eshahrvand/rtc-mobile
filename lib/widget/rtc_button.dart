@@ -73,12 +73,6 @@ class _RtcButtonState extends State<RtcButton> {
   double _getButtonHeight() {
     if (widget.height != null) return widget.height!;
 
-    // According to Figma, active style height is 70 (likely including bar padding)
-    // and deactive (disabled) lg style is 44.
-    if (isActive ?? true) {
-      return 70;
-    }
-
     switch (widget.size) {
       case RtcButtonSize.small:
         return 40;
@@ -143,8 +137,8 @@ class _RtcButtonState extends State<RtcButton> {
           ];
 
     final Color bgColor = active
-        ? (widget.backgroundColor ?? Colors.white)
-        : const Color(0xFFF5F5F5);
+        ? (widget.backgroundColor ?? AppColors.brandPalette.shade600)
+        : AppColors.grayPalette.shade100;
 
     return Padding(
       padding: widget.padding ?? EdgeInsets.zero,
@@ -183,9 +177,7 @@ class _RtcButtonState extends State<RtcButton> {
           child: isLoading!
               ? Center(
                   child: CircularProgressIndicator(
-                    color: active
-                        ? AppColors.brandPalette.shade600
-                        : AppColors.grayPalette.shade400,
+                    color: AppColors.grayPalette.shade400,
                   ),
                 )
               : isLoadingBtm!
