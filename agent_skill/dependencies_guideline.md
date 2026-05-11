@@ -1,61 +1,59 @@
 # Engineering DNA: Dependency Strategy & Package Philosophy
 
-## 1. Package Selection Philosophy: "High-Performance Pragmatism"
-The developer treats dependencies as **"Heavy Infrastructure"** rather than simple helpers. They avoid "package sprawl" by choosing comprehensive, ecosystem-standard solutions that solve entire categories of problems.
+## 1. Package Selection Philosophy
+The developer treats dependencies as **"Heavy Infrastructure"** — not simple helpers.
+Every package added to the project is a long-term commitment, not a shortcut.
 
-- **Infrastructure over Utilities:** They prefer "Big Rock" dependencies (Isar, Retrofit, BLoC) that define the architecture, while keeping "Small Pebble" UI helpers to a minimum. 
-- **The "Community-First" Resilience:** The choice of `isar_community` over the official (and often stalled) Isar v3/v4 reveals a developer who values **active maintenance and community fixes** over official branding. They are willing to switch to community-maintained forks to ensure project longevity.
-- **Deep Localization Integration:** The inclusion of `shamsi_date` and `sms_autofill` alongside standard localization tools indicates that regional requirements (Persian/Farsi support, Iranian SMS workflows) are baked into the core dependency strategy, not treated as afterthoughts.
+- **Prefer "Big Rock" over "Small Pebble":** Choose comprehensive, ecosystem-standard packages that solve an entire category of problems (e.g., networking, state management, persistence) rather than adding many small utility packages.
+- **Community Health over Popularity:** Before adding any package, check: Is it actively maintained? Does it have recent commits? Is the issue tracker responsive? A less-famous but actively maintained package is always preferred over a famous but stale one.
+- **Own What's Business-Critical:** If a feature is core to the product (payments, custom audio, proprietary logic), either build it in-house or use a `git`/`path` reference to a fork. Never depend on a pub.dev package for something the business cannot afford to break.
 
-## 2. Architectural Commitments
-The `pubspec.yaml` reveals four non-negotiable architectural pillars:
+## 2. The Four Architectural Pillars
+These are non-negotiable for every new project. They are selected first and define the skeleton of the codebase.
 
-- **The Networking Contract (Retrofit + Dio):** They deliberately chose a declarative, code-generated API layer. This commits the project to a **"Compile-Time Safe"** networking strategy where manual JSON parsing is strictly forbidden.
-- **The Persistence Engine (Isar):** By selecting a NoSQL, high-performance database, they commit to an **"Offline-First"** architecture capable of handling complex relational queries without the overhead of SQLite.
-- **The Reactive Core (BLoC/Cubit):** The commitment to `flutter_bloc` forces a strict separation between UI and Logic. There is no evidence of "lightweight" alternatives, suggesting a refusal to compromise on the predictability of the BLoC pattern.
-- **The Decoupling Layer (GetIt):** The presence of `get_it` alongside BLoC indicates a **Service Locator** philosophy for dependency injection, allowing for the "Lazy Initialization" pattern identified in other guidelines.
+1. **State Management → `flutter_bloc` (Cubit):** The reactive core. No lightweight alternatives. Predictability is non-negotiable.
+2. **Dependency Injection → `get_it`:** The service locator. Enables lazy initialization and decouples implementation from consumption.
+3. **Networking → `dio` + `retrofit`:** Declarative, code-generated API layer. Manual JSON parsing is strictly forbidden.
+4. **Local Storage → decided per project:** Chosen based on data complexity. Simple key-value → `shared_preferences`. Structured/relational data → a high-performance embedded database (evaluated at project start).
 
-## 3. Risk & Stability Signals
-- **Production-Hardened Selection:** The developer favors packages that are "de facto" standards (Sentry, Firebase, ConnectivityPlus). They prioritize observability (`sentry_flutter`) and reliability over "trendy" new packages.
-- **Aggressive Code Generation:** The heavy `dev_dependencies` section (`freezed`, `json_serializable`, `retrofit_generator`, `isar_community_generator`) reveals a **"Zero-Boilerplate"** discipline. They trade a slightly longer build time for 100% type safety and reduced human error in data mapping.
-- **Mixed Stability Stance:** While most versions use the caret (`^`) for flexible updates, they use specific `-dev` versions for critical infrastructure (`isar_community`). This shows a willingness to adopt pre-release versions if it provides a competitive advantage in performance or stability.
+## 3. The Code Generation Rule
+**Never write manual data mappers.** The following generator stack is always added:
+- `freezed` + `freezed_annotation` — for immutable state and sealed classes.
+- `json_serializable` + `json_annotation` — for DTO serialization.
+- `retrofit_generator` — for API service interfaces.
+- `build_runner` — as the orchestrator.
 
-## 4. Implicit Rules & Absences
-- **The "Build vs. Buy" Line:** The developer uses a local `path` for `iap` and a `git` reference for `wave_blob`. This reveals an implicit rule: **"If it's business-critical (payments) or specialized (audio), own the source code or use a fork."**
-- **No "God-Object" UI Kits:** There are no "UI component libraries" (like GetWidget or VelocityX). This confirms the **"Component DNA"** of building custom, brand-specific widgets from scratch using only low-level Material/Cupertino foundations.
-- **Redundant Responsive Logic:** The presence of both `responsive_framework` and `flutter_screenutil` suggests a dual-strategy for handling device diversity: one for layout reflow and one for pixel-perfect scaling.
+This is a trade-off: slightly longer build times in exchange for 100% type safety and zero human error in data mapping.
 
-## 5. Replication Guide: The "New Project" Checklist
+## 4. The Observability Rule
+If the app is going to production, these are added from Day 1 — never retrofitted later:
+- **Error tracking:** A crash/exception reporting service (e.g., Sentry or Firebase Crashlytics).
+- **Analytics:** A business event tracking service (e.g., Firebase Analytics).
 
-When starting a new feature or project in this style, follow this prioritized decision framework:
+## 5. The UI Package Rule
+**Never add a UI component library.** No GetWidget, VelocityX, or similar "God-Object" UI kits.
+All UI components are built in-house using only low-level Material/Cupertino foundations, following the project's own component system and brand prefix conventions.
 
-### Priority 1: The "Quad-Core" Infrastructure
-These must be added first and define the project's skeleton:
-1. `flutter_bloc`: The state container.
-2. `get_it`: The service locator.
-3. `isar_community`: The persistence engine.
-4. `retrofit` + `dio`: The communication layer.
+The only exception is **data visualization** (e.g., charts), where a specialized library is acceptable if building in-house is not practical.
 
-### Priority 2: The "Type-Safe" Generator Stack
-NEVER write manual mappers. Always add:
-- `freezed` + `json_annotation` + `build_runner`
+## 6. The "To Package or Not?" Decision Framework
+Before adding any new package, answer these questions in order:
 
-### Priority 3: The Observability Layer
-If the app is intended for production, these are non-negotiable from Day 1:
-- `sentry_flutter` for error tracking.
-- `firebase_analytics` for business events.
+| Question | Answer |
+|---|---|
+| Is it a UI element? | Build in-house. |
+| Is it domain/business logic? | Build in-house. |
+| Is it complex OS integration (camera, health, sensors)? | Use a well-maintained package. |
+| Is it data visualization? | Use a specialized library. |
+| Is it business-critical infrastructure? | Own the source via `path` or `git`. |
 
-### Priority 4: Decision Framework: "To Package or Not?"
-- **UI Element?** Build it in-house (Caltivita-prefixed).
-- **Domain logic?** Build it in-house.
-- **Complex OS Integration (Scanner, Health, Alarm)?** Use a high-quality, maintained package.
-- **Data Visualization?** Use a specialized library (`fl_chart`).
+## 7. Version Pinning Strategy
+- Use caret (`^`) for most packages to allow non-breaking updates.
+- Use **exact versions** for packages that are part of the core architecture (networking, persistence, state management) if stability has been an issue.
+- Avoid `-dev` or `-alpha` versions in production unless there is a specific, documented reason (e.g., a critical bug fix not yet in stable).
 
----
-
-## Connection Points
-
-- **To `clean_architecture_guideline.md`**: The `retrofit` and `isar` choices provide the technical enforcement for the "Branching Repository" and "Data Bundle" patterns.
-- **To `state_management_guideline.md`**: `flutter_bloc` is the engine that drives the "Omni-Cubit" and "Status-Driven UI" philosophy.
-- **To `theme_system_guideline.md`**: The absence of UI kits explains why the developer had to build a custom `MaterialColor` and `BoxShadow` system from scratch.
-- **To `local_data_layer_guideline.md`**: The choice of `isar_community` enables the "High-Performance Cache" and "Relational Cleanup" logic through its fast query engine.
+## 8. Cross-Reference
+- **`architecture_di_guideline.md`**: The `get_it` choice enforces the lazy singleton DI pattern.
+- **`state_management_guideline.md`**: `flutter_bloc` is the engine behind the Cubit and status-driven UI.
+- **`local_data_layer_guideline.md`**: The persistence package choice determines the DAO implementation strategy.
+- **`ui_component_system_guideline.md`**: The absence of UI kits is why the custom component system with brand prefix exists.

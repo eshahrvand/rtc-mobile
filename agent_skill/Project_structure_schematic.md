@@ -49,34 +49,15 @@ lib/
 │           └── model/
 │               └── ai_model_dto.dart
 │
-├── repository/                          # Data layer implementations
+├── repository/                          # Concrete repositories — no abstract, no _impl suffix
 │   ├── auth/
-│   │   └── auth_repository_impl.dart
+│   │   └── auth_repository.dart        # concrete class, injected via GetIt
 │   ├── splash/
-│   │   └── splash_repository_impl.dart
+│   │   └── splash_repository.dart
 │   ├── chat/
-│   │   └── chat_repository_impl.dart
+│   │   └── chat_repository.dart
 │   └── models/
-│       └── model_repository_impl.dart
-│
-├── domain/
-│   └── repository/                      # Interfaces + UseCases
-│       ├── auth/
-│       │   ├── auth_repository.dart     # abstract interface
-│       │   └── usecase/
-│       │       └── auth_use_case.dart
-│       ├── splash/
-│       │   ├── splash_repository.dart
-│       │   └── usecase/
-│       │       └── splash_use_case.dart
-│       ├── chat/
-│       │   ├── chat_repository.dart
-│       │   └── usecase/
-│       │       └── chat_use_case.dart
-│       └── models/
-│           ├── model_repository.dart
-│           └── usecase/
-│               └── model_use_case.dart
+│       └── model_repository.dart
 │
 └── ui/
 ├── router/
@@ -156,13 +137,17 @@ lib/
 # Class naming    : PascalCase
 # Cubit states    : sealed class with freezed (@freezed)
 
+# Architecture rules:
+# - NO domain/ layer (no abstract repositories, no use cases)
+# - Repository = single concrete class per feature, no _impl suffix
+# - Cubit calls Repository directly via sl<FeatureRepository>()
+# - No abstract interfaces for repositories
+
 # ─────────────────────────────────────────
 # BUILD ORDER FOR SPLASH (example)
 # ─────────────────────────────────────────
-# Step 1 → data_source/local/prefs/prefs.dart         (token storage)
+# Step 1 → data_source/local/prefs/prefs.dart                  (token storage)
 # Step 2 → data_source/remote/splash/splash_service.dart + model
-# Step 3 → domain/repository/splash/splash_repository.dart (interface)
-# Step 4 → repository/splash/splash_repository_impl.dart
-# Step 5 → domain/repository/splash/usecase/splash_use_case.dart
-# Step 6 → locator.dart (register splash deps)
-# Step 7 → ui/presenters/splash/ (cubit + screen + widgets)
+# Step 3 → repository/splash/splash_repository.dart            (concrete class)
+# Step 4 → locator.dart                                         (register splash deps)
+# Step 5 → ui/presenters/splash/                               (cubit + screen + widgets)
