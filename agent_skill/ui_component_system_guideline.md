@@ -19,10 +19,48 @@ The developer views UI components not just as visual elements, but as **"Self-Co
 
 ## 4. Implicit Rules
 - **The Prefix Ritual:** Every custom widget must carry the brand prefix. This serves as a psychological marker distinguishing "Safe/Project-Aware" components from raw Material widgets.
-- **The "Skeleton" Capability:** Complex cards and charts must support an "isLoading" flag internally, often wrapping themselves in a shimmer effect. The responsibility for "Waiting UI" lies with the component, not the screen.
+- **The "Skeleton" Capability:** Complex cards and charts must support an `isLoading` flag internally, often wrapping themselves in a shimmer effect. The responsibility for "Waiting UI" lies with the component, not the screen.
 - **Interactive Wrapped Foundations:** Nearly every interactive surface is wrapped in a custom "InkWell" abstraction to ensure consistent ripple effects and haptic feedback across the entire system.
+- **No Logic in UI Files:** UI files are only allowed to call Cubit methods and render state. They must never contain business logic, async operations, or direct data access. See `state_management_guideline.md` for the full rule.
 
-## 5. Replication Guide
+## 5. File Size & Widget Extraction Rules
+
+### The 150–200 Line Rule
+Every screen file (`*_screen.dart` or `*_page.dart`) must stay within **150–200 lines of UI code**. This is a hard ceiling, not a suggestion.
+
+When a screen file approaches or exceeds this limit, **widget extraction is mandatory** — not optional.
+
+### When to Extract
+Extract a widget into its own file when **any** of the following is true:
+- The screen file exceeds or is approaching 200 lines.
+- A visual block (e.g., a card, a list section, a header row) is more than ~30–40 lines.
+- A widget is used in more than one place in the same screen.
+- A widget is logically self-contained (e.g., `DrawerWidget`, `BankCardListWidget`).
+
+### Extraction Conventions
+- Extracted widgets live in a `widget/` subfolder next to the screen file.
+- Naming: `[feature]_[description]_widget.dart` (e.g., `home_card_list_widget.dart`).
+- Extracted widgets receive only the data they need via constructor parameters — they do not access the Cubit or BlocProvider themselves unless they need to (in which case they use `context.read<FeatureCubit>()`).
+- A `BlocBuilder` that wraps a large subtree should always be a candidate for extraction.
+
+### What Stays in the Screen File
+- `BlocProvider` / `MultiBlocProvider` setup
+- `MultiBlocListener` for side effects (navigation, snackbars)
+- Top-level `Scaffold` and layout skeleton
+- Calls to extracted widgets, passing in state properties
+
+### Example Structure
+```
+feature/
+  home_screen.dart          ← max 150-200 lines: Scaffold + Listeners + layout skeleton
+  widget/
+    home_card_list_widget.dart
+    home_action_widget.dart
+    home_drawer_widget.dart
+    home_transaction_list_widget.dart
+```
+
+## 6. Replication Guide
 
 To implement a new UI component (e.g., "Feature Slider") in this style, follow these steps:
 
@@ -42,3 +80,6 @@ If the component handles media, add branching logic for every possible format (N
 
 ### Step 5: Platform Guarding
 Identify if the component behaves differently on the web (e.g., mouse-hover effects or focus handling). Add `kIsWeb` checks directly inside the `build` method to adjust behavior without changing the component's signature.
+
+### Step 6: Apply the Line Limit
+After building the screen that uses the new component, count the lines. If the screen file is over 200 lines, immediately extract the largest `BlocBuilder` subtree or visual section into a dedicated widget file under `widget/`.

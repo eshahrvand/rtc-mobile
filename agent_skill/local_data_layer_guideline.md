@@ -1,7 +1,7 @@
 # Engineering DNA: Local Data Layer
 
 ## 1. Engineering Mindset
-The developer views the local database as a **"Disposable High-Performance Cache"** rather than a permanent independent storage system. 
+The developer views the local database as a **"Disposable High-Performance Cache"** rather than a permanent independent storage system.
 
 - **Problem Solving via Total Reset:** Instead of complex migration scripts, they favor a "Wipe and Re-sync" strategy. If the database version shifts, the local file is destroyed. This reveals a mindset where the Cloud is the absolute source of truth, and local storage is merely a transient projection of that truth.
 - **Trade-off (Global Availability over Encapsulation):** They deliberately use a static singleton pattern for database access. They trade the testability of dependency injection for the immediate availability of the database instance across any layer of the app.
@@ -15,7 +15,8 @@ The developer views the local database as a **"Disposable High-Performance Cache
 ## 3. Dependency & Communication Rules
 - **Direct Global Access:** DAOs communicate with the database via a public static instance. There is no middle-man or repository-level injection for the database provider.
 - **DAOs as Mapping Stations:** The DAO is the designated layer where "Network Objects" (DTOs) are transformed into "Local Entities." The DAO understands both the shape of the data on the wire and the shape of the data on the disk.
-- **Web-Divergent Persistence:** The developer explicitly branches the initialization logic. On the web, the persistence layer is often reduced to a skeleton, indicating a "Live-Only" mindset for browser-based users, whereas mobile users get the full "Offline-First" treatment.
+- **DAO is a Private Detail of the Repository:** DAOs are never called from the Cubit directly. The Repository is the only consumer of DAO methods. The Cubit has no awareness that a DAO exists.
+- **Web-Divergent Persistence:** The developer explicitly branches the initialization logic. On the web, the persistence layer is often reduced to a skeleton, indicating a "Live-Only" mindset for browser-based users, whereas mobile users get the full "Offline-First" treatment. This branching is handled inside the Repository, not the Cubit.
 
 ## 4. Implicit Rules
 - **The Sync-First Transaction:** Data modification is rarely a simple "Add." It is almost always a "Sync Payload" processing event that handles Create, Update, and Delete operations in a single atomic transaction.
@@ -44,3 +45,11 @@ Expose the DAO methods as a stateless class. Use the global static database inst
 
 ### Step 5: Global Schema Registration
 Add the new schema to the centralized initialization list. Ensure that any version increment in the global configuration triggers the automatic file deletion logic to prevent schema mismatch crashes.
+
+### Step 6: Wire into Repository
+Register the DAO as a `LazySingleton` in GetIt, then inject it into the corresponding `FeatureRepository`. The Repository is the sole consumer of this DAO — no other layer should reference it directly.
+- *Pseudocode:*
+  ```
+  REGISTER_LAZY_SINGLETON(FeatureDAO())
+  REGISTER_LAZY_SINGLETON(FeatureRepository(RESOLVE(FeatureDAO)))
+  ```
