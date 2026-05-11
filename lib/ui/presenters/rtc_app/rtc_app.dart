@@ -7,8 +7,8 @@ import '../../../generated/l10n.dart';
 import '../../router/router.dart';
 import '../../theme/theme.dart';
 
-class AxinoApp extends StatelessWidget {
-  const AxinoApp({super.key});
+class RtcApp extends StatelessWidget {
+  const RtcApp({super.key});
 
   @override
   Widget build(BuildContext context) {
