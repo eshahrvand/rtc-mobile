@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 
-import '../../../../generated/l10n.dart';
 import '../../../../config/config.dart';
+import '../../../../generated/l10n.dart';
 import '../../../../widget/rtc_button.dart';
 import '../../../../widget/rtc_image.dart';
 import '../../../../widget/rtc_text_button.dart';
-import '../../../theme/colors.dart';
 import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 
@@ -19,57 +19,44 @@ class OtpWidget extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+        return Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 60),
-              Center(
-                child: RtcImage(image: '$baseImage/rtc_logo.png', height: 60),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                S.current.companyName,
-                textAlign: TextAlign.center,
-                // TODO: replace with AppTextStyle
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                S.current.appSubtitle,
-                textAlign: TextAlign.center,
-                // TODO: replace with AppTextStyle
-                style: const TextStyle(fontSize: 12),
-              ),
-              const SizedBox(height: 60),
               Text(
                 S.current.enterOtpCode,
                 textAlign: TextAlign.right,
-                // TODO: replace with AppTextStyle
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                style: theme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.grayPalette.shade900,
                 ),
               ),
               const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
                     S.current.otpSentTo(state.phoneNumber),
                     textAlign: TextAlign.right,
-                    // TODO: replace with AppTextStyle
-                    style: const TextStyle(fontSize: 14),
+
+                    style: theme.bodyLarge!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
                   ),
-                  const SizedBox(width: 8),
+                  Spacer(),
                   GestureDetector(
                     onTap: () => context.read<AuthCubit>().editPhoneNumber(),
-                    child: const Icon(Icons.edit_outlined, size: 20),
+                    child: RtcImage(
+                      image: "$baseImage/edit.svg",
+                      height: 24,
+                      width: 24,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 32),
+
               Directionality(
                 textDirection: TextDirection.ltr,
                 child: Pinput(
@@ -79,7 +66,7 @@ class OtpWidget extends StatelessWidget {
                   defaultPinTheme: PinTheme(
                     width: 56,
                     height: 56,
-                    // TODO: replace with theme colors/styles
+
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(8),
@@ -87,18 +74,26 @@ class OtpWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
+
               if (!state.isTimerExpired)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       '${(state.remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(state.remainingSeconds % 60).toString().padLeft(2, '0')}',
-                      // TODO: replace with AppTextStyle
-                      style: const TextStyle(fontSize: 14),
+
+                      style: theme.labelLarge!.copyWith(
+                        color: AppColors.grayPalette.shade600,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.access_time, size: 20),
+                    RtcImage(
+                      image: "$baseImage/clock.svg",
+                      height: 20,
+                      width: 20,
+                    ),
                   ],
                 )
               else
@@ -106,31 +101,48 @@ class OtpWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     RtcTextButton(
+                      styleBtn: theme.labelLarge!.copyWith(
+                        color: AppColors.brandPalette.shade600,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      title: S.current.resendSms,
+                      onPressed: () => context.read<AuthCubit>().resendOtp(),
+                    ),
+
+                    Spacer(),
+                    Container(
+                      width: 1,
+                      height: 32,
+                      color: AppColors.grayPalette.shade300,
+                    ),
+                    Spacer(),
+
+                    RtcTextButton(
+                      styleBtn: theme.labelLarge!.copyWith(
+                        color: AppColors.brandPalette.shade600,
+                        fontWeight: FontWeight.w600,
+                      ),
                       title: S.current.sendViaRubika,
                       onPressed: () =>
                           context.read<AuthCubit>().sendViaRubika(),
                     ),
-                    const SizedBox(
-                      height: 20,
-                      child: VerticalDivider(thickness: 1, width: 20),
-                    ),
-                    RtcTextButton(
-                      title: S.current.resendSms,
-                      onPressed: () => context.read<AuthCubit>().resendOtp(),
-                    ),
                   ],
                 ),
-              const SizedBox(height: 60),
-              RtcButton(
-                title: S.current.confirm,
-                isActive: state.isOtpComplete,
-                isLoading: state.isLoading,
-                onPressed: () => context.read<AuthCubit>().submitOtp(),
-                styleBtn: theme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: state.isPhoneValid
-                      ? Colors.white
-                      : AppColors.grayPalette.shade300,
+              const Spacer(),
+
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: RtcButton(
+                  title: S.current.confirm,
+                  isActive: state.isOtpComplete,
+                  isLoading: state.isLoading,
+                  onPressed: () => context.read<AuthCubit>().submitOtp(),
+                  styleBtn: theme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: state.isOtpComplete
+                        ? Colors.white
+                        : AppColors.grayPalette.shade300,
+                  ),
                 ),
               ),
             ],
