@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../presenters/auth/auth.dart';
 import '../presenters/splash/splash.dart';
 import 'app_route.dart';
 
@@ -12,13 +13,9 @@ final router = GoRouter(
       path: AppRoutes.splash,
       builder: (context, state) => const SplashScreen(),
     ),
-    //   GoRoute(
-    //     path: AppRoutes.auth,
-    //     builder: (context, state) => const Scaffold(body: Center(child: Text('Auth Screen'))),
-    //   ),
-    //   GoRoute(
-    //     path: AppRoutes.chatList,
-    //     builder: (context, state) => const Scaffold(body: Center(child: Text('Chat List Screen'))),
-    //   ),
+    GoRoute(
+      path: AppRoutes.auth,
+      builder: (context, state) => const AuthScreen(),
+    ),
   ],
 );
