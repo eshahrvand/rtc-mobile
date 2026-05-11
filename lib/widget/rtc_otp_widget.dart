@@ -2,13 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:pinput/pinput.dart';
 import 'package:rtc_mobile/widget/rtc_image.dart';
-import '../../../../../generated/l10n.dart';
-import 'package:flutter/material.dart';
-import 'package:pinput/pinput.dart';
 
 import '../config/config.dart';
 import '../ui/theme/colors.dart';

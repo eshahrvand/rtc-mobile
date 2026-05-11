@@ -7,6 +7,7 @@ import '../../../../config/config.dart';
 import '../../../../widget/rtc_button.dart';
 import '../../../../widget/rtc_image.dart';
 import '../../../../widget/rtc_text_button.dart';
+import '../../../theme/colors.dart';
 import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 
@@ -15,6 +16,7 @@ class OtpWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         return SingleChildScrollView(
@@ -124,11 +126,12 @@ class OtpWidget extends StatelessWidget {
                 isActive: state.isOtpComplete,
                 isLoading: state.isLoading,
                 onPressed: () => context.read<AuthCubit>().submitOtp(),
-                width: double.infinity,
-                // TODO: replace with theme color
-                backgroundColor: state.isOtpComplete
-                    ? Colors.blue
-                    : Colors.grey.shade200,
+                styleBtn: theme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: state.isPhoneValid
+                      ? Colors.white
+                      : AppColors.grayPalette.shade300,
+                ),
               ),
             ],
           ),

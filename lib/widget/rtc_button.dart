@@ -161,23 +161,44 @@ class _RtcButtonState extends State<RtcButton> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
+            backgroundColor: active
+                ? (widget.backgroundColor ?? AppColors.brandPalette.shade600)
+                : AppColors.grayPalette.shade200,
+
             foregroundColor: active
                 ? AppColors.brandPalette.shade600
                 : AppColors.grayPalette.shade400,
+
+            shadowColor: Colors.transparent,
             elevation: 0,
-            padding: active
-                ? const EdgeInsets.fromLTRB(10, 10, 10, 16)
-                : const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
+              side: BorderSide(
+                color: active
+                    ? AppColors.brandPalette.shade600
+                    : AppColors.grayPalette.shade200,
+                width: 1,
+              ),
+            ),
+
+            fixedSize: Size(
+              widget.width ?? double.infinity,
+              widget.height ?? 48,
             ),
           ),
+
           child: isLoading!
-              ? Center(
+              ? SizedBox(
+                  height: 20,
+                  width: 20,
                   child: CircularProgressIndicator(
-                    color: AppColors.grayPalette.shade400,
+                    color: active
+                        ? Colors.white
+                        : AppColors.grayPalette.shade400,
+                    strokeWidth: 2.5,
                   ),
                 )
               : isLoadingBtm!
