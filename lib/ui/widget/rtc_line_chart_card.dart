@@ -46,14 +46,14 @@ class RtcLineChartCard extends StatelessWidget {
                   spacing: 8,
                   children: [
                     _buildLegendItem(
-                      line1Label ?? S.current.lastMonth,
-                      AppColors.successPalette.shade500,
-                      theme,
+                      label: line1Label ?? S.current.lastMonth,
+                      color: AppColors.successPalette.shade500,
+                      theme: theme,
                     ),
                     _buildLegendItem(
-                      line2Label ?? S.current.currentMonth,
-                      AppColors.brandPalette.shade600,
-                      theme,
+                      label: line2Label ?? S.current.currentMonth,
+                      color: AppColors.brandPalette.shade600,
+                      theme: theme,
                     ),
                   ],
                 ),
@@ -136,7 +136,11 @@ class RtcLineChartCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color, TextTheme theme) {
+  Widget _buildLegendItem({
+    required String label,
+    required Color color,
+    required TextTheme theme,
+  }) {
     return Row(
       spacing: 6,
       children: [
