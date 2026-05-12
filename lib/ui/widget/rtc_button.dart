@@ -113,20 +113,7 @@ class _RtcButtonState extends State<RtcButton> {
 
     // Figma Shadows
     final List<BoxShadow> shadows = active
-        ? [
-            const BoxShadow(
-              color: AppColors.shadowColorTop,
-              offset: Offset(1, 0),
-              blurRadius: 2,
-              spreadRadius: 0,
-            ),
-            const BoxShadow(
-              color: AppColors.shadowColorDown,
-              offset: Offset(1, 0),
-              blurRadius: 3,
-              spreadRadius: 0,
-            ),
-          ]
+        ? AppColors.primaryShadow
         : [
             const BoxShadow(
               color: Color(0x0D0A0D12),

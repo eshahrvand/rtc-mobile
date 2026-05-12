@@ -179,4 +179,19 @@ class AppColors {
 
   static const Color shadowColorTop = Color(0x0F0A0D12);
   static const Color shadowColorDown = Color(0x1A0A0D12);
+
+  static const List<BoxShadow> primaryShadow = [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: shadowColorTop,
+    ),
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: shadowColorDown,
+    ),
+  ];
 }

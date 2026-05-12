@@ -32,21 +32,7 @@ class RtcQuickAccessItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
-
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(0, 1),
-                blurRadius: 2,
-                spreadRadius: 0,
-                color: AppColors.shadowColorTop,
-              ),
-              BoxShadow(
-                offset: Offset(0, 1),
-                blurRadius: 3,
-                spreadRadius: 0,
-                color: AppColors.shadowColorDown,
-              ),
-            ],
+            boxShadow: AppColors.primaryShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

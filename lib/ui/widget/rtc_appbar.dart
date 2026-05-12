@@ -25,20 +25,7 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            offset: Offset(0, 1),
-            blurRadius: 2,
-            spreadRadius: 0,
-            color: AppColors.shadowColorTop,
-          ),
-          BoxShadow(
-            offset: Offset(0, 1),
-            blurRadius: 3,
-            spreadRadius: 0,
-            color: AppColors.shadowColorDown,
-          ),
-        ],
+        boxShadow: AppColors.primaryShadow,
       ),
       child: AppBar(
         centerTitle: true,
