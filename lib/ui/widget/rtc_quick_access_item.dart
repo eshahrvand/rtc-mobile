@@ -3,15 +3,19 @@ import 'rtc_image.dart';
 
 class RtcQuickAccessItem extends StatelessWidget {
   final String title;
+  final String value;
+  final String currency;
   final String iconPath;
-  final String? badgeCount;
+  final String? percentage;
   final VoidCallback onTap;
 
   const RtcQuickAccessItem({
     super.key,
     required this.title,
+    required this.value,
+    required this.currency,
     required this.iconPath,
-    this.badgeCount,
+    this.percentage,
     required this.onTap,
   });
 
@@ -21,66 +25,102 @@ class RtcQuickAccessItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          margin: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white, // // TODO: replace with theme values
-            borderRadius: BorderRadius.circular(12), // // TODO: replace with theme values
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05), // // TODO: replace with theme values
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            color: Colors.white, // // TODO: replace with theme color
+            borderRadius: BorderRadius.circular(24), // // TODO: replace with theme color
+            border: Border.all(
+              color: const Color(0xFFF2F4F7), // // TODO: replace with theme color
+            ),
           ),
-          child: Stack(
-            clipBehavior: Clip.none,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Center(
-                    child: RtcImage(
-                      image: iconPath,
-                      width: 24,
-                      height: 24,
+                  // Icon Container
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF8FF), // // TODO: replace with theme color
+                      borderRadius: BorderRadius.circular(12), // // TODO: replace with theme color
+                    ),
+                    child: Center(
+                      child: RtcImage(
+                        image: iconPath,
+                        width: 24,
+                        height: 24,
+                        color: const Color(0xFF2E90FA), // // TODO: replace with theme color
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  // Percentage Badge
+                  if (percentage != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFECFDF3), // // TODO: replace with theme color
+                        borderRadius: BorderRadius.circular(10), // // TODO: replace with theme color
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            percentage!,
+                            style: const TextStyle(
+                              color: Color(0xFF12B76A), // // TODO: replace with theme color
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Icon(
+                            Icons.arrow_upward,
+                            size: 14,
+                            color: Color(0xFF12B76A), // // TODO: replace with theme color
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  fontSize: 14, // // TODO: replace with theme color
+                  color: Color(0xFF475467), // // TODO: replace with theme color
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                   Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    value,
                     style: const TextStyle(
-                      fontSize: 10, // // TODO: replace with theme values
-                      color: Colors.grey, // // TODO: replace with theme values
+                      fontSize: 20, // // TODO: replace with theme color
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF101828), // // TODO: replace with theme color
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    currency,
+                    style: const TextStyle(
+                      fontSize: 12, // // TODO: replace with theme color
+                      color: Color(0xFF101828), // // TODO: replace with theme color
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-              if (badgeCount != null)
-                Positioned(
-                  top: -8,
-                  right: -8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1), // // TODO: replace with theme values
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      badgeCount!,
-                      style: const TextStyle(
-                        color: Colors.green, // // TODO: replace with theme values
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

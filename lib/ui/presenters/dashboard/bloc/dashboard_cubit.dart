@@ -20,10 +20,33 @@ class DashboardCubit extends Cubit<DashboardState> {
           emit(state.copyWith(
             status: DashboardRequestStatus.success,
             quickAccessItems: [
-              QuickAccessItemModel(title: 'فروش ماهانه', iconPath: 'assets/images/ic_monthly_sales.svg', badgeCount: '15% +'),
-              QuickAccessItemModel(title: 'سفارشات تایید شده', iconPath: 'assets/images/ic_confirmed_orders.svg', badgeCount: '12+'),
-              QuickAccessItemModel(title: 'موجودی کیف پول', iconPath: 'assets/images/ic_wallet.svg'),
-              QuickAccessItemModel(title: 'پورسانت نقدی', iconPath: 'assets/images/ic_commission.svg', badgeCount: '12% +'),
+              QuickAccessItemModel(
+                title: 'فروش ماهانه',
+                value: '۶۸,۰۰۰,۰۰۰',
+                currency: 'تومان',
+                iconPath: 'assets/images/ic_monthly_sales.svg',
+                percentage: '۱۸.۵%',
+              ),
+              QuickAccessItemModel(
+                title: 'سفارشات تایید شده',
+                value: '۲۴',
+                currency: 'تومان',
+                iconPath: 'assets/images/ic_confirmed_orders.svg',
+                percentage: '۱۸.۵%',
+              ),
+              QuickAccessItemModel(
+                title: 'موجودی کیف پول',
+                value: '۲,۰۰۰,۰۰۰',
+                currency: 'تومان',
+                iconPath: 'assets/images/ic_wallet.svg',
+              ),
+              QuickAccessItemModel(
+                title: 'پورسانت نقدی',
+                value: '۲۲,۰۰۰,۰۰۰',
+                currency: 'تومان',
+                iconPath: 'assets/images/ic_commission.svg',
+                percentage: '۱۸.۵%',
+              ),
             ],
             messageText: 'با فروش ۲,۰۰۰,۰۰۰ تومان دیگر پورسانت شما به ۱۸٪ نقدی و یا ۲۰٪ کالا افزایش می‌یابد.',
             messageIconPath: 'assets/images/ic_info.svg',
