@@ -4,9 +4,10 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 
 import '../../../../config/config.dart';
 import '../../../../generated/l10n.dart';
-import '../../../../widget/rtc_button.dart';
-import '../../../../widget/rtc_image.dart';
-import '../../../../widget/rtc_text_field.dart';
+
+import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_image.dart';
+import '../../../widget/rtc_text_field.dart';
 import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 

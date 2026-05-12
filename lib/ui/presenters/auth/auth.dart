@@ -5,8 +5,8 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 
 import '../../../config/config.dart';
 import '../../../generated/l10n.dart';
-import '../../../widget/rtc_image.dart';
 import '../../router/app_route.dart';
+import '../../widget/rtc_image.dart';
 import 'bloc/auth_cubit.dart';
 import 'bloc/auth_state.dart';
 import 'widget/otp_widget.dart';
@@ -26,7 +26,7 @@ class AuthScreen extends StatelessWidget {
             listenWhen: (prev, curr) => prev.status != curr.status,
             listener: (context, state) {
               if (state.status == AuthRequestStatus.success) {
-                context.go(AppRoutes.chatList);
+                context.go(AppRoutes.dashboard);
               } else if (state.status == AuthRequestStatus.error) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.errorMessage)),

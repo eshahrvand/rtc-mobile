@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../ui/theme/colors.dart';
+import '../theme/colors.dart';
 
 class RtcTextField extends StatelessWidget {
   final TextEditingController? controller;

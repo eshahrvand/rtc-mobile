@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
-import '../ui/theme/colors.dart';
+import '../theme/colors.dart';
 import 'rtc_image.dart';
 
 class RtcTextButton extends StatefulWidget {

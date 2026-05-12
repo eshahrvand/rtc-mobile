@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/widget/rtc_image.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+
 
 class AxinoIconButton extends StatelessWidget {
   final String icon;

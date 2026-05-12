@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presenters/auth/auth.dart';
+import '../presenters/dashboard/dashboard.dart';
 import '../presenters/splash/splash.dart';
 import 'app_route.dart';
 
@@ -16,6 +17,10 @@ final router = GoRouter(
     GoRoute(
       path: AppRoutes.auth,
       builder: (context, state) => const AuthScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.dashboard,
+      builder: (context, state) => const DashboardScreen(),
     ),
   ],
 );
