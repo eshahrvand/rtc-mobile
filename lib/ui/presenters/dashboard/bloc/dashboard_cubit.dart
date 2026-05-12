@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/config/config.dart';
 import '../../../../data/models/bar_chart_item_model.dart';
 import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/order_item_model.dart';
@@ -49,7 +50,7 @@ class DashboardCubit extends Cubit<DashboardState> {
               ),
             ],
             messageText: 'با فروش ۲,۰۰۰,۰۰۰ تومان دیگر پورسانت شما به ۱۸٪ نقدی و یا ۲۰٪ کالا افزایش می‌یابد.',
-            messageIconPath: 'assets/images/ic_info.svg',
+            messageIconPath: '$baseImage/alert.svg',
             lineChartData: [
               LineChartDataModel(
                 line1Data: const [

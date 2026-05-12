@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_image.dart';
 
 class RtcMessageCard extends StatelessWidget {
@@ -13,37 +14,32 @@ class RtcMessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF9F2), // // TODO: replace with theme values
-        borderRadius: BorderRadius.circular(8), // // TODO: replace with theme values
-        border: Border.all(
-          color: const Color(0xFFFFE4C4), // // TODO: replace with theme values
+    var theme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 18, 0, 18),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.warningPalette.shade25,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.warningPalette.shade100),
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RtcImage(
-            image: iconPath,
-            width: 20,
-            height: 20,
-            color: const Color(0xFFFB8C00), // // TODO: replace with theme values
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                fontSize: 12, // // TODO: replace with theme values
-                color: Color(0xFFD87C00), // // TODO: replace with theme values
-                height: 1.5,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10 , 12 , 10 , 12),
+          child: Row(
+            spacing: 10,
+            children: [
+              RtcImage(image: iconPath, width: 16, height: 16),
+
+              Expanded(
+                child: Text(
+                  message,
+                  style: theme.bodyMedium!.copyWith(color: AppColors.warningPalette.shade600
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
