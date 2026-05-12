@@ -60,65 +60,63 @@ class DashboardView extends StatelessWidget {
             }
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.only(right: 16, left: 16),
               child: Column(
                 children: [
                   const SizedBox(height: 16),
                   // 4x Quick Access Containers
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            if (state.quickAccessItems.isNotEmpty)
-                              RtcQuickAccessItem(
-                                title: state.quickAccessItems[0].title,
-                                value: state.quickAccessItems[0].value,
-                                currency: state.quickAccessItems[0].currency,
-                                iconPath: state.quickAccessItems[0].iconPath,
-                                percentage:
-                                    state.quickAccessItems[0].percentage,
-                                onTap: () {},
-                              ),
-                            if (state.quickAccessItems.length > 1)
-                              RtcQuickAccessItem(
-                                title: state.quickAccessItems[1].title,
-                                value: state.quickAccessItems[1].value,
-                                currency: state.quickAccessItems[1].currency,
-                                iconPath: state.quickAccessItems[1].iconPath,
-                                percentage:
-                                    state.quickAccessItems[1].percentage,
-                                onTap: () {},
-                              ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            if (state.quickAccessItems.length > 2)
-                              RtcQuickAccessItem(
-                                title: state.quickAccessItems[2].title,
-                                value: state.quickAccessItems[2].value,
-                                currency: state.quickAccessItems[2].currency,
-                                iconPath: state.quickAccessItems[2].iconPath,
-                                percentage:
-                                    state.quickAccessItems[2].percentage,
-                                onTap: () {},
-                              ),
-                            if (state.quickAccessItems.length > 3)
-                              RtcQuickAccessItem(
-                                title: state.quickAccessItems[3].title,
-                                value: state.quickAccessItems[3].value,
-                                currency: state.quickAccessItems[3].currency,
-                                iconPath: state.quickAccessItems[3].iconPath,
-                                percentage:
-                                    state.quickAccessItems[3].percentage,
-                                onTap: () {},
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      Row(
+                        spacing: 12,
+                        children: [
+                          if (state.quickAccessItems.length > 1)
+                            RtcQuickAccessItem(
+                              title: state.quickAccessItems[1].title,
+                              value: state.quickAccessItems[1].value,
+                              currency: state.quickAccessItems[1].currency,
+                              iconPath: state.quickAccessItems[1].iconPath,
+                              percentage: state.quickAccessItems[1].percentage,
+                              onTap: () {},
+                            ),
+
+                          if (state.quickAccessItems.isNotEmpty)
+                            RtcQuickAccessItem(
+                              title: state.quickAccessItems[0].title,
+                              value: state.quickAccessItems[0].value,
+                              currency: state.quickAccessItems[0].currency,
+                              iconPath: state.quickAccessItems[0].iconPath,
+                              percentage: state.quickAccessItems[0].percentage,
+                              onTap: () {},
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        spacing: 12,
+                        children: [
+                          if (state.quickAccessItems.length > 3)
+                            RtcQuickAccessItem(
+                              title: state.quickAccessItems[3].title,
+                              value: state.quickAccessItems[3].value,
+                              currency: state.quickAccessItems[3].currency,
+                              iconPath: state.quickAccessItems[3].iconPath,
+                              percentage: state.quickAccessItems[3].percentage,
+                              onTap: () {},
+                            ),
+
+                          if (state.quickAccessItems.length > 2)
+                            RtcQuickAccessItem(
+                              title: state.quickAccessItems[2].title,
+                              value: state.quickAccessItems[2].value,
+                              currency: state.quickAccessItems[2].currency,
+                              iconPath: state.quickAccessItems[2].iconPath,
+                              percentage: state.quickAccessItems[2].percentage,
+                              onTap: () {},
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
 
                   // Message Container

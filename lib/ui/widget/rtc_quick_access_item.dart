@@ -53,36 +53,38 @@ class RtcQuickAccessItem extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (percentage != null)
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.successPalette.shade50,
+                  percentage != null
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.successPalette.shade50,
 
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(6, 3, 6, 3),
-                        child: Row(
-                          spacing: 4,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              percentage!,
-                              style: theme.bodySmall!.copyWith(
-                                color: AppColors.successPalette.shade600,
-                              ),
-                            ),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(6, 3, 6, 3),
+                            child: Row(
+                              spacing: 4,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  percentage!,
+                                  style: theme.bodySmall!.copyWith(
+                                    color: AppColors.successPalette.shade600,
+                                  ),
+                                ),
 
-                            RtcImage(
-                              image: "$baseImage/arrow-up.svg",
-                              width: 10,
-                              height: 10,
+                                RtcImage(
+                                  image: "$baseImage/arrow-up.svg",
+                                  width: 10,
+                                  height: 10,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
+                        )
+                      : SizedBox(),
 
                   Container(
                     width: 30,
@@ -98,7 +100,6 @@ class RtcQuickAccessItem extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 13),
 
               Text(
                 title,
