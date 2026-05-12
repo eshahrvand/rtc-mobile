@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_bar_chart_card.dart';
 import '../../widget/rtc_bottom_nav.dart';
@@ -47,18 +49,9 @@ class DashboardView extends StatelessWidget {
         ),
       ],
       child: Scaffold(
-        backgroundColor: const Color(0xFFF9FAFB),
-        // // TODO: replace with theme values
         appBar: RtcAppBar(
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.menu,
-                color: Colors.black,
-              ), // // TODO: replace with theme values
-            ),
-          ],
+          onBack: () {},
+          backIconPath: "$baseImage/drawer_menu.svg",
         ),
         body: BlocBuilder<DashboardCubit, DashboardState>(
           builder: (context, state) {
@@ -84,7 +77,8 @@ class DashboardView extends StatelessWidget {
                                 value: state.quickAccessItems[0].value,
                                 currency: state.quickAccessItems[0].currency,
                                 iconPath: state.quickAccessItems[0].iconPath,
-                                percentage: state.quickAccessItems[0].percentage,
+                                percentage:
+                                    state.quickAccessItems[0].percentage,
                                 onTap: () {},
                               ),
                             if (state.quickAccessItems.length > 1)
@@ -93,7 +87,8 @@ class DashboardView extends StatelessWidget {
                                 value: state.quickAccessItems[1].value,
                                 currency: state.quickAccessItems[1].currency,
                                 iconPath: state.quickAccessItems[1].iconPath,
-                                percentage: state.quickAccessItems[1].percentage,
+                                percentage:
+                                    state.quickAccessItems[1].percentage,
                                 onTap: () {},
                               ),
                           ],
@@ -106,7 +101,8 @@ class DashboardView extends StatelessWidget {
                                 value: state.quickAccessItems[2].value,
                                 currency: state.quickAccessItems[2].currency,
                                 iconPath: state.quickAccessItems[2].iconPath,
-                                percentage: state.quickAccessItems[2].percentage,
+                                percentage:
+                                    state.quickAccessItems[2].percentage,
                                 onTap: () {},
                               ),
                             if (state.quickAccessItems.length > 3)
@@ -115,7 +111,8 @@ class DashboardView extends StatelessWidget {
                                 value: state.quickAccessItems[3].value,
                                 currency: state.quickAccessItems[3].currency,
                                 iconPath: state.quickAccessItems[3].iconPath,
-                                percentage: state.quickAccessItems[3].percentage,
+                                percentage:
+                                    state.quickAccessItems[3].percentage,
                                 onTap: () {},
                               ),
                           ],

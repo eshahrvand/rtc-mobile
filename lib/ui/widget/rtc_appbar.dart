@@ -23,19 +23,19 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      elevation: elevation ?? 0, // // TODO: replace with theme values
-      backgroundColor: Colors.white, // // TODO: replace with theme values
+      elevation: elevation ?? 0,
+      backgroundColor: Colors.white,
+
       leading: onBack != null
           ? GestureDetector(
               onTap: onBack,
               child: Container(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(right: 16 , top: 12 , bottom: 12),
                 alignment: Alignment.center,
                 child: RtcImage(
                   image: backIconPath ?? 'assets/images/ic_close.svg',
-                  width: 24,
-                  height: 24,
-                  color: Colors.black, // // TODO: replace with theme values
+                  width: 40,
+                  height: 40,
                 ),
               ),
             )
