@@ -16,6 +16,7 @@ class RtcPreInvoiceCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 56,
+
         decoration: BoxDecoration(
           color: AppColors.grayPalette.shade900,
           borderRadius: BorderRadius.circular(8),
