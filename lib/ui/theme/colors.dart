@@ -182,4 +182,7 @@ class AppColors {
         800: Color(0xFF9C2A10),
         900: Color(0xFF7E2410),
       });
+
+  static const Color shadowColorTop = Color(0x0F0A0D12);
+  static const Color shadowColorDown = Color(0x1A0A0D12);
 }

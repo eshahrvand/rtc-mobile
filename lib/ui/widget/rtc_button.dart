@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
-
 import '../theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -116,13 +115,13 @@ class _RtcButtonState extends State<RtcButton> {
     final List<BoxShadow> shadows = active
         ? [
             const BoxShadow(
-              color: Color(0x0F0A0D12),
+              color: AppColors.shadowColorTop,
               offset: Offset(1, 0),
               blurRadius: 2,
               spreadRadius: 0,
             ),
             const BoxShadow(
-              color: Color(0x1A0A0D12),
+              color: AppColors.shadowColorDown,
               offset: Offset(1, 0),
               blurRadius: 3,
               spreadRadius: 0,
