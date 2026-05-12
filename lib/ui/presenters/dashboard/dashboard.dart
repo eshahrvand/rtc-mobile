@@ -167,10 +167,7 @@ class DashboardView extends StatelessWidget {
 
                   // Recent Orders Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -181,10 +178,18 @@ class DashboardView extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        RtcImage(
-                          image: "$baseImage/arrow-left-dashboard.svg",
-                          width: 14,
-                          height: 14,
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: RtcImage(
+                            image: "$baseImage/arrow-left-dashboard.svg",
+                            width: 16,
+                            height: 16,
+                          ),
                         ),
                       ],
                     ),
@@ -197,9 +202,12 @@ class DashboardView extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: state.recentOrders.length,
                     itemBuilder: (context, index) {
-                      return RtcOrderItem(
-                        order: state.recentOrders[index],
-                        onTap: () {},
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: RtcOrderItem(
+                          order: state.recentOrders[index],
+                          onTap: () {},
+                        ),
                       );
                     },
                   ),

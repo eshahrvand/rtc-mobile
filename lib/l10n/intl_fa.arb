@@ -28,5 +28,8 @@
   "dailySalesChart": "نمودار روزانه فروش",
   "currentMonth": "ماه جاری",
   "lastMonth": "ماه گذشته",
-  "recentOrdersHeader": "آخرین سفارش‌ها"
+  "recentOrdersHeader": "آخرین سفارش‌ها",
+  "statusApproved": "تایید شده",
+  "statusRejected": "رد شده",
+  "statusPending": "در انتظار تایید"
 }

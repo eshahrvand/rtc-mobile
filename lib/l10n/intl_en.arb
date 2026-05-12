@@ -28,5 +28,8 @@
   "dailySalesChart": "",
   "currentMonth": "",
   "lastMonth": "",
-  "recentOrdersHeader": ""
+  "recentOrdersHeader": "",
+  "statusApproved": "",
+  "statusRejected": "",
+  "statusPending": ""
 }

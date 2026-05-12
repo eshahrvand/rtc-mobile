@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
 
-class AxinoIconButton extends StatelessWidget {
+class RtcIconButton extends StatelessWidget {
   final String icon;
   final double size;
   final VoidCallback? onPressed;
   final Color? color;
 
-  const AxinoIconButton({
+  const RtcIconButton({
     super.key,
     required this.icon,
     this.size = 50.0,

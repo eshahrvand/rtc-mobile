@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_icon_button.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../data/models/order_item_model.dart';
+import '../../generated/l10n.dart';
 
 class RtcOrderItem extends StatelessWidget {
   final OrderItemModel order;
@@ -16,9 +20,7 @@ class RtcOrderItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-
           borderRadius: BorderRadius.circular(12),
-
           border: Border.all(width: 1, color: AppColors.grayPalette.shade200),
         ),
         child: Padding(
@@ -36,7 +38,6 @@ class RtcOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade900,
                     ),
                   ),
-
                   Text(
                     order.amount,
                     style: theme.bodyLarge!.copyWith(
@@ -46,7 +47,6 @@ class RtcOrderItem extends StatelessWidget {
                   ),
                 ],
               ),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -56,8 +56,7 @@ class RtcOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade700,
                     ),
                   ),
-
-                  _buildStatusBadge(order.status),
+                  _buildStatusBadge(order.status, theme),
                 ],
               ),
             ],
@@ -67,25 +66,40 @@ class RtcOrderItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(String status) {
-    Color color = Colors.blue; // // TODO: replace with theme color per status
-    if (status == 'تایید شده') color = Colors.green;
-    if (status == 'رد شده') color = Colors.red;
-    if (status == 'در انتظار تایید') color = Colors.orange;
+  Widget _buildStatusBadge(String status, TextTheme theme) {
+    Color color = AppColors.brandPalette.shade600;
+
+    if (status == S.current.statusApproved) {
+      color = AppColors.successPalette.shade50;
+    } else if (status == S.current.statusRejected) {
+      color = AppColors.errorPalette.shade50;
+    } else if (status == S.current.statusPending) {
+      color = AppColors.warningPalette.shade50;
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1), // // TODO: replace with theme values
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Text(
-        status,
-        style: TextStyle(
-          fontSize: 10,
-          color: color, // // TODO: replace with theme values
-          fontWeight: FontWeight.bold,
-        ),
+      child: Row(
+        spacing: 4,
+        children: [
+          RtcImage(
+            image: "$baseImage/document-list-check.svg",
+            width: 12,
+            height: 12,
+            color: AppColors.blueGrayPalette.shade600,
+          ),
+          Text(
+            status,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.brandPalette.shade700,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }
