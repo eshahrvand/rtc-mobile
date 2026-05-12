@@ -20,5 +20,9 @@
   "resendSms": "ارسال مجدد پیامک",
   "confirm": "تایید",
   "otpResent": "کد مجدداً ارسال شد",
-  "releaseFactor": ""
+  "releaseFactor": "",
+  "dashboard": "",
+  "products": "",
+  "orders": "",
+  "profile": ""
 }

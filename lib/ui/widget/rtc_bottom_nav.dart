@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import '../../generated/l10n.dart';
 import 'rtc_image.dart';
 
 class RtcBottomNav extends StatelessWidget {
@@ -18,7 +21,8 @@ class RtcBottomNav extends StatelessWidget {
         color: Colors.white, // // TODO: replace with theme values
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05), // // TODO: replace with theme values
+            color: Colors.black.withOpacity(0.05),
+            // // TODO: replace with theme values
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -31,10 +35,17 @@ class RtcBottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildNavItem(0, 'داشبورد', 'assets/images/ic_dashboard.svg'),
-              _buildNavItem(1, 'کالاها', 'assets/images/ic_products.svg'),
-              _buildNavItem(2, 'سفارشات', 'assets/images/ic_orders.svg'),
-              _buildNavItem(3, 'پروفایل', 'assets/images/ic_profile.svg'),
+              _buildNavItem(0, S.current.dashboard, '$baseImage/home.svg'),
+              _buildNavItem(
+                1,
+                S.current.products,
+                '$baseImage/package-check.svg',
+              ),
+              _buildNavItem(
+                2,
+                S.current.orders,
+                '$baseImage/shopping-cart-check.svg',
+              ),
             ],
           ),
         ),
@@ -45,7 +56,8 @@ class RtcBottomNav extends StatelessWidget {
   Widget _buildNavItem(int index, String label, String iconPath) {
     final bool isSelected = selectedIndex == index;
     final Color color = isSelected
-        ? Colors.blue // // TODO: replace with theme values
+        ? Colors
+              .blue // // TODO: replace with theme values
         : Colors.grey; // // TODO: replace with theme values
 
     return Expanded(
@@ -55,12 +67,7 @@ class RtcBottomNav extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            RtcImage(
-              image: iconPath,
-              width: 24,
-              height: 24,
-              color: color,
-            ),
+            RtcImage(image: iconPath, width: 24, height: 24, color: color),
             const SizedBox(height: 4),
             Text(
               label,
