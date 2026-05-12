@@ -24,5 +24,8 @@
   "dashboard": "",
   "products": "",
   "orders": "",
-  "profile": ""
+  "profile": "",
+  "dailySalesChart": "",
+  "currentMonth": "",
+  "lastMonth": ""
 }

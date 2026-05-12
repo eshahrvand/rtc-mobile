@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../../generated/l10n.dart';
 import '../theme/colors.dart';
 
 class RtcLineChartCard extends StatelessWidget {
@@ -18,13 +19,13 @@ class RtcLineChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(top: 18),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-
           borderRadius: BorderRadius.circular(14),
           boxShadow: AppColors.primaryShadow,
         ),
@@ -33,22 +34,27 @@ class RtcLineChartCard extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
               children: [
-
-                const Text(
-                  'نمودار روزانه فروش',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black, // // TODO: replace with theme values
+                Text(
+                  S.current.dailySalesChart,
+                  style: theme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.grayPalette.shade900,
                   ),
                 ),
                 Row(
+                  spacing: 8,
                   children: [
-                    _buildLegendItem(line2Label ?? 'ماه جاری', Colors.blue),
-                    const SizedBox(width: 12),
-                    _buildLegendItem(line1Label ?? 'ماه گذشته', Colors.green),
+                    _buildLegendItem(
+                      line1Label ?? S.current.lastMonth,
+                      AppColors.successPalette.shade500,
+                      theme,
+                    ),
+                    _buildLegendItem(
+                      line2Label ?? S.current.currentMonth,
+                      AppColors.brandPalette.shade600,
+                      theme,
+                    ),
                   ],
                 ),
               ],
@@ -130,15 +136,20 @@ class RtcLineChartCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(String label, Color color, TextTheme theme) {
     return Row(
+      spacing: 6,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-        const SizedBox(width: 4),
         Container(
           width: 8,
           height: 8,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        Text(
+          label,
+          style: theme.bodySmall!.copyWith(
+            color: AppColors.grayPalette.shade600,
+          ),
         ),
       ],
     );

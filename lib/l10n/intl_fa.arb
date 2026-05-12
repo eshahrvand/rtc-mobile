@@ -24,5 +24,8 @@
   "dashboard": "داشبورد",
   "products": "کالاها",
   "orders": "سفارشات",
-  "profile": "پروفایل"
+  "profile": "پروفایل",
+  "dailySalesChart": "نمودار روزانه فروش",
+  "currentMonth": "ماه جاری",
+  "lastMonth": "ماه گذشته"
 }
