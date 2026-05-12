@@ -28,8 +28,8 @@ class RtcBarChartCard extends StatelessWidget {
               textAlign: TextAlign.right,
               style: theme.labelLarge!.copyWith(
                 color: AppColors.grayPalette.shade900,
-                fontWeight: FontWeight.w600
-              )
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 12),
             AspectRatio(
@@ -51,10 +51,8 @@ class RtcBarChartCard extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
                                 data[index].label,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  // // TODO: replace with theme values
-                                  fontSize: 10,
+                                style: theme.bodySmall!.copyWith(
+                                  color: Colors.black,
                                 ),
                               ),
                             );
@@ -82,12 +80,11 @@ class RtcBarChartCard extends StatelessWidget {
                       barRods: [
                         BarChartRodData(
                           toY: entry.value.value,
-                          color: Colors.blue,
-                          // // TODO: replace with theme values
-                          width: 16,
+                          color: AppColors.brandPalette.shade600,
+                          width: 20,
                           borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            topRight: Radius.circular(4),
+                            topLeft: Radius.circular(1),
+                            topRight: Radius.circular(1),
                           ),
                         ),
                       ],
