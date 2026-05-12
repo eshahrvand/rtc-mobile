@@ -1,50 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import '../../generated/l10n.dart';
 import 'rtc_image.dart';
 
 class RtcPreInvoiceCard extends StatelessWidget {
   final VoidCallback onTap;
 
-  const RtcPreInvoiceCard({
-    super.key,
-    required this.onTap,
-  });
+  const RtcPreInvoiceCard({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        height: 56,
         decoration: BoxDecoration(
-          color: const Color(0xFF1D2939), // // TODO: replace with theme values
-          borderRadius: BorderRadius.circular(12), // // TODO: replace with theme values
+          color: AppColors.grayPalette.shade900,
+          borderRadius: BorderRadius.circular(8),
         ),
-        child: const Row(
-          children: [
-            RtcImage(
-              image: 'assets/images/ic_arrow_left.svg',
-              width: 20,
-              height: 20,
-              color: Colors.white, // // TODO: replace with theme values
-            ),
-            Spacer(),
-            Text(
-              'صدور پیش‌فاکتور',
-              style: TextStyle(
-                color: Colors.white, // // TODO: replace with theme values
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          child: Row(
+            spacing: 8,
+            children: [
+              RtcImage(
+                image: '$baseImage/asset_report.svg',
+                width: 24,
+                height: 24,
               ),
-            ),
-            SizedBox(width: 12),
-            RtcImage(
-              image: 'assets/images/ic_invoice_add.svg',
-              width: 24,
-              height: 24,
-              color: Colors.white, // // TODO: replace with theme values
-            ),
-          ],
+
+              Text(
+                S.current.releaseFactor,
+                style: theme.labelLarge!.copyWith(color: Colors.white),
+              ),
+              Spacer(),
+              RtcImage(
+                image: "$baseImage/angle-left.svg",
+                width: 24,
+                height: 24,
+              ),
+            ],
+          ),
         ),
       ),
     );

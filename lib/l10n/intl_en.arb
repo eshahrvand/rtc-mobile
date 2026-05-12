@@ -19,5 +19,6 @@
   "sendViaRubika": "ارسال به روبیکا",
   "resendSms": "ارسال مجدد پیامک",
   "confirm": "تایید",
-  "otpResent": "کد مجدداً ارسال شد"
+  "otpResent": "کد مجدداً ارسال شد",
+  "releaseFactor": ""
 }
