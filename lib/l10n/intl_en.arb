@@ -27,5 +27,6 @@
   "profile": "",
   "dailySalesChart": "",
   "currentMonth": "",
-  "lastMonth": ""
+  "lastMonth": "",
+  "recentOrdersHeader": ""
 }

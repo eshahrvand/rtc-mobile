@@ -1,72 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../data/models/order_item_model.dart';
 
 class RtcOrderItem extends StatelessWidget {
   final OrderItemModel order;
   final VoidCallback onTap;
 
-  const RtcOrderItem({
-    super.key,
-    required this.order,
-    required this.onTap,
-  });
+  const RtcOrderItem({super.key, required this.order, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white, // // TODO: replace with theme values
-          borderRadius: BorderRadius.circular(12), // // TODO: replace with theme values
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05), // // TODO: replace with theme values
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: Colors.white,
+
+          borderRadius: BorderRadius.circular(12),
+
+          border: Border.all(width: 1, color: AppColors.grayPalette.shade200),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  order.amount,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black, // // TODO: replace with theme values
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            spacing: 16,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '# ${order.orderId}',
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
+                    ),
                   ),
-                ),
-                Text(
-                  '# ${order.orderId}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey, // // TODO: replace with theme values
+
+                  Text(
+                    order.amount,
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatusBadge(order.status),
-                Text(
-                  order.customerName,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black87, // // TODO: replace with theme values
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    order.customerName,
+                    style: theme.bodyMedium!.copyWith(
+                      color: AppColors.grayPalette.shade700,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+
+                  _buildStatusBadge(order.status),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

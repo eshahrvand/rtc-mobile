@@ -27,5 +27,6 @@
   "profile": "پروفایل",
   "dailySalesChart": "نمودار روزانه فروش",
   "currentMonth": "ماه جاری",
-  "lastMonth": "ماه گذشته"
+  "lastMonth": "ماه گذشته",
+  "recentOrdersHeader": "آخرین سفارش‌ها"
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import '../../../generated/l10n.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_bar_chart_card.dart';
 import '../../widget/rtc_bottom_nav.dart';
@@ -31,6 +33,7 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return MultiBlocListener(
       listeners: [
         BlocListener<DashboardCubit, DashboardState>(
@@ -91,7 +94,7 @@ class DashboardView extends StatelessWidget {
                             ),
                         ],
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       Row(
                         spacing: 12,
                         children: [
@@ -153,6 +156,14 @@ class DashboardView extends StatelessWidget {
                     title: state.barChartTitle,
                     data: state.barChartData,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 18, bottom: 18),
+                    child: Container(
+                      height: 1,
+                      width: double.infinity,
+                      color: AppColors.grayPalette.shade200,
+                    ),
+                  ),
 
                   // Recent Orders Header
                   Padding(
@@ -163,20 +174,17 @@ class DashboardView extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(
-                          Icons.arrow_back,
-                          size: 16,
-                          color: Colors.blue,
-                        ),
-                        // // TODO
-                        const Text(
-                          'آخرین سفارش‌ها',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors
-                                .black, // // TODO: replace with theme values
+                        Text(
+                          S.current.recentOrdersHeader,
+                          style: theme.labelLarge!.copyWith(
+                            color: AppColors.grayPalette.shade900,
+                            fontWeight: FontWeight.w600,
                           ),
+                        ),
+                        RtcImage(
+                          image: "$baseImage/arrow-left-dashboard.svg",
+                          width: 14,
+                          height: 14,
                         ),
                       ],
                     ),
