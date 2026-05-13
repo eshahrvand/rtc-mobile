@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/config/config.dart';
 import '../../../../../data/models/product_chip_model.dart';
 import '../../../../../data/models/product_item_model.dart';
 import 'product_state.dart';
@@ -23,14 +24,14 @@ class ProductCubit extends Cubit<ProductState> {
       ProductItemModel(
         id: '1',
         name: 'یخچال ۵۵ فوت RTC مدل Smart TV 4K',
-        imageUrl: 'assets/images/refrigerator.png',
+        imageUrl: '$baseImage/frame1.png',
         price: '۲۲,۴۹۰,۰۰۰',
         inventory: '۵',
       ),
       ProductItemModel(
         id: '2',
         name: 'ماکروویو RTC مدل Smart 4K',
-        imageUrl: 'assets/images/microwave.png',
+        imageUrl: '$baseImage/frame2.png',
         price: '۱۴,۴۹۰,۰۰۰',
         oldPrice: '۱۶,۱۰۰,۰۰۰',
         inventory: '۸',
@@ -38,15 +39,31 @@ class ProductCubit extends Cubit<ProductState> {
       ),
       ProductItemModel(
         id: '3',
-        name: 'اسپروساز دلونگی مدل PRMAX12435554',
-        imageUrl: 'assets/images/espresso.png',
+        name: 'ماکروویو RTC مدل Smart 4K',
+        imageUrl: '$baseImage/frame2.png',
+        price: '۱۴,۴۹۰,۰۰۰',
+        oldPrice: '۱۶,۱۰۰,۰۰۰',
+        inventory: '۸',
+        discount: '۲۰٪',
+      ),
+      ProductItemModel(
+        id: '4',
+        name: 'اسپروساز دلونگی مدل 35554',
+        imageUrl: '$baseImage/frame3.png',
         price: '۱۴,۴۹۰,۰۰۰',
         inventory: '۲',
       ),
       ProductItemModel(
-        id: '4',
-        name: 'هواپز NINJA PRO مدل RTC RTC34566',
-        imageUrl: 'assets/images/airfryer.png',
+        id: '5',
+        name: 'هواپز NINJA PRO مدل RTC RTC366',
+        imageUrl: '$baseImage/frame4.png',
+        price: '۱۴,۴۹۰,۰۰۰',
+        inventory: '۴',
+      ),
+      ProductItemModel(
+        id: '6',
+        name: 'هواپز NINJA PRO مدل RTC RTC66',
+        imageUrl: '$baseImage/frame4.png',
         price: '۱۴,۴۹۰,۰۰۰',
         inventory: '۴',
       ),
@@ -55,18 +72,22 @@ class ProductCubit extends Cubit<ProductState> {
     // Using Future.delayed to simulate API call and follow .then().catchError() pattern
     Future.delayed(const Duration(milliseconds: 500))
         .then((_) {
-          emit(state.copyWith(
-            status: ProductRequestStatus.success,
-            chips: chips,
-            allProducts: products,
-            filteredProducts: products,
-          ));
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.success,
+              chips: chips,
+              allProducts: products,
+              filteredProducts: products,
+            ),
+          );
         })
         .catchError((Object e) {
-          emit(state.copyWith(
-            status: ProductRequestStatus.error,
-            errorMessage: e.toString(),
-          ));
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
         });
   }
 
@@ -75,11 +96,13 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void deactivateSearch() {
-    emit(state.copyWith(
-      isSearchActive: false,
-      searchQuery: '',
-      filteredProducts: state.allProducts,
-    ));
+    emit(
+      state.copyWith(
+        isSearchActive: false,
+        searchQuery: '',
+        filteredProducts: state.allProducts,
+      ),
+    );
   }
 
   void onSearchChanged(String query) {
@@ -105,7 +128,10 @@ class ProductCubit extends Cubit<ProductState> {
 
     if (state.searchQuery.isNotEmpty) {
       filtered = filtered
-          .where((p) => p.name.toLowerCase().contains(state.searchQuery.toLowerCase()))
+          .where(
+            (p) =>
+                p.name.toLowerCase().contains(state.searchQuery.toLowerCase()),
+          )
           .toList();
     }
 

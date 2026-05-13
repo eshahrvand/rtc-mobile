@@ -28,11 +28,7 @@ class RtcProductsAppBar extends StatelessWidget implements PreferredSizeWidget {
         elevation: 0,
         leading: IconButton(
           onPressed: () => cubit.deactivateSearch(),
-          icon: RtcImage(
-            image: '$baseImage/close.svg',
-            width: 24,
-            height: 24,
-          ),
+          icon: RtcImage(image: '$baseImage/close.svg', width: 24, height: 24),
         ),
         title: RtcTextField(
           autoFocus: true,

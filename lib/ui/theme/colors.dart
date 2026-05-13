@@ -3,13 +3,36 @@ import 'package:flutter/material.dart';
 class RtcPalette extends MaterialColor {
   const RtcPalette(super.primary, super.swatch);
 
+  Color get shade20 => this[20]!;
+
   Color get shade25 => this[25]!;
+
+  Color get shade50 => this[50]!;
+
+  Color get shade100 => this[100]!;
+
+  Color get shade200 => this[200]!;
+
+  Color get shade300 => this[300]!;
+
+  Color get shade400 => this[400]!;
+
+  Color get shade500 => this[500]!;
+
+  Color get shade600 => this[600]!;
+
+  Color get shade700 => this[700]!;
+
+  Color get shade800 => this[800]!;
+
+  Color get shade900 => this[900]!;
 }
 
 class AppColors {
   AppColors._();
 
   static const RtcPalette grayPalette = RtcPalette(0xFF717680, <int, Color>{
+    20: Color(0xFF333333),
     25: Color(0xFFFDFDFD),
     50: Color(0xFFFAFAFA),
     100: Color(0xFFF5F5F5),
@@ -93,19 +116,20 @@ class AppColors {
     900: Color(0xFF101323),
   });
 
-  static const RtcPalette blueLightPalette = RtcPalette(0xFF0BA5EC, <int, Color>{
-    25: Color(0xFFF5FBFF),
-    50: Color(0xFFF0F9FF),
-    100: Color(0xFFE0F2FE),
-    200: Color(0xFFB9E6FE),
-    300: Color(0xFF7CD4FD),
-    400: Color(0xFF36BFFA),
-    500: Color(0xFF0BA5EC),
-    600: Color(0xFF0086C9),
-    700: Color(0xFF026AA2),
-    800: Color(0xFF065988),
-    900: Color(0xFF0B4A6F),
-  });
+  static const RtcPalette blueLightPalette =
+      RtcPalette(0xFF0BA5EC, <int, Color>{
+        25: Color(0xFFF5FBFF),
+        50: Color(0xFFF0F9FF),
+        100: Color(0xFFE0F2FE),
+        200: Color(0xFFB9E6FE),
+        300: Color(0xFF7CD4FD),
+        400: Color(0xFF36BFFA),
+        500: Color(0xFF0BA5EC),
+        600: Color(0xFF0086C9),
+        700: Color(0xFF026AA2),
+        800: Color(0xFF065988),
+        900: Color(0xFF0B4A6F),
+      });
 
   static const RtcPalette indigoPalette = RtcPalette(0xFF6172F3, <int, Color>{
     25: Color(0xFFF5F8FF),
