@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_credit_limit_field.dart';
@@ -20,7 +21,13 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: RtcAppBar(
         title: S.current.profile,
-        onBack: () => context.pop(),
+        onBack: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(AppRoutes.dashboard);
+          }
+        },
         backIconPath: "$baseImage/angle-right.svg",
       ),
       body: SingleChildScrollView(
@@ -161,7 +168,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 16,)
+            SizedBox(height: 16),
           ],
         ),
       ),
