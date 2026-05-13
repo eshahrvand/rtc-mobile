@@ -34,9 +34,9 @@ class RtcProductItem extends StatelessWidget {
             ),
 
             // Content
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-              child: Expanded(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -58,7 +58,7 @@ class RtcProductItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         if (product.discount != null)
                           Container(
@@ -83,12 +83,15 @@ class RtcProductItem extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (product.oldPrice != null)
-                              Text(
-                                product.oldPrice!,
-                                style: theme.bodyMedium!.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.grayPalette.shade500,
-                                  decoration: TextDecoration.lineThrough,
+                              Padding(
+                                padding: const EdgeInsets.only(right: 18),
+                                child: Text(
+                                  product.oldPrice!,
+                                  style: theme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.grayPalette.shade500,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
                                 ),
                               ),
                             Row(
