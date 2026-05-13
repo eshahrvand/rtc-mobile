@@ -123,4 +123,22 @@ class DashboardCubit extends Cubit<DashboardState> {
   void onNavItemSelected(int index) {
     emit(state.copyWith(selectedNavIndex: index));
   }
+
+  Map<String, dynamic> getUserProfileData() {
+    return {
+      'fullName': 'آرش فرداد',
+      'role': 'نماینده فروش',
+      'phoneNumber': '۰۹۱۲۶۰۲۴۱۷۹',
+      'nationalId': '۰۰۸۱۲۳۴۵۶۷',
+      'email': 'Arash.fardad@gmail.com',
+      'agencyCode': 'AG-TEH-011',
+      'workshopCode': '۱۲۳۴۵۶۷۸۹۰',
+      'province': 'تهران',
+      'city': 'تهران',
+      'address': 'خ ولیعصر، خ پسیان، ک طلوعی، پ ۱۵۸، واحد ۱۲ خ ولیعصر، خ پسیان، ک طلوعی، پ ۱۵۸، واحد ۱۲',
+      'creditLimit': '۱۰۰,۰۰۰,۰۰۰',
+      'regionalManager': 'پاشا نیکچی',
+      'avatarUrl': 'assets/images/Avatar.png',
+    };
+  }
 }

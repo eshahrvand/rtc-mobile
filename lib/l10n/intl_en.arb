@@ -33,5 +33,16 @@
   "statusRejected": "",
   "statusPending": "",
   "myCustomers": "",
-  "wallet": ""
+  "wallet": "Wallet",
+  "phoneNumber": "Phone Number",
+  "nationalId": "National ID",
+  "email": "Email",
+  "agencyCode": "Agency Code",
+  "workshopCode": "Workshop Code",
+  "province": "Province",
+  "city": "City",
+  "address": "Address",
+  "creditLimit": "Credit Limit",
+  "regionalManager": "Regional Manager",
+  "creditLimitHelper": "Your allowed debt to the wallet system"
 }

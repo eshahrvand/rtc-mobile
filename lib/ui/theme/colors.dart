@@ -194,4 +194,25 @@ class AppColors {
       color: shadowColorDown,
     ),
   ];
+
+  static const List<BoxShadow> fieldShadow = [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 1,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+    BoxShadow(
+      offset: Offset(0, 0),
+      blurRadius: 0,
+      spreadRadius: 1,
+      color: Color(0x29676E76),
+    ),
+    BoxShadow(
+      offset: Offset(0, 2),
+      blurRadius: 5,
+      spreadRadius: 0,
+      color: Color(0x14676E76),
+    ),
+  ];
 }

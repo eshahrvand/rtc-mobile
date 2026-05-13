@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
@@ -36,19 +37,19 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.myCustomers,
                       iconPath: '$baseImage/family.svg',
-                      onTap: () => _navigate(context, '/customers'),
+                      onTap: () => context.go(AppRoutes.profile),
                     ),
                     const RtcDivider(),
                     _DrawerMenuItem(
                       title: S.current.releaseFactor,
                       iconPath: '$baseImage/invoice.svg',
-                      onTap: () => _navigate(context, '/pre-invoice'),
+                      onTap: () => context.go(AppRoutes.profile),
                     ),
                     const RtcDivider(),
                     _DrawerMenuItem(
                       title: S.current.wallet,
                       iconPath: '$baseImage/wallet_drawer.svg',
-                      onTap: () => _navigate(context, '/wallet'),
+                      onTap: () => context.go(AppRoutes.profile),
                     ),
                     const RtcDivider(),
                   ],
@@ -131,7 +132,7 @@ class RtcDrawer extends StatelessWidget {
               const Spacer(),
               IconButton(
                 onPressed: () {
-                  _navigate(context, '/login');
+                  context.go(AppRoutes.profile);
                 },
                 icon: RtcImage(
                   image: "$baseImage/door_close.svg",
@@ -144,11 +145,6 @@ class RtcDrawer extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _navigate(BuildContext context, String route) {
-    scaffoldKey.currentState?.closeDrawer();
-    context.go(route);
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -30,7 +31,9 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
         centerTitle: true,
         elevation: elevation ?? 0,
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
 
         leading: onBack != null
             ? GestureDetector(
@@ -43,7 +46,7 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   alignment: Alignment.center,
                   child: RtcImage(
-                    image: backIconPath ?? 'assets/images/ic_close.svg',
+                    image: backIconPath ?? '$baseImage/close.svg',
                     width: 40,
                     height: 40,
                   ),
@@ -52,10 +55,8 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
             : const SizedBox.shrink(),
         title: Text(
           title ?? '',
-          style: const TextStyle(
-            color: Colors.black, // // TODO: replace with theme values
-            fontSize: 18, // // TODO: replace with theme values
-            fontWeight: FontWeight.bold, // // TODO: replace with theme values
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+            color: AppColors.grayPalette.shade600,
           ),
         ),
         actions: actions ?? [],
