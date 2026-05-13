@@ -44,5 +44,6 @@
   "address": "آدرس",
   "creditLimit": "سقف اعتبار",
   "regionalManager": "مدیر منطقه",
-  "creditLimitHelper": "میزان بدهی مجاز شما به سیستم کیف پول"
+  "creditLimitHelper": "میزان بدهی مجاز شما به سیستم کیف پول",
+  "searchProducts": "جستجو در کالاها..."
 }
