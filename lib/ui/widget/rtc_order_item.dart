@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:rtc_mobile/ui/widget/rtc_icon_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../data/models/order_item_model.dart';
 import '../../generated/l10n.dart';

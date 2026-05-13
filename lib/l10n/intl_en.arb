@@ -1,14 +1,14 @@
 {
   "@@locale": "en",
   "appName": "Rtc",
-  "companyName": "شرکت زندگی ویرا قشم",
-  "appSubtitle": "پرتال سفارشات نمایندگان اعتباری",
-  "loginToSystem": "ورود به سیستم",
-  "enterPhoneNumber": "لطفاً شماره همراه خود را وارد کنید",
-  "phoneNumberHint": "۰۹xxxxxxxxx",
-  "getOtpCode": "دریافت کد تایید",
-  "enterOtpCode": "کد تایید را وارد کنید",
-  "otpSentTo": "کد تایید برای شماره {phoneNumber} ارسال شد.",
+  "companyName": "",
+  "appSubtitle": "",
+  "loginToSystem": "",
+  "enterPhoneNumber": "",
+  "phoneNumberHint": "۰",
+  "getOtpCode": "",
+  "enterOtpCode": "",
+  "otpSentTo": "",
   "@otpSentTo": {
     "placeholders": {
       "phoneNumber": {
@@ -16,10 +16,10 @@
       }
     }
   },
-  "sendViaRubika": "ارسال به روبیکا",
-  "resendSms": "ارسال مجدد پیامک",
-  "confirm": "تایید",
-  "otpResent": "کد مجدداً ارسال شد",
+  "sendViaRubika": "",
+  "resendSms": "",
+  "confirm": "",
+  "otpResent": "",
   "releaseFactor": "",
   "dashboard": "",
   "products": "",
@@ -31,5 +31,7 @@
   "recentOrdersHeader": "",
   "statusApproved": "",
   "statusRejected": "",
-  "statusPending": ""
+  "statusPending": "",
+  "myCustomers": "",
+  "wallet": ""
 }

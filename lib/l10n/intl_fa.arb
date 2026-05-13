@@ -31,5 +31,7 @@
   "recentOrdersHeader": "آخرین سفارش‌ها",
   "statusApproved": "تایید شده",
   "statusRejected": "رد شده",
-  "statusPending": "در انتظار تایید"
+  "statusPending": "در انتظار تایید",
+  "myCustomers": "مشتریان من",
+  "wallet": "کیف پول"
 }

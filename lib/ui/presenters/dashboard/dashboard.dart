@@ -7,6 +7,7 @@ import '../../../generated/l10n.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_bar_chart_card.dart';
 import '../../widget/rtc_bottom_nav.dart';
+import '../../widget/rtc_drawer.dart';
 import '../../widget/rtc_line_chart_card.dart';
 import '../../widget/rtc_message_card.dart';
 import '../../widget/rtc_order_item.dart';
@@ -23,13 +24,15 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => DashboardCubit()..init(),
-      child: const DashboardView(),
+      child: DashboardView(),
     );
   }
 }
 
 class DashboardView extends StatelessWidget {
-  const DashboardView({super.key});
+  DashboardView({super.key});
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +55,12 @@ class DashboardView extends StatelessWidget {
         ),
       ],
       child: Scaffold(
+        key: _scaffoldKey,
+        drawer: RtcDrawer(scaffoldKey: _scaffoldKey),
         appBar: RtcAppBar(
-          onBack: () {},
+          onBack: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
           backIconPath: "$baseImage/drawer_menu.svg",
         ),
         body: BlocBuilder<DashboardCubit, DashboardState>(
