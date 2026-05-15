@@ -4,4 +4,5 @@ class AppRoutes {
   static const dashboard = '/dashboard';
   static const profile = '/profile';
   static const productDetail = '/product-detail';
+  static const customers = '/customers';
 }

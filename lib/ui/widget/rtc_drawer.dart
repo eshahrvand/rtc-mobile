@@ -37,7 +37,7 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.myCustomers,
                       iconPath: '$baseImage/family.svg',
-                      onTap: () => context.go(AppRoutes.profile),
+                      onTap: () => context.push(AppRoutes.customers),
                     ),
                     const RtcDivider(),
                     _DrawerMenuItem(

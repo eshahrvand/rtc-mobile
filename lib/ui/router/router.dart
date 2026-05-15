@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presenters/auth/auth.dart';
+import '../presenters/customers/customers.dart';
 import '../presenters/dashboard/dashboard.dart';
 import '../presenters/dashboard/widget/profile.dart';
 import '../presenters/product_detail/product_detail.dart';
@@ -34,6 +35,10 @@ final router = GoRouter(
       builder: (context, state) => ProductDetailScreen(
         productId: (state.extra as Map<String, dynamic>)['productId'] as String,
       ),
+    ),
+    GoRoute(
+      path: AppRoutes.customers,
+      builder: (context, state) => const CustomersScreen(),
     ),
   ],
 );
