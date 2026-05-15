@@ -14,7 +14,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     Future.delayed(const Duration(milliseconds: 500))
         .then((_) {
           final mockOrders = [
-            OrderItemModel(
+            OrderSummaryModel(
               id: '1',
               orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
               customerName: 'سامان راد',
@@ -23,7 +23,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
               amount: '۸۰,۲۰۰,۰۰۰',
             ),
-            OrderItemModel(
+            OrderSummaryModel(
               id: '2',
               orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
               customerName: 'آرش مهبان',
@@ -32,7 +32,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
               amount: '۸۰,۲۰۰,۰۰۰',
             ),
-            OrderItemModel(
+            OrderSummaryModel(
               id: '3',
               orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
               customerName: 'سارا قریشی',
@@ -85,7 +85,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(filteredOrders: filtered));
   }
 
-  void onOrderTapped(OrderItemModel order) {
+  void onOrderTapped(OrderSummaryModel order) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     // Simulated detail fetch

@@ -5,6 +5,7 @@ import '../../../router/app_route.dart';
 import '../../../widget/rtc_chip_list.dart';
 import '../../../widget/rtc_order_item.dart';
 import '../../../../data/models/product_chip_model.dart';
+import '../../../../data/models/order_model.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 
@@ -28,7 +29,7 @@ class OrdersBody extends StatelessWidget {
                   : ListView.builder(
                       itemCount: state.filteredOrders.length,
                       itemBuilder: (context, index) {
-                        final order = state.filteredOrders[index];
+                        final OrderSummaryModel order = state.filteredOrders[index];
                         return RtcOrderItem(
                           order: order,
                           onTap: () {

@@ -15,8 +15,8 @@ class OrdersState with _$OrdersState {
   const factory OrdersState({
     @Default(OrdersRequestStatus.initial) OrdersRequestStatus status,
     @Default('') String errorMessage,
-    @Default([]) List<OrderItemModel> allOrders,
-    @Default([]) List<OrderItemModel> filteredOrders,
+    @Default([]) List<OrderSummaryModel> allOrders,
+    @Default([]) List<OrderSummaryModel> filteredOrders,
     @Default('') String searchQuery,
     @Default([]) List<String> selectedBadges,
     OrderDetailModel? selectedOrder,

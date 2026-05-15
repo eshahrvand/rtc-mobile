@@ -5,7 +5,7 @@ import '../theme/colors.dart';
 import 'rtc_image.dart';
 
 class RtcOrderItem extends StatelessWidget {
-  final OrderItemModel order;
+  final OrderSummaryModel order;
   final VoidCallback onTap;
 
   const RtcOrderItem({

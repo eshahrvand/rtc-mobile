@@ -5,7 +5,7 @@ import '../../router/app_route.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../../widget/rtc_order_item.dart';
-import '../../widget/rtc_products_appbar.dart';
+import '../../widget/rtc_orders_appbar.dart';
 import '../../../../data/models/product_chip_model.dart';
 import 'bloc/orders_cubit.dart';
 import 'bloc/orders_state.dart';
@@ -52,14 +52,11 @@ class OrdersView extends StatelessWidget {
           
           return Scaffold(
             key: scaffoldKey,
-            appBar: RtcProductsAppBar(
-              isSearchActive: state.searchQuery.isNotEmpty, // Simplified for now
+            appBar: RtcOrdersAppBar(
+              isSearchActive: state.searchQuery.isNotEmpty,
               searchQuery: state.searchQuery,
               scaffoldKey: scaffoldKey,
-              // We need a way to trigger activateSearch in OrdersCubit
-              // or handle it via a local boolean if needed, but spec says logic in Cubit.
-              // For now let's assume searchQuery non-empty means active.
-              cubit: dynamic, // This is a bit tricky as RtcProductsAppBar expects ProductCubit
+              cubit: cubit,
             ),
             body: Column(
               children: [

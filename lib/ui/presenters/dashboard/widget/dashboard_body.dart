@@ -5,9 +5,9 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../generated/l10n.dart';
 import '../../../widget/rtc_bar_chart_card.dart';
+import '../../../widget/rtc_dashboard_order_item.dart';
 import '../../../widget/rtc_line_chart_card.dart';
 import '../../../widget/rtc_message_card.dart';
-import '../../../widget/rtc_order_item.dart';
 import '../../../widget/rtc_pie_chart_card.dart';
 import '../../../widget/rtc_pre_invoice_card.dart';
 import '../../../widget/rtc_quick_access_item.dart';
@@ -167,7 +167,7 @@ class DashboardBody extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: RtcOrderItem(
+                    child: RtcDashboardOrderItem(
                       order: state.recentOrders[index],
                       onTap: () {},
                     ),

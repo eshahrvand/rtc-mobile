@@ -130,7 +130,7 @@ class _CreditPlanInfo extends StatelessWidget {
       child: Column(
         children: [
           _InfoRow(label: 'ارائه دهنده', value: plan.provider),
-          _InfoRow(label: 'نام طرح', plan.planName),
+          _InfoRow(label: 'نام طرح', value: plan.planName),
           _InfoRow(label: 'افزایش قیمت', value: plan.priceIncrease, valueColor: Colors.blue),
           _InfoRow(label: 'مدت اعتبار', value: plan.validityPeriod),
         ],

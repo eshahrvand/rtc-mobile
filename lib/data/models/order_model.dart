@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class OrderItemModel {
+class OrderSummaryModel {
   final String id;
   final String orderId;
   final String customerName;
@@ -11,7 +11,7 @@ class OrderItemModel {
   final Color? statusColor;
   final Color? statusBgColor;
 
-  OrderItemModel({
+  OrderSummaryModel({
     required this.id,
     required this.orderId,
     required this.customerName,
