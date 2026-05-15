@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../data/models/product_detail_model.dart';
 import 'rtc_image.dart';
 
@@ -12,53 +13,82 @@ class RtcProductBadgeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: badges.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final badge = badges[index];
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              // TODO: replace with theme color
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
+    if (badges.isEmpty) return const SizedBox.shrink();
+
+    // Separate "Availability" (موجودی) from others if present
+    final availabilityBadge = badges.firstWhere(
+      (b) => b.label.contains('موجودی'),
+      orElse: () => badges.first, // Fallback, though we might want to handle it better
+    );
+
+    final otherBadges = badges.where((b) => b != availabilityBadge).toList();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          _BadgeItem(badge: availabilityBadge, isGreen: true),
+          if (otherBadges.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.end,
+              children: otherBadges.map((b) => _BadgeItem(badge: b)).toList(),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (badge.iconPath != null)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: RtcImage(
-                      image: badge.iconPath!,
-                      width: 16,
-                      height: 16,
-                    ),
-                  ),
-                Text(
-                  '${badge.label}: ',
-                  style: const TextStyle(
-                    // TODO: replace with AppTextStyle
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  badge.value,
-                  style: const TextStyle(
-                    // TODO: replace with AppTextStyle
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _BadgeItem extends StatelessWidget {
+  final ProductBadgeModel badge;
+  final bool isGreen;
+
+  const _BadgeItem({required this.badge, this.isGreen = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: isGreen
+            ? AppColors.successPalette.shade500
+            : AppColors.grayPalette.shade900,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (badge.iconPath != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: RtcImage(
+                image: badge.iconPath!,
+                width: 14,
+                height: 14,
+                color: Colors.white,
+              ),
             ),
-          );
-        },
+          Text(
+            '${badge.label}: ',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            badge.value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }

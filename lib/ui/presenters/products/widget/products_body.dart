@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../router/app_route.dart';
 import '../bloc/product_cubit.dart';
 import '../bloc/product_state.dart';
 import '../../../widget/rtc_chip_list.dart';
@@ -33,7 +35,10 @@ class ProductsBody extends StatelessWidget {
                         return RtcProductItem(
                           product: product,
                           onTap: () {
-                            // TODO: navigate to product details
+                            context.push(
+                              AppRoutes.productDetail,
+                              extra: {'productId': product.id},
+                            );
                           },
                         );
                       },

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/config/config.dart';
 import '../../../../../data/models/product_detail_model.dart';
 import 'product_detail_state.dart';
 
@@ -18,11 +19,11 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       price: '۲۲,۴۹۰,۰۰۰',
       oldPrice: '۲۸,۹۰۰,۰۰۰',
       discountPercent: '۲۰٪',
-      imageUrls: List.generate(5, (_) => 'assets/images/refrigerator.png'),
+      imageUrls: List.generate(5, (_) => '$baseImage/frame1.png'),
       badges: [
         ProductBadgeModel(label: 'موجودی', value: '۱۲ عدد'),
         ProductBadgeModel(label: 'دسته بندی', value: 'یخچال فریزر'),
-        ProductBadgeModel(label: 'مدل', value: 'DCA-78453427'),
+        ProductBadgeModel(label: 'SKU', value: '۱۲۳۴۵۶۷۸'),
       ],
       specs: [
         ProductSpecModel(key: 'با ضمانت', value: '۲۴ ماهه پاسارگاد'),
