@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../presenters/auth/auth.dart';
 import '../presenters/customers/customers.dart';
 import '../presenters/orders/orders.dart';
+import '../presenters/orders/bloc/orders_cubit.dart';
 import '../presenters/orders/widget/order_detail_view.dart';
 import '../presenters/dashboard/dashboard.dart';
 import '../presenters/dashboard/widget/profile.dart';
@@ -48,7 +50,13 @@ final router = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.orderDetail,
-      builder: (context, state) => const OrderDetailView(),
+      builder: (context, state) {
+        final cubit = state.extra as OrdersCubit;
+        return BlocProvider.value(
+          value: cubit,
+          child: const OrderDetailView(),
+        );
+      },
     ),
   ],
 );

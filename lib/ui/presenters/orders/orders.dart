@@ -74,7 +74,7 @@ class OrdersView extends StatelessWidget {
                               order: order,
                               onTap: () {
                                 cubit.onOrderTapped(order);
-                                context.push(AppRoutes.orderDetail);
+                                context.push(AppRoutes.orderDetail, extra: cubit);
                               },
                             );
                           },
