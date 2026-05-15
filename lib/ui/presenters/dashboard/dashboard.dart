@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/config/config.dart';
+import '../../widget/rtc_image.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/dashboard_state.dart';
 import 'widget/dashboard_body.dart';
 import '../products/widget/products_body.dart';
 import '../products/bloc/product_cubit.dart';
 import '../products/bloc/product_state.dart';
+import '../orders/bloc/orders_cubit.dart';
+import '../orders/bloc/orders_state.dart';
+import '../orders/widget/orders_body.dart';
 import '../../widget/rtc_bottom_nav.dart';
 import '../../widget/rtc_drawer.dart';
 import '../../widget/rtc_appbar.dart';
@@ -21,6 +25,7 @@ class DashboardScreen extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => DashboardCubit()..init()),
         BlocProvider(create: (context) => ProductCubit()..init()),
+        BlocProvider(create: (context) => OrdersCubit()..init()),
       ],
       child: const MainView(),
     );
@@ -64,6 +69,19 @@ class MainView extends StatelessWidget {
             }
           },
         ),
+        BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) => prev.status != curr.status,
+          listener: (context, state) {
+            if (state.status == OrdersRequestStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage),
+                  backgroundColor: Colors.red, // TODO: replace with theme values
+                ),
+              );
+            }
+          },
+        ),
       ],
       child: BlocBuilder<DashboardCubit, DashboardState>(
         buildWhen: (prev, curr) =>
@@ -71,30 +89,34 @@ class MainView extends StatelessWidget {
         builder: (context, dashboardState) {
           return BlocBuilder<ProductCubit, ProductState>(
             builder: (context, productState) {
-              return Scaffold(
-                key: scaffoldKey,
-                drawer: RtcDrawer(scaffoldKey: scaffoldKey),
-                appBar: _buildAppBar(
-                  context,
-                  dashboardState.selectedNavIndex,
-                  scaffoldKey,
-                  productState,
-                ),
-                body: IndexedStack(
-                  index: dashboardState.selectedNavIndex,
-                  children: const [
-                    DashboardBody(),
-                    ProductsBody(),
-                    // Index 2 could be OrdersBody()
-                    Center(child: Text('Orders Page')),
-                  ],
-                ),
-                bottomNavigationBar: RtcBottomNav(
-                  selectedIndex: dashboardState.selectedNavIndex,
-                  onItemSelected: (index) {
-                    context.read<DashboardCubit>().onNavItemSelected(index);
-                  },
-                ),
+              return BlocBuilder<OrdersCubit, OrdersState>(
+                builder: (context, ordersState) {
+                  return Scaffold(
+                    key: scaffoldKey,
+                    drawer: RtcDrawer(scaffoldKey: scaffoldKey),
+                    appBar: _buildAppBar(
+                      context,
+                      dashboardState.selectedNavIndex,
+                      scaffoldKey,
+                      productState,
+                      ordersState,
+                    ),
+                    body: IndexedStack(
+                      index: dashboardState.selectedNavIndex,
+                      children: const [
+                        DashboardBody(),
+                        ProductsBody(),
+                        OrdersBody(),
+                      ],
+                    ),
+                    bottomNavigationBar: RtcBottomNav(
+                      selectedIndex: dashboardState.selectedNavIndex,
+                      onItemSelected: (index) {
+                        context.read<DashboardCubit>().onNavItemSelected(index);
+                      },
+                    ),
+                  );
+                },
               );
             },
           );
@@ -108,6 +130,7 @@ class MainView extends StatelessWidget {
     int index,
     GlobalKey<ScaffoldState> scaffoldKey,
     ProductState productState,
+    OrdersState ordersState,
   ) {
     if (index == 0) {
       return RtcAppBar(
@@ -122,6 +145,18 @@ class MainView extends StatelessWidget {
         searchQuery: productState.searchQuery,
         scaffoldKey: scaffoldKey,
         cubit: context.read<ProductCubit>(),
+      );
+    } else if (index == 2) {
+      return RtcAppBar(
+        title: 'سفارشات',
+        onBack: () => scaffoldKey.currentState?.openDrawer(),
+        backIconPath: "$baseImage/drawer_menu.svg",
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: RtcImage(image: "$baseImage/search.svg", width: 20, height: 20),
+          ),
+        ],
       );
     }
     return null;
