@@ -45,5 +45,12 @@
   "creditLimit": "سقف اعتبار",
   "regionalManager": "مدیر منطقه",
   "creditLimitHelper": "میزان بدهی مجاز شما به سیستم کیف پول",
-  "searchProducts": "جستجو در کالاها..."
+  "searchProducts": "جستجو در کالاها...",
+  "customerInfo": "اطلاعات مشتری",
+  "customerName": "نام مشتری",
+  "postalCode": "کد پستی",
+  "search": "جستجو",
+  "customerDetails": "جزئیات مشتری",
+  "toman": "تومان",
+  "preInvoice": "پیش فاکتور"
 }

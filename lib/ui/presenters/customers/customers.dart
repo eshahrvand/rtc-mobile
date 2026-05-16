@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import '../../widget/rtc_appbar.dart';
 import 'bloc/customers_cubit.dart';
 import 'bloc/customers_state.dart';
@@ -30,7 +31,7 @@ class CustomersView extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: RtcAppBar(
-            title: state.step == CustomersStep.customerList ? 'مشتریان من' : 'جزئیات مشتری',
+            title: state.step == CustomersStep.customerList ? S.current.myCustomers : S.current.customerDetails,
             onBack: () {
               if (state.step == CustomersStep.customerList) {
                 context.pop();

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../widget/rtc_customer_order_item.dart';
 import '../../../widget/rtc_tab_bar.dart';
 import '../../../widget/rtc_text_field.dart';
@@ -20,7 +22,7 @@ class CustomersDetailView extends StatelessWidget {
         return Column(
           children: [
             RtcTabBar(
-              tabs: const ['اطلاعات مشتری', 'سفارش‌ها'],
+              tabs: [S.current.customerInfo, S.current.orders],
               selectedIndex: state.selectedTabIndex,
               onTabChanged: (index) =>
                   context.read<CustomersCubit>().onTabChanged(index),
@@ -53,36 +55,31 @@ class _CustomerInfoTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildField('نام مشتری', customer.name),
-          _buildField('کد ملی', customer.nationalCode),
-          _buildField('شماره موبایل', customer.phoneNumber),
-          _buildField('کد پستی', customer.postalCode),
-          _buildField('آدرس', customer.address),
+          _buildField(S.current.customerName, customer.name, context),
+          _buildField(S.current.nationalId, customer.nationalCode, context),
+          _buildField(S.current.phoneNumber, customer.phoneNumber, context),
+          _buildField(S.current.postalCode, customer.postalCode, context),
+          _buildField(S.current.address, customer.address, context),
         ],
       ),
     );
   }
 
-  Widget _buildField(String label, String value) {
+  Widget _buildField(String label, String value, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              // TODO: replace with theme color
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 8),
-          RtcTextField(
-            readOnly: true,
-            controller: TextEditingController(text: value),
-          ),
-        ],
+      padding: const EdgeInsets.only(bottom: 24),
+      child: RtcTextField(
+        readOnly: true,
+        labelText: label,
+        labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          fontWeight: FontWeight.w500,
+          color: AppColors.grayPalette.shade700,
+        ),
+        controller: TextEditingController(text: value),
+        textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: AppColors.grayPalette.shade700
+        ),
+
       ),
     );
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../config/config.dart';
 import '../../data/models/customer_model.dart';
 import 'rtc_image.dart';
@@ -6,23 +8,18 @@ import 'rtc_image.dart';
 class RtcCustomerOrderItem extends StatelessWidget {
   final CustomerOrderItemModel order;
 
-  const RtcCustomerOrderItem({
-    super.key,
-    required this.order,
-  });
+  const RtcCustomerOrderItem({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          // TODO: replace with theme color
-          color: Colors.grey.withOpacity(0.2),
-        ),
+        border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
       ),
       child: Column(
         children: [
@@ -30,45 +27,40 @@ class RtcCustomerOrderItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
+                spacing: 4,
                 children: [
-                  const Text(
-                    'تومان',
-                    style: TextStyle(
-                      fontSize: 12,
-                      // TODO: replace with theme color
-                      color: Colors.grey,
+                  Text(
+                    order.orderId,
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
                     ),
                   ),
-                  const SizedBox(width: 4),
+
                   Text(
-                    order.amount,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      // TODO: replace with theme color
-                      color: Colors.black,
+                    '#',
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
                     ),
                   ),
                 ],
               ),
               Row(
+                spacing: 4,
                 children: [
                   Text(
-                    order.orderId,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      // TODO: replace with theme color
-                      color: Colors.black,
+                    order.amount,
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  const Text(
-                    '#',
-                    style: TextStyle(
-                      fontSize: 14,
-                      // TODO: replace with theme color
-                      color: Colors.grey,
+                  Text(
+                    S.current.toman,
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
                     ),
                   ),
                 ],
@@ -79,15 +71,14 @@ class RtcCustomerOrderItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatusBadge(),
               Text(
                 order.date,
-                style: const TextStyle(
-                  fontSize: 12,
-                  // TODO: replace with theme color
-                  color: Colors.grey,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade700,
                 ),
               ),
+
+              _buildStatusBadge(context),
             ],
           ),
         ],
@@ -95,7 +86,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
     Color bgColor;
     Color textColor;
     String iconPath;
@@ -123,18 +114,12 @@ class RtcCustomerOrderItem extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          RtcImage(
-            image: iconPath,
-            width: 14,
-            height: 14,
-            color: textColor,
-          ),
+          RtcImage(image: iconPath, width: 14, height: 14, color: textColor),
           const SizedBox(width: 4),
           Text(
             order.status,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w500,
               color: textColor,
             ),
           ),

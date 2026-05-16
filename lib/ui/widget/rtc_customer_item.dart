@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../data/models/customer_model.dart';
 import '../theme/colors.dart';
 
@@ -14,67 +16,56 @@ class RtcCustomerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
+              spacing: 16,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '...',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    // TODO: replace with theme color
-                    color: Colors.grey,
+                Text(
+                  customer.name,
+                  style: theme.bodyLarge!.copyWith(
+                    color: AppColors.grayPalette.shade900,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 24),
+
                 Text(
-                  customer.city,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    // TODO: replace with theme color
-                    color: Colors.grey,
+                  customer.phoneNumber,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade700,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
             Column(
+              spacing: 16,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  customer.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    // TODO: replace with theme color
-                    color: Colors.black,
-                  ),
+                RtcImage(
+                  image: "$baseImage/more-horizontal.svg",
+                  width: 20,
+                  height: 20,
                 ),
-                const SizedBox(height: 8),
+
                 Text(
-                  customer.phoneNumber,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    // TODO: replace with theme color
-                    color: Colors.grey,
+                  customer.city,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade700,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],

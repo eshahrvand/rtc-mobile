@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 
 class RtcTabBar extends StatelessWidget {
   final List<String> tabs;
@@ -14,13 +15,11 @@ class RtcTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            // TODO: replace with theme color
-            color: Colors.grey.withOpacity(0.2),
-          ),
+          bottom: BorderSide(color: AppColors.grayPalette.shade200, width: 1),
         ),
       ),
       child: Row(
@@ -35,7 +34,7 @@ class RtcTabBar extends StatelessWidget {
                   border: Border(
                     bottom: BorderSide(
                       color: isSelected
-                          ? Colors.blue // TODO: replace with theme color
+                          ? AppColors.brandPalette.shade600
                           : Colors.transparent,
                       width: 2,
                     ),
@@ -44,13 +43,14 @@ class RtcTabBar extends StatelessWidget {
                 child: Center(
                   child: Text(
                     tabs[index],
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                    style: theme.bodyMedium!.copyWith(
                       color: isSelected
-                          ? Colors.blue // TODO: replace with theme color
-                          : Colors.grey, // TODO: replace with theme color
+                          ? AppColors.brandPalette.shade600
+                          : AppColors.grayPalette.shade600,
+
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
                     ),
                   ),
                 ),
