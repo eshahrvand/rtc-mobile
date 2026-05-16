@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 import '../../data/models/order_item_model.dart';
 import '../../generated/l10n.dart';
 
@@ -59,50 +60,12 @@ class RtcDashboardOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade700,
                     ),
                   ),
-                  _buildStatusBadge(order.status, theme),
+                  RtcStatusBadge(status: order.status),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge(String status, TextTheme theme) {
-    Color color = AppColors.brandPalette.shade600;
-
-    if (status == S.current.statusApproved) {
-      color = AppColors.successPalette.shade50;
-    } else if (status == S.current.statusRejected) {
-      color = AppColors.errorPalette.shade50;
-    } else if (status == S.current.statusPending) {
-      color = AppColors.warningPalette.shade50;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        spacing: 4,
-        children: [
-          RtcImage(
-            image: "$baseImage/document-list-check.svg",
-            width: 12,
-            height: 12,
-            color: AppColors.blueGrayPalette.shade600,
-          ),
-          Text(
-            status,
-            style: theme.bodyMedium!.copyWith(
-              color: AppColors.brandPalette.shade700,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
+import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 import '../../config/config.dart';
 import '../../data/models/order_model.dart';
 import '../../generated/l10n.dart';
@@ -81,7 +82,7 @@ class RtcOrderItem extends StatelessWidget {
                   ),
                 ),
 
-                _buildStatusBadge(),
+                RtcStatusBadge(status: order.status),
               ],
             ),
             const SizedBox(height: 12),
@@ -120,64 +121,6 @@ class RtcOrderItem extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge() {
-    Color bgColor;
-    Color textColor;
-    IconData? icon;
-    String? iconPath;
-
-    switch (order.status) {
-      case 'در انتظار تسویه':
-        bgColor = const Color(0xFFEEF2FF);
-        textColor = const Color(0xFF4338CA);
-        iconPath = '$baseImage/dollar.svg';
-        break;
-      case 'در انتظار تایید':
-        bgColor = const Color(0xFFFFF7ED);
-        textColor = const Color(0xFFEA580C);
-        iconPath = '$baseImage/waiting.svg';
-        break;
-      case 'تایید شده':
-        bgColor = const Color(0xFFECFDF5);
-        textColor = const Color(0xFF059669);
-        iconPath = '$baseImage/package-check.svg';
-        break;
-      case 'رد شده':
-        bgColor = const Color(0xFFFEF2F2);
-        textColor = const Color(0xFFDC2626);
-        iconPath = '$baseImage/close.svg';
-        break;
-      default:
-        bgColor = Colors.grey.withOpacity(0.1);
-        textColor = Colors.grey;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (iconPath != null) ...[
-            RtcImage(image: iconPath, width: 14, height: 14, color: textColor),
-            const SizedBox(width: 4),
-          ],
-          Text(
-            order.status,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-          ),
-        ],
       ),
     );
   }
