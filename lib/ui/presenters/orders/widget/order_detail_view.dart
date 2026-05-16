@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
 import '../../../widget/rtc_appbar.dart';
 import '../../../widget/rtc_image.dart';
@@ -29,10 +30,9 @@ class OrderDetailView extends StatelessWidget {
         final cubit = context.read<OrdersCubit>();
 
         return Scaffold(
-          backgroundColor: Colors.white,
           appBar: RtcAppBar(
             onBack: () => context.pop(),
-            backIconPath: '$baseImage/angle-left.svg',
+            backIconPath: '$baseImage/angle-right.svg',
             actions: [
               Padding(
                 padding: const EdgeInsets.only(left: 16),
@@ -40,7 +40,6 @@ class OrderDetailView extends StatelessWidget {
                   image: '$baseImage/print.svg',
                   width: 24,
                   height: 24,
-                  color: Colors.black,
                 ),
               ),
             ],
@@ -71,35 +70,33 @@ class OrderDetailView extends StatelessWidget {
   }
 
   Widget _buildValidityHeader(BuildContext context, dynamic order) {
+    var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          RtcStatusBadge(
-            status: order.status,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          ),
           Row(
+            spacing: 4,
             children: [
               Text(
                 'زمان باقی‌مانده: ',
-                style: const TextStyle(
-                  fontSize: 12,
-                  // TODO: replace with theme color
-                  color: Colors.grey,
+                style: theme.bodySmall!.copyWith(
+                  color: AppColors.grayPalette.shade600,
                 ),
               ),
               Text(
                 order.remainingTime,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  // TODO: replace with theme color
-                  color: Colors.red,
+                style: theme.bodySmall!.copyWith(
+                  color: AppColors.errorPalette!.shade600,
                 ),
               ),
             ],
+          ),
+
+          RtcStatusBadge(
+            status: order.status,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           ),
         ],
       ),
