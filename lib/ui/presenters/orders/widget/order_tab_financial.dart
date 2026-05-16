@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
@@ -27,7 +28,7 @@ class OrderTabFinancial extends StatelessWidget {
                 child: Column(
                   children: [
                     RtcCollapsibleSection(
-                      title: 'خلاصه مالی',
+                      title: S.current.financialSummaryTitle,
                       icon: RtcImage(
                         image: '$baseImage/dollar.svg',
                         width: 20,
@@ -67,7 +68,7 @@ class OrderTabFinancial extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: RtcButton(
-                  title: 'تخلیه و تسویه',
+                  title: S.current.dischargeAndSettlement,
                   onPressed: () {},
                   // TODO: replace with theme values
                   backgroundColor: const Color(0xFF2563EB),
@@ -85,13 +86,13 @@ class OrderTabFinancial extends StatelessWidget {
       child: Column(
         children: [
           if (isWaitingSettlement) ...[
-            _buildInfoRow('مبلغ نهایی فاکتور', summary.finalAmount, isBold: true),
+            _buildInfoRow(S.current.finalFactorAmount, summary.finalAmount, isBold: true),
           ] else if (isSettled) ...[
-            _buildInfoRow('مبلغ نهایی فاکتور', summary.finalAmount, isBold: true),
+            _buildInfoRow(S.current.finalFactorAmount, summary.finalAmount, isBold: true),
           ] else ...[
-            _buildInfoRow('جمع قیمت پایه (۳ کالا)', summary.basePrice),
-            _buildInfoRow('جمع تخفیفات', summary.totalDiscount),
-            _buildInfoRow('مبلغ نهایی فاکتور', summary.finalAmount, isBold: true),
+            _buildInfoRow(S.current.totalBasePrice, summary.basePrice),
+            _buildInfoRow(S.current.totalDiscounts, summary.totalDiscount),
+            _buildInfoRow(S.current.finalFactorAmount, summary.finalAmount, isBold: true),
           ],
         ],
       ),
@@ -149,9 +150,9 @@ class OrderTabFinancial extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
-                'روش تسویه',
-                style: TextStyle(
+              Text(
+                S.current.settlementMethod,
+                style: const TextStyle(
                   fontSize: 12,
                   // TODO: replace with theme color
                   color: Colors.grey,
@@ -173,9 +174,9 @@ class OrderTabFinancial extends StatelessWidget {
                       color: Colors.grey,
                     ),
                     const Spacer(),
-                    const Text(
-                      'تسویه با کیف پول',
-                      style: TextStyle(
+                    Text(
+                      S.current.walletSettlement,
+                      style: const TextStyle(
                         // TODO: replace with theme color
                       ),
                     ),
@@ -188,9 +189,9 @@ class OrderTabFinancial extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Text(
-                        'تومان',
-                        style: TextStyle(
+                      Text(
+                        S.current.toman,
+                        style: const TextStyle(
                           fontSize: 12,
                           // TODO: replace with theme color
                           color: Color(0xFFD97706),
@@ -199,18 +200,13 @@ class OrderTabFinancial extends StatelessWidget {
                       const SizedBox(width: 4),
                       const Text(
                         '۲۴,۰۰۰,۰۰۰',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          // TODO: replace with theme color
-                          color: Color(0xFFD97706),
-                        ),
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFFD97706)),
                       ),
                     ],
                   ),
-                  const Text(
-                    'مبلغ ما به تفاوت',
-                    style: TextStyle(
+                  Text(
+                    S.current.differenceAmount,
+                    style: const TextStyle(
                       fontSize: 12,
                       // TODO: replace with theme color
                       color: Colors.grey,
@@ -236,11 +232,11 @@ class OrderTabFinancial extends StatelessWidget {
                       size: 18,
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'موجودی کیف پول آپ ۱۲ ماهه شما برای پرداخت ما به تفاوت مبلغ کافیست',
+                        S.current.walletBalanceSufficient,
                         textAlign: TextAlign.right,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           // TODO: replace with theme color
                           color: Color(0xFF16A34A),
@@ -252,7 +248,7 @@ class OrderTabFinancial extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               RtcButton(
-                title: 'پرداخت با کیف پول',
+                title: S.current.payWithWallet,
                 onPressed: () {},
                 // TODO: replace with theme values
                 backgroundColor: const Color(0xFF2563EB),
@@ -339,9 +335,9 @@ class OrderTabFinancial extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
-                'تومان',
-                style: TextStyle(
+              Text(
+                S.current.toman,
+                style: const TextStyle(
                   fontSize: 12,
                   // TODO: replace with theme color
                   color: Colors.grey,

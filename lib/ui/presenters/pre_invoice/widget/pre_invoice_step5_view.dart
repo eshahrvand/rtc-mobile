@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/config.dart';
@@ -18,34 +19,34 @@ class PreInvoiceStep5View extends StatelessWidget {
 
         return Column(
           children: [
-            const RtcStepIndicator(
+            RtcStepIndicator(
               totalSteps: 5,
               currentStepIndex: 4,
               stepLabels: [
-                'انتخاب طرح اعتباری',
-                'انتخاب کالاها',
-                'اطلاعات مشتری',
-                'بارگذاری مدارک',
-                'بررسی نهایی و ثبت پیش‌فاکتور',
+                S.current.selectCreditPlan,
+                S.current.selectProducts,
+                S.current.customerInfo,
+                S.current.uploadDocuments,
+                S.current.reviewAndSubmit,
               ],
             ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildSectionHeader('طرح اعتباری', '$baseImage/package-check.svg'),
+                    _buildSectionHeader(S.current.creditPlanTitle, '$baseImage/package-check.svg'),
                     _buildCreditPlanInfo(state),
                     const Divider(),
-                    _buildSectionHeader('کالاها', '$baseImage/package-check.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.products)),
+                    _buildSectionHeader(S.current.productsTitle, '$baseImage/package-check.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.products)),
                     ...state.cartItems.map((item) => _buildProductItem(item)).toList(),
                     const Divider(),
-                    _buildSectionHeader('اطلاعات مشتری', '$baseImage/family.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.customerInfo)),
+                    _buildSectionHeader(S.current.customerInfoTitle, '$baseImage/family.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.customerInfo)),
                     _buildCustomerInfo(state),
                     const Divider(),
-                    _buildSectionHeader('مدارک بارگذاری شده', '$baseImage/document-list-check.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.documents)),
+                    _buildSectionHeader(S.current.uploadedDocumentsTitle, '$baseImage/document-list-check.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.documents)),
                     _buildDocuments(state),
                     const Divider(),
-                    _buildSectionHeader('خلاصه مالی', '$baseImage/dollar.svg'),
+                    _buildSectionHeader(S.current.financialSummaryTitle, '$baseImage/dollar.svg'),
                     _buildFinancialSummary(state),
                     const SizedBox(height: 32),
                   ],
@@ -91,10 +92,10 @@ class PreInvoiceStep5View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildInfoRow('ارائه دهنده', plan.providerName),
-          _buildInfoRow('نام طرح', plan.planName),
-          _buildInfoRow('افزایش قیمت', '۱۵٪', valueColor: Colors.blue),
-          _buildInfoRow('مدت اعتبار', plan.validityDuration),
+          _buildInfoRow(S.current.providerLabel, plan.providerName),
+          _buildInfoRow(S.current.planNameLabel, plan.planName),
+          _buildInfoRow(S.current.priceIncreaseLabel, '۱۵٪', valueColor: Colors.blue),
+          _buildInfoRow(S.current.validityPeriodLabel, plan.validityDuration),
         ],
       ),
     );
@@ -132,7 +133,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         child: Text(item.discount!, style: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
                       ),
                     const SizedBox(width: 8),
-                    const Text('تومان', style: TextStyle(fontSize: 10)),
+                    Text(S.current.toman, style: const TextStyle(fontSize: 10)),
                     const SizedBox(width: 4),
                     Text(item.price, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ],
@@ -158,11 +159,11 @@ class PreInvoiceStep5View extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildInfoRow('نام', info.firstName),
-          _buildInfoRow('شماره موبایل', info.phoneNumber),
-          _buildInfoRow('کد ملی', info.nationalId),
-          _buildInfoRow('کد پستی', info.postalCode),
-          _buildInfoRow('آدرس:', ''),
+          _buildInfoRow(S.current.nameLabel, info.firstName),
+          _buildInfoRow(S.current.phoneNumberLabel, info.phoneNumber),
+          _buildInfoRow(S.current.nationalCodeLabel, info.nationalId),
+          _buildInfoRow(S.current.postalCodeLabel, info.postalCode),
+          _buildInfoRow(S.current.addressLabel, ''),
           Text(info.address, textAlign: TextAlign.right, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
@@ -174,8 +175,8 @@ class PreInvoiceStep5View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildDocItem('کارت ملی - روی', '۶ MB', true),
-          if (state.optionalDocPath != null) _buildDocItem('سایر مدارک ۱', '۶ MB', false),
+          _buildDocItem(S.current.nationalCardFront, '۶ MB', true),
+          if (state.optionalDocPath != null) _buildDocItem(S.current.optionalDocuments, '۶ MB', false),
         ],
       ),
     );
@@ -214,9 +215,9 @@ class PreInvoiceStep5View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildInfoRow('جمع قیمت پایه (۳ کالا)', '۱۴,۴۹۰,۰۰۰'),
-          _buildInfoRow('جمع تخفیفات', '۴۹۰,۰۰۰'),
-          _buildInfoRow('مبلغ قابل پرداخت', '۱۴,۰۰۰,۰۰۰', isBold: true, valueColor: Colors.blue),
+          _buildInfoRow('${S.current.totalBasePrice} (۳ ${S.current.products})', '۱۴,۴۹۰,۰۰۰'),
+          _buildInfoRow(S.current.totalDiscounts, '۴۹۰,۰۰۰'),
+          _buildInfoRow(S.current.payableAmount, '۱۴,۰۰۰,۰۰۰', isBold: true, valueColor: Colors.blue),
         ],
       ),
     );
@@ -246,14 +247,14 @@ class PreInvoiceStep5View extends StatelessWidget {
         children: [
           Expanded(
             child: RtcButton(
-              title: 'ثبت و تخلیه کارت',
+              title: S.current.submitAndClearCart,
               onPressed: () => cubit.submitAndClear(),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: RtcButton(
-              title: 'ثبت پیش فاکتور',
+              title: S.current.submitPreInvoice,
               backgroundColor: Colors.blue.shade50,
               styleBtn: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               onPressed: () => cubit.submitPreInvoice(),

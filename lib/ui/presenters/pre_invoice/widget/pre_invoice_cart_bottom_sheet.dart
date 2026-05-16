@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../widget/rtc_image.dart';
@@ -54,15 +55,15 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            '$count کالا',
+            '$count ${S.current.products}',
             style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
           ),
         ),
-        const Row(
+        Row(
           children: [
-            Text('سبد خرید', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            SizedBox(width: 8),
-            Icon(Icons.shopping_cart_outlined),
+            Text(S.current.cartTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 8),
+            const Icon(Icons.shopping_cart_outlined),
           ],
         ),
       ],
@@ -98,7 +99,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text('تومان', style: TextStyle(fontSize: 10)),
+                    Text(S.current.toman, style: const TextStyle(fontSize: 10)),
                     const SizedBox(width: 4),
                     Text(item.price, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ],
@@ -147,9 +148,9 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
     // Mock calculation
     return Column(
       children: [
-        _buildSummaryRow('جمع کل', '۱۴,۴۹۰,۰۰۰'),
-        _buildSummaryRow('جمع تخفیفات', '۴۹۰,۰۰۰'),
-        _buildSummaryRow('مبلغ قابل پرداخت', '۱۴,۰۰۰,۰۰۰', isBold: true, color: Colors.blue),
+        _buildSummaryRow(S.current.totalAmount, '۱۴,۴۹۰,۰۰۰'),
+        _buildSummaryRow(S.current.totalDiscounts, '۴۹۰,۰۰۰'),
+        _buildSummaryRow(S.current.payableAmount, '۱۴,۰۰۰,۰۰۰', isBold: true, color: Colors.blue),
       ],
     );
   }
@@ -162,7 +163,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('تومان', style: TextStyle(fontSize: 10, color: Colors.grey)),
+              Text(S.current.toman, style: const TextStyle(fontSize: 10, color: Colors.grey)),
               const SizedBox(width: 4),
               Text(
                 value,

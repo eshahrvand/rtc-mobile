@@ -25,7 +25,7 @@ class OrderTabDetails extends StatelessWidget {
           child: Column(
             children: [
               RtcCollapsibleSection(
-                title: 'طرح اعتباری',
+                title: S.current.creditPlanTitle,
                 icon: RtcImage(
                   image: '$baseImage/referee-card.svg',
                   width: 18,
@@ -43,15 +43,15 @@ class OrderTabDetails extends StatelessWidget {
                   color: AppColors.grayPalette.shade600,
                 ),
                 child: order.creditPlan == null
-                    ? const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text('طرحی انتخاب نشده است'),
+                    ? Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(S.current.noPlanSelected),
                       )
                     : _CreditPlanInfo(plan: order.creditPlan!),
               ),
 
               RtcCollapsibleSection(
-                title: 'کالاها',
+                title: S.current.products,
                 icon: RtcImage(
                   image: '$baseImage/package-check-tab.svg',
                   width: 18,
@@ -76,7 +76,7 @@ class OrderTabDetails extends StatelessWidget {
               ),
 
               RtcCollapsibleSection(
-                title: 'اطلاعات مشتری',
+                title: S.current.customerInfo,
                 icon: RtcImage(
                   image: '$baseImage/user-tab.svg',
                   width: 18,
@@ -97,7 +97,7 @@ class OrderTabDetails extends StatelessWidget {
               ),
 
               RtcCollapsibleSection(
-                title: 'مدارک بارگذاری شده',
+                title: S.current.uploadedDocumentsTitle,
                 icon: RtcImage(
                   image: '$baseImage/papers-text-tab.svg',
                   width: 18,
@@ -140,14 +140,14 @@ class _CreditPlanInfo extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         children: [
-          _InfoRow(label: 'ارائه دهنده', value: plan.provider),
-          _InfoRow(label: 'نام طرح', value: plan.planName),
+          _InfoRow(label: S.current.providerLabel, value: plan.provider),
+          _InfoRow(label: S.current.planNameLabel, value: plan.planName),
           _InfoRow(
-            label: 'افزایش قیمت',
+            label: S.current.priceIncreaseLabel,
             value: plan.priceIncrease,
             valueColor: Colors.blue,
           ),
-          _InfoRow(label: 'مدت اعتبار', value: plan.validityPeriod),
+          _InfoRow(label: S.current.validityPeriodLabel, value: plan.validityPeriod),
         ],
       ),
     );
@@ -321,11 +321,11 @@ class _CustomerInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _InfoRow(label: 'نام', value: customer.name),
-          _InfoRow(label: 'شماره موبایل', value: customer.phone),
-          _InfoRow(label: 'کد ملی', value: customer.nationalCode),
-          _InfoRow(label: 'کد پستی', value: customer.postalCode),
-          const _InfoRow(label: 'آدرس:', value: ''),
+          _InfoRow(label: S.current.nameLabel, value: customer.name),
+          _InfoRow(label: S.current.phoneNumberLabel, value: customer.phone),
+          _InfoRow(label: S.current.nationalCodeLabel, value: customer.nationalCode),
+          _InfoRow(label: S.current.postalCodeLabel, value: customer.postalCode),
+          _InfoRow(label: S.current.addressLabel, value: ''),
           Text(
             customer.address,
 
@@ -339,6 +339,7 @@ class _CustomerInfo extends StatelessWidget {
     );
   }
 }
+
 
 class _DocumentItem extends StatelessWidget {
   final OrderDocumentModel doc;

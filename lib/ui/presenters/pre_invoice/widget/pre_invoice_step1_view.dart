@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../widget/rtc_button.dart';
@@ -17,15 +18,15 @@ class PreInvoiceStep1View extends StatelessWidget {
 
         return Column(
           children: [
-            const RtcStepIndicator(
+            RtcStepIndicator(
               totalSteps: 5,
               currentStepIndex: 0,
               stepLabels: [
-                'انتخاب طرح اعتباری',
-                'انتخاب کالاها',
-                'اطلاعات مشتری',
-                'بارگذاری مدارک',
-                'بررسی نهایی و ثبت',
+                S.current.selectCreditPlan,
+                S.current.selectProducts,
+                S.current.customerInfo,
+                S.current.uploadDocuments,
+                S.current.reviewAndSubmit,
               ],
             ),
             Expanded(
@@ -46,7 +47,7 @@ class PreInvoiceStep1View extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: RtcButton(
-                title: 'مرحله بعد',
+                title: S.current.nextStep,
                 isActive: state.selectedCreditPlanId != null,
                 onPressed: () => cubit.goToStep(PreInvoiceStep.products),
               ),

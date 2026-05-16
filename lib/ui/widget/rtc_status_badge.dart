@@ -30,7 +30,7 @@ class RtcStatusBadge extends StatelessWidget {
       bgColor = Colors.blueGrey.shade50;
       textColor = Colors.blueGrey.shade700;
       iconPath = '$baseImage/document-list-badge.svg';
-    } else if (status == 'در انتظار تسویه') {
+    } else if (status == 'در انتظار تسویه' || status == S.current.statusWaitingSettlement) {
       bgColor = Colors.indigo.shade50;
       textColor = Colors.indigo.shade700;
       iconPath = '$baseImage/dollar_badge.svg';
@@ -47,7 +47,7 @@ class RtcStatusBadge extends StatelessWidget {
       bgColor = AppColors.errorPalette.shade50;
       textColor = AppColors.errorPalette.shade700;
       iconPath = '$baseImage/close_badge.svg';
-    } else if (status == 'منقضی شده') {
+    } else if (status == 'منقضی شده' || status == S.current.statusExpired) {
       bgColor = AppColors.grayPalette.shade50;
       textColor = AppColors.grayPalette.shade700;
       iconPath = '$baseImage/calendar_badge.svg';

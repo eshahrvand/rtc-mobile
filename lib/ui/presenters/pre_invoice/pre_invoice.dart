@@ -69,7 +69,7 @@ class PreInvoiceView extends StatelessWidget {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: RtcAppBar(
-              title: 'صدور پیش‌فاکتور',
+              title: S.current.releaseFactor,
               onBack: () {
                 if (state.currentStep == PreInvoiceStep.creditPlan) {
                   context.pop();

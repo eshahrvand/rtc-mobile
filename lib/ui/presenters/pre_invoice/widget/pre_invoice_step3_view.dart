@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,15 +19,15 @@ class PreInvoiceStep3View extends StatelessWidget {
 
         return Column(
           children: [
-            const RtcStepIndicator(
+            RtcStepIndicator(
               totalSteps: 5,
               currentStepIndex: 2,
               stepLabels: [
-                'انتخاب طرح اعتباری',
-                'انتخاب کالاها',
-                'اطلاعات مشتری',
-                'بارگذاری مدارک',
-                'بررسی نهایی و ثبت',
+                S.current.selectCreditPlan,
+                S.current.selectProducts,
+                S.current.customerInfo,
+                S.current.uploadDocuments,
+                S.current.reviewAndSubmit,
               ],
             ),
             Expanded(
@@ -35,14 +36,14 @@ class PreInvoiceStep3View extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('کد ملی*', style: TextStyle(fontSize: 12)),
+                    Text(S.current.nationalCodeLabel, style: const TextStyle(fontSize: 12)),
                     const SizedBox(height: 8),
                     RtcTextField(
-                      hintText: 'کد ملی مشتری را وارد کنید',
+                      hintText: S.current.nationalCodeHint,
                       onChanged: (value) => cubit.onCustomerIdChanged(value),
                       suffix: TextButton(
                         onPressed: () => cubit.searchCustomer(),
-                        child: const Text('بررسی', style: TextStyle(color: Colors.blue)),
+                        child: Text(S.current.checkButton, style: const TextStyle(color: Colors.blue)),
                       ),
                     ),
                     if (state.customerSearchLoading)
@@ -52,35 +53,35 @@ class PreInvoiceStep3View extends StatelessWidget {
                       ),
                     if (state.customerInfo != null) ...[
                       const SizedBox(height: 24),
-                      const Text('نام*', style: TextStyle(fontSize: 12)),
+                      Text(S.current.nameLabel, style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 8),
                       RtcTextField(
                         controller: TextEditingController(text: state.customerInfo!.firstName),
                         onChanged: (value) => cubit.onCustomerFieldChanged('firstName', value),
                       ),
                       const SizedBox(height: 16),
-                      const Text('نام خانوادگی*', style: TextStyle(fontSize: 12)),
+                      Text(S.current.lastNameLabel, style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 8),
                       RtcTextField(
                         controller: TextEditingController(text: state.customerInfo!.lastName),
                         onChanged: (value) => cubit.onCustomerFieldChanged('lastName', value),
                       ),
                       const SizedBox(height: 16),
-                      const Text('شماره موبایل*', style: TextStyle(fontSize: 12)),
+                      Text(S.current.phoneNumberLabel, style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 8),
                       RtcTextField(
                         controller: TextEditingController(text: state.customerInfo!.phoneNumber),
                         onChanged: (value) => cubit.onCustomerFieldChanged('phoneNumber', value),
                       ),
                       const SizedBox(height: 16),
-                      const Text('کد پستی*', style: TextStyle(fontSize: 12)),
+                      Text(S.current.postalCodeLabel, style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 8),
                       RtcTextField(
                         controller: TextEditingController(text: state.customerInfo!.postalCode),
                         onChanged: (value) => cubit.onCustomerFieldChanged('postalCode', value),
                       ),
                       const SizedBox(height: 16),
-                      const Text('آدرس کامل*', style: TextStyle(fontSize: 12)),
+                      Text(S.current.fullAddressLabel, style: const TextStyle(fontSize: 12)),
                       const SizedBox(height: 8),
                       RtcTextField(
                         maxLines: 3,
@@ -91,13 +92,13 @@ class PreInvoiceStep3View extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text('ارسال سفارش به آدرس مشتری', style: TextStyle(fontSize: 14)),
+                          Text(S.current.sendOrderToCustomerAddress, style: const TextStyle(fontSize: 14)),
                           Switch(
                             value: state.customerInfo!.isOrderSentToCustomerAddress,
                             onChanged: (value) => cubit.onCustomerFieldChanged('isOrderSentToCustomerAddress', value),
                             activeColor: Colors.blue,
                           ),
-                          const Text('غیر فعال', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                          Text(S.current.inactive, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                         ],
                       ),
                     ],
@@ -108,7 +109,7 @@ class PreInvoiceStep3View extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: RtcButton(
-                title: 'مرحله بعد',
+                title: S.current.nextStep,
                 isActive: state.customerInfo != null,
                 onPressed: () => cubit.goToStep(PreInvoiceStep.documents),
               ),

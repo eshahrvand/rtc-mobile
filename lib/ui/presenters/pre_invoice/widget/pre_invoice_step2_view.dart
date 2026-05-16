@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/models/product_chip_model.dart';
@@ -21,15 +22,15 @@ class PreInvoiceStep2View extends StatelessWidget {
 
         return Column(
           children: [
-            const RtcStepIndicator(
+            RtcStepIndicator(
               totalSteps: 5,
               currentStepIndex: 1,
               stepLabels: [
-                'انتخاب طرح اعتباری',
-                'انتخاب کالاها',
-                'اطلاعات مشتری',
-                'بارگذاری مدارک',
-                'بررسی نهایی و ثبت',
+                S.current.selectCreditPlan,
+                S.current.selectProducts,
+                S.current.customerInfo,
+                S.current.uploadDocuments,
+                S.current.reviewAndSubmit,
               ],
             ),
             Padding(
@@ -38,7 +39,7 @@ class PreInvoiceStep2View extends StatelessWidget {
                 children: [
                   Expanded(
                     child: RtcTextField(
-                      hintText: 'جستجو',
+                      hintText: S.current.searchHint,
                       onChanged: (value) => cubit.onSearchChanged(value),
                       suffix: const Icon(Icons.search),
                     ),
@@ -71,7 +72,7 @@ class PreInvoiceStep2View extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    '${state.filteredProducts.length} کالا پیدا شد',
+                    '${state.filteredProducts.length} ${S.current.productsFound}',
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
@@ -161,7 +162,7 @@ class PreInvoiceStep2View extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: RtcButton(
-              title: totalItems > 0 ? 'مرحله بعد ($totalItems کالا)' : 'مرحله بعد',
+              title: totalItems > 0 ? '${S.current.nextStep} ($totalItems ${S.current.products})' : S.current.nextStep,
               isActive: totalItems > 0,
               onPressed: () => cubit.goToStep(PreInvoiceStep.customerInfo),
             ),

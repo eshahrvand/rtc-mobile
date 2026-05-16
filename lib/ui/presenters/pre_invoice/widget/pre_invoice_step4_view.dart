@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../widget/rtc_button.dart';
@@ -16,15 +17,15 @@ class PreInvoiceStep4View extends StatelessWidget {
 
         return Column(
           children: [
-            const RtcStepIndicator(
+            RtcStepIndicator(
               totalSteps: 5,
               currentStepIndex: 3,
               stepLabels: [
-                'انتخاب طرح اعتباری',
-                'انتخاب کالاها',
-                'اطلاعات مشتری',
-                'بارگذاری مدارک',
-                'بررسی نهایی و ثبت',
+                S.current.selectCreditPlan,
+                S.current.selectProducts,
+                S.current.customerInfo,
+                S.current.uploadDocuments,
+                S.current.reviewAndSubmit,
               ],
             ),
             Expanded(
@@ -33,9 +34,9 @@ class PreInvoiceStep4View extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('مدرک اجباری*', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(S.current.mandatoryDocument, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    const Text('تصویر روی کارت ملی', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(S.current.nationalCardFront, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                     const SizedBox(height: 16),
                     _buildUploadBox(
                       context,
@@ -44,7 +45,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                       onRemove: () => cubit.removeMandatoryDoc(),
                     ),
                     const SizedBox(height: 32),
-                    const Text('مدارک اختیاری', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(S.current.optionalDocuments, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     _buildUploadBox(
                       context,
@@ -59,7 +60,7 @@ class PreInvoiceStep4View extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: RtcButton(
-                title: 'مرحله بعد',
+                title: S.current.nextStep,
                 isActive: state.mandatoryDocPath != null,
                 onPressed: () => cubit.goToStep(PreInvoiceStep.review),
               ),
@@ -94,17 +95,18 @@ class PreInvoiceStep4View extends StatelessWidget {
                     child: const Icon(Icons.image_outlined, color: Colors.blue),
                   ),
                   const SizedBox(height: 16),
-                  const Text.rich(
+                  Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: 'برای '),
-                        TextSpan(text: 'بارگذاری عکس ', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
-                        TextSpan(text: 'اینجا را کلیک کنید.'),
+                        TextSpan(text: S.current.clickToUpload.split('اینجا')[0]),
+                        TextSpan(text: 'اینجا ', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                        TextSpan(text: S.current.clickToUpload.split('اینجا')[1]),
                       ],
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  const Text('فرمت فایل: PNG, JPG | حداکثر حجم: ۱۰۰ KB', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                  Text(S.current.uploadFormatInfo, style: const TextStyle(fontSize: 10, color: Colors.grey)),
                 ],
               )
             : Stack(
