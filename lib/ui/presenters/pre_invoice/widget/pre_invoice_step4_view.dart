@@ -2,7 +2,6 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../widget/rtc_button.dart';
-import '../../../widget/rtc_step_indicator.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 
@@ -17,26 +16,24 @@ class PreInvoiceStep4View extends StatelessWidget {
 
         return Column(
           children: [
-            RtcStepIndicator(
-              totalSteps: 5,
-              currentStepIndex: 3,
-              stepLabels: [
-                S.current.selectCreditPlan,
-                S.current.selectProducts,
-                S.current.customerInfo,
-                S.current.uploadDocuments,
-                S.current.reviewAndSubmit,
-              ],
-            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(S.current.mandatoryDocument, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      S.current.mandatoryDocument,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text(S.current.nationalCardFront, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(
+                      S.current.nationalCardFront,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     const SizedBox(height: 16),
                     _buildUploadBox(
                       context,
@@ -45,7 +42,13 @@ class PreInvoiceStep4View extends StatelessWidget {
                       onRemove: () => cubit.removeMandatoryDoc(),
                     ),
                     const SizedBox(height: 32),
-                    Text(S.current.optionalDocuments, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      S.current.optionalDocuments,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     _buildUploadBox(
                       context,
@@ -71,7 +74,12 @@ class PreInvoiceStep4View extends StatelessWidget {
     );
   }
 
-  Widget _buildUploadBox(BuildContext context, {String? path, required VoidCallback onTap, required VoidCallback onRemove}) {
+  Widget _buildUploadBox(
+    BuildContext context, {
+    String? path,
+    required VoidCallback onTap,
+    required VoidCallback onRemove,
+  }) {
     return GestureDetector(
       onTap: path == null ? onTap : null,
       child: Container(
@@ -98,15 +106,28 @@ class PreInvoiceStep4View extends StatelessWidget {
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: S.current.clickToUpload.split('اینجا')[0]),
-                        TextSpan(text: 'اینجا ', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
-                        TextSpan(text: S.current.clickToUpload.split('اینجا')[1]),
+                        TextSpan(
+                          text: S.current.clickToUpload.split('اینجا')[0],
+                        ),
+                        TextSpan(
+                          text: 'اینجا ',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: S.current.clickToUpload.split('اینجا')[1],
+                        ),
                       ],
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  Text(S.current.uploadFormatInfo, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                  Text(
+                    S.current.uploadFormatInfo,
+                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                  ),
                 ],
               )
             : Stack(
@@ -114,11 +135,19 @@ class PreInvoiceStep4View extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
-                      path, // Using asset for simulation, should be File(path) in real usage
+                      path,
+                      // Using asset for simulation, should be File(path) in real usage
                       width: double.infinity,
                       height: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.image, size: 50, color: Colors.grey)),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                          ),
                     ),
                   ),
                   Positioned(
@@ -132,7 +161,11 @@ class PreInvoiceStep4View extends StatelessWidget {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.red,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),

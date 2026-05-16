@@ -1,3 +1,4 @@
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_cart_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
 import '../../widget/rtc_appbar.dart';
+import '../../widget/rtc_step_indicator.dart';
 import 'bloc/pre_invoice_cubit.dart';
 import 'bloc/pre_invoice_state.dart';
 import 'widget/pre_invoice_step1_view.dart';
@@ -82,7 +84,38 @@ class PreInvoiceView extends StatelessWidget {
                   ? '$baseImage/close.svg' 
                   : '$baseImage/angle-right.svg',
             ),
-            body: _buildStepView(state.currentStep),
+            body: Column(
+              children: [
+                BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
+                  buildWhen: (prev, curr) => prev.currentStep != curr.currentStep,
+                  builder: (context, state) => RtcStepIndicator(
+                    totalSteps: 5,
+                    currentStepIndex: state.currentStep.index,
+                    stepLabels: [
+                      S.current.selectCreditPlan,
+                      S.current.selectProducts,
+                      S.current.customerInfo,
+                      S.current.uploadDocuments,
+                      S.current.reviewAndSubmit,
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
+                    buildWhen: (prev, curr) => prev.currentStep != curr.currentStep,
+                    builder: (context, state) {
+                      switch (state.currentStep) {
+                        case PreInvoiceStep.creditPlan:   return const PreInvoiceStep1View();
+                        case PreInvoiceStep.products:     return const PreInvoiceStep2View();
+                        case PreInvoiceStep.customerInfo: return const PreInvoiceStep3View();
+                        case PreInvoiceStep.documents:    return const PreInvoiceStep4View();
+                        case PreInvoiceStep.review:       return const PreInvoiceStep5View();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/config.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
-import '../../../widget/rtc_step_indicator.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 
@@ -19,17 +18,6 @@ class PreInvoiceStep5View extends StatelessWidget {
 
         return Column(
           children: [
-            RtcStepIndicator(
-              totalSteps: 5,
-              currentStepIndex: 4,
-              stepLabels: [
-                S.current.selectCreditPlan,
-                S.current.selectProducts,
-                S.current.customerInfo,
-                S.current.uploadDocuments,
-                S.current.reviewAndSubmit,
-              ],
-            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(

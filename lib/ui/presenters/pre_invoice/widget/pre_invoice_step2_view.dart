@@ -5,7 +5,6 @@ import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/pre_invoice_model.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_chip_list.dart';
-import '../../../widget/rtc_step_indicator.dart';
 import '../../../widget/rtc_text_field.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -22,17 +21,6 @@ class PreInvoiceStep2View extends StatelessWidget {
 
         return Column(
           children: [
-            RtcStepIndicator(
-              totalSteps: 5,
-              currentStepIndex: 1,
-              stepLabels: [
-                S.current.selectCreditPlan,
-                S.current.selectProducts,
-                S.current.customerInfo,
-                S.current.uploadDocuments,
-                S.current.reviewAndSubmit,
-              ],
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
