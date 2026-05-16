@@ -147,7 +147,10 @@ class _CreditPlanInfo extends StatelessWidget {
             value: plan.priceIncrease,
             valueColor: Colors.blue,
           ),
-          _InfoRow(label: S.current.validityPeriodLabel, value: plan.validityPeriod),
+          _InfoRow(
+            label: S.current.validityPeriodLabel,
+            value: plan.validityPeriod,
+          ),
         ],
       ),
     );
@@ -323,8 +326,14 @@ class _CustomerInfo extends StatelessWidget {
         children: [
           _InfoRow(label: S.current.nameLabel, value: customer.name),
           _InfoRow(label: S.current.phoneNumberLabel, value: customer.phone),
-          _InfoRow(label: S.current.nationalCodeLabel, value: customer.nationalCode),
-          _InfoRow(label: S.current.postalCodeLabel, value: customer.postalCode),
+          _InfoRow(
+            label: S.current.nationalCodeLabel,
+            value: customer.nationalCode,
+          ),
+          _InfoRow(
+            label: S.current.postalCodeLabel,
+            value: customer.postalCode,
+          ),
           _InfoRow(label: S.current.addressLabel, value: ''),
           Text(
             customer.address,
@@ -339,7 +348,6 @@ class _CustomerInfo extends StatelessWidget {
     );
   }
 }
-
 
 class _DocumentItem extends StatelessWidget {
   final OrderDocumentModel doc;

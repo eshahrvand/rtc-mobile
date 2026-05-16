@@ -38,7 +38,7 @@ class OrderTabFinancial extends StatelessWidget {
                       ),
                       isExpanded: state.isFinancialSummaryExpanded,
                       onToggle: () => cubit.toggleFinancialSummary(),
-                      showDivider: false,
+                      showDivider: true,
                       headerSpacing: 8,
                       trailing: Icon(
                         state.isFinancialSummaryExpanded
@@ -53,7 +53,7 @@ class OrderTabFinancial extends StatelessWidget {
                         isWaitingSettlement,
                       ),
                     ),
-                    const Divider(),
+
                     ...order.operations.map((op) {
                       if (op.step == 2 && isWaitingSettlement) {
                         return _buildSettlementOperations(op);
@@ -80,19 +80,35 @@ class OrderTabFinancial extends StatelessWidget {
     );
   }
 
-  Widget _buildFinancialSummary(FinancialSummaryModel summary, bool isSettled, bool isWaitingSettlement) {
+  Widget _buildFinancialSummary(
+    FinancialSummaryModel summary,
+    bool isSettled,
+    bool isWaitingSettlement,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         children: [
           if (isWaitingSettlement) ...[
-            _buildInfoRow(S.current.finalFactorAmount, summary.finalAmount, isBold: true),
+            _buildInfoRow(
+              S.current.finalFactorAmount,
+              summary.finalAmount,
+              isBold: true,
+            ),
           ] else if (isSettled) ...[
-            _buildInfoRow(S.current.finalFactorAmount, summary.finalAmount, isBold: true),
+            _buildInfoRow(
+              S.current.finalFactorAmount,
+              summary.finalAmount,
+              isBold: true,
+            ),
           ] else ...[
             _buildInfoRow(S.current.totalBasePrice, summary.basePrice),
             _buildInfoRow(S.current.totalDiscounts, summary.totalDiscount),
-            _buildInfoRow(S.current.finalFactorAmount, summary.finalAmount, isBold: true),
+            _buildInfoRow(
+              S.current.finalFactorAmount,
+              summary.finalAmount,
+              isBold: true,
+            ),
           ],
         ],
       ),
@@ -139,12 +155,7 @@ class OrderTabFinancial extends StatelessWidget {
             ],
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Divider(
-              // TODO: replace with theme color
-              ),
-        ),
+
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -160,7 +171,10 @@ class OrderTabFinancial extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   // TODO: replace with theme color
                   border: Border.all(color: Colors.grey.withOpacity(0.3)),
@@ -200,7 +214,11 @@ class OrderTabFinancial extends StatelessWidget {
                       const SizedBox(width: 4),
                       const Text(
                         '۲۴,۰۰۰,۰۰۰',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFFD97706)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFD97706),
+                        ),
                       ),
                     ],
                   ),
@@ -271,7 +289,10 @@ class OrderTabFinancial extends StatelessWidget {
               const Spacer(),
               if (op.isCompleted)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     // TODO: replace with theme color
                     color: const Color(0xFFECFDF5),
@@ -301,7 +322,10 @@ class OrderTabFinancial extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 op.title,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(width: 8),
               Container(
@@ -315,14 +339,17 @@ class OrderTabFinancial extends StatelessWidget {
                 child: Center(
                   child: Text(
                     '${op.step}',
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        const Divider(),
       ],
     );
   }
@@ -353,13 +380,7 @@ class OrderTabFinancial extends StatelessWidget {
               ),
             ],
           ),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
+          Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         ],
       ),
     );
