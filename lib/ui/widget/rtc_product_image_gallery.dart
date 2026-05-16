@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'rtc_image.dart';
 
 class RtcProductImageGallery extends StatelessWidget {
@@ -34,22 +36,15 @@ class RtcProductImageGallery extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            imageUrls.length,
-            (index) => Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                // TODO: replace with theme color
-                color: selectedIndex == index
-                    ? Colors.blue
-                    : Colors.grey.shade300,
-              ),
-            ),
+        AnimatedSmoothIndicator(
+          activeIndex: selectedIndex,
+          count: imageUrls.length,
+          effect: ExpandingDotsEffect(
+            dotHeight: 6,
+            dotWidth: 6,
+            spacing: 6,
+            activeDotColor: AppColors.brandPalette.shade500,
+            dotColor: AppColors.grayPalette.shade200,
           ),
         ),
       ],

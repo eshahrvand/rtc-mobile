@@ -6,10 +6,7 @@ import 'rtc_image.dart';
 class RtcProductBadgeList extends StatelessWidget {
   final List<ProductBadgeModel> badges;
 
-  const RtcProductBadgeList({
-    super.key,
-    required this.badges,
-  });
+  const RtcProductBadgeList({super.key, required this.badges});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +15,8 @@ class RtcProductBadgeList extends StatelessWidget {
     // Separate "Availability" (موجودی) from others if present
     final availabilityBadge = badges.firstWhere(
       (b) => b.label.contains('موجودی'),
-      orElse: () => badges.first, // Fallback, though we might want to handle it better
+      orElse: () =>
+          badges.first, // Fallback, though we might want to handle it better
     );
 
     final otherBadges = badges.where((b) => b != availabilityBadge).toList();
@@ -26,7 +24,7 @@ class RtcProductBadgeList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _BadgeItem(badge: availabilityBadge, isGreen: true),
           if (otherBadges.isNotEmpty) ...[
@@ -52,6 +50,7 @@ class _BadgeItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -75,18 +74,11 @@ class _BadgeItem extends StatelessWidget {
             ),
           Text(
             '${badge.label}: ',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
+            style: theme.bodyMedium!.copyWith(color: Colors.white),
           ),
           Text(
             badge.value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
+            style: theme.bodyMedium!.copyWith(color: Colors.white),
           ),
         ],
       ),

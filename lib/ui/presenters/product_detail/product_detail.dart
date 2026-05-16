@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
+import '../../../generated/l10n.dart';
 import 'bloc/product_detail_cubit.dart';
 import 'bloc/product_detail_state.dart';
 import '../../widget/rtc_appbar.dart';
@@ -46,7 +49,7 @@ class ProductDetailView extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: RtcAppBar(
-          title: '',
+          title: S.current.productDetail,
           onBack: () => context.pop(),
           backIconPath: "$baseImage/angle-right.svg",
         ),
@@ -70,14 +73,14 @@ class ProductDetailView extends StatelessWidget {
                     selectedIndex: state.selectedImageIndex,
                     onImageChanged: (index) => cubit.onImageSelected(index),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 26),
                   _PriceBlock(product: product),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   RtcProductBadgeList(badges: product.badges),
-                  const SizedBox(height: 24),
-                  const Divider(),
+                  const SizedBox(height: 28),
+
                   _SpecsSection(specs: product.specs),
-                  const Divider(),
+
                   _DescriptionSection(description: product.description),
                   const SizedBox(height: 32),
                 ],
@@ -97,6 +100,7 @@ class _PriceBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -104,61 +108,67 @@ class _PriceBlock extends StatelessWidget {
         children: [
           Text(
             product.name,
-            style: const TextStyle(
-              // TODO: replace with AppTextStyle
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            style: theme.titleSmall!.copyWith(
+              color: AppColors.grayPalette.shade20,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              if (product.discountPercent != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.errorPalette.shade500,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Text(
+                    product.discountPercent!,
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (product.oldPrice != null)
                     Text(
                       product.oldPrice!,
-                      style: const TextStyle(
-                        // TODO: replace with AppTextStyle
-                        color: Colors.grey,
+                      style: theme.bodyLarge!.copyWith(
+                        color: AppColors.grayPalette.shade500,
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),
+
+                  if (product.oldPrice != null) SizedBox(height: 10),
                   Row(
                     children: [
                       Text(
                         product.price,
-                        style: const TextStyle(
-                          // TODO: replace with AppTextStyle
-                          fontSize: 20,
+                        style: theme.labelLarge!.copyWith(
+                          color: AppColors.brandPalette.shade600,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Text('تومان'),
+                      Text(
+                        S.current.toman,
+                        style: theme.labelLarge!.copyWith(
+                          color: AppColors.grayPalette.shade25,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
-              if (product.discountPercent != null)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    // TODO: replace with theme color
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    product.discountPercent!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
             ],
           ),
         ],
@@ -174,41 +184,57 @@ class _SpecsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'مشخصات فنی',
-            style: TextStyle(
-              // TODO: replace with AppTextStyle
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            spacing: 12,
+            children: [
+              Text(
+                'مشخصات فنی',
+                style: theme.labelLarge!.copyWith(
+                  color: AppColors.grayPalette.shade20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Expanded(
+                child: RtcDivider(color: AppColors.grayPalette.shade200),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
-          ...specs.map((spec) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(spec.key),
-                          Text(
-                            spec.value,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+          ...specs.map(
+            (spec) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '• ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: Row(
+                      spacing: 2,
+                      children: [
+                        Text(spec.key),
+                        Text(
+                          spec.value,
+                          style: theme.bodyLarge!.copyWith(
+                            color: AppColors.grayPalette.shade700,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -222,25 +248,34 @@ class _DescriptionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
+        spacing: 12,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'توضیحات',
-            style: TextStyle(
-              // TODO: replace with AppTextStyle
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            spacing: 12,
+            children: [
+              Text(
+                'توضیحات',
+                style: theme.labelLarge!.copyWith(
+                  color: AppColors.grayPalette.shade20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Expanded(
+                child: RtcDivider(color: AppColors.grayPalette.shade200),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
+
           Text(
             description,
-            style: const TextStyle(
-              // TODO: replace with AppTextStyle
-              height: 1.6,
+            style: theme.bodyLarge!.copyWith(
+              color: AppColors.grayPalette.shade700,
             ),
           ),
         ],
