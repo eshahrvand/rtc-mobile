@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +6,7 @@ import '../presenters/customers/customers.dart';
 import '../presenters/orders/orders.dart';
 import '../presenters/orders/bloc/orders_cubit.dart';
 import '../presenters/orders/widget/order_detail_view.dart';
+import '../presenters/pre_invoice/pre_invoice.dart';
 import '../presenters/dashboard/dashboard.dart';
 import '../presenters/dashboard/widget/profile.dart';
 import '../presenters/product_detail/product_detail.dart';
@@ -57,6 +57,10 @@ final router = GoRouter(
           child: const OrderDetailView(),
         );
       },
+    ),
+    GoRoute(
+      path: AppRoutes.preInvoice,
+      builder: (context, state) => const PreInvoiceScreen(),
     ),
   ],
 );

@@ -7,4 +7,5 @@ class AppRoutes {
   static const customers = '/customers';
   static const orders = '/orders';
   static const orderDetail = '/order-detail';
+  static const preInvoice = '/pre-invoice';
 }

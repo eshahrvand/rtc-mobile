@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rtc_mobile/main.dart';
 import 'package:rtc_mobile/ui/presenters/rtc_app/rtc_app.dart';
 
 void main() {

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
-import '../../config/config.dart';
 import '../../data/models/customer_model.dart';
-import 'rtc_image.dart';
 
 class RtcCustomerOrderItem extends StatelessWidget {
   final CustomerOrderItemModel order;

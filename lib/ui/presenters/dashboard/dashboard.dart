@@ -77,7 +77,8 @@ class MainView extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.errorMessage),
-                  backgroundColor: Colors.red, // TODO: replace with theme values
+                  backgroundColor:
+                      Colors.red, // TODO: replace with theme values
                 ),
               );
             }
@@ -143,7 +144,8 @@ class MainView extends StatelessWidget {
     } else if (index == 1) {
       return RtcSearchAppBar(
         isSearchActive: productState.isSearchActive,
-        showShadow: false, // Products appbar originally had no shadow
+        showShadow: false,
+        // Products appbar originally had no shadow
         title: S.current.products,
         titleStyle: const TextStyle(
           // TODO: replace with AppTextStyle
@@ -166,7 +168,8 @@ class MainView extends StatelessWidget {
     } else if (index == 2) {
       return RtcSearchAppBar(
         isSearchActive: ordersState.searchQuery.isNotEmpty,
-        showShadow: true, // Orders in dashboard originally used RtcAppBar with shadow
+        showShadow: true,
+        // Orders in dashboard originally used RtcAppBar with shadow
         title: 'سفارشات',
         titleStyle: const TextStyle(
           // TODO: replace with AppTextStyle

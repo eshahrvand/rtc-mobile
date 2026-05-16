@@ -43,7 +43,7 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.releaseFactor,
                       iconPath: '$baseImage/invoice.svg',
-                      onTap: () => context.go(AppRoutes.profile),
+                      onTap: () => context.push(AppRoutes.preInvoice),
                     ),
                     const RtcDivider(),
                     _DrawerMenuItem(

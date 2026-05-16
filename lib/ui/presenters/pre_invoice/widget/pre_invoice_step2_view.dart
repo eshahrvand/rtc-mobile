@@ -1,0 +1,173 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../data/models/product_chip_model.dart';
+import '../../../../data/models/pre_invoice_model.dart';
+import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_chip_list.dart';
+import '../../../widget/rtc_step_indicator.dart';
+import '../../../widget/rtc_text_field.dart';
+import '../bloc/pre_invoice_cubit.dart';
+import '../bloc/pre_invoice_state.dart';
+import 'rtc_pre_invoice_product_item.dart';
+
+class PreInvoiceStep2View extends StatelessWidget {
+  const PreInvoiceStep2View({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
+      builder: (context, state) {
+        final cubit = context.read<PreInvoiceCubit>();
+
+        return Column(
+          children: [
+            const RtcStepIndicator(
+              totalSteps: 5,
+              currentStepIndex: 1,
+              stepLabels: [
+                'انتخاب طرح اعتباری',
+                'انتخاب کالاها',
+                'اطلاعات مشتری',
+                'بارگذاری مدارک',
+                'بررسی نهایی و ثبت',
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RtcTextField(
+                      hintText: 'جستجو',
+                      onChanged: (value) => cubit.onSearchChanged(value),
+                      suffix: const Icon(Icons.search),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.tune, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            RtcChipList(
+              chips: state.filterChips.map((c) => ProductChipModel(
+                id: c.id,
+                label: c.label,
+                opensBottomSheet: c.opensBottomSheet,
+              )).toList(),
+              selectedIndex: state.selectedChipIndex,
+              onChipTap: (index, chip) => cubit.onChipSelected(index),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    '${state.filteredProducts.length} کالا پیدا شد',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: state.filteredProducts.length,
+                itemBuilder: (context, index) {
+                  final product = state.filteredProducts[index];
+                  final cartItem = state.cartItems.firstWhere(
+                    (item) => item.productId == product.id,
+                    orElse: () => CartItemModel(
+                      productId: '',
+                      name: '',
+                      imageUrl: '',
+                      price: '',
+                      quantity: 0,
+                    ),
+                  );
+
+                  return RtcPreInvoiceProductItem(
+                    product: product,
+                    quantity: cartItem.quantity,
+                    onAdd: () => cubit.addToCart(product),
+                    onRemove: () => cubit.removeFromCart(product.id),
+                  );
+                },
+              ),
+            ),
+            _buildBottomBar(context, state, cubit),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context, PreInvoiceState state, PreInvoiceCubit cubit) {
+    int totalItems = state.cartItems.fold(0, (sum, item) => sum + item.quantity);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => cubit.showCart(),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.shopping_cart_outlined, color: Colors.blue),
+                ),
+                if (totalItems > 0)
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '$totalItems',
+                        style: const TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: RtcButton(
+              title: totalItems > 0 ? 'مرحله بعد ($totalItems کالا)' : 'مرحله بعد',
+              isActive: totalItems > 0,
+              onPressed: () => cubit.goToStep(PreInvoiceStep.customerInfo),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/config/config.dart';
-import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../generated/l10n.dart';
 import 'rtc_image.dart';
 
