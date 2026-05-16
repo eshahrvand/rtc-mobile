@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../config/config.dart';
 import '../../data/models/order_model.dart';
+import '../../generated/l10n.dart';
 import '../theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -8,132 +10,111 @@ class RtcOrderItem extends StatelessWidget {
   final OrderSummaryModel order;
   final VoidCallback onTap;
 
-  const RtcOrderItem({
-    super.key,
-    required this.order,
-    required this.onTap,
-  });
+  const RtcOrderItem({super.key, required this.order, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            // TODO: replace with theme color
-            color: Colors.grey.withOpacity(0.1),
-          ),
-          boxShadow: [
-            BoxShadow(
-              // TODO: replace with theme color
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(width: 1, color: AppColors.grayPalette.shade200),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                RtcImage(
-                  image: '$baseImage/angle-left.svg',
-                  width: 16,
-                  height: 16,
-                  color: Colors.grey,
-                ),
                 Row(
+                  spacing: 4,
                   children: [
                     Text(
                       order.orderId,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: theme.labelLarge!.copyWith(
                         fontWeight: FontWeight.bold,
-                        // TODO: replace with theme color
-                        color: Colors.black,
+                        color: AppColors.grayPalette.shade900,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
+
+                    Text(
                       '#',
-                      style: TextStyle(
-                        fontSize: 14,
-                        // TODO: replace with theme color
-                        color: Colors.grey,
+                      style: theme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.grayPalette.shade900,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  order.customerName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    // TODO: replace with theme color
-                    color: Colors.black,
-                  ),
+
+                RtcImage(
+                  image: '$baseImage/angle-left.svg',
+                  width: 20,
+                  height: 20,
+                  color: AppColors.grayPalette.shade600,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 6),
+            Text(
+              order.customerName,
+              style: theme.bodyLarge!.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppColors.grayPalette.shade700,
+              ),
+            ),
+
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildStatusBadge(),
                 Text(
                   order.itemCount,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    // TODO: replace with theme color
-                    color: Colors.black,
+                  style: theme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grayPalette.shade700,
                   ),
                 ),
+
+                _buildStatusBadge(),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Text(
+                  order.dateTime,
+                  style: theme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grayPalette.shade700,
+                  ),
+                ),
                 Row(
+                  spacing: 4,
                   children: [
-                    const Text(
-                      'تومان',
-                      style: TextStyle(
-                        fontSize: 12,
-                        // TODO: replace with theme color
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
                     Text(
                       order.amount,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        // TODO: replace with theme color
-                        color: Colors.black,
+                      style: theme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade900,
+                      ),
+                    ),
+                    Text(
+                      S.current.toman,
+                      style: theme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade900,
                       ),
                     ),
                   ],
-                ),
-                Text(
-                  order.dateTime,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    // TODO: replace with theme color
-                    color: Colors.grey,
-                  ),
                 ),
               ],
             ),
@@ -185,12 +166,7 @@ class RtcOrderItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (iconPath != null) ...[
-            RtcImage(
-              image: iconPath,
-              width: 14,
-              height: 14,
-              color: textColor,
-            ),
+            RtcImage(image: iconPath, width: 14, height: 14, color: textColor),
             const SizedBox(width: 4),
           ],
           Text(

@@ -58,9 +58,9 @@ class RtcSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       showShadow: showShadow,
       centerTitle: true,
       leading: IconButton(
-        onPressed: onSearchActivated,
+        onPressed: () => scaffoldKey.currentState?.openDrawer(),
         icon: RtcImage(
-          image: '$baseImage/search.svg',
+          image: '$baseImage/drawer_menu.svg',
           width: 24,
           height: 24,
         ),
@@ -69,12 +69,8 @@ class RtcSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleStyle: titleStyle,
       actions: [
         IconButton(
-          onPressed: () => scaffoldKey.currentState?.openDrawer(),
-          icon: RtcImage(
-            image: '$baseImage/drawer_menu.svg',
-            width: 24,
-            height: 24,
-          ),
+          onPressed: onSearchActivated,
+          icon: RtcImage(image: '$baseImage/search.svg', width: 24, height: 24),
         ),
       ],
     );

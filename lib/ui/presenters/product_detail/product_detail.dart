@@ -162,7 +162,7 @@ class _PriceBlock extends StatelessWidget {
                       Text(
                         S.current.toman,
                         style: theme.labelLarge!.copyWith(
-                          color: AppColors.grayPalette.shade25,
+                          color: AppColors.grayPalette.shade900,
                         ),
                       ),
                     ],
