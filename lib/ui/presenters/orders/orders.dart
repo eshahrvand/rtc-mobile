@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rtc_mobile/config/config.dart';
 import '../../router/app_route.dart';
-import '../../widget/rtc_appbar.dart';
+import '../../widget/rtc_image.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../../widget/rtc_order_item.dart';
-import '../../widget/rtc_orders_appbar.dart';
+import '../../widget/rtc_search_appbar.dart';
 import '../../../../data/models/product_chip_model.dart';
+import '../../../../data/models/order_model.dart';
 import 'bloc/orders_cubit.dart';
 import 'bloc/orders_state.dart';
 
@@ -24,7 +26,6 @@ class OrdersScreen extends StatelessWidget {
 
 class OrdersView extends StatelessWidget {
   const OrdersView({super.key});
-
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -49,14 +50,28 @@ class OrdersView extends StatelessWidget {
       child: BlocBuilder<OrdersCubit, OrdersState>(
         builder: (context, state) {
           final cubit = context.read<OrdersCubit>();
-          
+
           return Scaffold(
             key: scaffoldKey,
-            appBar: RtcOrdersAppBar(
+            appBar: RtcSearchAppBar(
               isSearchActive: state.searchQuery.isNotEmpty,
-              searchQuery: state.searchQuery,
+              showShadow: false, // Matches original RtcOrdersAppBar
+              title: 'سفارشات',
+              titleStyle: const TextStyle(
+                // TODO: replace with AppTextStyle
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              searchLabel: 'جستجو در سفارشات',
+              onSearchChanged: (value) => cubit.onSearchChanged(value),
+              onSearchActivated: () => cubit.onSearchChanged(' '),
+              onSearchDeactivated: () => cubit.onSearchChanged(''),
               scaffoldKey: scaffoldKey,
-              cubit: cubit,
+              searchSuffix: RtcImage(
+                image: '$baseImage/search.svg',
+                width: 20,
+                height: 20,
+              ),
             ),
             body: Column(
               children: [
@@ -69,12 +84,14 @@ class OrdersView extends StatelessWidget {
                       : ListView.builder(
                           itemCount: state.filteredOrders.length,
                           itemBuilder: (context, index) {
-                            final order = state.filteredOrders[index];
+                            final OrderSummaryModel order =
+                                state.filteredOrders[index];
                             return RtcOrderItem(
                               order: order,
                               onTap: () {
                                 cubit.onOrderTapped(order);
-                                context.push(AppRoutes.orderDetail, extra: cubit);
+                                context.push(AppRoutes.orderDetail,
+                                    extra: cubit);
                               },
                             );
                           },

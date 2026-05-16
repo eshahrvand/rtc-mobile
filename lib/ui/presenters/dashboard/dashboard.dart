@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import '../../widget/rtc_image.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/dashboard_state.dart';
@@ -14,7 +15,7 @@ import '../orders/widget/orders_body.dart';
 import '../../widget/rtc_bottom_nav.dart';
 import '../../widget/rtc_drawer.dart';
 import '../../widget/rtc_appbar.dart';
-import '../../widget/rtc_products_appbar.dart';
+import '../../widget/rtc_search_appbar.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -140,23 +141,51 @@ class MainView extends StatelessWidget {
         backIconPath: "$baseImage/drawer_menu.svg",
       );
     } else if (index == 1) {
-      return RtcProductsAppBar(
+      return RtcSearchAppBar(
         isSearchActive: productState.isSearchActive,
-        searchQuery: productState.searchQuery,
+        showShadow: false, // Products appbar originally had no shadow
+        title: S.current.products,
+        titleStyle: const TextStyle(
+          // TODO: replace with AppTextStyle
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        searchHint: S.current.searchProducts,
+        onSearchChanged: (value) =>
+            context.read<ProductCubit>().onSearchChanged(value),
+        onSearchActivated: () => context.read<ProductCubit>().activateSearch(),
+        onSearchDeactivated: () =>
+            context.read<ProductCubit>().deactivateSearch(),
         scaffoldKey: scaffoldKey,
-        cubit: context.read<ProductCubit>(),
+        searchPrefix: RtcImage(
+          image: '$baseImage/search.svg',
+          width: 20,
+          height: 20,
+        ),
       );
     } else if (index == 2) {
-      return RtcAppBar(
+      return RtcSearchAppBar(
+        isSearchActive: ordersState.searchQuery.isNotEmpty,
+        showShadow: true, // Orders in dashboard originally used RtcAppBar with shadow
         title: 'سفارشات',
-        onBack: () => scaffoldKey.currentState?.openDrawer(),
-        backIconPath: "$baseImage/drawer_menu.svg",
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: RtcImage(image: "$baseImage/search.svg", width: 20, height: 20),
-          ),
-        ],
+        titleStyle: const TextStyle(
+          // TODO: replace with AppTextStyle
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        searchLabel: 'جستجو در سفارشات',
+        onSearchChanged: (value) =>
+            context.read<OrdersCubit>().onSearchChanged(value),
+        onSearchActivated: () =>
+            context.read<OrdersCubit>().onSearchChanged(' '),
+        onSearchDeactivated: () =>
+            context.read<OrdersCubit>().onSearchChanged(''),
+        scaffoldKey: scaffoldKey,
+        searchSuffix: RtcImage(
+          image: '$baseImage/search.svg',
+          width: 20,
+          height: 20,
+        ),
       );
     }
     return null;
