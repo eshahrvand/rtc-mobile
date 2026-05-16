@@ -1,11 +1,11 @@
 {
   "@@locale": "en",
-  "appName": "Rtc",
+  "appName": "",
   "companyName": "",
   "appSubtitle": "",
   "loginToSystem": "",
   "enterPhoneNumber": "",
-  "phoneNumberHint": "۰",
+  "phoneNumberHint": "",
   "getOtpCode": "",
   "enterOtpCode": "",
   "otpSentTo": "",
@@ -53,5 +53,7 @@
   "customerDetails": "",
   "toman": "",
   "preInvoice": "",
-  "productDetail": ""
+  "productDetail": "",
+  "technicalSpecs": "",
+  "description": ""
 }

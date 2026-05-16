@@ -194,7 +194,7 @@ class _SpecsSection extends StatelessWidget {
             spacing: 12,
             children: [
               Text(
-                'مشخصات فنی',
+                S.current.technicalSpecs,
                 style: theme.labelLarge!.copyWith(
                   color: AppColors.grayPalette.shade20,
                   fontWeight: FontWeight.bold,
@@ -259,7 +259,7 @@ class _DescriptionSection extends StatelessWidget {
             spacing: 12,
             children: [
               Text(
-                'توضیحات',
+                S.current.description,
                 style: theme.labelLarge!.copyWith(
                   color: AppColors.grayPalette.shade20,
                   fontWeight: FontWeight.bold,
