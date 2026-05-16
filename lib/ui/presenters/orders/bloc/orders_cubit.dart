@@ -15,6 +15,15 @@ class OrdersCubit extends Cubit<OrdersState> {
         .then((_) {
           final mockOrders = [
             OrderSummaryModel(
+              id: '0',
+              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
+              customerName: 'سامان راد',
+              itemCount: '۳ کالا',
+              status: 'پیش فاکتور',
+              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
+              amount: '۸۰,۲۰۰,۰۰۰',
+            ),
+            OrderSummaryModel(
               id: '1',
               orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
               customerName: 'سامان راد',
@@ -38,6 +47,24 @@ class OrdersCubit extends Cubit<OrdersState> {
               customerName: 'سارا قریشی',
               itemCount: '۳ کالا',
               status: 'تایید شده',
+              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
+              amount: '۸۰,۲۰۰,۰۰۰',
+            ),
+            OrderSummaryModel(
+              id: '4',
+              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
+              customerName: 'مهدی علوی',
+              itemCount: '۳ کالا',
+              status: 'رد شده',
+              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
+              amount: '۸۰,۲۰۰,۰۰۰',
+            ),
+            OrderSummaryModel(
+              id: '5',
+              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
+              customerName: 'حسین حسینی',
+              itemCount: '۳ کالا',
+              status: 'منقضی شده',
               dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
               amount: '۸۰,۲۰۰,۰۰۰',
             ),
@@ -91,10 +118,18 @@ class OrdersCubit extends Cubit<OrdersState> {
     // Simulated detail fetch
     Future.delayed(const Duration(milliseconds: 300))
         .then((_) {
+          final isRejected = order.status == 'رد شده';
+          final isWaitingSettlement = order.status == 'در انتظار تسویه';
+          final isConfirmed = order.status == 'تایید شده';
+          final isWaitingApproval = order.status == 'در انتظار تایید';
+          final isExpired = order.status == 'منقضی شده';
+
           final detail = OrderDetailModel(
             id: order.id,
             status: order.status,
-            remainingTime: '۴ ساعت',
+            remainingTime: isWaitingSettlement || order.status == 'پیش فاکتور' ? '۴ ساعت' : '',
+            rejectionReason: isRejected ? 'مدارک اسکن شده با مشخصات هویتی مشتری تطابق ندارد.' : null,
+            isSettled: isConfirmed || isWaitingApproval || isRejected,
             creditPlan: CreditPlanModel(
               provider: 'آپ',
               planName: 'آپ - ۱۲ ماهه',
@@ -124,7 +159,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               ),
             ],
             customer: OrderCustomerModel(
-              name: 'سامان راد',
+              name: order.customerName,
               phone: '۰۹۱۲۶۰۷۷۴۵۶',
               nationalCode: '۰۰۸۱۲۳۴۵۶۷',
               postalCode: '۱۹۳۳۹۴۳۱۱۱',
@@ -156,16 +191,39 @@ class OrdersCubit extends Cubit<OrdersState> {
               finalAmount: '۱۲۴,۰۰۰,۰۰۰',
             ),
             operations: [
-              OrderOperationModel(step: 1, title: 'عملیات تخلیه', status: 'انجام شده', isCompleted: true),
-              OrderOperationModel(step: 2, title: 'عملیات تسویه', status: 'انجام شده', isCompleted: true),
+              OrderOperationModel(
+                step: 1,
+                title: 'عملیات تخلیه',
+                status: 'انجام شده',
+                isCompleted: true,
+              ),
+              OrderOperationModel(
+                step: 2,
+                title: 'عملیات تسویه',
+                status: isWaitingSettlement ? '' : 'انجام شده',
+                isCompleted: !isWaitingSettlement,
+              ),
             ],
             history: [
               OrderHistoryModel(label: 'تاریخ ثبت:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-              OrderHistoryModel(label: 'تاریخ تخلیه:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-              OrderHistoryModel(label: 'تاریخ تسویه:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-              OrderHistoryModel(label: 'تاریخ تایید:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-              OrderHistoryModel(label: 'نام پشتیبان:', value: 'آرمان برزگر'),
-              OrderHistoryModel(label: 'نام سرپرست مالی:', value: 'سینا ایرانی'),
+              if (isExpired)
+                OrderHistoryModel(label: 'تاریخ انقضا:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰')
+              else ...[
+                OrderHistoryModel(label: 'تاریخ تخلیه:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
+                if (!isWaitingSettlement) ...[
+                  OrderHistoryModel(label: 'تاریخ تسویه:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
+                  if (isConfirmed)
+                    OrderHistoryModel(label: 'تاریخ تایید:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰')
+                  else if (isRejected)
+                    OrderHistoryModel(label: 'تاریخ رد شدن:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰')
+                  else if (isWaitingApproval)
+                    ...[],
+                ],
+              ],
+              if (isConfirmed || isRejected) ...[
+                OrderHistoryModel(label: 'نام پشتیبان:', value: 'آرمان برزگر'),
+                OrderHistoryModel(label: 'نام سرپرست مالی:', value: 'سینا ایرانی'),
+              ],
             ],
           );
           emit(state.copyWith(

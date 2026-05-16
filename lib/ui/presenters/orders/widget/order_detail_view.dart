@@ -31,10 +31,16 @@ class OrderDetailView extends StatelessWidget {
           backgroundColor: Colors.white,
           appBar: RtcAppBar(
             onBack: () => context.pop(),
+            backIconPath: '$baseImage/angle-left.svg',
             actions: [
-              IconButton(
-                onPressed: () {},
-                icon: RtcImage(image: '$baseImage/edit.svg', width: 20, height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: RtcImage(
+                  image: '$baseImage/print.svg',
+                  width: 24,
+                  height: 24,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
