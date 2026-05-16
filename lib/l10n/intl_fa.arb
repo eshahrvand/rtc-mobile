@@ -100,5 +100,9 @@
   "uploadFormatInfo": "فرمت فایل: PNG, JPG | حداکثر حجم: ۱۰۰ KB",
   "submitAndClearCart": "ثبت و تخلیه کارت",
   "submitPreInvoice": "ثبت پیش فاکتور",
-  "cartTitle": "سبد خرید"
+  "cartTitle": "سبد خرید",
+  "customerInfoTitle": "اطلاعات مشتری",
+  "payableAmount": "مبلغ قابل پرداخت",
+  "productsTitle": "کالاها",
+  "totalAmount": "جمع کل"
 }

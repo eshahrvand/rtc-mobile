@@ -100,5 +100,9 @@
   "uploadFormatInfo": "",
   "submitAndClearCart": "",
   "submitPreInvoice": "",
-  "cartTitle": ""
+  "cartTitle": "",
+  "customerInfoTitle": "",
+  "payableAmount": "",
+  "productsTitle": "",
+  "totalAmount": ""
 }
