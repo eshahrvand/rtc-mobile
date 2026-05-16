@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_collapsible_section.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
@@ -25,12 +26,31 @@ class OrderTabFinancial extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildCollapsibleSection(
+                    RtcCollapsibleSection(
                       title: 'خلاصه مالی',
-                      iconPath: '$baseImage/dollar.svg',
+                      icon: RtcImage(
+                        image: '$baseImage/dollar.svg',
+                        width: 20,
+                        height: 20,
+                        // TODO: replace with theme color
+                        color: Colors.black,
+                      ),
                       isExpanded: state.isFinancialSummaryExpanded,
                       onToggle: () => cubit.toggleFinancialSummary(),
-                      child: _buildFinancialSummary(order.financialSummary, order.isSettled, isWaitingSettlement),
+                      showDivider: false,
+                      headerSpacing: 8,
+                      trailing: Icon(
+                        state.isFinancialSummaryExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        // TODO: replace with theme color
+                        color: Colors.grey,
+                      ),
+                      child: _buildFinancialSummary(
+                        order.financialSummary,
+                        order.isSettled,
+                        isWaitingSettlement,
+                      ),
                     ),
                     const Divider(),
                     ...order.operations.map((op) {
@@ -56,52 +76,6 @@ class OrderTabFinancial extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildCollapsibleSection({
-    required String title,
-    required String iconPath,
-    required bool isExpanded,
-    required VoidCallback onToggle,
-    required Widget child,
-  }) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: onToggle,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  // TODO: replace with theme color
-                  color: Colors.grey,
-                ),
-                const Spacer(),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    // TODO: replace with theme color
-                  ),
-                ),
-                const SizedBox(width: 8),
-                RtcImage(
-                  image: iconPath,
-                  width: 20,
-                  height: 20,
-                  // TODO: replace with theme color
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-        ),
-        if (isExpanded) child,
-      ],
     );
   }
 

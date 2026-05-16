@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_collapsible_section.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
@@ -23,11 +24,24 @@ class OrderTabDetails extends StatelessWidget {
         return SingleChildScrollView(
           child: Column(
             children: [
-              _CollapsibleSection(
+              RtcCollapsibleSection(
                 title: 'طرح اعتباری',
-                iconPath: '$baseImage/referee-card.svg',
+                icon: RtcImage(
+                  image: '$baseImage/referee-card.svg',
+                  width: 18,
+                  height: 18,
+                  color: AppColors.grayPalette.shade700,
+                ),
                 isExpanded: state.isCreditPlanExpanded,
                 onToggle: () => cubit.toggleCreditPlan(),
+                trailing: RtcImage(
+                  image: state.isCreditPlanExpanded
+                      ? "$baseImage/arrow_up_tab.svg"
+                      : "$baseImage/angle-down_tab.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.grayPalette.shade600,
+                ),
                 child: order.creditPlan == null
                     ? const Padding(
                         padding: EdgeInsets.all(16.0),
@@ -36,11 +50,24 @@ class OrderTabDetails extends StatelessWidget {
                     : _CreditPlanInfo(plan: order.creditPlan!),
               ),
 
-              _CollapsibleSection(
+              RtcCollapsibleSection(
                 title: 'کالاها',
-                iconPath: '$baseImage/package-check-tab.svg',
+                icon: RtcImage(
+                  image: '$baseImage/package-check-tab.svg',
+                  width: 18,
+                  height: 18,
+                  color: AppColors.grayPalette.shade700,
+                ),
                 isExpanded: state.isProductsExpanded,
                 onToggle: () => cubit.toggleProducts(),
+                trailing: RtcImage(
+                  image: state.isProductsExpanded
+                      ? "$baseImage/arrow_up_tab.svg"
+                      : "$baseImage/angle-down_tab.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.grayPalette.shade600,
+                ),
                 child: Column(
                   children: order.products
                       .map((p) => _ProductItem(product: p))
@@ -48,19 +75,45 @@ class OrderTabDetails extends StatelessWidget {
                 ),
               ),
 
-              _CollapsibleSection(
+              RtcCollapsibleSection(
                 title: 'اطلاعات مشتری',
-                iconPath: '$baseImage/user-tab.svg',
+                icon: RtcImage(
+                  image: '$baseImage/user-tab.svg',
+                  width: 18,
+                  height: 18,
+                  color: AppColors.grayPalette.shade700,
+                ),
                 isExpanded: state.isCustomerInfoExpanded,
                 onToggle: () => cubit.toggleCustomerInfo(),
+                trailing: RtcImage(
+                  image: state.isCustomerInfoExpanded
+                      ? "$baseImage/arrow_up_tab.svg"
+                      : "$baseImage/angle-down_tab.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.grayPalette.shade600,
+                ),
                 child: _CustomerInfo(customer: order.customer),
               ),
 
-              _CollapsibleSection(
+              RtcCollapsibleSection(
                 title: 'مدارک بارگذاری شده',
-                iconPath: '$baseImage/papers-text-tab.svg',
+                icon: RtcImage(
+                  image: '$baseImage/papers-text-tab.svg',
+                  width: 18,
+                  height: 18,
+                  color: AppColors.grayPalette.shade700,
+                ),
                 isExpanded: state.isDocumentsExpanded,
                 onToggle: () => cubit.toggleDocuments(),
+                trailing: RtcImage(
+                  image: state.isDocumentsExpanded
+                      ? "$baseImage/arrow_up_tab.svg"
+                      : "$baseImage/angle-down_tab.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.grayPalette.shade600,
+                ),
                 child: Column(
                   children: order.documents
                       .map((d) => _DocumentItem(doc: d))
@@ -72,76 +125,6 @@ class OrderTabDetails extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _CollapsibleSection extends StatelessWidget {
-  final String title;
-  final String iconPath;
-  final bool isExpanded;
-  final VoidCallback onToggle;
-  final Widget child;
-
-  const _CollapsibleSection({
-    required this.title,
-    required this.iconPath,
-    required this.isExpanded,
-    required this.onToggle,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        InkWell(
-          onTap: onToggle,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              spacing: 4,
-              children: [
-                RtcImage(
-                  image: iconPath,
-                  width: 18,
-                  height: 18,
-                  color: AppColors.grayPalette.shade700,
-                ),
-
-                Text(
-                  title,
-                  style: theme.labelLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.grayPalette.shade900,
-                  ),
-                ),
-
-                const Spacer(),
-                RtcImage(
-                  image: isExpanded
-                      ? "$baseImage/arrow_up_tab.svg"
-                      : "$baseImage/angle-down_tab.svg",
-                  width: 24,
-                  height: 24,
-                  color: AppColors.grayPalette.shade600,
-                ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 8,
-            bottom: 8,
-            right: 16,
-            left: 16,
-          ),
-          child: RtcDivider(color: AppColors.grayPalette.shade900, height: 0.5),
-        ),
-        if (isExpanded) child,
-      ],
     );
   }
 }
