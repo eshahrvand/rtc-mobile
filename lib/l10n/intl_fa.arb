@@ -68,6 +68,7 @@
   "nameLabel": "نام",
   "phoneNumberLabel": "شماره موبایل",
   "nationalCodeLabel": "کد ملی",
+  "nationalCodeLabelWithStar": "کد ملی *",
   "postalCodeLabel": "کد پستی",
   "addressLabel": "آدرس:",
   "financialSummaryTitle": "خلاصه مالی",

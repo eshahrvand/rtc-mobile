@@ -106,5 +106,6 @@
   "productsTitle": "",
   "totalAmount": "",
   "statusDone": "",
-  "preInvoiceValidityDuration": ""
+  "preInvoiceValidityDuration": "",
+  "nationalCodeLabelWithStar": ""
 }
