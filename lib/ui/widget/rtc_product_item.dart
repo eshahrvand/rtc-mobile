@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../data/models/product_item_model.dart';
+import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import 'rtc_image.dart';
 
 class RtcProductItem extends StatelessWidget {
@@ -61,23 +63,7 @@ class RtcProductItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         if (product.discount != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.errorPalette.shade500,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: Text(
-                              product.discount!,
-                              style: theme.bodyMedium!.copyWith(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+                          RtcDiscountBadge(discount: product.discount!),
 
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +92,7 @@ class RtcProductItem extends StatelessWidget {
                                 ),
 
                                 Text(
-                                  'تومان',
+                                  S.current.toman,
                                   style: theme.labelLarge!.copyWith(
                                     color: AppColors.grayPalette.shade900,
                                     fontWeight: FontWeight.w500,

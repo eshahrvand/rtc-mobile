@@ -158,68 +158,53 @@ class PreInvoiceStep2View extends StatelessWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      width: double.infinity,
+      decoration: const BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
+        boxShadow: AppColors.secondaryShadow,
       ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => cubit.showCart(),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade200),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.shopping_cart_outlined,
-                    color: Colors.blue,
-                  ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          spacing: 10,
+          children: [
+            Expanded(
+              child: RtcButton(
+                title: totalItems > 0
+                    ? '${S.current.nextStep} ($totalItems ${S.current.products})'
+                    : S.current.nextStep,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
-                if (totalItems > 0)
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '$totalItems',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
+                isActive: totalItems > 0,
+                onPressed: () => cubit.goToStep(PreInvoiceStep.customerInfo),
+              ),
+            ),
+
+            GestureDetector(
+              onTap: () => cubit.showCart(),
+              child: Container(
+                padding: EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.brandPalette.shade50,
+                  border: Border.all(
+                    color: AppColors.grayPalette.shade200,
+                    width: 0.5,
                   ),
-              ],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: RtcImage(
+                  image: "$baseImage/basket-bottom-sheet.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.brandPalette.shade600,
+                  boxFit: BoxFit.fill,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: RtcButton(
-              title: totalItems > 0
-                  ? '${S.current.nextStep} ($totalItems ${S.current.products})'
-                  : S.current.nextStep,
-              isActive: totalItems > 0,
-              onPressed: () => cubit.goToStep(PreInvoiceStep.customerInfo),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

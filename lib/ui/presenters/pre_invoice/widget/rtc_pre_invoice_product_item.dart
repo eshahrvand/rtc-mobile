@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../data/models/pre_invoice_model.dart';
+import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import '../../../widget/rtc_image.dart';
 
 class RtcPreInvoiceProductItem extends StatelessWidget {
@@ -48,7 +51,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
 
                 _buildAvailability(context),
 
-                _buildPriceAndActions(),
+                _buildPriceAndActions(context),
               ],
             ),
           ),
@@ -83,52 +86,43 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceAndActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildPriceAndActions(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        if (product.oldPrice != null)
+          Text(
+            product.oldPrice!,
+            style: theme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w500,
+              decoration: TextDecoration.lineThrough,
+              color: AppColors.grayPalette.shade500,
+            ),
+          ),
+        Row(
           children: [
-            if (product.oldPrice != null)
-              Text(
-                product.oldPrice!,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  decoration: TextDecoration.lineThrough,
-                ),
+            if (product.discount != null)
+              RtcDiscountBadge(
+                discount: product.discount!,
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if (product.discount != null)
-                  Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      product.discount!,
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                    ),
-                  ),
-                SizedBox(width: 50,),
-                const Text('تومان', style: TextStyle(fontSize: 12)),
-                const SizedBox(width: 4),
-                Text(
-                  product.price,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            const Spacer(),
+
+            Text(
+              product.price,
+              style: theme.labelLarge!.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.grayPalette.shade900,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              S.current.toman,
+              style: theme.labelLarge!.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.grayPalette.shade900,
+              ),
             ),
           ],
         ),
@@ -143,13 +137,14 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade200),
+            color: Colors.white,
+            border: Border.all(color: AppColors.grayPalette.shade200),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            Icons.add,
-            color: product.isAvailable ? Colors.black : Colors.grey,
-            size: 20,
+          child: RtcImage(
+            image: "$baseImage/add-basket.svg",
+            width: 16,
+            height: 16,
           ),
         ),
       );
@@ -158,24 +153,34 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade200),
+        color: Colors.white,
+        border: Border.all(color: AppColors.grayPalette.shade200),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          GestureDetector(onTap: onAdd, child: const Icon(Icons.add, size: 18)),
-          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: onAdd,
+            child: RtcImage(
+              image: "$baseImage/add-basket.svg",
+              width: 16,
+              height: 16,
+            ),
+          ),
+          const SizedBox(width: 14),
           Text(
             '$quantity',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           GestureDetector(
             onTap: onRemove,
-            child: Icon(
-              quantity == 1 ? Icons.delete_outline : Icons.remove,
-              size: 18,
-              color: quantity == 1 ? Colors.red : Colors.black,
+            child: RtcImage(
+              image: quantity == 1
+                  ? "$baseImage/delete.svg"
+                  : "$baseImage/remove.svg",
+              width: 16,
+              height: 16,
             ),
           ),
         ],
