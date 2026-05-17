@@ -16,29 +16,14 @@ class OrderTabHistory extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var i = 0; i < order.history.length; i++) ...[
-            if (i == order.history.length - 2)
-              Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
-                child: RtcDivider(
-                  height: 0.5,
-                  color: AppColors.grayPalette.shade300,
-                ),
-              ),
-            _buildHistoryRow(
-              order.history[i].label,
-              order.history[i].value,
-              theme,
-            ),
-            if (i == order.history.length - 1)
-              Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
-                child: RtcDivider(
-                  height: 0.5,
-                  color: AppColors.grayPalette.shade300,
-                ),
-              ),
-          ],
+          ...order.history
+              .take(order.history.length - 2)
+              .map((h) => _buildHistoryRow(h.label, h.value, theme)),
+          _divider(),
+          ...order.history
+              .skip(order.history.length - 2)
+              .map((h) => _buildHistoryRow(h.label, h.value, theme)),
+          _divider(),
           if (order.rejectionReason != null) ...[
             const SizedBox(height: 15),
             Text(
@@ -58,6 +43,16 @@ class OrderTabHistory extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _divider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: RtcDivider(
+        height: 0.5,
+        color: AppColors.grayPalette.shade300,
       ),
     );
   }
