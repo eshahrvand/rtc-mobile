@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../data/models/order_model.dart';
 
 class OrderTabHistory extends StatelessWidget {
@@ -8,29 +10,51 @@ class OrderTabHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...order.history
-              .map((h) => _buildHistoryRow(h.label, h.value))
-              .toList(),
+          for (var i = 0; i < order.history.length; i++) ...[
+            if (i == order.history.length - 2)
+              Padding(
+                padding: EdgeInsets.only(top: 8, bottom: 8),
+                child: RtcDivider(
+                  height: 0.5,
+                  color: AppColors.grayPalette.shade300,
+                ),
+              ),
+            _buildHistoryRow(
+              order.history[i].label,
+              order.history[i].value,
+              theme,
+            ),
+            if (i == order.history.length - 1)
+              Padding(
+                padding: EdgeInsets.only(top: 8, bottom: 8),
+                child: RtcDivider(
+                  height: 0.5,
+                  color: AppColors.grayPalette.shade300,
+                ),
+              ),
+          ],
           if (order.rejectionReason != null) ...[
-            const SizedBox(height: 24),
-            const Text(
+            const SizedBox(height: 15),
+            Text(
               'علت رد شدن:',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
+              style: theme.labelMedium!.copyWith(
+                color: AppColors.errorPalette.shade600,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 15),
             Text(
               order.rejectionReason!,
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 14, color: Colors.black),
+              style: theme.bodyLarge!.copyWith(
+                color: AppColors.grayPalette.shade700,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ],
@@ -38,17 +62,25 @@ class OrderTabHistory extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryRow(String label, String value) {
+  Widget _buildHistoryRow(String label, String value, TextTheme theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            label,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.grayPalette.shade600,
+            ),
           ),
-          Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+          Text(
+            value,
+            style: theme.labelLarge!.copyWith(
+              color: AppColors.grayPalette.shade900,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
