@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
@@ -16,6 +17,7 @@ class OrderTabFinancial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
@@ -33,30 +35,31 @@ class OrderTabFinancial extends StatelessWidget {
                         image: '$baseImage/dollar.svg',
                         width: 20,
                         height: 20,
-                        // TODO: replace with theme color
-                        color: Colors.black,
+
+                        color: AppColors.grayPalette.shade700,
                       ),
                       isExpanded: state.isFinancialSummaryExpanded,
                       onToggle: () => cubit.toggleFinancialSummary(),
                       showDivider: true,
                       headerSpacing: 8,
-                      trailing: Icon(
-                        state.isFinancialSummaryExpanded
-                            ? Icons.keyboard_arrow_up
-                            : Icons.keyboard_arrow_down,
-                        // TODO: replace with theme color
-                        color: Colors.grey,
+                      trailing: RtcImage(
+                        image: state.isFinancialSummaryExpanded
+                            ? "$baseImage/arrow_up_tab.svg"
+                            : "$baseImage/angle-down_tab.svg",
+
+                        color: AppColors.grayPalette.shade600,
                       ),
                       child: _buildFinancialSummary(
                         order.financialSummary,
                         order.isSettled,
                         isWaitingSettlement,
+                        context,
                       ),
                     ),
 
                     ...order.operations.map((op) {
                       if (op.step == 2 && isWaitingSettlement) {
-                        return _buildSettlementOperations(op);
+                        return _buildSettlementOperations(op, context);
                       }
                       return _buildOperationItem(op);
                     }).toList(),
@@ -84,6 +87,7 @@ class OrderTabFinancial extends StatelessWidget {
     FinancialSummaryModel summary,
     bool isSettled,
     bool isWaitingSettlement,
+    BuildContext context,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -91,20 +95,27 @@ class OrderTabFinancial extends StatelessWidget {
         children: [
           if (isWaitingSettlement) ...[
             _buildInfoRow(
+              context,
               S.current.finalFactorAmount,
               summary.finalAmount,
               isBold: true,
             ),
           ] else if (isSettled) ...[
             _buildInfoRow(
+              context,
               S.current.finalFactorAmount,
               summary.finalAmount,
               isBold: true,
             ),
           ] else ...[
-            _buildInfoRow(S.current.totalBasePrice, summary.basePrice),
-            _buildInfoRow(S.current.totalDiscounts, summary.totalDiscount),
+            _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
             _buildInfoRow(
+              context,
+              S.current.totalDiscounts,
+              summary.totalDiscount,
+            ),
+            _buildInfoRow(
+              context,
               S.current.finalFactorAmount,
               summary.finalAmount,
               isBold: true,
@@ -115,42 +126,48 @@ class OrderTabFinancial extends StatelessWidget {
     );
   }
 
-  Widget _buildSettlementOperations(OrderOperationModel op) {
+  Widget _buildSettlementOperations(
+    OrderOperationModel op,
+    BuildContext context,
+  ) {
+    var theme = Theme.of(context).textTheme;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              const Icon(Icons.keyboard_arrow_up, color: Colors.grey),
-              const Spacer(),
-              Text(
-                op.title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  // TODO: replace with theme color
-                ),
-              ),
-              const SizedBox(width: 8),
               Container(
-                width: 24,
-                height: 24,
+                width: 20,
+                height: 20,
                 decoration: BoxDecoration(
-                  // TODO: replace with theme color
-                  color: const Color(0xFF1E293B),
+                  color: AppColors.grayPalette.shade900,
+
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Center(
                   child: Text(
                     '${op.step}',
-                    style: const TextStyle(
+                    style: theme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                op.title,
+                style: theme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.grayPalette.shade900,
+                ),
+              ),
+              const Spacer(),
+              RtcImage(
+                image: "$baseImage/arrow_up_tab.svg",
+                width: 24,
+                height: 24,
               ),
             ],
           ),
@@ -159,14 +176,13 @@ class OrderTabFinancial extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 S.current.settlementMethod,
-                style: const TextStyle(
-                  fontSize: 12,
-                  // TODO: replace with theme color
-                  color: Colors.grey,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade500,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 8),
@@ -176,100 +192,111 @@ class OrderTabFinancial extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  // TODO: replace with theme color
-                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.grayPalette.shade300,
+                    width: 1,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.keyboard_arrow_down,
-                      // TODO: replace with theme color
-                      color: Colors.grey,
-                    ),
-                    const Spacer(),
                     Text(
                       S.current.walletSettlement,
-                      style: const TextStyle(
-                        // TODO: replace with theme color
+                      style: theme.bodyLarge!.copyWith(
+                        color: AppColors.grayPalette.shade900,
                       ),
+                    ),
+                    const Spacer(),
+                    RtcImage(
+                      image: "$baseImage/angle-down_tab.svg",
+                      width: 24,
+                      height: 24,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Text(
+                    S.current.differenceAmount,
+                    style: theme.bodySmall!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
+                  ),
                   Row(
+                    spacing: 4,
                     children: [
                       Text(
-                        S.current.toman,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          // TODO: replace with theme color
-                          color: Color(0xFFD97706),
+                        '۲۴,۰۰۰,۰۰۰',
+                        style: theme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.warningPalette.shade600,
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        '۲۴,۰۰۰,۰۰۰',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFD97706),
+
+                      Text(
+                        S.current.toman,
+                        style: theme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.warningPalette.shade600,
                         ),
                       ),
                     ],
                   ),
-                  Text(
-                    S.current.differenceAmount,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      // TODO: replace with theme color
-                      color: Colors.grey,
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                 decoration: BoxDecoration(
-                  // TODO: replace with theme color
-                  color: const Color(0xFFF0FDF4),
+                  color: AppColors.successPalette.shade25,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFDCFCE7)),
+                  border: Border.all(
+                    color: AppColors.successPalette.shade100,
+                    width: 1,
+                  ),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  spacing: 10,
                   children: [
-                    const Icon(
-                      Icons.check_circle_outline,
-                      // TODO: replace with theme color
-                      color: Color(0xFF16A34A),
-                      size: 18,
+                    RtcImage(
+                      image: "$baseImage/tick_circle.svg",
+                      width: 16,
+                      height: 16,
                     ),
-                    const SizedBox(width: 8),
+
                     Expanded(
                       child: Text(
                         S.current.walletBalanceSufficient,
                         textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          // TODO: replace with theme color
-                          color: Color(0xFF16A34A),
+                        style: theme.bodyMedium!.copyWith(
+                          color: AppColors.successPalette.shade600,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              RtcButton(
-                title: S.current.payWithWallet,
-                onPressed: () {},
-                // TODO: replace with theme values
-                backgroundColor: const Color(0xFF2563EB),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  SizedBox(width: 120),
+
+                  Spacer(),
+                  RtcButton(
+                    title: S.current.payWithWallet,
+                    styleBtn: theme.labelLarge!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    width: 160,
+                    onPressed: () {},
+                  ),
+                ],
               ),
             ],
           ),
@@ -285,7 +312,7 @@ class OrderTabFinancial extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+            RtcImage(image: "$baseImage/angle-down_tab.svg" , width: 24 , height: 24,),
               const Spacer(),
               if (op.isCompleted)
                 Container(
@@ -354,33 +381,41 @@ class OrderTabFinancial extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {bool isBold = false}) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    String label,
+    String value, {
+    bool isBold = false,
+  }) {
+    var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Text(
+            label,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.grayPalette.shade600,
+            ),
+          ),
           Row(
+            spacing: 4,
             children: [
               Text(
-                S.current.toman,
-                style: const TextStyle(
-                  fontSize: 12,
-                  // TODO: replace with theme color
-                  color: Colors.grey,
+                value,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade900,
                 ),
               ),
-              const SizedBox(width: 4),
               Text(
-                value,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                S.current.toman,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade900,
                 ),
               ),
             ],
           ),
-          Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         ],
       ),
     );

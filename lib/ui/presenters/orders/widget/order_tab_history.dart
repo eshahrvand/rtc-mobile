@@ -13,7 +13,9 @@ class OrderTabHistory extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          ...order.history.map((h) => _buildHistoryRow(h.label, h.value)).toList(),
+          ...order.history
+              .map((h) => _buildHistoryRow(h.label, h.value))
+              .toList(),
           if (order.rejectionReason != null) ...[
             const SizedBox(height: 24),
             const Text(
@@ -28,10 +30,7 @@ class OrderTabHistory extends StatelessWidget {
             Text(
               order.rejectionReason!,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black),
             ),
           ],
         ],
@@ -47,18 +46,9 @@ class OrderTabHistory extends StatelessWidget {
         children: [
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
+          Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         ],
       ),
     );
