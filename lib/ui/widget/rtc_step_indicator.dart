@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
 class RtcStepIndicator extends StatelessWidget {
   final int totalSteps;
@@ -15,42 +17,43 @@ class RtcStepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        spacing: 6,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacing: 39,
             children: [
               Text(
                 'مرحله ${currentStepIndex + 1} از $totalSteps',
-                style: const TextStyle(
-                  // TODO: replace with theme values
-                  fontSize: 12,
-                  color: Colors.grey,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade700,
                 ),
               ),
-              Row(
-                children: List.generate(totalSteps, (index) {
-                  return Row(
-                    children: [
-                      _buildStepCircle(index),
-                      if (index < totalSteps - 1) _buildStepLine(index),
-                    ],
-                  );
-                }).reversed.toList(),
+              Expanded(
+                child: Row(
+                  children: List.generate(totalSteps, (index) {
+                    return index < totalSteps - 1
+                        ? Expanded(
+                            child: Row(
+                              children: [_buildStepCircle(index), _buildStepLine()],
+                            ),
+                          )
+                        : _buildStepCircle(index);
+                  }).toList(),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+
           Text(
             stepLabels[currentStepIndex],
-            style: const TextStyle(
-              // TODO: replace with theme values
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
+            style: theme.labelMedium!.copyWith(
+              color: AppColors.brandPalette.shade700,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -67,9 +70,13 @@ class RtcStepIndicator extends StatelessWidget {
       height: 24,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isActive ? Colors.blue : (isCompleted ? Colors.blue : Colors.white),
+        color: isActive
+            ? AppColors.brandPalette.shade600
+            : (isCompleted ? AppColors.brandPalette.shade600 : Colors.white),
         border: Border.all(
-          color: isActive || isCompleted ? Colors.blue : Colors.grey.shade300,
+          color: isActive || isCompleted
+              ? AppColors.brandPalette.shade600
+              : AppColors.grayPalette.shade300,
           width: 2,
         ),
       ),
@@ -84,25 +91,28 @@ class RtcStepIndicator extends StatelessWidget {
                 ),
               )
             : (isCompleted
-                ? const Icon(Icons.check, size: 16, color: Colors.white)
-                : Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey.shade300,
-                    ),
-                  )),
+                  ? RtcImage(
+                      image: "$baseImage/check_badge.svg",
+                      width: 16,
+                      height: 16,
+                      color: Colors.white,
+                      boxFit: BoxFit.fill,
+                    )
+                  : Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.grayPalette.shade300,
+                      ),
+                    )),
       ),
     );
   }
 
-  Widget _buildStepLine(int index) {
-    bool isCompleted = index < currentStepIndex;
-    return Container(
-      width: 30,
-      height: 2,
-      color: isCompleted ? Colors.blue : Colors.grey.shade300,
+  Widget _buildStepLine() {
+    return Expanded(
+      child: Container(height: 0.5, color: AppColors.grayPalette.shade200),
     );
   }
 }

@@ -38,9 +38,9 @@ class PreInvoiceView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == PreInvoiceRequestStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
             }
             if (state.status == PreInvoiceRequestStatus.submitted) {
               context.go(AppRoutes.orderDetail);
@@ -57,8 +57,8 @@ class PreInvoiceView extends StatelessWidget {
             if (state.isCartVisible) {
               _showCartBottomSheet(context);
             } else {
-              // Bottom sheet usually handles its own closing, 
-              // but if triggered by state we might need Navigator.pop(context) 
+              // Bottom sheet usually handles its own closing,
+              // but if triggered by state we might need Navigator.pop(context)
               // if it's currently open.
             }
           },
@@ -76,18 +76,20 @@ class PreInvoiceView extends StatelessWidget {
                 if (state.currentStep == PreInvoiceStep.creditPlan) {
                   context.pop();
                 } else {
-                  final prevStep = PreInvoiceStep.values[state.currentStep.index - 1];
+                  final prevStep =
+                      PreInvoiceStep.values[state.currentStep.index - 1];
                   cubit.goToStep(prevStep);
                 }
               },
-              backIconPath: state.currentStep == PreInvoiceStep.creditPlan 
-                  ? '$baseImage/close.svg' 
+              backIconPath: state.currentStep == PreInvoiceStep.creditPlan
+                  ? '$baseImage/close.svg'
                   : '$baseImage/angle-right.svg',
             ),
             body: Column(
               children: [
                 BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
-                  buildWhen: (prev, curr) => prev.currentStep != curr.currentStep,
+                  buildWhen: (prev, curr) =>
+                      prev.currentStep != curr.currentStep,
                   builder: (context, state) => RtcStepIndicator(
                     totalSteps: 5,
                     currentStepIndex: state.currentStep.index,
@@ -102,14 +104,20 @@ class PreInvoiceView extends StatelessWidget {
                 ),
                 Expanded(
                   child: BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
-                    buildWhen: (prev, curr) => prev.currentStep != curr.currentStep,
+                    buildWhen: (prev, curr) =>
+                        prev.currentStep != curr.currentStep,
                     builder: (context, state) {
                       switch (state.currentStep) {
-                        case PreInvoiceStep.creditPlan:   return const PreInvoiceStep1View();
-                        case PreInvoiceStep.products:     return const PreInvoiceStep2View();
-                        case PreInvoiceStep.customerInfo: return const PreInvoiceStep3View();
-                        case PreInvoiceStep.documents:    return const PreInvoiceStep4View();
-                        case PreInvoiceStep.review:       return const PreInvoiceStep5View();
+                        case PreInvoiceStep.creditPlan:
+                          return const PreInvoiceStep1View();
+                        case PreInvoiceStep.products:
+                          return const PreInvoiceStep2View();
+                        case PreInvoiceStep.customerInfo:
+                          return const PreInvoiceStep3View();
+                        case PreInvoiceStep.documents:
+                          return const PreInvoiceStep4View();
+                        case PreInvoiceStep.review:
+                          return const PreInvoiceStep5View();
                       }
                     },
                   ),
