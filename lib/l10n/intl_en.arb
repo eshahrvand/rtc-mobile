@@ -105,5 +105,6 @@
   "payableAmount": "",
   "productsTitle": "",
   "totalAmount": "",
-  "statusDone": ""
+  "statusDone": "",
+  "preInvoiceValidityDuration": ""
 }

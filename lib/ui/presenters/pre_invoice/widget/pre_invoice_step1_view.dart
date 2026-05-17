@@ -1,6 +1,7 @@
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_credit_plan_item.dart';
 import '../bloc/pre_invoice_cubit.dart';
@@ -32,12 +33,23 @@ class PreInvoiceStep1View extends StatelessWidget {
                       },
                     ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RtcButton(
-                title: S.current.nextStep,
-                isActive: state.selectedCreditPlanId != null,
-                onPressed: () => cubit.goToStep(PreInvoiceStep.products),
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: AppColors.secondaryShadow,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: RtcButton(
+                  title: S.current.nextStep,
+                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  isActive: state.selectedCreditPlanId != null,
+                  onPressed: () => cubit.goToStep(PreInvoiceStep.products),
+                ),
               ),
             ),
           ],

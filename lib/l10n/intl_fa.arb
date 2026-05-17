@@ -105,5 +105,6 @@
   "payableAmount": "مبلغ قابل پرداخت",
   "productsTitle": "کالاها",
   "totalAmount": "جمع کل",
-  "statusDone": "انجام شده"
+  "statusDone": "انجام شده",
+  "preInvoiceValidityDuration": "مدت اعتبار پیش‌فاکتور"
 }

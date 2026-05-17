@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/data/models/pre_invoice_model.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'rtc_image.dart';
 
 class RtcCreditPlanItem extends StatelessWidget {
@@ -16,6 +19,7 @@ class RtcCreditPlanItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -25,16 +29,12 @@ class RtcCreditPlanItem extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade200,
-            width: isSelected ? 2 : 1,
+            color: isSelected
+                ? AppColors.brandPalette.shade600
+                : Colors.transparent,
+            width: isSelected ? 2 : 0,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: AppColors.primaryShadow,
         ),
         child: Column(
           children: [
@@ -42,56 +42,51 @@ class RtcCreditPlanItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         plan.providerName,
-                        style: const TextStyle(
-                          // TODO: replace with theme values
-                          fontSize: 12,
-                          color: Colors.grey,
+                        style: theme.bodyMedium!.copyWith(
+                          color: AppColors.grayPalette.shade900,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         plan.planName,
-                        style: const TextStyle(
-                          // TODO: replace with theme values
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: theme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.grayPalette.shade900,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
-                RtcImage(
-                  image: plan.logo,
-                  width: 48,
-                  height: 48,
-                ),
+
+                RtcImage(image: plan.logo, width: 48, height: 48),
               ],
             ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+
             Row(
+              spacing: 10,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  plan.validityDuration,
-                  style: const TextStyle(
-                    // TODO: replace with theme values
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  S.current.preInvoiceValidityDuration,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade900,
                   ),
                 ),
-                const Text(
-                  'مدت اعتبار پیش‌فاکتور',
-                  style: TextStyle(
-                    // TODO: replace with theme values
-                    fontSize: 14,
-                    color: Colors.grey,
+                Expanded(
+                  child: RtcDivider(
+                    height: 0.5,
+                    color: AppColors.grayPalette.shade200,
+                  ),
+                ),
+                Text(
+                  plan.validityDuration,
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade700,
                   ),
                 ),
               ],

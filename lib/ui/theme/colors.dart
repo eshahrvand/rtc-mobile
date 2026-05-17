@@ -219,6 +219,21 @@ class AppColors {
     ),
   ];
 
+  static const List<BoxShadow> secondaryShadow = [
+    BoxShadow(
+      offset: Offset(1, 0),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: shadowColorTop,
+    ),
+    BoxShadow(
+      offset: Offset(1, 0),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: shadowColorDown,
+    ),
+  ];
+
   static const List<BoxShadow> fieldShadow = [
     BoxShadow(
       offset: Offset(0, 1),

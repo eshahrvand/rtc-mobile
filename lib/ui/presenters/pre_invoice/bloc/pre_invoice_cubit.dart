@@ -14,28 +14,28 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       final mockPlans = [
         CreditPlanItemModel(
           id: '1',
-          logo: '$baseImage/snapp_pay.png',
+          logo: 'assets/images/snapp.png',
           providerName: 'اسنپ پی',
           planName: 'طرح ۶ ماهه',
           validityDuration: '۴۸ ساعت',
         ),
         CreditPlanItemModel(
           id: '2',
-          logo: '$baseImage/tejarat_bank.png',
+          logo: 'assets/images/tejarat.png',
           providerName: 'بانک تجارت',
           planName: 'طرح ۶ ماهه',
           validityDuration: '۴۸ ساعت',
         ),
         CreditPlanItemModel(
           id: '3',
-          logo: '$baseImage/tara.png',
+          logo: 'assets/images/tara.png',
           providerName: 'تارا',
           planName: 'طرح ۶ ماهه',
           validityDuration: '۴۸ ساعت',
         ),
         CreditPlanItemModel(
           id: '4',
-          logo: '$baseImage/melli_bank.png',
+          logo: 'assets/images/melli.png',
           providerName: 'بانک ملی',
           planName: 'طرح ۶ ماهه',
           validityDuration: '۴۸ ساعت',

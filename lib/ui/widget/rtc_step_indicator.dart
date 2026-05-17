@@ -20,6 +20,10 @@ class RtcStepIndicator extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: AppColors.primaryShadow,
+      ),
       child: Column(
         spacing: 6,
         crossAxisAlignment: CrossAxisAlignment.start,
