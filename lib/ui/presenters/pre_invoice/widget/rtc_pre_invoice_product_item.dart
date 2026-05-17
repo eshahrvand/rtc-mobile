@@ -118,6 +118,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
                       style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
+                SizedBox(width: 50,),
                 const Text('تومان', style: TextStyle(fontSize: 12)),
                 const SizedBox(width: 4),
                 Text(
