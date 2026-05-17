@@ -1,6 +1,9 @@
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/pre_invoice_model.dart';
 import '../../../widget/rtc_button.dart';
@@ -15,6 +18,7 @@ class PreInvoiceStep2View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
@@ -22,35 +26,45 @@ class PreInvoiceStep2View extends StatelessWidget {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
+                spacing: 8,
                 children: [
                   Expanded(
                     child: RtcTextField(
                       hintText: S.current.searchHint,
+                      hintStyle: theme.bodyLarge!.copyWith(
+                        color: AppColors.grayPalette.shade400,
+                      ),
                       onChanged: (value) => cubit.onSearchChanged(value),
-                      suffix: const Icon(Icons.search),
+                      prefix: RtcImage(image: "$baseImage/search.svg"),
                     ),
                   ),
-                  const SizedBox(width: 8),
+
                   Container(
                     padding: const EdgeInsets.all(12),
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
+                      color: AppColors.grayPalette.shade25,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.tune, color: Colors.grey),
+                    child: RtcImage(image: "$baseImage/sort.svg"),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             RtcChipList(
-              chips: state.filterChips.map((c) => ProductChipModel(
-                id: c.id,
-                label: c.label,
-                opensBottomSheet: c.opensBottomSheet,
-              )).toList(),
+              chips: state.filterChips
+                  .map(
+                    (c) => ProductChipModel(
+                      id: c.id,
+                      label: c.label,
+                      opensBottomSheet: c.opensBottomSheet,
+                    ),
+                  )
+                  .toList(),
               selectedIndex: state.selectedChipIndex,
               onChipTap: (index, chip) => cubit.onChipSelected(index),
             ),
@@ -98,8 +112,15 @@ class PreInvoiceStep2View extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, PreInvoiceState state, PreInvoiceCubit cubit) {
-    int totalItems = state.cartItems.fold(0, (sum, item) => sum + item.quantity);
+  Widget _buildBottomBar(
+    BuildContext context,
+    PreInvoiceState state,
+    PreInvoiceCubit cubit,
+  ) {
+    int totalItems = state.cartItems.fold(
+      0,
+      (sum, item) => sum + item.quantity,
+    );
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -126,7 +147,10 @@ class PreInvoiceStep2View extends StatelessWidget {
                     border: Border.all(color: Colors.grey.shade200),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.shopping_cart_outlined, color: Colors.blue),
+                  child: const Icon(
+                    Icons.shopping_cart_outlined,
+                    color: Colors.blue,
+                  ),
                 ),
                 if (totalItems > 0)
                   Positioned(
@@ -140,7 +164,10 @@ class PreInvoiceStep2View extends StatelessWidget {
                       ),
                       child: Text(
                         '$totalItems',
-                        style: const TextStyle(color: Colors.white, fontSize: 10),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ),
@@ -150,7 +177,9 @@ class PreInvoiceStep2View extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: RtcButton(
-              title: totalItems > 0 ? '${S.current.nextStep} ($totalItems ${S.current.products})' : S.current.nextStep,
+              title: totalItems > 0
+                  ? '${S.current.nextStep} ($totalItems ${S.current.products})'
+                  : S.current.nextStep,
               isActive: totalItems > 0,
               onPressed: () => cubit.goToStep(PreInvoiceStep.customerInfo),
             ),
