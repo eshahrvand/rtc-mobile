@@ -39,7 +39,7 @@ class RtcStatusBadge extends StatelessWidget {
       bgColor = AppColors.warningPalette.shade50;
       textColor = AppColors.warningPalette.shade700;
       iconPath = '$baseImage/waiting_badge.svg';
-    } else if (status == 'تایید شده' || status == S.current.statusApproved) {
+    } else if (status == 'تایید شده' || status == S.current.statusApproved || status == 'انجام شده' || status == S.current.statusDone) {
       bgColor = AppColors.successPalette.shade50;
       textColor = AppColors.successPalette.shade700;
       iconPath = '$baseImage/check_badge.svg';

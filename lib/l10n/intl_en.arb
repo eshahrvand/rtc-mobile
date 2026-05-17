@@ -104,5 +104,6 @@
   "customerInfoTitle": "",
   "payableAmount": "",
   "productsTitle": "",
-  "totalAmount": ""
+  "totalAmount": "",
+  "statusDone": ""
 }

@@ -104,5 +104,6 @@
   "customerInfoTitle": "اطلاعات مشتری",
   "payableAmount": "مبلغ قابل پرداخت",
   "productsTitle": "کالاها",
-  "totalAmount": "جمع کل"
+  "totalAmount": "جمع کل",
+  "statusDone": "انجام شده"
 }

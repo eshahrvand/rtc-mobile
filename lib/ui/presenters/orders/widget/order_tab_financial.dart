@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
@@ -61,7 +62,7 @@ class OrderTabFinancial extends StatelessWidget {
                       if (op.step == 2 && isWaitingSettlement) {
                         return _buildSettlementOperations(op, context);
                       }
-                      return _buildOperationItem(op);
+                      return _buildOperationItem(op, context);
                     }).toList(),
                   ],
                 ),
@@ -69,12 +70,15 @@ class OrderTabFinancial extends StatelessWidget {
             ),
             if (order.status == 'پیش فاکتور')
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
+
                 child: RtcButton(
+                  styleBtn: theme.labelLarge!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                   title: S.current.dischargeAndSettlement,
                   onPressed: () {},
-                  // TODO: replace with theme values
-                  backgroundColor: const Color(0xFF2563EB),
                 ),
               ),
           ],
@@ -305,74 +309,47 @@ class OrderTabFinancial extends StatelessWidget {
     );
   }
 
-  Widget _buildOperationItem(OrderOperationModel op) {
+  Widget _buildOperationItem(OrderOperationModel op, BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-            RtcImage(image: "$baseImage/angle-down_tab.svg" , width: 24 , height: 24,),
-              const Spacer(),
-              if (op.isCompleted)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    // TODO: replace with theme color
-                    color: const Color(0xFFECFDF5),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.check,
-                        // TODO: replace with theme color
-                        color: Color(0xFF059669),
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        op.status,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          // TODO: replace with theme color
-                          color: Color(0xFF059669),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(width: 8),
-              Text(
-                op.title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 8),
               Container(
-                width: 24,
-                height: 24,
+                width: 20,
+                height: 20,
                 decoration: BoxDecoration(
-                  // TODO: replace with theme color
-                  color: const Color(0xFF1E293B),
+                  color: AppColors.grayPalette.shade900,
+
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Center(
                   child: Text(
                     '${op.step}',
-                    style: const TextStyle(
+                    style: theme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                op.title,
+                style: theme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.grayPalette.shade900,
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (op.isCompleted) RtcStatusBadge(status: op.status),
+              const Spacer(),
+              RtcImage(
+                image: "$baseImage/angle-down_tab.svg",
+                width: 24,
+                height: 24,
               ),
             ],
           ),
