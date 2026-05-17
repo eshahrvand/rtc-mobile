@@ -40,7 +40,6 @@ class PreInvoiceStep2View extends StatelessWidget {
                       prefix: RtcImage(image: "$baseImage/search.svg"),
                     ),
                   ),
-
                   Container(
                     padding: const EdgeInsets.all(12),
                     width: 44,
@@ -48,34 +47,70 @@ class PreInvoiceStep2View extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.grayPalette.shade25,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.grayPalette.shade200),
                     ),
                     child: RtcImage(image: "$baseImage/sort.svg"),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            RtcChipList(
-              chips: state.filterChips
-                  .map(
-                    (c) => ProductChipModel(
-                      id: c.id,
-                      label: c.label,
-                      opensBottomSheet: c.opensBottomSheet,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 48,
+                    width: 140,
+                    child: RtcChipList(
+                      chips: state.filterChips
+                          .where((c) => c.label == "دسته بندی")
+                          .map(
+                            (c) => ProductChipModel(
+                              id: c.id,
+                              label: c.label,
+                              opensBottomSheet: c.opensBottomSheet,
+                            ),
+                          )
+                          .toList(),
+                      selectedIndex: -1,
+                      onChipTap: (index, chip) => cubit.onChipSelected(index),
                     ),
-                  )
-                  .toList(),
-              selectedIndex: state.selectedChipIndex,
-              onChipTap: (index, chip) => cubit.onChipSelected(index),
+                  ),
+                  const Spacer(),
+
+                  GestureDetector(
+                    onTap: () => cubit.toggleShowAvailableOnly(),
+                    child: RtcImage(
+                      image: state.showAvailableOnly
+                          ? "$baseImage/toggle_base.svg"
+                          : "$baseImage/toggle_base.svg",
+                      width: 36,
+                      height: 20,
+                    ),
+                  ),
+
+                  const SizedBox(width: 8),
+                  Text(
+                    "نمایش کالاهای موجود",
+                    style: theme.bodyMedium!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
                     '${state.filteredProducts.length} ${S.current.productsFound}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: theme.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
+                    ),
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../data/models/pre_invoice_model.dart';
 import '../../../widget/rtc_image.dart';
 
@@ -18,6 +19,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
@@ -29,22 +31,23 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
       child: Row(
         children: [
           _buildImage(),
-          const SizedBox(width: 12),
+          const SizedBox(width: 30),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 4,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   product.name,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  style: theme.labelMedium!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.grayPalette.shade20,
                   ),
                 ),
-                const SizedBox(height: 8),
-                _buildAvailability(),
-                const SizedBox(height: 8),
+
+                _buildAvailability(context),
+
                 _buildPriceAndActions(),
               ],
             ),
@@ -55,24 +58,27 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    return Container(
-      width: 80,
-      height: 80,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade100),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: RtcImage(image: product.imageUrl, boxFit: BoxFit.contain),
+    return Stack(
+      children: [
+        SizedBox(
+          child: RtcImage(
+            image: product.imageUrl,
+            boxFit: BoxFit.contain,
+            width: 104,
+            height: 104,
+          ),
+        ),
+        Positioned(right: 0, bottom: 0, child: _buildCounter()),
+      ],
     );
   }
 
-  Widget _buildAvailability() {
+  Widget _buildAvailability(BuildContext context) {
     return Text(
       product.isAvailable ? 'موجودی (${product.inventory})' : 'ناموجود',
-      style: TextStyle(
-        fontSize: 12,
-        color: product.isAvailable ? Colors.green : Colors.red,
+      style: Theme.of(context).textTheme.labelSmall!.copyWith(
+        fontWeight: FontWeight.w600,
+        color: AppColors.successPalette.shade600,
       ),
     );
   }
@@ -81,7 +87,6 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildCounter(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -95,6 +100,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
                 ),
               ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 if (product.discount != null)
                   Container(

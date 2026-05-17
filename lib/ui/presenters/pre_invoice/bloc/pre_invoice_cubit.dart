@@ -129,6 +129,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     _filterProducts();
   }
 
+  void toggleShowAvailableOnly() {
+    emit(state.copyWith(showAvailableOnly: !state.showAvailableOnly));
+    _filterProducts();
+  }
+
   void _filterProducts() {
     var filtered = state.allProducts;
     if (state.searchQuery.isNotEmpty) {
@@ -136,6 +141,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           .where((p) => p.name.contains(state.searchQuery))
           .toList();
     }
+
+    if (state.showAvailableOnly) {
+      filtered = filtered.where((p) => p.isAvailable).toList();
+    }
+
     // Add chip filtering logic here if needed
     emit(state.copyWith(filteredProducts: filtered));
   }

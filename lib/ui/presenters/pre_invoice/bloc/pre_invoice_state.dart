@@ -40,6 +40,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(0) int selectedChipIndex,
     @Default([]) List<PreInvoiceProductModel> allProducts,
     @Default([]) List<PreInvoiceProductModel> filteredProducts,
+    @Default(false) bool showAvailableOnly,
     @Default([]) List<CartItemModel> cartItems,
     @Default(false) bool isCartVisible,
 
