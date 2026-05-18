@@ -60,7 +60,10 @@ class RtcCollapsibleSection extends StatelessWidget {
               right: 16,
               left: 16,
             ),
-            child: RtcDivider(color: AppColors.grayPalette.shade900, height: 0.5),
+            child: RtcDivider(
+              color: AppColors.grayPalette.shade900,
+              height: 0.5,
+            ),
           ),
         if (isExpanded) child,
       ],

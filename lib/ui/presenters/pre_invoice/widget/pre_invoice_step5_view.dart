@@ -1,6 +1,8 @@
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
@@ -21,20 +23,65 @@ class PreInvoiceStep5View extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildSectionHeader(S.current.creditPlanTitle, '$baseImage/package-check.svg'),
-                    _buildCreditPlanInfo(state),
-                    const Divider(),
-                    _buildSectionHeader(S.current.productsTitle, '$baseImage/package-check.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.products)),
-                    ...state.cartItems.map((item) => _buildProductItem(item)).toList(),
-                    const Divider(),
-                    _buildSectionHeader(S.current.customerInfoTitle, '$baseImage/family.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.customerInfo)),
-                    _buildCustomerInfo(state),
-                    const Divider(),
-                    _buildSectionHeader(S.current.uploadedDocumentsTitle, '$baseImage/document-list-check.svg', onEdit: () => cubit.goToStep(PreInvoiceStep.documents)),
-                    _buildDocuments(state),
-                    const Divider(),
-                    _buildSectionHeader(S.current.financialSummaryTitle, '$baseImage/dollar.svg'),
-                    _buildFinancialSummary(state),
+                    _Section(
+                      title: S.current.creditPlanTitle,
+                      icon: RtcImage(
+                        image: '$baseImage/package-check.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      child: _buildCreditPlanInfo(state),
+                    ),
+                    _Section(
+                      title: S.current.productsTitle,
+                      icon: RtcImage(
+                        image: '$baseImage/package-check.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      trailing: _buildEditButton(
+                        () => cubit.goToStep(PreInvoiceStep.products),
+                      ),
+                      child: Column(
+                        children:
+                            state.cartItems
+                                .map((item) => _buildProductItem(item))
+                                .toList(),
+                      ),
+                    ),
+                    _Section(
+                      title: S.current.customerInfoTitle,
+                      icon: RtcImage(
+                        image: '$baseImage/family.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      trailing: _buildEditButton(
+                        () => cubit.goToStep(PreInvoiceStep.customerInfo),
+                      ),
+                      child: _buildCustomerInfo(state),
+                    ),
+                    _Section(
+                      title: S.current.uploadedDocumentsTitle,
+                      icon: RtcImage(
+                        image: '$baseImage/document-list-check.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      trailing: _buildEditButton(
+                        () => cubit.goToStep(PreInvoiceStep.documents),
+                      ),
+                      child: _buildDocuments(state),
+                    ),
+                    _Section(
+                      title: S.current.financialSummaryTitle,
+                      icon: RtcImage(
+                        image: '$baseImage/dollar.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      child: _buildFinancialSummary(state),
+                    ),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -46,28 +93,20 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, String iconPath, {VoidCallback? onEdit}) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          if (onEdit != null)
-            GestureDetector(
-              onTap: onEdit,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Icon(Icons.edit_outlined, size: 16, color: Colors.blue),
-              ),
-            ),
-          const Spacer(),
-          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          const SizedBox(width: 8),
-          RtcImage(image: iconPath, width: 20, height: 20),
-        ],
+  Widget _buildEditButton(VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.brandPalette.shade600),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Icon(
+          Icons.edit_outlined,
+          size: 16,
+          color: AppColors.brandPalette.shade600,
+        ),
       ),
     );
   }
@@ -219,6 +258,58 @@ class PreInvoiceStep5View extends StatelessWidget {
           Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         ],
       ),
+    );
+  }
+}
+
+class _Section extends StatelessWidget {
+  final String title;
+  final Widget icon;
+  final Widget child;
+  final Widget? trailing;
+  final bool showDivider;
+
+  const _Section({
+    required this.title,
+    required this.icon,
+    required this.child,
+    this.trailing,
+    this.showDivider = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            spacing: 4,
+            children: [
+              if (trailing != null) trailing!,
+              const Spacer(),
+              Text(
+                title,
+                style: theme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.grayPalette.shade900,
+                ),
+              ),
+              icon,
+            ],
+          ),
+        ),
+        if (showDivider)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: RtcDivider(
+              color: AppColors.grayPalette.shade900,
+              height: 0.5,
+            ),
+          ),
+        child,
+      ],
     );
   }
 }
