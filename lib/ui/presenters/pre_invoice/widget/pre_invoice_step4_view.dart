@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -137,9 +139,8 @@ class PreInvoiceStep4View extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      path,
-                      // Using asset for simulation, should be File(path) in real usage
+                    child: Image.file(
+                      File(path),
                       width: double.infinity,
                       height: double.infinity,
                       fit: BoxFit.cover,

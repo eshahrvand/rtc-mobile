@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../config/config.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../data/models/pre_invoice_model.dart';
@@ -6,6 +7,8 @@ import 'pre_invoice_state.dart';
 
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   PreInvoiceCubit() : super(const PreInvoiceState());
+
+  final ImagePicker _picker = ImagePicker();
 
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
@@ -294,14 +297,29 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void pickMandatoryDoc() {
-    // Gallery picker logic would go here
-    // Simulating selection
-    emit(state.copyWith(mandatoryDocPath: 'path/to/mandatory_doc.jpg'));
+    _picker.pickImage(source: ImageSource.gallery).then((image) {
+      if (image != null) {
+        emit(state.copyWith(mandatoryDocPath: image.path));
+      }
+    }).catchError((e) {
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.error,
+        errorMessage: 'خطا در انتخاب تصویر',
+      ));
+    });
   }
 
   void pickOptionalDoc() {
-    // Simulating selection
-    emit(state.copyWith(optionalDocPath: 'path/to/optional_doc.jpg'));
+    _picker.pickImage(source: ImageSource.gallery).then((image) {
+      if (image != null) {
+        emit(state.copyWith(optionalDocPath: image.path));
+      }
+    }).catchError((e) {
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.error,
+        errorMessage: 'خطا در انتخاب تصویر',
+      ));
+    });
   }
 
   void removeMandatoryDoc() {
