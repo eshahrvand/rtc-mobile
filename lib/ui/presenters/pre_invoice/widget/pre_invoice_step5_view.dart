@@ -2,11 +2,11 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
+import 'pre_invoice_section_widget.dart';
 
 class PreInvoiceStep5View extends StatelessWidget {
   const PreInvoiceStep5View({super.key});
@@ -23,7 +23,7 @@ class PreInvoiceStep5View extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _Section(
+                    PreInvoiceSectionWidget(
                       title: S.current.creditPlanTitle,
                       icon: RtcImage(
                         image: '$baseImage/package-check.svg',
@@ -32,7 +32,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                       ),
                       child: _buildCreditPlanInfo(state),
                     ),
-                    _Section(
+                    PreInvoiceSectionWidget(
                       title: S.current.productsTitle,
                       icon: RtcImage(
                         image: '$baseImage/package-check.svg',
@@ -49,7 +49,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                                 .toList(),
                       ),
                     ),
-                    _Section(
+                    PreInvoiceSectionWidget(
                       title: S.current.customerInfoTitle,
                       icon: RtcImage(
                         image: '$baseImage/family.svg',
@@ -61,7 +61,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                       ),
                       child: _buildCustomerInfo(state),
                     ),
-                    _Section(
+                    PreInvoiceSectionWidget(
                       title: S.current.uploadedDocumentsTitle,
                       icon: RtcImage(
                         image: '$baseImage/document-list-check.svg',
@@ -73,7 +73,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                       ),
                       child: _buildDocuments(state),
                     ),
-                    _Section(
+                    PreInvoiceSectionWidget(
                       title: S.current.financialSummaryTitle,
                       icon: RtcImage(
                         image: '$baseImage/dollar.svg',
@@ -258,58 +258,6 @@ class PreInvoiceStep5View extends StatelessWidget {
           Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         ],
       ),
-    );
-  }
-}
-
-class _Section extends StatelessWidget {
-  final String title;
-  final Widget icon;
-  final Widget child;
-  final Widget? trailing;
-  final bool showDivider;
-
-  const _Section({
-    required this.title,
-    required this.icon,
-    required this.child,
-    this.trailing,
-    this.showDivider = true,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            spacing: 4,
-            children: [
-              if (trailing != null) trailing!,
-              const Spacer(),
-              Text(
-                title,
-                style: theme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.grayPalette.shade900,
-                ),
-              ),
-              icon,
-            ],
-          ),
-        ),
-        if (showDivider)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: RtcDivider(
-              color: AppColors.grayPalette.shade900,
-              height: 0.5,
-            ),
-          ),
-        child,
-      ],
     );
   }
 }
