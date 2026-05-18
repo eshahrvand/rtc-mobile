@@ -6,7 +6,6 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/pre_invoice_model.dart';
-import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_chip_list.dart';
 import '../../../widget/rtc_text_field.dart';
 import '../bloc/pre_invoice_cubit.dart';
@@ -140,72 +139,9 @@ class PreInvoiceStep2View extends StatelessWidget {
                 },
               ),
             ),
-            _buildBottomBar(context, state, cubit),
           ],
         );
       },
-    );
-  }
-
-  Widget _buildBottomBar(
-    BuildContext context,
-    PreInvoiceState state,
-    PreInvoiceCubit cubit,
-  ) {
-    int totalItems = state.cartItems.fold(
-      0,
-      (sum, item) => sum + item.quantity,
-    );
-
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: AppColors.secondaryShadow,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
-          spacing: 10,
-          children: [
-            Expanded(
-              child: RtcButton(
-                title: totalItems > 0
-                    ? '${S.current.nextStep} ($totalItems ${S.current.products})'
-                    : S.current.nextStep,
-                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-                isActive: totalItems > 0,
-                onPressed: () => cubit.goToStep(PreInvoiceStep.customerInfo),
-              ),
-            ),
-
-            GestureDetector(
-              onTap: () => cubit.showCart(),
-              child: Container(
-                padding: EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppColors.brandPalette.shade50,
-                  border: Border.all(
-                    color: AppColors.grayPalette.shade200,
-                    width: 0.5,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: RtcImage(
-                  image: "$baseImage/basket-bottom-sheet.svg",
-                  width: 24,
-                  height: 24,
-                  color: AppColors.brandPalette.shade600,
-                  boxFit: BoxFit.fill,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

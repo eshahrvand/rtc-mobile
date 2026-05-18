@@ -2,7 +2,6 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/config.dart';
-import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -41,7 +40,6 @@ class PreInvoiceStep5View extends StatelessWidget {
                 ),
               ),
             ),
-            _buildBottomButtons(context, cubit),
           ],
         );
       },
@@ -219,35 +217,6 @@ class PreInvoiceStep5View extends StatelessWidget {
         children: [
           Text(value, style: TextStyle(fontSize: 14, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: valueColor ?? Colors.black)),
           Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomButtons(BuildContext context, PreInvoiceCubit cubit) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4))],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: RtcButton(
-              title: S.current.submitAndClearCart,
-              onPressed: () => cubit.submitAndClear(),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: RtcButton(
-              title: S.current.submitPreInvoice,
-              backgroundColor: Colors.blue.shade50,
-              styleBtn: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              onPressed: () => cubit.submitPreInvoice(),
-            ),
-          ),
         ],
       ),
     );

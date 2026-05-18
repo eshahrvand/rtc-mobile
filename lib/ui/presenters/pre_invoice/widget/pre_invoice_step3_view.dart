@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
 import '../../../../data/models/pre_invoice_model.dart';
-import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_text_field.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../../config/config.dart';
@@ -249,25 +248,6 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         ),
                       ],
                     ],
-                  ),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: AppColors.secondaryShadow,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: RtcButton(
-                    title: S.current.nextStep,
-                    isActive: state.customerInfo != null,
-                    onPressed: () => cubit.goToStep(PreInvoiceStep.documents),
-                    styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                 ),
               ),

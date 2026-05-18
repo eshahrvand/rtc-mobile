@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_cart_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_button.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_step_indicator.dart';
 import 'bloc/pre_invoice_cubit.dart';
@@ -122,10 +125,123 @@ class PreInvoiceView extends StatelessWidget {
                     },
                   ),
                 ),
+                _buildBottomButtons(context, state, cubit),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons(
+    BuildContext context,
+    PreInvoiceState state,
+    PreInvoiceCubit cubit,
+  ) {
+    if (state.currentStep == PreInvoiceStep.review) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: AppColors.secondaryShadow,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: RtcButton(
+                title: S.current.submitAndClearCart,
+                onPressed: () => cubit.submitAndClear(),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: RtcButton(
+                title: S.current.submitPreInvoice,
+                backgroundColor: AppColors.brandPalette.shade50,
+                styleBtn: TextStyle(
+                  color: AppColors.brandPalette.shade600,
+                  fontWeight: FontWeight.bold,
+                ),
+                onPressed: () => cubit.submitPreInvoice(),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    String title = S.current.nextStep;
+    bool isActive = false;
+    VoidCallback onPressed = () {};
+
+    if (state.currentStep == PreInvoiceStep.creditPlan) {
+      isActive = state.selectedCreditPlanId != null;
+      onPressed = () => cubit.goToStep(PreInvoiceStep.products);
+    } else if (state.currentStep == PreInvoiceStep.products) {
+      int totalItems = state.cartItems.fold(
+        0,
+        (sum, item) => sum + item.quantity,
+      );
+      isActive = totalItems > 0;
+      title = isActive
+          ? '${S.current.nextStep} ($totalItems ${S.current.products})'
+          : S.current.nextStep;
+      onPressed = () => cubit.goToStep(PreInvoiceStep.customerInfo);
+    } else if (state.currentStep == PreInvoiceStep.customerInfo) {
+      isActive = state.customerInfo != null;
+      onPressed = () => cubit.goToStep(PreInvoiceStep.documents);
+    } else if (state.currentStep == PreInvoiceStep.documents) {
+      isActive = state.mandatoryDocPath != null;
+      onPressed = () => cubit.goToStep(PreInvoiceStep.review);
+    }
+
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: AppColors.secondaryShadow,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          spacing: 10,
+          children: [
+            Expanded(
+              child: RtcButton(
+                title: title,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+                isActive: isActive,
+                onPressed: onPressed,
+              ),
+            ),
+            if (state.currentStep == PreInvoiceStep.products)
+              GestureDetector(
+                onTap: () => cubit.showCart(),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandPalette.shade50,
+                    border: Border.all(
+                      color: AppColors.grayPalette.shade200,
+                      width: 0.5,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: RtcImage(
+                    image: "$baseImage/basket-bottom-sheet.svg",
+                    width: 24,
+                    height: 24,
+                    color: AppColors.brandPalette.shade600,
+                    boxFit: BoxFit.fill,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

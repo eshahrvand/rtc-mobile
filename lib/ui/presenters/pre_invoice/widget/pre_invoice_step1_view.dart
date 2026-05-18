@@ -1,8 +1,5 @@
-import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rtc_mobile/ui/theme/colors.dart';
-import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_credit_plan_item.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -16,44 +13,19 @@ class PreInvoiceStep1View extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
 
-        return Column(
-          children: [
-            Expanded(
-              child: state.status == PreInvoiceRequestStatus.loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: state.creditPlans.length,
-                      itemBuilder: (context, index) {
-                        final plan = state.creditPlans[index];
-                        return RtcCreditPlanItem(
-                          plan: plan,
-                          isSelected: state.selectedCreditPlanId == plan.id,
-                          onTap: () => cubit.onCreditPlanSelected(plan.id),
-                        );
-                      },
-                    ),
-            ),
-            Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: AppColors.secondaryShadow,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: RtcButton(
-                  title: S.current.nextStep,
-                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  isActive: state.selectedCreditPlanId != null,
-                  onPressed: () => cubit.goToStep(PreInvoiceStep.products),
-                ),
-              ),
-            ),
-          ],
-        );
+        return state.status == PreInvoiceRequestStatus.loading
+            ? const Center(child: CircularProgressIndicator())
+            : ListView.builder(
+                itemCount: state.creditPlans.length,
+                itemBuilder: (context, index) {
+                  final plan = state.creditPlans[index];
+                  return RtcCreditPlanItem(
+                    plan: plan,
+                    isSelected: state.selectedCreditPlanId == plan.id,
+                    onTap: () => cubit.onCreditPlanSelected(plan.id),
+                  );
+                },
+              );
       },
     );
   }
