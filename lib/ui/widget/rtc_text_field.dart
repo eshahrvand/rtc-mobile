@@ -143,7 +143,7 @@ class RtcTextField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
                   color: (isError ?? false)
-                      ? AppColors.warningPalette.shade600
+                      ? AppColors.errorPalette.shade600
                       : borderColor ?? Theme.of(context).primaryColor,
                   width: 1,
                 ),
