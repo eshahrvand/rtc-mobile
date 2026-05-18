@@ -216,6 +216,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         ),
                         const SizedBox(height: 8),
                         RtcTextField(
+                          minLines: 1,
                           maxLines: 3,
                           controller: _addressController,
                           onChanged: (value) =>

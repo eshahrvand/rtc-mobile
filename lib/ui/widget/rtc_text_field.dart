@@ -27,6 +27,7 @@ class RtcTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final Function? onChanged;
   final int? maxLines;
+  final int? minLines;
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
   final String? error;
@@ -58,6 +59,7 @@ class RtcTextField extends StatelessWidget {
     this.focusNode,
     this.onChanged,
     this.maxLines = 1,
+    this.minLines,
     this.maxLength,
     this.inputFormatters,
     this.error,
@@ -84,7 +86,7 @@ class RtcTextField extends StatelessWidget {
           ),
         if (labelText != null) const SizedBox(height: 8),
         Container(
-          height: height ?? 44,
+          height: height ?? (maxLines == 1 ? 44 : null),
           width: width,
           decoration: BoxDecoration(
             // boxShadow: bowShadow ?? mediumShadow,
@@ -100,6 +102,7 @@ class RtcTextField extends StatelessWidget {
             style: textStyle != null
                 ? textStyle!.copyWith(color: null)
                 : textStyle,
+            minLines: minLines,
             maxLines: maxLines,
             autofocus: autoFocus ?? false,
             readOnly: readOnly ?? false,
