@@ -6,6 +6,7 @@ import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
 
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_text_field.dart';
+import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 
@@ -18,7 +19,7 @@ class PreInvoiceStep3View extends StatelessWidget {
     return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
-//TODO: have has size error here
+        //TODO: have has size error here
         return Column(
           children: [
             Expanded(
@@ -30,22 +31,52 @@ class PreInvoiceStep3View extends StatelessWidget {
                     Row(
                       spacing: 14,
                       children: [
-                        RtcTextField(
-                          labelText: S.current.nationalCodeLabelWithStar,
-                          labelStyle: theme.bodyMedium!.copyWith(
-                            color: AppColors.grayPalette.shade700,
-                            fontWeight: FontWeight.w500,
+                        Expanded(
+                          child: RtcTextField(
+                            labelText: S.current.nationalCodeLabelWithStar,
+                            labelStyle: theme.bodyMedium!.copyWith(
+                              color: AppColors.grayPalette.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            hintText: S.current.nationalCodeHint,
+                            hintStyle: theme.bodyLarge!.copyWith(
+                              color: AppColors.grayPalette.shade400,
+                            ),
+                            isError: !state.isNationalIdValid,
+                            helper: !state.isNationalIdValid
+                                ? Row(
+                                    spacing: 8,
+                                    children: [
+                                      RtcImage(
+                                        image: 'assets/images/alert.svg',
+                                        width: 14,
+                                        height: 14,
+                                        color: AppColors.errorPalette.shade600,
+                                      ),
+                                      Text(
+                                        S.current.nationalIdWrong,
+                                        style: theme.bodySmall!.copyWith(
+                                          color:
+                                              AppColors.errorPalette.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox.shrink(),
+                            onChanged: (value) =>
+                                cubit.onCustomerIdChanged(value),
                           ),
-                          hintText: S.current.nationalCodeHint,
-                          hintStyle: theme.bodyLarge!.copyWith(
-                            color: AppColors.grayPalette.shade400,
-                          ),
-                          onChanged: (value) =>
-                              cubit.onCustomerIdChanged(value),
                         ),
-                        RtcTextButton(
-                          title: S.current.checkButton,
-                          onPressed: () => cubit.searchCustomer(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(2, 10, 2, 10),
+                          child: RtcTextButton(
+                            title: S.current.checkButton,
+                            styleBtn: theme.labelLarge!.copyWith(
+                              color: AppColors.brandPalette.shade600,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            onPressed: () => cubit.searchCustomer(),
+                          ),
                         ),
                       ],
                     ),
@@ -58,7 +89,10 @@ class PreInvoiceStep3View extends StatelessWidget {
                       const SizedBox(height: 24),
                       Text(
                         S.current.nameLabel,
-                        style: const TextStyle(fontSize: 12),
+                        style: theme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade700
+                        ),
                       ),
                       const SizedBox(height: 8),
                       RtcTextField(
@@ -153,12 +187,24 @@ class PreInvoiceStep3View extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: RtcButton(
-                title: S.current.nextStep,
-                isActive: state.customerInfo != null,
-                onPressed: () => cubit.goToStep(PreInvoiceStep.documents),
+
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: AppColors.secondaryShadow,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: RtcButton(
+                  title: S.current.nextStep,
+                  isActive: state.customerInfo != null,
+                  onPressed: () => cubit.goToStep(PreInvoiceStep.documents),
+
+                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),),
               ),
             ),
           ],

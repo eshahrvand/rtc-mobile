@@ -107,5 +107,6 @@
   "productsTitle": "کالاها",
   "totalAmount": "جمع کل",
   "statusDone": "انجام شده",
-  "preInvoiceValidityDuration": "مدت اعتبار پیش‌فاکتور"
+  "preInvoiceValidityDuration": "مدت اعتبار پیش‌فاکتور",
+  "nationalIdWrong": "کد ملی وارد شده صحیح نمی‌باشد."
 }

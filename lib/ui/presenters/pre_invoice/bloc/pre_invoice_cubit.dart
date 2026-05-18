@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../config/config.dart';
+import '../../../../config/regex_national_number_validator.dart';
 import '../../../../data/models/pre_invoice_model.dart';
 import 'pre_invoice_state.dart';
 
@@ -231,7 +232,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void onCustomerIdChanged(String value) {
-    emit(state.copyWith(customerIdQuery: value));
+    bool isValid = isNationalIDValid(value);
+    emit(state.copyWith(customerIdQuery: value, isNationalIdValid: isValid));
   }
 
   void searchCustomer() {
