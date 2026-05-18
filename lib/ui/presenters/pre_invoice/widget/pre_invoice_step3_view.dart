@@ -148,81 +148,65 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                           child: Center(child: CircularProgressIndicator()),
                         ),
                       if (state.customerInfo != null) ...[
-                        const SizedBox(height: 24),
-                        Text(
-                          S.current.nameLabelWithStar,
-                          style: theme.bodyMedium!.copyWith(
+                        RtcTextField(
+                          labelText: S.current.nameLabelWithStar,
+                          labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        RtcTextField(
                           controller: _firstNameController,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('firstName', value),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.current.lastNameLabelWithStar,
-                          style: theme.bodyMedium!.copyWith(
+                        SizedBox(height: 12),
+                        RtcTextField(
+                          labelText: S.current.lastNameLabelWithStar,
+                          labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        RtcTextField(
                           controller: _lastNameController,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('lastName', value),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.current.phoneNumberLabelWithStar,
-                          style: theme.bodyMedium!.copyWith(
+                        SizedBox(height: 12),
+                        RtcTextField(
+                          labelText: S.current.phoneNumberLabelWithStar,
+                          labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        RtcTextField(
                           controller: _phoneNumberController,
                           onChanged: (value) => cubit.onCustomerFieldChanged(
                             'phoneNumber',
                             value,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.current.postalCodeLabelWithStar,
-                          style: theme.bodyMedium!.copyWith(
+                        SizedBox(height: 12),
+                        RtcTextField(
+                          labelText: S.current.postalCodeLabelWithStar,
+                          labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        RtcTextField(
                           controller: _postalCodeController,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('postalCode', value),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.current.fullAddressLabelWithStar,
-                          style: theme.bodyMedium!.copyWith(
+                        SizedBox(height: 12),
+                        RtcTextField(
+                          labelText: S.current.fullAddressLabelWithStar,
+                          labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        RtcTextField(
                           minLines: 1,
                           maxLines: 3,
                           controller: _addressController,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('address', value),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 12),
                         Row(
                           spacing: 8,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -258,12 +242,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                                   ? S.current.active
                                   : S.current.inactive,
                               style: theme.bodyMedium!.copyWith(
-                                color:
-                                    state
-                                        .customerInfo!
-                                        .isOrderSentToCustomerAddress
-                                    ? AppColors.brandPalette.shade600
-                                    : AppColors.grayPalette.shade400,
+                                color: AppColors.grayPalette.shade700,
                               ),
                             ),
                           ],
