@@ -91,7 +91,7 @@ class PreInvoiceStep3View extends StatelessWidget {
                         S.current.nameLabel,
                         style: theme.bodyMedium!.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: AppColors.grayPalette.shade700
+                          color: AppColors.grayPalette.shade700,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -105,7 +105,10 @@ class PreInvoiceStep3View extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         S.current.lastNameLabel,
-                        style: const TextStyle(fontSize: 12),
+                        style: theme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade700,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       RtcTextField(
@@ -118,7 +121,10 @@ class PreInvoiceStep3View extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         S.current.phoneNumberLabel,
-                        style: const TextStyle(fontSize: 12),
+                        style: theme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade700,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       RtcTextField(
@@ -131,7 +137,10 @@ class PreInvoiceStep3View extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         S.current.postalCodeLabel,
-                        style: const TextStyle(fontSize: 12),
+                        style: theme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade700,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       RtcTextField(
@@ -144,7 +153,10 @@ class PreInvoiceStep3View extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         S.current.fullAddressLabel,
-                        style: const TextStyle(fontSize: 12),
+                        style: theme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade700,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       RtcTextField(
@@ -157,12 +169,19 @@ class PreInvoiceStep3View extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.start,
+
                         children: [
                           Text(
                             S.current.sendOrderToCustomerAddress,
-                            style: const TextStyle(fontSize: 14),
+                            style: theme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.grayPalette.shade700,
+                            ),
                           ),
+
+                          Expanded(child: SizedBox()),
+
                           Switch(
                             value: state
                                 .customerInfo!
@@ -175,9 +194,8 @@ class PreInvoiceStep3View extends StatelessWidget {
                           ),
                           Text(
                             S.current.inactive,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
+                            style: theme.bodyMedium!.copyWith(
+                              color: AppColors.grayPalette.shade400,
                             ),
                           ),
                         ],
@@ -204,7 +222,8 @@ class PreInvoiceStep3View extends StatelessWidget {
                   styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                  ),),
+                  ),
+                ),
               ),
             ),
           ],
