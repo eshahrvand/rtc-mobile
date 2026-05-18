@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 bool isNationalIDValid(String nc) {
   if (nc.trim() == '') {

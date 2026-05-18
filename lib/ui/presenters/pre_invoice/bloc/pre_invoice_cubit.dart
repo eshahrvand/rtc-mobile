@@ -312,7 +312,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void pickOptionalDoc() {
     _picker.pickImage(source: ImageSource.gallery).then((image) {
       if (image != null) {
-        emit(state.copyWith(optionalDocPath: image.path));
+        final updatedPaths = List<String>.from(state.optionalDocPaths)..add(image.path);
+        emit(state.copyWith(optionalDocPaths: updatedPaths));
       }
     }).catchError((e) {
       emit(state.copyWith(
@@ -326,8 +327,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     emit(state.copyWith(mandatoryDocPath: null));
   }
 
-  void removeOptionalDoc() {
-    emit(state.copyWith(optionalDocPath: null));
+  void removeOptionalDoc(int index) {
+    final updatedPaths = List<String>.from(state.optionalDocPaths)..removeAt(index);
+    emit(state.copyWith(optionalDocPaths: updatedPaths));
   }
 
   void submitPreInvoice() {

@@ -104,6 +104,15 @@
   "optionalDocuments": "",
   "clickToUpload": "",
   "uploadFormatInfo": "",
+  "addWithPlus": "",
+  "otherDocumentsLabel": "{index}",
+  "@otherDocumentsLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
   "submitAndClearCart": "",
   "submitPreInvoice": "",
   "cartTitle": "",

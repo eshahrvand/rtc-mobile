@@ -43,10 +43,9 @@ class PreInvoiceStep5View extends StatelessWidget {
                         () => cubit.goToStep(PreInvoiceStep.products),
                       ),
                       child: Column(
-                        children:
-                            state.cartItems
-                                .map((item) => _buildProductItem(item))
-                                .toList(),
+                        children: state.cartItems
+                            .map((item) => _buildProductItem(item))
+                            .toList(),
                       ),
                     ),
                     PreInvoiceSectionWidget(
@@ -112,14 +111,21 @@ class PreInvoiceStep5View extends StatelessWidget {
   }
 
   Widget _buildCreditPlanInfo(PreInvoiceState state) {
-    final plan = state.creditPlans.firstWhere((p) => p.id == state.selectedCreditPlanId, orElse: () => state.creditPlans.first);
+    final plan = state.creditPlans.firstWhere(
+      (p) => p.id == state.selectedCreditPlanId,
+      orElse: () => state.creditPlans.first,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           _buildInfoRow(S.current.providerLabel, plan.providerName),
           _buildInfoRow(S.current.planNameLabel, plan.planName),
-          _buildInfoRow(S.current.priceIncreaseLabel, '۱۵٪', valueColor: Colors.blue),
+          _buildInfoRow(
+            S.current.priceIncreaseLabel,
+            '۱۵٪',
+            valueColor: Colors.blue,
+          ),
           _buildInfoRow(S.current.validityPeriodLabel, plan.validityDuration),
         ],
       ),
@@ -146,28 +152,64 @@ class PreInvoiceStep5View extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(item.name, textAlign: TextAlign.right, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                Text(
+                  item.name,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     if (item.discount != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(4)),
-                        child: Text(item.discount!, style: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          item.discount!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     const SizedBox(width: 8),
                     Text(S.current.toman, style: const TextStyle(fontSize: 10)),
                     const SizedBox(width: 4),
-                    Text(item.price, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    Text(
+                      item.price,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.blue)),
-                  child: Text('${item.quantity}', style: const TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.bold)),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Text(
+                    '${item.quantity}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -189,7 +231,11 @@ class PreInvoiceStep5View extends StatelessWidget {
           _buildInfoRow(S.current.nationalCodeLabel, info.nationalId),
           _buildInfoRow(S.current.postalCodeLabel, info.postalCode),
           _buildInfoRow(S.current.addressLabel, ''),
-          Text(info.address, textAlign: TextAlign.right, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(
+            info.address,
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
         ],
       ),
     );
@@ -201,7 +247,13 @@ class PreInvoiceStep5View extends StatelessWidget {
       child: Column(
         children: [
           _buildDocItem(S.current.nationalCardFront, '۶ MB', true),
-          if (state.optionalDocPath != null) _buildDocItem(S.current.optionalDocuments, '۶ MB', false),
+          ...state.optionalDocPaths.asMap().entries.map((entry) {
+            return _buildDocItem(
+              S.current.otherDocumentsLabel(entry.key + 1),
+              '۶ MB',
+              false,
+            );
+          }),
         ],
       ),
     );
@@ -211,23 +263,47 @@ class PreInvoiceStep5View extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade100), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade100),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(size, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-            const SizedBox(height: 4),
-            const Icon(Icons.image_outlined, size: 16, color: Colors.blue),
-          ]),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                size,
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              const Icon(Icons.image_outlined, size: 16, color: Colors.blue),
+            ],
+          ),
           const Spacer(),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-            const Text('national_card_front', style: TextStyle(fontSize: 10, color: Colors.grey)),
-          ]),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                'national_card_front',
+                style: TextStyle(fontSize: 10, color: Colors.grey),
+              ),
+            ],
+          ),
           const SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: const Icon(Icons.image_outlined, color: Colors.blue),
           ),
         ],
@@ -240,21 +316,41 @@ class PreInvoiceStep5View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildInfoRow('${S.current.totalBasePrice} (۳ ${S.current.products})', '۱۴,۴۹۰,۰۰۰'),
+          _buildInfoRow(
+            '${S.current.totalBasePrice} (۳ ${S.current.products})',
+            '۱۴,۴۹۰,۰۰۰',
+          ),
           _buildInfoRow(S.current.totalDiscounts, '۴۹۰,۰۰۰'),
-          _buildInfoRow(S.current.payableAmount, '۱۴,۰۰۰,۰۰۰', isBold: true, valueColor: Colors.blue),
+          _buildInfoRow(
+            S.current.payableAmount,
+            '۱۴,۰۰۰,۰۰۰',
+            isBold: true,
+            valueColor: Colors.blue,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {Color? valueColor, bool isBold = false}) {
+  Widget _buildInfoRow(
+    String label,
+    String value, {
+    Color? valueColor,
+    bool isBold = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: valueColor ?? Colors.black)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: valueColor ?? Colors.black,
+            ),
+          ),
           Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         ],
       ),

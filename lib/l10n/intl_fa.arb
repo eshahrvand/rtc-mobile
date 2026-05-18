@@ -105,6 +105,15 @@
   "optionalDocuments": "مدارک اختیاری",
   "clickToUpload": "برای بارگذاری عکس اینجا را کلیک کنید.",
   "uploadFormatInfo": "فرمت فایل: PNG, JPG | حداکثر حجم: ۱۰۰ KB",
+  "addWithPlus": "افزودن +",
+  "otherDocumentsLabel": "سایر مدارک {index}",
+  "@otherDocumentsLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
   "submitAndClearCart": "ثبت و تخلیه کارت",
   "submitPreInvoice": "ثبت پیش فاکتور",
   "cartTitle": "سبد خرید",

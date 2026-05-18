@@ -8,6 +8,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
+import 'pre_invoice_document_item.dart';
 
 class PreInvoiceStep4View extends StatelessWidget {
   const PreInvoiceStep4View({super.key});
@@ -50,20 +51,51 @@ class PreInvoiceStep4View extends StatelessWidget {
                       onRemove: () => cubit.removeMandatoryDoc(),
                     ),
                     const SizedBox(height: 32),
-                    Text(
-                      S.current.optionalDocuments,
-                      style: theme.labelLarge!.copyWith(
-                        color: AppColors.grayPalette.shade900,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (state.optionalDocPaths.isNotEmpty)
+                          GestureDetector(
+                            onTap: () => cubit.pickOptionalDoc(),
+                            child: Text(
+                              S.current.addWithPlus,
+                              style: theme.bodyLarge!.copyWith(
+                                color: AppColors.brandPalette.shade600,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
+                        Text(
+                          S.current.optionalDocuments,
+                          style: theme.labelLarge!.copyWith(
+                            color: AppColors.grayPalette.shade900,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 12),
-                    _buildUploadBox(
-                      context,
-                      path: state.optionalDocPath,
-                      onTap: () => cubit.pickOptionalDoc(),
-                      onRemove: () => cubit.removeOptionalDoc(),
-                    ),
+                    ...state.optionalDocPaths.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      String path = entry.value;
+                      return PreInvoiceDocumentItem(
+                        title: S.current.otherDocumentsLabel(index + 1),
+                        fileName: path.split('/').last,
+                        fileSize: '۱۶ MB',
+                        // Mock size as in screenshot
+                        onDelete: () => cubit.removeOptionalDoc(index),
+                        onView: () {
+                          // View logic if needed
+                        },
+                      );
+                    }),
+                    if (state.optionalDocPaths.isEmpty)
+                      _buildUploadPlaceholder(
+                        context,
+                        onTap: () => cubit.pickOptionalDoc(),
+                      ),
                   ],
                 ),
               ),
@@ -71,6 +103,65 @@ class PreInvoiceStep4View extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildUploadPlaceholder(
+    BuildContext context, {
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 140,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.grayPalette.shade25,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 14),
+            RtcImage(
+              image: "$baseImage/featured-icon.svg",
+              width: 32,
+              height: 32,
+            ),
+            const SizedBox(height: 12),
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: S.current.clickToUpload.split('بارگذاری عکس')[0],
+                  ),
+                  TextSpan(
+                    text: 'بارگذاری عکس ',
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: AppColors.brandPalette.shade600,
+                    ),
+                  ),
+                  TextSpan(
+                    text: S.current.clickToUpload.split('بارگذاری عکس')[1],
+                  ),
+                ],
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.grayPalette.shade700,
+                ),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              S.current.uploadFormatInfo,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: AppColors.grayPalette.shade600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -91,50 +182,7 @@ class PreInvoiceStep4View extends StatelessWidget {
           border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
         ),
         child: path == null
-            ? Column(
-                children: [
-                  SizedBox(height: 14),
-                  RtcImage(
-                    image: "$baseImage/featured-icon.svg",
-                    width: 32,
-                    height: 32,
-                  ),
-                  const SizedBox(height: 12),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: S.current.clickToUpload.split(
-                            'بارگذاری عکس',
-                          )[0],
-                        ),
-                        TextSpan(
-                          text: 'بارگذاری عکس ',
-                          style: Theme.of(context).textTheme.labelMedium!
-                              .copyWith(color: AppColors.brandPalette.shade600),
-                        ),
-                        TextSpan(
-                          text: S.current.clickToUpload.split(
-                            'بارگذاری عکس',
-                          )[1],
-                        ),
-                      ],
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    S.current.uploadFormatInfo,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: AppColors.grayPalette.shade600,
-                    ),
-                  ),
-                ],
-              )
+            ? _buildUploadPlaceholderContent(context)
             : Stack(
                 children: [
                   ClipRRect(
@@ -169,6 +217,42 @@ class PreInvoiceStep4View extends StatelessWidget {
                 ],
               ),
       ),
+    );
+  }
+
+  Widget _buildUploadPlaceholderContent(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 14),
+        RtcImage(image: "$baseImage/featured-icon.svg", width: 32, height: 32),
+        const SizedBox(height: 12),
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: S.current.clickToUpload.split('بارگذاری عکس')[0]),
+              TextSpan(
+                text: 'بارگذاری عکس ',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                  color: AppColors.brandPalette.shade600,
+                ),
+              ),
+              TextSpan(text: S.current.clickToUpload.split('بارگذاری عکس')[1]),
+            ],
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.grayPalette.shade700,
+            ),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          S.current.uploadFormatInfo,
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: AppColors.grayPalette.shade600,
+          ),
+        ),
+      ],
     );
   }
 }
