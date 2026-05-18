@@ -105,7 +105,7 @@
   "optionalDocuments": "مدارک اختیاری",
   "clickToUpload": "برای بارگذاری عکس اینجا را کلیک کنید.",
   "uploadFormatInfo": "فرمت فایل: PNG, JPG | حداکثر حجم: ۱۰۰ KB",
-  "addWithPlus": "افزودن +",
+  "add": "افزودن ",
   "otherDocumentsLabel": "سایر مدارک {index}",
   "@otherDocumentsLabel": {
     "placeholders": {

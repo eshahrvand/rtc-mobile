@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'pre_invoice_document_item.dart';
@@ -54,19 +55,6 @@ class PreInvoiceStep4View extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (state.optionalDocPaths.isNotEmpty)
-                          GestureDetector(
-                            onTap: () => cubit.pickOptionalDoc(),
-                            child: Text(
-                              S.current.addWithPlus,
-                              style: theme.bodyLarge!.copyWith(
-                                color: AppColors.brandPalette.shade600,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          )
-                        else
-                          const SizedBox.shrink(),
                         Text(
                           S.current.optionalDocuments,
                           style: theme.labelLarge!.copyWith(
@@ -74,6 +62,19 @@ class PreInvoiceStep4View extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                        if (state.optionalDocPaths.isNotEmpty)
+                          RtcTextButton(
+                            onPressed: () => cubit.pickOptionalDoc(),
+                            title: S.current.add,
+                            leftIcon: "$baseImage/plus.svg",
+                            leftIconColor: AppColors.brandPalette.shade600,
+                            styleBtn: theme.labelLarge!.copyWith(
+                              color: AppColors.brandPalette.shade600,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
                       ],
                     ),
                     const SizedBox(height: 12),

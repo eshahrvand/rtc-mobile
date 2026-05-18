@@ -104,7 +104,7 @@
   "optionalDocuments": "",
   "clickToUpload": "",
   "uploadFormatInfo": "",
-  "addWithPlus": "",
+  "add": "",
   "otherDocumentsLabel": "{index}",
   "@otherDocumentsLabel": {
     "placeholders": {

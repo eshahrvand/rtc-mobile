@@ -32,9 +32,44 @@ class PreInvoiceDocumentItem extends StatelessWidget {
       child: Row(
         spacing: 14,
         children: [
-          // Actions on the left (RTL)
+          // Icon on the right (first in RTL Row)
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.brandPalette.shade50,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: RtcImage(
+              image: '$baseImage/featured-icon.svg',
+              width: 32,
+              height: 32,
+            ),
+          ),
+          // Text content in the middle
+          Expanded(
+            child: Column(
+              spacing: 3,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grayPalette.shade900,
+                  ),
+                ),
+                Text(
+                  fileName,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Actions on the left (last in RTL Row)
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 fileSize,
@@ -65,33 +100,6 @@ class PreInvoiceDocumentItem extends StatelessWidget {
                 ],
               ),
             ],
-          ),
-          const Spacer(),
-
-          Column(
-            spacing: 3,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                title,
-                style: theme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.grayPalette.shade900,
-                ),
-              ),
-              Text(
-                fileName,
-                style: theme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade600,
-                ),
-              ),
-            ],
-          ),
-
-          RtcImage(
-            image: '$baseImage/featured-icon.svg',
-            width: 32,
-            height: 32,
           ),
         ],
       ),
