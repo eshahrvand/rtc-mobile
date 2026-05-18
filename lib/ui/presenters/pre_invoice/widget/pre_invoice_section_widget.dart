@@ -28,8 +28,7 @@ class PreInvoiceSectionWidget extends StatelessWidget {
           child: Row(
             spacing: 4,
             children: [
-              if (trailing != null) trailing!,
-              const Spacer(),
+              icon,
               Text(
                 title,
                 style: theme.labelLarge!.copyWith(
@@ -37,13 +36,19 @@ class PreInvoiceSectionWidget extends StatelessWidget {
                   color: AppColors.grayPalette.shade900,
                 ),
               ),
-              icon,
+              const Spacer(),
+              if (trailing != null) trailing!,
             ],
           ),
         ),
         if (showDivider)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.only(
+              top: 8,
+              bottom: 8,
+              right: 16,
+              left: 16,
+            ),
             child: RtcDivider(
               color: AppColors.grayPalette.shade900,
               height: 0.5,

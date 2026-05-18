@@ -26,7 +26,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                     PreInvoiceSectionWidget(
                       title: S.current.creditPlanTitle,
                       icon: RtcImage(
-                        image: '$baseImage/package-check.svg',
+                        image: '$baseImage/referee-card.svg',
                         width: 20,
                         height: 20,
                       ),
@@ -35,7 +35,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                     PreInvoiceSectionWidget(
                       title: S.current.productsTitle,
                       icon: RtcImage(
-                        image: '$baseImage/package-check.svg',
+                        image: '$baseImage/package-check-tab.svg',
                         width: 20,
                         height: 20,
                       ),
@@ -63,7 +63,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                     PreInvoiceSectionWidget(
                       title: S.current.uploadedDocumentsTitle,
                       icon: RtcImage(
-                        image: '$baseImage/document-list-check.svg',
+                        image: '$baseImage/papers-text-tab.svg',
                         width: 20,
                         height: 20,
                       ),
@@ -95,17 +95,11 @@ class PreInvoiceStep5View extends StatelessWidget {
   Widget _buildEditButton(VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.brandPalette.shade600),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Icon(
-          Icons.edit_outlined,
-          size: 16,
-          color: AppColors.brandPalette.shade600,
-        ),
+      child: RtcImage(
+        image: "$baseImage/edit.svg",
+        width: 20,
+        height: 20,
+        color: AppColors.brandPalette.shade600,
       ),
     );
   }
