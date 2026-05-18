@@ -13,6 +13,7 @@ class PreInvoiceStep5View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
@@ -30,7 +31,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         width: 20,
                         height: 20,
                       ),
-                      child: _buildCreditPlanInfo(state),
+                      child: _buildCreditPlanInfo(state, theme),
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.productsTitle,
@@ -58,7 +59,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                       trailing: _buildEditButton(
                         () => cubit.goToStep(PreInvoiceStep.customerInfo),
                       ),
-                      child: _buildCustomerInfo(state),
+                      child: _buildCustomerInfo(state, theme),
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.uploadedDocumentsTitle,
@@ -79,7 +80,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         width: 20,
                         height: 20,
                       ),
-                      child: _buildFinancialSummary(state),
+                      child: _buildFinancialSummary(state, theme),
                     ),
                     const SizedBox(height: 32),
                   ],
@@ -104,7 +105,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildCreditPlanInfo(PreInvoiceState state) {
+  Widget _buildCreditPlanInfo(PreInvoiceState state, TextTheme theme) {
     final plan = state.creditPlans.firstWhere(
       (p) => p.id == state.selectedCreditPlanId,
       orElse: () => state.creditPlans.first,
@@ -113,14 +114,19 @@ class PreInvoiceStep5View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildInfoRow(S.current.providerLabel, plan.providerName),
-          _buildInfoRow(S.current.planNameLabel, plan.planName),
+          _buildInfoRow(S.current.providerLabel, plan.providerName, theme),
+          _buildInfoRow(S.current.planNameLabel, plan.planName, theme),
           _buildInfoRow(
             S.current.priceIncreaseLabel,
             '۱۵٪',
+            theme,
             valueColor: Colors.blue,
           ),
-          _buildInfoRow(S.current.validityPeriodLabel, plan.validityDuration),
+          _buildInfoRow(
+            S.current.validityPeriodLabel,
+            plan.validityDuration,
+            theme,
+          ),
         ],
       ),
     );
@@ -213,18 +219,18 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomerInfo(PreInvoiceState state) {
+  Widget _buildCustomerInfo(PreInvoiceState state, TextTheme theme) {
     final info = state.customerInfo!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildInfoRow(S.current.nameLabel, info.firstName),
-          _buildInfoRow(S.current.phoneNumberLabel, info.phoneNumber),
-          _buildInfoRow(S.current.nationalCodeLabel, info.nationalId),
-          _buildInfoRow(S.current.postalCodeLabel, info.postalCode),
-          _buildInfoRow(S.current.addressLabel, ''),
+          _buildInfoRow(S.current.nameLabel, info.firstName, theme),
+          _buildInfoRow(S.current.phoneNumberLabel, info.phoneNumber, theme),
+          _buildInfoRow(S.current.nationalCodeLabel, info.nationalId, theme),
+          _buildInfoRow(S.current.postalCodeLabel, info.postalCode, theme),
+          _buildInfoRow(S.current.addressLabel, '', theme),
           Text(
             info.address,
             textAlign: TextAlign.right,
@@ -305,7 +311,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildFinancialSummary(PreInvoiceState state) {
+  Widget _buildFinancialSummary(PreInvoiceState state, TextTheme theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -313,11 +319,13 @@ class PreInvoiceStep5View extends StatelessWidget {
           _buildInfoRow(
             '${S.current.totalBasePrice} (۳ ${S.current.products})',
             '۱۴,۴۹۰,۰۰۰',
+            theme,
           ),
-          _buildInfoRow(S.current.totalDiscounts, '۴۹۰,۰۰۰'),
+          _buildInfoRow(S.current.totalDiscounts, '۴۹۰,۰۰۰', theme),
           _buildInfoRow(
             S.current.payableAmount,
             '۱۴,۰۰۰,۰۰۰',
+            theme,
             isBold: true,
             valueColor: Colors.blue,
           ),
@@ -328,7 +336,8 @@ class PreInvoiceStep5View extends StatelessWidget {
 
   Widget _buildInfoRow(
     String label,
-    String value, {
+    String value,
+    TextTheme theme, {
     Color? valueColor,
     bool isBold = false,
   }) {
@@ -338,14 +347,18 @@ class PreInvoiceStep5View extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: valueColor ?? Colors.black,
+            label,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.grayPalette.shade600,
             ),
           ),
-          Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+          Text(
+            value,
+            style: theme.labelMedium!.copyWith(
+              color: AppColors.grayPalette.shade900,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
