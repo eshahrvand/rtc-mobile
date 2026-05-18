@@ -1,6 +1,9 @@
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../widget/rtc_button.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -10,6 +13,7 @@ class PreInvoiceStep4View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
@@ -20,21 +24,24 @@ class PreInvoiceStep4View extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       S.current.mandatoryDocument,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: theme.labelLarge!.copyWith(
+                        color: AppColors.grayPalette.shade900,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Text(
                       S.current.nationalCardFront,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 6),
                     _buildUploadBox(
                       context,
                       path: state.mandatoryDocPath,
@@ -44,12 +51,12 @@ class PreInvoiceStep4View extends StatelessWidget {
                     const SizedBox(height: 32),
                     Text(
                       S.current.optionalDocuments,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: theme.labelLarge!.copyWith(
+                        color: AppColors.grayPalette.shade900,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _buildUploadBox(
                       context,
                       path: state.optionalDocPath,
@@ -83,50 +90,55 @@ class PreInvoiceStep4View extends StatelessWidget {
     return GestureDetector(
       onTap: path == null ? onTap : null,
       child: Container(
-        height: 180,
+        height: 140,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          color: AppColors.grayPalette.shade25,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
         ),
         child: path == null
             ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.image_outlined, color: Colors.blue),
+                  SizedBox(height: 14),
+                  RtcImage(
+                    image: "$baseImage/featured-icon.svg",
+                    width: 32,
+                    height: 32,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: S.current.clickToUpload.split('اینجا')[0],
+                          text: S.current.clickToUpload.split(
+                            'بارگذاری عکس',
+                          )[0],
                         ),
                         TextSpan(
-                          text: 'اینجا ',
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          text: 'بارگذاری عکس ',
+                          style: Theme.of(context).textTheme.labelMedium!
+                              .copyWith(color: AppColors.brandPalette.shade600),
                         ),
                         TextSpan(
-                          text: S.current.clickToUpload.split('اینجا')[1],
+                          text: S.current.clickToUpload.split(
+                            'بارگذاری عکس',
+                          )[1],
                         ),
                       ],
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Text(
                     S.current.uploadFormatInfo,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
                   ),
                 ],
               )
@@ -151,21 +163,14 @@ class PreInvoiceStep4View extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    bottom: 12,
-                    left: 12,
+                    bottom: 4,
+                    left: 4,
                     child: GestureDetector(
                       onTap: onRemove,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                          size: 20,
-                        ),
+                      child: RtcImage(
+                        image: "$baseImage/delete-image.svg",
+                        width: 20,
+                        height: 20,
                       ),
                     ),
                   ),
