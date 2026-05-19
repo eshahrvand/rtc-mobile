@@ -155,114 +155,109 @@ class PreInvoiceStep5View extends StatelessWidget {
     PreInvoiceCubit cubit,
   ) {
     return Container(
+      height: 90,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grayPalette.shade200, width: 0.5),
-      ),
+
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
       child: Row(
         children: [
-          // Left Side: Counter (from rtc_pre_invoice_product_item theme)
-          _buildCounter(
-            item.quantity,
-            () => cubit.increaseQuantity(item.productId),
-            () => cubit.removeFromCart(item.productId),
-          ),
-          const Spacer(),
-          // Middle Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  product.name,
-                  textAlign: TextAlign.right,
-                  style: theme.labelMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.grayPalette.shade800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  product.isAvailable
-                      ? 'موجودی (${product.inventory})'
-                      : 'ناموجود',
-                  style: theme.labelSmall!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: product.isAvailable
-                        ? AppColors.successPalette.shade600
-                        : AppColors.errorPalette.shade600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (product.discount != null)
-                      RtcDiscountBadge(
-                        discount: product.discount!,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                      ),
-                    if (product.oldPrice != null) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        product.oldPrice!,
-                        style: theme.bodySmall!.copyWith(
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.lineThrough,
-                          color: AppColors.grayPalette.shade400,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      S.current.toman,
-                      style: theme.bodySmall!.copyWith(
-                        color: AppColors.grayPalette.shade600,
-                        fontSize: 10,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      product.price,
-                      style: theme.labelLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.grayPalette.shade900,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Right Side: Image
           Container(
             width: 80,
             height: 80,
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.grayPalette.shade100),
-              borderRadius: BorderRadius.circular(8),
-            ),
+
             child: RtcImage(image: product.imageUrl, boxFit: BoxFit.contain),
+          ),
+          const SizedBox(width: 10),
+          // Middle Content
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                product.name,
+                textAlign: TextAlign.right,
+                style: theme.labelMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.grayPalette.shade800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                product.isAvailable
+                    ? 'موجودی (${product.inventory})'
+                    : 'ناموجود',
+                style: theme.labelSmall!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: product.isAvailable
+                      ? AppColors.successPalette.shade600
+                      : AppColors.errorPalette.shade600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (product.oldPrice != null) ...[
+                    const SizedBox(width: 8),
+                    Text(
+                      product.oldPrice!,
+                      style: theme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.lineThrough,
+                        color: AppColors.grayPalette.shade400,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                  ],
+                  if (product.discount != null)
+                    RtcDiscountBadge(
+                      discount: product.discount!,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                spacing: 4,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    product.price,
+                    style: theme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.grayPalette.shade900,
+                    ),
+                  ),
+                  Text(
+                    S.current.toman,
+                    style: theme.bodySmall!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const Spacer(),
+
+          _buildCounter(
+            item.quantity,
+            () => cubit.increaseQuantity(item.productId),
+            () => cubit.removeFromCart(item.productId),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCounter(int quantity, VoidCallback onAdd, VoidCallback onRemove) {
+  Widget _buildCounter(
+    int quantity,
+    VoidCallback onAdd,
+    VoidCallback onRemove,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -290,10 +285,9 @@ class PreInvoiceStep5View extends StatelessWidget {
           GestureDetector(
             onTap: onRemove,
             child: RtcImage(
-              image:
-                  quantity == 1
-                      ? "$baseImage/delete.svg"
-                      : "$baseImage/remove.svg",
+              image: quantity == 1
+                  ? "$baseImage/delete.svg"
+                  : "$baseImage/remove.svg",
               width: 16,
               height: 16,
               color: quantity == 1 ? AppColors.errorPalette.shade600 : null,
