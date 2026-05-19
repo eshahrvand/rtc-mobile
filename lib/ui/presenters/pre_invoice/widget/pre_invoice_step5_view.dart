@@ -49,7 +49,8 @@ class PreInvoiceStep5View extends StatelessWidget {
                         () => cubit.enterEditMode(PreInvoiceStep.products),
                       ),
                       child: Column(
-                        children: state.cartItems.map((item) {
+                        children: state.cartItems.asMap().entries.map((entry) {
+                          final item = entry.value;
                           final product = state.allProducts.firstWhere(
                             (p) => p.id == item.productId,
                             orElse: () => PreInvoiceProductModel(
@@ -60,7 +61,25 @@ class PreInvoiceStep5View extends StatelessWidget {
                               inventory: '0',
                             ),
                           );
-                          return _buildProductItem(item, product, theme, cubit);
+                          return Column(
+                            children: [
+                              _buildProductItem(item, product, theme, cubit),
+                              if (entry.key != state.cartItems.length - 1) ...[
+                                const SizedBox(height: 7),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 16,
+                                    right: 16,
+                                  ),
+                                  child: RtcDivider(
+                                    color: AppColors.grayPalette.shade200,
+                                    height: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 7),
+                              ],
+                            ],
+                          );
                         }).toList(),
                       ),
                     ),
