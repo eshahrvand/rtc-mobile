@@ -297,8 +297,14 @@ class PreInvoiceStep5View extends StatelessWidget {
             '${S.current.totalBasePrice} (۳ ${S.current.products})',
             '۱۴,۴۹۰,۰۰۰',
             theme,
+            isPrice: true,
           ),
-          _buildInfoRow(S.current.totalDiscounts, '۴۹۰,۰۰۰', theme),
+          _buildInfoRow(
+            S.current.totalDiscounts,
+            '۴۹۰,۰۰۰',
+            theme,
+            isPrice: true,
+          ),
 
           RtcDivider(
             height: 0.5,
@@ -310,6 +316,7 @@ class PreInvoiceStep5View extends StatelessWidget {
             '۱۴,۰۰۰,۰۰۰',
             theme,
             isBold: true,
+            isPrice: true,
             valueColor: Colors.blue,
           ),
         ],
@@ -323,6 +330,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     TextTheme theme, {
     Color? valueColor,
     bool isBold = false,
+    bool isPrice = false,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -335,12 +343,28 @@ class PreInvoiceStep5View extends StatelessWidget {
               color: AppColors.grayPalette.shade600,
             ),
           ),
-          Text(
-            value,
-            style: theme.labelMedium!.copyWith(
-              color: valueColor ?? AppColors.grayPalette.shade900,
-              fontWeight: FontWeight.w600,
-            ),
+
+          Row(
+            mainAxisSize: MainAxisSize.min,
+
+            children: [
+              Text(
+                value,
+                style: theme.labelMedium!.copyWith(
+                  color: valueColor ?? AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (isPrice) ...[
+                SizedBox(width: 4),
+                Text(
+                  S.current.toman,
+                  style: theme.bodySmall!.copyWith(
+                    color: valueColor ?? AppColors.grayPalette.shade700,
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),

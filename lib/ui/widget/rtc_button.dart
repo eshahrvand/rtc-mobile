@@ -165,7 +165,7 @@ class _RtcButtonState extends State<RtcButton> {
               borderRadius: BorderRadius.circular(8),
               side: BorderSide(
                 color: active
-                    ? AppColors.brandPalette.shade600
+                    ? widget.borderColor ??  AppColors.brandPalette.shade600
                     : AppColors.grayPalette.shade200,
                 width: 1,
               ),

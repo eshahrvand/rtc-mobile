@@ -139,21 +139,26 @@ class PreInvoiceView extends StatelessWidget {
           boxShadow: AppColors.secondaryShadow,
         ),
         child: Row(
+          spacing: 12,
           children: [
-            Expanded(
-              child: RtcButton(
-                title: S.current.save,
-                onPressed: () => cubit.exitEditMode(),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: RtcButton(
                 title: S.current.back,
                 backgroundColor: AppColors.grayPalette.shade50,
-                styleBtn: TextStyle(
-                  color: AppColors.grayPalette.shade600,
-                  fontWeight: FontWeight.bold,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.grayPalette.shade700,
+                ),
+                onPressed: () => cubit.exitEditMode(),
+                borderColor: AppColors.grayPalette.shade300,
+              ),
+            ),
+            Expanded(
+              child: RtcButton(
+                title: S.current.save,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
                 onPressed: () => cubit.exitEditMode(),
               ),
@@ -171,23 +176,29 @@ class PreInvoiceView extends StatelessWidget {
           boxShadow: AppColors.secondaryShadow,
         ),
         child: Row(
+          spacing: 12,
           children: [
-            Expanded(
-              child: RtcButton(
-                title: S.current.submitAndClearCart,
-                onPressed: () => cubit.submitAndClear(),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: RtcButton(
                 title: S.current.submitPreInvoice,
                 backgroundColor: AppColors.brandPalette.shade50,
-                styleBtn: TextStyle(
-                  color: AppColors.brandPalette.shade600,
-                  fontWeight: FontWeight.bold,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.brandPalette.shade700,
                 ),
+
                 onPressed: () => cubit.submitPreInvoice(),
+                borderColor: AppColors.brandPalette.shade50,
+              ),
+            ),
+            Expanded(
+              child: RtcButton(
+                title: S.current.submitAndClearCart,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                onPressed: () => cubit.submitAndClear(),
               ),
             ),
           ],
