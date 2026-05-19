@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../router/app_route.dart';
 import '../../../widget/rtc_chip_list.dart';
-import '../../../widget/rtc_order_item.dart';
+import 'rtc_order_item.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/order_model.dart';
 import '../bloc/orders_cubit.dart';

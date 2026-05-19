@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
-import '../../config/config.dart';
-import '../../data/models/order_model.dart';
-import '../../generated/l10n.dart';
-import '../theme/colors.dart';
-import 'rtc_image.dart';
+
+import '../../../../config/config.dart';
+import '../../../../data/models/order_model.dart';
+import '../../../../generated/l10n.dart';
+import '../../../theme/colors.dart';
+import '../../../widget/rtc_image.dart';
+
 
 class RtcOrderItem extends StatelessWidget {
   final OrderSummaryModel order;

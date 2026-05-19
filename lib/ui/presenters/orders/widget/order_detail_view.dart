@@ -44,14 +44,18 @@ class OrderDetailView extends StatelessWidget {
               ),
             ],
           ),
+          // Order detail body
           body: Column(
             children: [
+              // Order validity header
               _buildValidityHeader(context, order),
+              // Tab bar
               RtcTabBar(
                 tabs: const ['جزییات سفارش', 'اطلاعات مالی', 'تاریخچه'],
                 selectedIndex: state.selectedTabIndex,
                 onTabChanged: (index) => cubit.onTabChanged(index),
               ),
+              // Order content tabs
               Expanded(
                 child: IndexedStack(
                   index: state.selectedTabIndex,

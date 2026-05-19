@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
-import '../../router/app_route.dart';
 import '../../widget/rtc_image.dart';
 import '../../widget/rtc_chip_list.dart';
-import '../../widget/rtc_order_item.dart';
 import '../../widget/rtc_search_appbar.dart';
 import '../../../../data/models/product_chip_model.dart';
-import '../../../../data/models/order_model.dart';
 import 'bloc/orders_cubit.dart';
 import 'bloc/orders_state.dart';
+import 'widget/orders_list_widget.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -76,27 +73,11 @@ class OrdersView extends StatelessWidget {
             body: Column(
               children: [
                 const SizedBox(height: 16),
+                // Filter badges
                 _buildBadgeList(context, state),
                 const SizedBox(height: 8),
-                Expanded(
-                  child: state.status == OrdersRequestStatus.loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          itemCount: state.filteredOrders.length,
-                          itemBuilder: (context, index) {
-                            final OrderSummaryModel order =
-                                state.filteredOrders[index];
-                            return RtcOrderItem(
-                              order: order,
-                              onTap: () {
-                                cubit.onOrderTapped(order);
-                                context.push(AppRoutes.orderDetail,
-                                    extra: cubit);
-                              },
-                            );
-                          },
-                        ),
-                ),
+                // Orders list view
+                const Expanded(child: OrdersListWidget()),
               ],
             ),
           );
