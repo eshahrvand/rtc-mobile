@@ -53,5 +53,7 @@ class PreInvoiceState with _$PreInvoiceState {
     // Step 4 — Documents
     String? mandatoryDocPath,
     @Default([]) List<String> optionalDocPaths,
+
+    @Default(false) bool isEditMode,
   }) = _PreInvoiceState;
 }

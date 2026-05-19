@@ -104,7 +104,15 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void goToStep(PreInvoiceStep step) {
-    emit(state.copyWith(currentStep: step));
+    emit(state.copyWith(currentStep: step, isEditMode: false));
+  }
+
+  void enterEditMode(PreInvoiceStep step) {
+    emit(state.copyWith(currentStep: step, isEditMode: true));
+  }
+
+  void exitEditMode() {
+    emit(state.copyWith(currentStep: PreInvoiceStep.review, isEditMode: false));
   }
 
   void onCreditPlanSelected(String id) {

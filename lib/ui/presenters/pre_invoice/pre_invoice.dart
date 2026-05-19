@@ -49,7 +49,6 @@ class PreInvoiceView extends StatelessWidget {
               context.go(AppRoutes.orderDetail);
             }
             if (state.status == PreInvoiceRequestStatus.submittedAndCleared) {
-              // Behavior defined by developer - assuming pop for now
               context.pop();
             }
           },
@@ -59,10 +58,6 @@ class PreInvoiceView extends StatelessWidget {
           listener: (context, state) {
             if (state.isCartVisible) {
               _showCartBottomSheet(context);
-            } else {
-              // Bottom sheet usually handles its own closing,
-              // but if triggered by state we might need Navigator.pop(context)
-              // if it's currently open.
             }
           },
         ),
@@ -74,9 +69,13 @@ class PreInvoiceView extends StatelessWidget {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: RtcAppBar(
-              title: S.current.releaseFactor,
+              title: state.isEditMode
+                  ? _getEditTitle(state.currentStep)
+                  : S.current.releaseFactor,
               onBack: () {
-                if (state.currentStep == PreInvoiceStep.creditPlan) {
+                if (state.isEditMode) {
+                  cubit.exitEditMode();
+                } else if (state.currentStep == PreInvoiceStep.creditPlan) {
                   context.pop();
                 } else {
                   final prevStep =
@@ -84,16 +83,15 @@ class PreInvoiceView extends StatelessWidget {
                   cubit.goToStep(prevStep);
                 }
               },
-              backIconPath: state.currentStep == PreInvoiceStep.creditPlan
+              backIconPath: (state.currentStep == PreInvoiceStep.creditPlan &&
+                      !state.isEditMode)
                   ? '$baseImage/close.svg'
                   : '$baseImage/angle-right.svg',
             ),
             body: Column(
               children: [
-                BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
-                  buildWhen: (prev, curr) =>
-                      prev.currentStep != curr.currentStep,
-                  builder: (context, state) => RtcStepIndicator(
+                if (!state.isEditMode)
+                  RtcStepIndicator(
                     totalSteps: 5,
                     currentStepIndex: state.currentStep.index,
                     stepLabels: [
@@ -104,26 +102,8 @@ class PreInvoiceView extends StatelessWidget {
                       S.current.reviewAndSubmit,
                     ],
                   ),
-                ),
                 Expanded(
-                  child: BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
-                    buildWhen: (prev, curr) =>
-                        prev.currentStep != curr.currentStep,
-                    builder: (context, state) {
-                      switch (state.currentStep) {
-                        case PreInvoiceStep.creditPlan:
-                          return const PreInvoiceStep1View();
-                        case PreInvoiceStep.products:
-                          return const PreInvoiceStep2View();
-                        case PreInvoiceStep.customerInfo:
-                          return const PreInvoiceStep3View();
-                        case PreInvoiceStep.documents:
-                          return const PreInvoiceStep4View();
-                        case PreInvoiceStep.review:
-                          return const PreInvoiceStep5View();
-                      }
-                    },
-                  ),
+                  child: _buildStepView(state.currentStep),
                 ),
                 _buildBottomButtons(context, state, cubit),
               ],
@@ -134,11 +114,56 @@ class PreInvoiceView extends StatelessWidget {
     );
   }
 
+  String _getEditTitle(PreInvoiceStep step) {
+    switch (step) {
+      case PreInvoiceStep.products:
+        return S.current.editProductsTitle;
+      case PreInvoiceStep.customerInfo:
+        return S.current.editCustomerInfoTitle;
+      case PreInvoiceStep.documents:
+        return S.current.editDocumentsTitle;
+      default:
+        return '';
+    }
+  }
+
   Widget _buildBottomButtons(
     BuildContext context,
     PreInvoiceState state,
     PreInvoiceCubit cubit,
   ) {
+    if (state.isEditMode) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: AppColors.secondaryShadow,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: RtcButton(
+                title: S.current.save,
+                onPressed: () => cubit.exitEditMode(),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: RtcButton(
+                title: S.current.back,
+                backgroundColor: AppColors.grayPalette.shade50,
+                styleBtn: TextStyle(
+                  color: AppColors.grayPalette.shade600,
+                  fontWeight: FontWeight.bold,
+                ),
+                onPressed: () => cubit.exitEditMode(),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (state.currentStep == PreInvoiceStep.review) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -211,9 +236,9 @@ class PreInvoiceView extends StatelessWidget {
               child: RtcButton(
                 title: title,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                 isActive: isActive,
                 onPressed: onPressed,
               ),

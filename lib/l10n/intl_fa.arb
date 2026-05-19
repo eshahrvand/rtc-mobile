@@ -123,5 +123,10 @@
   "totalAmount": "جمع کل",
   "statusDone": "انجام شده",
   "preInvoiceValidityDuration": "مدت اعتبار پیش‌فاکتور",
-  "nationalIdWrong": "کد ملی وارد شده صحیح نمی‌باشد."
+  "nationalIdWrong": "کد ملی وارد شده صحیح نمی‌باشد.",
+  "editProductsTitle": "ویرایش کالاها",
+  "editCustomerInfoTitle": "ویرایش اطلاعات مشتری",
+  "editDocumentsTitle": "ویرایش مدارک مشتری",
+  "save": "ثبت",
+  "back": "بازگشت"
 }

@@ -41,7 +41,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         height: 20,
                       ),
                       trailing: _buildEditButton(
-                        () => cubit.goToStep(PreInvoiceStep.products),
+                        () => cubit.enterEditMode(PreInvoiceStep.products),
                       ),
                       child: Column(
                         children: state.cartItems
@@ -57,7 +57,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         height: 20,
                       ),
                       trailing: _buildEditButton(
-                        () => cubit.goToStep(PreInvoiceStep.customerInfo),
+                        () => cubit.enterEditMode(PreInvoiceStep.customerInfo),
                       ),
                       child: _buildCustomerInfo(state, theme),
                     ),
@@ -69,7 +69,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         height: 20,
                       ),
                       trailing: _buildEditButton(
-                        () => cubit.goToStep(PreInvoiceStep.documents),
+                        () => cubit.enterEditMode(PreInvoiceStep.documents),
                       ),
                       child: _buildDocuments(state),
                     ),

@@ -123,5 +123,10 @@
   "statusDone": "",
   "preInvoiceValidityDuration": "",
   "nationalCodeLabelWithStar": "",
-  "nationalIdWrong": ""
+  "nationalIdWrong": "",
+  "editProductsTitle": "",
+  "editCustomerInfoTitle": "",
+  "editDocumentsTitle": "",
+  "save": "",
+  "back": ""
 }
