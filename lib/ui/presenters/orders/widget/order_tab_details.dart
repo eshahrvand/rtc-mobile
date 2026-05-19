@@ -8,10 +8,10 @@ import '../../../../generated/l10n.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
-import 'order_details_credit_plan_info.dart';
+import 'order_details_credit_plan_widget.dart';
 import 'order_details_customer_info.dart';
 import 'order_details_document_item.dart';
-import 'order_details_product_item.dart';
+import 'order_details_products_widget.dart';
 
 class OrderTabDetails extends StatelessWidget {
   final OrderDetailModel order;
@@ -27,57 +27,8 @@ class OrderTabDetails extends StatelessWidget {
         return SingleChildScrollView(
           child: Column(
             children: [
-              RtcCollapsibleSection(
-                title: S.current.creditPlanTitle,
-                icon: RtcImage(
-                  image: '$baseImage/referee-card.svg',
-                  width: 18,
-                  height: 18,
-                  color: AppColors.grayPalette.shade700,
-                ),
-                isExpanded: state.isCreditPlanExpanded,
-                onToggle: () => cubit.toggleCreditPlan(),
-                trailing: RtcImage(
-                  image: state.isCreditPlanExpanded
-                      ? "$baseImage/arrow_up_tab.svg"
-                      : "$baseImage/angle-down_tab.svg",
-                  width: 24,
-                  height: 24,
-                  color: AppColors.grayPalette.shade600,
-                ),
-                child: order.creditPlan == null
-                    ? Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(S.current.noPlanSelected),
-                      )
-                    : OrderDetailsCreditPlanInfo(plan: order.creditPlan!),
-              ),
-
-              RtcCollapsibleSection(
-                title: S.current.products,
-                icon: RtcImage(
-                  image: '$baseImage/package-check-tab.svg',
-                  width: 18,
-                  height: 18,
-                  color: AppColors.grayPalette.shade700,
-                ),
-                isExpanded: state.isProductsExpanded,
-                onToggle: () => cubit.toggleProducts(),
-                trailing: RtcImage(
-                  image: state.isProductsExpanded
-                      ? "$baseImage/arrow_up_tab.svg"
-                      : "$baseImage/angle-down_tab.svg",
-                  width: 24,
-                  height: 24,
-                  color: AppColors.grayPalette.shade600,
-                ),
-                child: Column(
-                  children: order.products
-                      .map((p) => OrderDetailsProductItem(product: p))
-                      .toList(),
-                ),
-              ),
-
+              OrderDetailsCreditPlanWidget(order: order),
+              OrderDetailsProductsWidget(order: order),
               RtcCollapsibleSection(
                 title: S.current.customerInfo,
                 icon: RtcImage(
