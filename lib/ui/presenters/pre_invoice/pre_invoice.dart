@@ -83,7 +83,8 @@ class PreInvoiceView extends StatelessWidget {
                   cubit.goToStep(prevStep);
                 }
               },
-              backIconPath: (state.currentStep == PreInvoiceStep.creditPlan &&
+              backIconPath:
+                  (state.currentStep == PreInvoiceStep.creditPlan &&
                       !state.isEditMode)
                   ? '$baseImage/close.svg'
                   : '$baseImage/angle-right.svg',
@@ -102,9 +103,7 @@ class PreInvoiceView extends StatelessWidget {
                       S.current.reviewAndSubmit,
                     ],
                   ),
-                Expanded(
-                  child: _buildStepView(state.currentStep),
-                ),
+                Expanded(child: _buildStepView(state.currentStep)),
                 _buildBottomButtons(context, state, cubit),
               ],
             ),
@@ -236,9 +235,9 @@ class PreInvoiceView extends StatelessWidget {
               child: RtcButton(
                 title: title,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
                 isActive: isActive,
                 onPressed: onPressed,
               ),

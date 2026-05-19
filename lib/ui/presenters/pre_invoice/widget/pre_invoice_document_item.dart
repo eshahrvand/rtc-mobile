@@ -9,6 +9,7 @@ class PreInvoiceDocumentItem extends StatelessWidget {
   final String fileSize;
   final VoidCallback onDelete;
   final VoidCallback onView;
+  final bool showDeleteButton;
 
   const PreInvoiceDocumentItem({
     super.key,
@@ -17,6 +18,7 @@ class PreInvoiceDocumentItem extends StatelessWidget {
     required this.fileSize,
     required this.onDelete,
     required this.onView,
+    this.showDeleteButton = true,
   });
 
   @override
@@ -81,14 +83,15 @@ class PreInvoiceDocumentItem extends StatelessWidget {
               Row(
                 spacing: 12,
                 children: [
-                  GestureDetector(
-                    onTap: onDelete,
-                    child: RtcImage(
-                      image: '$baseImage/delete.svg',
-                      width: 18,
-                      height: 18,
+                  if (showDeleteButton)
+                    GestureDetector(
+                      onTap: onDelete,
+                      child: RtcImage(
+                        image: '$baseImage/delete.svg',
+                        width: 18,
+                        height: 18,
+                      ),
                     ),
-                  ),
                   GestureDetector(
                     onTap: onView,
                     child: RtcImage(

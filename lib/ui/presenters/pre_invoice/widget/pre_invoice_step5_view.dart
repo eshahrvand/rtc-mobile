@@ -2,10 +2,12 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
+import 'pre_invoice_document_item.dart';
 import 'pre_invoice_section_widget.dart';
 
 class PreInvoiceStep5View extends StatelessWidget {
@@ -77,8 +79,9 @@ class PreInvoiceStep5View extends StatelessWidget {
                       title: S.current.financialSummaryTitle,
                       icon: RtcImage(
                         image: '$baseImage/dollar.svg',
-                        width: 20,
-                        height: 20,
+                        width: 16,
+                        height: 16,
+                        color: AppColors.grayPalette.shade700,
                       ),
                       child: _buildFinancialSummary(state, theme),
                     ),
@@ -113,6 +116,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
+        spacing: 7,
         children: [
           _buildInfoRow(S.current.providerLabel, plan.providerName, theme),
           _buildInfoRow(S.current.planNameLabel, plan.planName, theme),
@@ -120,7 +124,7 @@ class PreInvoiceStep5View extends StatelessWidget {
             S.current.priceIncreaseLabel,
             '۱۵٪',
             theme,
-            valueColor: Colors.blue,
+            valueColor: AppColors.brandPalette.shade700,
           ),
           _buildInfoRow(
             S.current.validityPeriodLabel,
@@ -224,17 +228,26 @@ class PreInvoiceStep5View extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        spacing: 7,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildInfoRow(S.current.nameLabel, info.firstName, theme),
+          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           _buildInfoRow(S.current.phoneNumberLabel, info.phoneNumber, theme),
+          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           _buildInfoRow(S.current.nationalCodeLabel, info.nationalId, theme),
+          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           _buildInfoRow(S.current.postalCodeLabel, info.postalCode, theme),
+          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           _buildInfoRow(S.current.addressLabel, '', theme),
+          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           Text(
             info.address,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+
+            style: theme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.grayPalette.shade900,
+            ),
           ),
         ],
       ),
@@ -246,12 +259,16 @@ class PreInvoiceStep5View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildDocItem(S.current.nationalCardFront, '۶ MB', true),
+          _buildDocItem(
+            S.current.nationalCardFront,
+            '۶ MB',
+            'national_card_front',
+          ),
           ...state.optionalDocPaths.asMap().entries.map((entry) {
             return _buildDocItem(
               S.current.otherDocumentsLabel(entry.key + 1),
               '۶ MB',
-              false,
+              'optional_doc_${entry.key + 1}',
             );
           }),
         ],
@@ -259,55 +276,14 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildDocItem(String title, String size, bool isMandatory) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade100),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                size,
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
-              ),
-              const SizedBox(height: 4),
-              const Icon(Icons.image_outlined, size: 16, color: Colors.blue),
-            ],
-          ),
-          const Spacer(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Text(
-                'national_card_front',
-                style: TextStyle(fontSize: 10, color: Colors.grey),
-              ),
-            ],
-          ),
-          const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.image_outlined, color: Colors.blue),
-          ),
-        ],
-      ),
+  Widget _buildDocItem(String title, String size, String fileName) {
+    return PreInvoiceDocumentItem(
+      title: title,
+      fileName: fileName,
+      fileSize: size,
+      onDelete: () {},
+      onView: () {},
+      showDeleteButton: false,
     );
   }
 
@@ -315,6 +291,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
+        spacing: 7,
         children: [
           _buildInfoRow(
             '${S.current.totalBasePrice} (۳ ${S.current.products})',
@@ -322,6 +299,12 @@ class PreInvoiceStep5View extends StatelessWidget {
             theme,
           ),
           _buildInfoRow(S.current.totalDiscounts, '۴۹۰,۰۰۰', theme),
+
+          RtcDivider(
+            height: 0.5,
+            color: AppColors.grayPalette.shade200,
+            isDashed: true,
+          ),
           _buildInfoRow(
             S.current.payableAmount,
             '۱۴,۰۰۰,۰۰۰',
@@ -355,7 +338,7 @@ class PreInvoiceStep5View extends StatelessWidget {
           Text(
             value,
             style: theme.labelMedium!.copyWith(
-              color: AppColors.grayPalette.shade900,
+              color: valueColor ?? AppColors.grayPalette.shade900,
               fontWeight: FontWeight.w600,
             ),
           ),
