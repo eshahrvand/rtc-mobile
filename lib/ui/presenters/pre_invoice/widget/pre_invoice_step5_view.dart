@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
+import '../../../widget/rtc_counter.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -169,84 +170,99 @@ class PreInvoiceStep5View extends StatelessWidget {
             child: RtcImage(image: product.imageUrl, boxFit: BoxFit.contain),
           ),
           const SizedBox(width: 10),
-          // Middle Content
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                product.name,
-                textAlign: TextAlign.right,
-                style: theme.labelMedium!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grayPalette.shade800,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                product.isAvailable
-                    ? 'موجودی (${product.inventory})'
-                    : 'ناموجود',
-                style: theme.labelSmall!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: product.isAvailable
-                      ? AppColors.successPalette.shade600
-                      : AppColors.errorPalette.shade600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  if (product.oldPrice != null) ...[
-                    const SizedBox(width: 8),
-                    Text(
-                      product.oldPrice!,
-                      style: theme.bodySmall!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.lineThrough,
-                        color: AppColors.grayPalette.shade400,
-                      ),
-                    ),
-                    SizedBox(width: 2),
-                  ],
-                  if (product.discount != null)
-                    RtcDiscountBadge(
-                      discount: product.discount!,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                spacing: 4,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    product.price,
-                    style: theme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grayPalette.shade900,
-                    ),
-                  ),
-                  Text(
-                    S.current.toman,
-                    style: theme.bodySmall!.copyWith(
-                      color: AppColors.grayPalette.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Spacer(),
 
-          _buildCounter(
-            item.quantity,
-            () => cubit.increaseQuantity(item.productId),
-            () => cubit.removeFromCart(item.productId),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.name,
+                  textAlign: TextAlign.right,
+                  style: theme.labelMedium!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.grayPalette.shade800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  product.isAvailable
+                      ? 'موجودی (${product.inventory})'
+                      : 'ناموجود',
+                  style: theme.labelSmall!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: product.isAvailable
+                        ? AppColors.successPalette.shade600
+                        : AppColors.errorPalette.shade600,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                SizedBox(
+                  height: 45,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              if (product.oldPrice != null) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  product.oldPrice!,
+                                  style: theme.bodySmall!.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    decoration: TextDecoration.lineThrough,
+                                    color: AppColors.grayPalette.shade400,
+                                  ),
+                                ),
+                                SizedBox(width: 2),
+                              ],
+                              if (product.discount != null)
+                                RtcDiscountBadge(
+                                  discount: product.discount!,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            spacing: 4,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                product.price,
+                                style: theme.labelLarge!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.grayPalette.shade900,
+                                ),
+                              ),
+                              Text(
+                                S.current.toman,
+                                style: theme.bodySmall!.copyWith(
+                                  color: AppColors.grayPalette.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      _buildCounter(
+                        item.quantity,
+                        () => cubit.increaseQuantity(item.productId),
+                        () => cubit.removeFromCart(item.productId),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
