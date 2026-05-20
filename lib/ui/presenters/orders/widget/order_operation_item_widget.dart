@@ -4,7 +4,6 @@ import '../../../../data/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_status_badge.dart';
-import 'order_clearance_otp_sheet.dart';
 import 'order_clearance_request_widget.dart';
 import 'order_upload_documents_sheet.dart';
 

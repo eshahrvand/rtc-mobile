@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
-import '../../../widget/rtc_counter.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
