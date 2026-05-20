@@ -6,6 +6,7 @@ import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_status_badge.dart';
 import 'order_clearance_otp_sheet.dart';
 import 'order_clearance_request_widget.dart';
+import 'order_upload_documents_sheet.dart';
 
 class OrderOperationItemWidget extends StatelessWidget {
   final OrderOperationModel op;
@@ -74,8 +75,7 @@ class OrderOperationItemWidget extends StatelessWidget {
                 context: context,
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
-                builder: (_) => OrderClearanceOtpSheet(
-                  phoneNumber: '۰۹۱۲*******۴۲',
+                builder: (_) => OrderUploadDocumentsSheet(
                   onConfirm: () {
                     Navigator.pop(context);
                     // Handle confirmation
