@@ -193,8 +193,8 @@ class OrdersCubit extends Cubit<OrdersState> {
               OrderOperationModel(
                 step: 1,
                 title: 'عملیات تخلیه',
-                status: 'انجام شده',
-                isCompleted: true,
+                status: order.status == 'پیش فاکتور' ? '' : 'انجام شده',
+                isCompleted: order.status != 'پیش فاکتور',
               ),
               OrderOperationModel(
                 step: 2,

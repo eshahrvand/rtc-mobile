@@ -80,9 +80,11 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                     ),
                     ...widget.order.operations.map((op) {
                       if (op.step == 2 && isWaitingSettlement) {
-                        return OrderSettlementOperationsWidget(op: op);
+                        return OrderSettlementOperationsWidget(
+                          op: op,
+                        );
                       }
-                      return OrderOperationItemWidget(op: op);
+                      return OrderOperationItemWidget(op: op );
                     }).toList(),
                   ],
                 ),
