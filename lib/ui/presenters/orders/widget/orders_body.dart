@@ -29,7 +29,8 @@ class OrdersBody extends StatelessWidget {
                   : ListView.builder(
                       itemCount: state.filteredOrders.length,
                       itemBuilder: (context, index) {
-                        final OrderSummaryModel order = state.filteredOrders[index];
+                        final OrderSummaryModel order =
+                            state.filteredOrders[index];
                         return RtcOrderItem(
                           order: order,
                           onTap: () {

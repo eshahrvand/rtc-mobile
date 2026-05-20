@@ -8,7 +8,6 @@ import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 
-
 class RtcOrderItem extends StatelessWidget {
   final OrderSummaryModel order;
   final VoidCallback onTap;

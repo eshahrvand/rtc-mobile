@@ -19,9 +19,9 @@ class SplashScreen extends StatelessWidget {
         listenWhen: (prev, curr) => prev.status != curr.status,
         listener: (context, state) {
           if (state.status == SplashStatus.tokenValid) {
-            context.go(AppRoutes.auth);
+            context.go(AppRoutes.dashboard);
           } else if (state.status == SplashStatus.tokenNotValid) {
-            context.go(AppRoutes.auth);
+            context.go(AppRoutes.dashboard);
           }
         },
         child: Scaffold(

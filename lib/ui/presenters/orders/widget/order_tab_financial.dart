@@ -9,13 +9,35 @@ import '../../../widget/rtc_collapsible_section.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
+import 'order_clearance_amount_sheet.dart';
 import 'order_operation_item_widget.dart';
 import 'order_settlement_operations_widget.dart';
 
-class OrderTabFinancial extends StatelessWidget {
+class OrderTabFinancial extends StatefulWidget {
   final OrderDetailModel order;
 
   const OrderTabFinancial({super.key, required this.order});
+
+  @override
+  State<OrderTabFinancial> createState() => _OrderTabFinancialState();
+}
+
+class _OrderTabFinancialState extends State<OrderTabFinancial> {
+  late TextEditingController _amountController;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController(
+      text: widget.order.financialSummary.finalAmount,
+    );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +45,7 @@ class OrderTabFinancial extends StatelessWidget {
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
-        final isWaitingSettlement = order.status == 'در انتظار تسویه';
+        final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
 
         return Column(
           children: [
@@ -50,13 +72,13 @@ class OrderTabFinancial extends StatelessWidget {
                         color: AppColors.grayPalette.shade600,
                       ),
                       child: _buildFinancialSummary(
-                        order.financialSummary,
-                        order.isSettled,
+                        widget.order.financialSummary,
+                        widget.order.isSettled,
                         isWaitingSettlement,
                         context,
                       ),
                     ),
-                    ...order.operations.map((op) {
+                    ...widget.order.operations.map((op) {
                       if (op.step == 2 && isWaitingSettlement) {
                         return OrderSettlementOperationsWidget(op: op);
                       }
@@ -66,7 +88,7 @@ class OrderTabFinancial extends StatelessWidget {
                 ),
               ),
             ),
-            if (order.status == 'پیش فاکتور')
+            if (widget.order.status == 'پیش فاکتور')
               Padding(
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
                 child: RtcButton(
@@ -75,7 +97,21 @@ class OrderTabFinancial extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   title: S.current.dischargeAndSettlement,
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => OrderClearanceAmountSheet(
+                        totalAmount: widget.order.financialSummary.finalAmount,
+                        amountController: _amountController,
+                        onCheckPressed: () {
+                          // Logic for checking amount will be implemented in Cubit
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
           ],
