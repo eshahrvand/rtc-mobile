@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import '../../../../config/config.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
@@ -65,7 +66,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
               child: Row(
                 children: [
                   Text(
-                    'تخلیه کارت اعتباری',
+                    S.current.clearanceOtpTitle,
                     style: theme.labelLarge!.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.grayPalette.shade900,
@@ -100,7 +101,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'کد تایید ارسال شده به شماره ${widget.phoneNumber} را وارد کنید.',
+                  S.current.otpSentToPhone(widget.phoneNumber),
                   textAlign: TextAlign.right,
                   style: theme.bodyLarge!.copyWith(
                     color: AppColors.grayPalette.shade900,
@@ -178,7 +179,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                 children: [
                   Expanded(
                     child: RtcButton(
-                      title: 'انصراف',
+                      title: S.current.cancel,
                       backgroundColor: Colors.white,
                       borderColor: AppColors.grayPalette.shade300,
                       styleBtn: theme.labelLarge!.copyWith(
@@ -191,7 +192,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: RtcButton(
-                      title: 'تایید وتخلیه کارت',
+                      title: S.current.confirmAndClearance,
                       styleBtn: theme.labelLarge!.copyWith(
                         color: AppColors.grayPalette.shade300,
                         fontWeight: FontWeight.w600,

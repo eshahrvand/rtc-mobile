@@ -42,7 +42,7 @@ class OrderClearanceRequestWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'مبلغ تخلیه',
+                      S.current.clearanceAmountLabel,
                       style: theme.bodyMedium!.copyWith(
                         color: AppColors.grayPalette.shade700,
                       ),
@@ -73,7 +73,7 @@ class OrderClearanceRequestWidget extends StatelessWidget {
               RtcDivider(color: AppColors.grayPalette.shade700, height: 1),
               const SizedBox(height: 16),
               Text(
-                'در صورت تایید اطلاعات پس از زدن گزینه درخواست کد تخلیه، کد فرستاده شده به شماره مشتری را وارد و تایید کنید.',
+                S.current.clearanceRequestInstruction,
                 textAlign: TextAlign.right,
                 style: theme.labelMedium!.copyWith(
                   color: AppColors.grayPalette.shade900,
@@ -84,7 +84,7 @@ class OrderClearanceRequestWidget extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: RtcButton(
-                  title: 'درخواست کد تخلیه',
+                  title: S.current.requestCodeButton,
                   styleBtn: theme.labelLarge!.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

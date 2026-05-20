@@ -49,7 +49,7 @@ class OrderClearanceAmountSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'مبلغ نهایی فاکتور:',
+                  S.current.finalFactorAmountLabel,
                   style: theme.bodyMedium!.copyWith(
                     color: AppColors.grayPalette.shade700,
                   ),
@@ -84,7 +84,7 @@ class OrderClearanceAmountSheet extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                'مبلغ تخلیه کارت را وارد کنید',
+                S.current.enterClearanceAmountHint,
                 style: theme.bodyLarge!.copyWith(
                   fontWeight: FontWeight.w500,
                   color: AppColors.grayPalette.shade900,
@@ -118,7 +118,7 @@ class OrderClearanceAmountSheet extends StatelessWidget {
                 ),
 
                 RtcButton(
-                  title: 'بررسی',
+                  title: S.current.checkButton,
                   onPressed: onCheckPressed,
                   height: 44,
                   width: 88,

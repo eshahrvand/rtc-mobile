@@ -128,5 +128,25 @@
   "editCustomerInfoTitle": "ویرایش اطلاعات مشتری",
   "editDocumentsTitle": "ویرایش مدارک مشتری",
   "save": "ثبت",
-  "back": "بازگشت"
+  "back": "بازگشت",
+  "finalFactorAmountLabel": "مبلغ نهایی فاکتور:",
+  "enterClearanceAmountHint": "مبلغی تخلیه کارت را وارد کنید",
+  "clearanceOtpTitle": "تخلیه کارت اعتباری",
+  "otpSentToPhone": "کد تایید ارسال شده به شماره {phoneNumber} را وارد کنید.",
+  "@otpSentToPhone": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmAndClearance": "تایید و تخلیه کارت",
+  "cancel": "انصراف",
+  "clearanceDocumentsTitle": "بارگذاری مدارک",
+  "uploadClearanceInstruction": "مستندات پرداخت را جهت بارگذاری آپلود کنید",
+  "paymentDocuments": "مدارک پرداخت",
+  "confirmAndSend": "تایید و ارسال",
+  "clearanceAmountLabel": "مبلغ تخلیه",
+  "clearanceRequestInstruction": "در صورت تایید اطلاعات پس از زدن گزینه درخواست کد تخلیه، کد فرستاده شده به شماره مشتری را وارد و تایید کنید.",
+  "requestCodeButton": "درخواست کد تخلیه"
 }

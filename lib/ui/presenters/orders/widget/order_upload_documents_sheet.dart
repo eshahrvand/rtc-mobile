@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../theme/colors.dart';
@@ -8,10 +10,7 @@ import 'order_details_document_item.dart';
 class OrderUploadDocumentsSheet extends StatelessWidget {
   final VoidCallback onConfirm;
 
-  const OrderUploadDocumentsSheet({
-    super.key,
-    required this.onConfirm,
-  });
+  const OrderUploadDocumentsSheet({super.key, required this.onConfirm});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +30,7 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
             child: Container(
               width: 33,
               height: 2,
-              decoration: BoxDecoration(
-                color: AppColors.brandPalette.shade600,
-              ),
+              decoration: BoxDecoration(color: AppColors.brandPalette.shade600),
             ),
           ),
           const SizedBox(height: 8),
@@ -42,7 +39,7 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
           Row(
             children: [
               Text(
-                'بارگذاری مدارک',
+                S.current.clearanceDocumentsTitle,
                 style: theme.labelLarge!.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.grayPalette.shade900,
@@ -51,10 +48,12 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: Icon(
-                  Icons.close,
-                  color: AppColors.grayPalette.shade800,
-                  size: 20,
+                child: RtcImage(
+                  image: "$baseImage/close.svg",
+                  width: 20,
+                  height: 20,
+                  color: AppColors.grayPalette.shade700,
+                  boxFit: BoxFit.fill,
                 ),
               ),
             ],
@@ -67,7 +66,7 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              'مستندات پرداخت را جهت بارگذاری آپلود کنید',
+              S.current.uploadClearanceInstruction,
               style: theme.bodyLarge!.copyWith(
                 color: AppColors.grayPalette.shade900,
                 fontWeight: FontWeight.w500,
@@ -79,11 +78,10 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
           // File Card
           OrderDetailsDocumentItem(
             doc: OrderDocumentModel(
-              title: 'مدارک پرداخت',
+              title: S.current.paymentDocuments,
               fileName: 'national_card_front',
               fileSize: '۱۶ MB',
               iconPath: '$baseImage/featured-icon.svg',
-
             ),
           ),
           const SizedBox(height: 32),
@@ -93,7 +91,7 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
             children: [
               Expanded(
                 child: RtcButton(
-                  title: 'تایید و ارسال',
+                  title: S.current.confirmAndSend,
                   styleBtn: theme.labelLarge!.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -104,7 +102,7 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: RtcButton(
-                  title: 'انصراف',
+                  title: S.current.cancel,
                   backgroundColor: Colors.white,
                   borderColor: AppColors.grayPalette.shade300,
                   styleBtn: theme.labelLarge!.copyWith(
@@ -121,5 +119,3 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
     );
   }
 }
-
-

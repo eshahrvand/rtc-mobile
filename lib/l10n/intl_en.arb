@@ -128,5 +128,25 @@
   "editCustomerInfoTitle": "",
   "editDocumentsTitle": "",
   "save": "",
-  "back": ""
+  "back": "",
+  "finalFactorAmountLabel": "",
+  "enterClearanceAmountHint": "",
+  "clearanceOtpTitle": "",
+  "otpSentToPhone": "{phoneNumber}",
+  "@otpSentToPhone": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmAndClearance": "",
+  "cancel": "",
+  "clearanceDocumentsTitle": "",
+  "uploadClearanceInstruction": "",
+  "paymentDocuments": "",
+  "confirmAndSend": "",
+  "clearanceAmountLabel": "",
+  "clearanceRequestInstruction": "",
+  "requestCodeButton": ""
 }
