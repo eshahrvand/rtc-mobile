@@ -89,7 +89,7 @@ class RtcTextField extends StatelessWidget {
           height: height ?? (maxLines == 1 ? 44 : null),
           width: width,
           decoration: BoxDecoration(
-            // boxShadow: bowShadow ?? mediumShadow,
+            boxShadow: bowShadow ?? AppColors.mediumShadow,
             color: (readOnly ?? false) && (isSetReadOnlyColor ?? false)
                 ? AppColors.grayPalette.shade50
                 : Colors.white,
@@ -138,7 +138,7 @@ class RtcTextField extends StatelessWidget {
                 borderSide: BorderSide(
                   color: (isError ?? false)
                       ? AppColors.warningPalette.shade600
-                      : borderColor ?? AppColors.grayPalette.shade200,
+                      : borderColor ?? AppColors.grayPalette.shade300,
                   width: 1,
                 ),
               ),
