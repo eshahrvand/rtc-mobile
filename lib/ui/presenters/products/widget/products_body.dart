@@ -6,6 +6,7 @@ import '../bloc/product_cubit.dart';
 import '../bloc/product_state.dart';
 import '../../../widget/rtc_chip_list.dart';
 import '../../../widget/rtc_product_item.dart';
+import 'filter_bottom_sheet.dart';
 
 class ProductsBody extends StatelessWidget {
   const ProductsBody({super.key});
