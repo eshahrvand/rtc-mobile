@@ -144,14 +144,8 @@ class MainView extends StatelessWidget {
     } else if (index == 1) {
       return RtcSearchAppBar(
         isSearchActive: productState.isSearchActive,
-        showShadow: false,
-        // Products appbar originally had no shadow
-        title: S.current.products,
-        titleStyle: const TextStyle(
-          // TODO: replace with AppTextStyle
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
+        showShadow: true,
+        title: "",
         searchHint: S.current.searchProducts,
         onSearchChanged: (value) =>
             context.read<ProductCubit>().onSearchChanged(value),
@@ -159,20 +153,13 @@ class MainView extends StatelessWidget {
         onSearchDeactivated: () =>
             context.read<ProductCubit>().deactivateSearch(),
         scaffoldKey: scaffoldKey,
-        searchPrefix: RtcImage(
-          image: '$baseImage/search.svg',
-          width: 20,
-          height: 20,
-        ),
       );
     } else if (index == 2) {
       return RtcSearchAppBar(
         isSearchActive: ordersState.searchQuery.isNotEmpty,
         showShadow: true,
-        // Orders in dashboard originally used RtcAppBar with shadow
-        title: 'سفارشات',
+        title: '',
         titleStyle: const TextStyle(
-          // TODO: replace with AppTextStyle
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),

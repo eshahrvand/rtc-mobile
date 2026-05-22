@@ -39,10 +39,16 @@ class RtcSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (isSearchActive) {
       return RtcAppBar(
         showShadow: showShadow,
-        leading: IconButton(
-          onPressed: onSearchDeactivated,
-          icon: RtcImage(image: '$baseImage/close.svg', width: 24, height: 24),
-        ),
+        actions: [
+          GestureDetector(
+            onTap: onSearchDeactivated,
+            child: RtcImage(
+              image: '$baseImage/close.svg',
+              width: 24,
+              height: 24,
+            ),
+          ),
+        ],
         titleWidget: RtcTextField(
           autoFocus: true,
           hintText: searchHint,
@@ -57,20 +63,30 @@ class RtcSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     return RtcAppBar(
       showShadow: showShadow,
       centerTitle: true,
-      leading: IconButton(
-        onPressed: () => scaffoldKey.currentState?.openDrawer(),
-        icon: RtcImage(
-          image: '$baseImage/drawer_menu.svg',
-          width: 24,
-          height: 24,
+      leading: Padding(
+        padding: const EdgeInsets.only(right: 16),
+        child: GestureDetector(
+          onTap: () => scaffoldKey.currentState?.openDrawer(),
+          child: RtcImage(
+            image: '$baseImage/drawer_menu.svg',
+            width: 24,
+            height: 24,
+          ),
         ),
       ),
       title: title,
       titleStyle: titleStyle,
       actions: [
-        IconButton(
-          onPressed: onSearchActivated,
-          icon: RtcImage(image: '$baseImage/search.svg', width: 24, height: 24),
+        Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: GestureDetector(
+            onTap: onSearchActivated,
+            child: RtcImage(
+              image: '$baseImage/search-product.svg',
+              width: 24,
+              height: 24,
+            ),
+          ),
         ),
       ],
     );

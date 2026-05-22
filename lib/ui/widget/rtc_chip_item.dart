@@ -54,7 +54,9 @@ class RtcChipItem extends StatelessWidget {
                   width: 16,
                   height: 16,
 
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: isSelected
+                      ? Colors.white
+                      : AppColors.grayPalette.shade700,
                 ),
               ),
             if (isSelected && !chip.opensBottomSheet)
