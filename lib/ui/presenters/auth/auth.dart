@@ -77,7 +77,7 @@ class AuthScreen extends StatelessWidget {
                               color: AppColors.grayPalette.shade600,
                             ),
                           ),
-                          const SizedBox(height: 38),
+                          const SizedBox(height: 30),
                           Expanded(
                             child: BlocBuilder<AuthCubit, AuthState>(
                               buildWhen: (prev, curr) => prev.step != curr.step,
