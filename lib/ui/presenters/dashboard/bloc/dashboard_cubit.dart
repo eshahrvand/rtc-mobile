@@ -9,6 +9,7 @@ import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart'
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../locator.dart';
 import '../../../../generated/l10n.dart';
+import '../../../theme/colors.dart';
 import 'dashboard_state.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
@@ -58,73 +59,94 @@ class DashboardCubit extends Cubit<DashboardState> {
                   value: summary.totalSalesAmount.toStringAsFixed(0),
                   currency: S.current.toman,
                   iconPath: 'assets/images/dollar.svg',
-                  percentage: '${summary.totalSalesDeltaPct}%',
+                  percentage:
+                      '${(summary.totalSalesDeltaPct ?? 0).toStringAsFixed(0)}%',
                 ),
                 QuickAccessItemModel(
                   title: S.current.approvedOrders,
-                  value: summary.activeAgents.toString(),
+                  value: summary.orderCount.toString(),
                   currency: S.current.toman,
                   iconPath: 'assets/images/trend-up.svg',
-                  percentage: '${summary.activeAgentsDelta}%',
+                  percentage: '${summary.orderCountDelta}%',
                 ),
                 QuickAccessItemModel(
                   title: S.current.walletBalance,
-                  value: summary.avgOrderAmount.toStringAsFixed(0),
+                  value: summary.walletBalance.toStringAsFixed(0),
                   currency: S.current.toman,
                   iconPath: 'assets/images/wallet.svg',
-                  percentage: '${summary.avgOrderDeltaPct}%',
                 ),
                 QuickAccessItemModel(
                   title: S.current.cashCommission,
-                  value: summary.totalCustomers.toString(),
+                  value: summary.activeOrders.toString(),
                   currency: S.current.toman,
                   iconPath: 'assets/images/document-list-check.svg',
-                  percentage: '${summary.totalCustomersDelta}%',
                 ),
               ],
               lineChartData: [
                 LineChartDataModel(
-                  line1Data: dailyChart
-                      .asMap()
-                      .entries
-                      .map(
-                        (e) =>
-                            FlSpot(e.key.toDouble(), e.value.totalSalesAmount),
-                      )
-                      .toList(),
-                  line2Data: const [], // TODO: mapping second line if available
+                  line1Data: dailyChart.isEmpty
+                      ? const [FlSpot(0, 0)]
+                      : dailyChart
+                            .asMap()
+                            .entries
+                            .map(
+                              (e) => FlSpot(
+                                e.key.toDouble(),
+                                e.value.totalSalesAmount,
+                              ),
+                            )
+                            .toList(),
+                  line2Data: const [],
                 ),
               ],
               pieChart1Title: S.current.orderStatusChartTitle,
-              pieChart1Data: categories
-                  .map(
-                    (c) => PieChartItemModel(
-                      label: c.categoryName,
-                      value: c.totalOrders.toDouble(),
-                      color: Colors.blue, // TODO: map properly
-                    ),
-                  )
-                  .toList(),
+              pieChart1Data: categories.isEmpty
+                  ? [
+                      PieChartItemModel(
+                        label: '...',
+                        value: 1,
+                        color: AppColors.grayPalette.shade200,
+                      ),
+                    ]
+                  : categories
+                        .map(
+                          (c) => PieChartItemModel(
+                            label: c.categoryName,
+                            value: c.totalOrders.toDouble(),
+                            color: Colors.blue,
+                          ),
+                        )
+                        .toList(),
               pieChart2Title: S.current.salesByCategoryChartTitle,
-              pieChart2Data: categories
-                  .map(
-                    (c) => PieChartItemModel(
-                      label: c.categoryName,
-                      value: c.totalSalesAmount,
-                      color: Colors.green, // TODO: map properly
-                    ),
-                  )
-                  .toList(),
+              pieChart2Data: categories.isEmpty
+                  ? [
+                      PieChartItemModel(
+                        label: '...',
+                        value: 1,
+                        color: AppColors.grayPalette.shade200,
+                      ),
+                    ]
+                  : categories
+                        .map(
+                          (c) => PieChartItemModel(
+                            label: c.categoryName,
+                            value: c.totalSalesAmount,
+                            color: Colors.green,
+                          ),
+                        )
+                        .toList(),
               barChartTitle: S.current.plansSalesChartTitle,
-              barChartData: subplans
-                  .map(
-                    (s) => BarChartItemModel(
-                      label: s.planName,
-                      value: s.totalSalesAmount,
-                    ),
-                  )
-                  .toList(),
-              recentOrders: state.recentOrders, // Keep existing if any
+              barChartData: subplans.isEmpty
+                  ? [BarChartItemModel(label: '...', value: 0)]
+                  : subplans
+                        .map(
+                          (s) => BarChartItemModel(
+                            label: s.planName,
+                            value: s.totalSalesAmount,
+                          ),
+                        )
+                        .toList(),
+              recentOrders: state.recentOrders,
             ),
           );
         })
@@ -140,24 +162,5 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   void onNavItemSelected(int index) {
     emit(state.copyWith(selectedNavIndex: index));
-  }
-
-  Map<String, dynamic> getUserProfileData() {
-    return {
-      'fullName': 'آرش فرداد',
-      'role': 'نماینده فروش',
-      'phoneNumber': '۰۹۱۲۶۰۲۴۱۷۹',
-      'nationalId': '۰۰۸۱۲۳۴۵۶۷',
-      'email': 'Arash.fardad@gmail.com',
-      'agencyCode': 'AG-TEH-011',
-      'workshopCode': '۱۲۳۴۵۶۷۸۹۰',
-      'province': 'تهران',
-      'city': 'تهران',
-      'address':
-          'خ ولیعصر، خ پسیان، ک طلوعی، پ ۱۵۸، واحد ۱۲ خ ولیعصر، خ پسیان، ک طلوعی، پ ۱۵۸، واحد ۱۲',
-      'creditLimit': '۱۰۰,۰۰۰,۰۰۰',
-      'regionalManager': 'پاشا نیکچی',
-      'avatarUrl': 'assets/images/Avatar.png',
-    };
   }
 }

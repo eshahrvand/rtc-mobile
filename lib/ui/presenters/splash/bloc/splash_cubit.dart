@@ -12,16 +12,11 @@ class SplashCubit extends Cubit<SplashState> {
     emit(state.copyWith(status: SplashStatus.loading));
 
     final delay = Future.delayed(const Duration(seconds: 2));
-    final profileFetch = _dashboardRepo.getMyProfile();
+    final summaryFetch = _dashboardRepo.getSummary();
 
-    Future.wait([delay, profileFetch])
-        .then((results) {
-          final profile = results[1];
-          if (profile != null) {
-            emit(state.copyWith(status: SplashStatus.tokenValid));
-          } else {
-            emit(state.copyWith(status: SplashStatus.tokenNotValid));
-          }
+    Future.wait([delay, summaryFetch])
+        .then((_) {
+          emit(state.copyWith(status: SplashStatus.tokenValid));
         })
         .catchError((Object error) {
           emit(state.copyWith(status: SplashStatus.tokenNotValid));

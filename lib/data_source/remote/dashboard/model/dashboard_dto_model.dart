@@ -6,14 +6,12 @@ part 'dashboard_dto_model.g.dart';
 @freezed
 class DashboardSummaryDtoModel with _$DashboardSummaryDtoModel {
   const factory DashboardSummaryDtoModel({
+    @JsonKey(name: 'wallet_balance') required double walletBalance,
+    @JsonKey(name: 'order_count') required int orderCount,
+    @JsonKey(name: 'order_count_delta') required int orderCountDelta,
     @JsonKey(name: 'total_sales_amount') required double totalSalesAmount,
-    @JsonKey(name: 'total_sales_delta_pct') required double totalSalesDeltaPct,
-    @JsonKey(name: 'active_agents') required int activeAgents,
-    @JsonKey(name: 'active_agents_delta') required int activeAgentsDelta,
-    @JsonKey(name: 'avg_order_amount') required double avgOrderAmount,
-    @JsonKey(name: 'avg_order_delta_pct') required double avgOrderDeltaPct,
-    @JsonKey(name: 'total_customers') required int totalCustomers,
-    @JsonKey(name: 'total_customers_delta') required int totalCustomersDelta,
+    @JsonKey(name: 'total_sales_delta_pct') double? totalSalesDeltaPct,
+    @JsonKey(name: 'active_orders') required int activeOrders,
   }) = _DashboardSummaryDtoModel;
 
   factory DashboardSummaryDtoModel.fromJson(Map<String, dynamic> json) => _$DashboardSummaryDtoModelFromJson(json);
