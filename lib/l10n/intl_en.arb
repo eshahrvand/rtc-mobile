@@ -154,5 +154,17 @@
   "confirmAndSend": "",
   "clearanceAmountLabel": "",
   "clearanceRequestInstruction": "",
-  "requestCodeButton": ""
+  "requestCodeButton": "",
+  "clearanceSuccessTitle": "",
+  "documentsSentSuccessTitle": "",
+  "clearancePendingSubtitle": "",
+  "proInvoiceNumberLabel": "",
+  "customerLabelWithColon": "",
+  "clearanceAmountLabelWithColon": "",
+  "orderAmountLabel": "",
+  "gatewayLabel": "",
+  "trackingNumberLabel": "",
+  "documentSubmissionDateLabel": "",
+  "clearanceDateLabel": "",
+  "gotItButton": ""
 }

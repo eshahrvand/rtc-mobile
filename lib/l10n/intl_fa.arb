@@ -154,5 +154,17 @@
   "confirmAndSend": "تایید و ارسال",
   "clearanceAmountLabel": "مبلغ تخلیه",
   "clearanceRequestInstruction": "در صورت تایید اطلاعات پس از زدن گزینه درخواست کد تخلیه، کد فرستاده شده به شماره مشتری را وارد و تایید کنید.",
-  "requestCodeButton": "درخواست کد تخلیه"
+  "requestCodeButton": "درخواست کد تخلیه",
+  "clearanceSuccessTitle": "تخلیه با موفقیت انجام شد",
+  "documentsSentSuccessTitle": "مستندات تخلیه با موفقیت ارسال شد",
+  "clearancePendingSubtitle": "پس از تایید سرپرست مالی، تخلیه انجام خواهد شد.",
+  "proInvoiceNumberLabel": "شماره پیش‌فاکتور:",
+  "customerLabelWithColon": "مشتری:",
+  "clearanceAmountLabelWithColon": "مبلغ تخلیه:",
+  "orderAmountLabel": "مبلغ سفارش:",
+  "gatewayLabel": "درگاه:",
+  "trackingNumberLabel": "شماره پیگیری:",
+  "documentSubmissionDateLabel": "تاریخ ارسال مستندات:",
+  "clearanceDateLabel": "تاریخ تخلیه:",
+  "gotItButton": "متوجه شدم"
 }
