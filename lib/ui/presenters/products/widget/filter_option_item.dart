@@ -25,23 +25,23 @@ class FilterOptionItem extends StatelessWidget {
         InkWell(
           onTap: onTap,
           splashColor: AppColors.brandPalette.shade50,
-          highlightColor: AppColors.brandPalette.shade50.withOpacity(0.5),
+          highlightColor: AppColors.brandPalette.shade50.withAlpha(128),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               children: [
-                _RadioIndicator(isSelected: isSelected),
-                const SizedBox(width: 12),
+                const Spacer(),
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: isSelected
-                        ? AppColors.brandPalette.shade700
+                        ? AppColors.grayPalette.shade900
                         : AppColors.grayPalette.shade700,
-                    fontWeight:
-                    isSelected ? FontWeight.w500 : FontWeight.w400,
+                    fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
                   ),
                 ),
+                const SizedBox(width: 12),
+                _RadioIndicator(isSelected: isSelected),
               ],
             ),
           ),
@@ -63,12 +63,21 @@ class _RadioIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RtcImage(
-      image: isSelected
-          ? 'assets/icons/radio_active.svg'
-          : 'assets/icons/radio_inactive.svg',
-      width: 20,
-      height: 20,
-    );
+    if (isSelected) {
+      return RtcImage(
+        image: 'assets/images/tick_circle.svg',
+        width: 24,
+        height: 24,
+      );
+    } else {
+      return Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.grayPalette.shade300, width: 1),
+        ),
+      );
+    }
   }
 }

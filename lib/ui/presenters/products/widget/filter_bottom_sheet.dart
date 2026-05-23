@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
-import '../../../widget/rtc_button.dart' show RtcButton;
-import '../../../widget/rtc_divider.dart';
+import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_image.dart';
+import '../../../widget/rtc_text_button.dart';
 import 'filter_option_item.dart';
 
 /// Data model for each selectable filter option.
@@ -14,22 +16,6 @@ class FilterItem {
 }
 
 /// A single-select filter bottom sheet with RTL support.
-///
-/// Usage:
-/// ```dart
-/// FilterBottomSheet.show(
-///   context,
-///   title: 'طرح',
-///   subtitle: 'طرح مورد نظر را انتخاب کنید',
-///   items: [
-///     FilterItem(id: '1', title: 'اسنپ - ۱۲ ماهه'),
-///     FilterItem(id: '2', title: 'اسنپ - ۶ ماهه'),
-///   ],
-///   initialSelectedId: null,
-///   onApply: (selectedItem) => print(selectedItem?.title),
-///   onClear: () => print('filter cleared'),
-/// );
-/// ```
 class FilterBottomSheet extends StatefulWidget {
   final String title;
   final String subtitle;
@@ -117,10 +103,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           children: [
             _buildDragHandle(),
             _buildHeader(context),
-            RtcDivider(),
+            const SizedBox(height: 24),
             _buildSubtitle(context),
+            const SizedBox(height: 16),
             _buildItemsList(),
-            RtcDivider(),
+            const SizedBox(height: 32),
             _buildActions(context, bottomPadding),
           ],
         ),
@@ -136,32 +123,27 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: AppColors.grayPalette.shade300,
+          color: AppColors.brandPalette.shade600,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
     );
   }
 
-  /// ── Header: [icon + title] ········ [حذف فیلتر] ──
+  /// ── Header: [حذف فیلتر] ········ [title + icon] ──
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
         children: [
-          // Trailing (left in RTL): clear filter
-          GestureDetector(
-            onTap: _onClear,
-            behavior: HitTestBehavior.opaque,
-            child: Text(
-              'حذف فیلتر',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.grayPalette.shade500,
-              ),
+          RtcTextButton(
+            title: S.current.clearFilter,
+            onPressed: _onClear,
+            styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.grayPalette.shade500,
             ),
           ),
           const Spacer(),
-          // Leading (right in RTL): title + filter icon
           Text(
             widget.title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -170,10 +152,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
-            Icons.filter_alt_outlined,
-            color: Colors.black,
-            size: 20,
+          RtcImage(
+            image: 'assets/images/sort.svg',
+            width: 20,
+            height: 20,
+            color: AppColors.grayPalette.shade900,
           ),
         ],
       ),
@@ -183,14 +166,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   /// ── Instruction subtitle ──
   Widget _buildSubtitle(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Align(
         alignment: Alignment.centerRight,
         child: Text(
           widget.subtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.grayPalette.shade700,
-            fontWeight: FontWeight.w500,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: AppColors.grayPalette.shade900,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -209,7 +192,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           title: item.title,
           isSelected: _selectedId == item.id,
           onTap: () => setState(() => _selectedId = item.id),
-          showDivider: index < widget.items.length - 1,
+          showDivider: false, // UI in screenshot doesn't show dividers between items
         );
       },
     );
@@ -217,7 +200,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   Widget _buildActions(BuildContext context, double bottomPadding) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // 40px side padding total + 12px gap between buttons → each button ≈ (width - 52) / 2
+    // Padding 20px each side, gap 12px
     final buttonWidth = (screenWidth - 52) / 2;
 
     return Padding(
@@ -225,19 +208,21 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       child: Row(
         children: [
           RtcButton(
-            title: 'بازگشت',
+            title: S.current.applyFilter,
+            width: buttonWidth,
+            onPressed: _onApply,
+            isActive: _hasSelection,
+          ),
+          const SizedBox(width: 12),
+          RtcButton(
+            title: S.current.back,
             width: buttonWidth,
             onPressed: () => Navigator.of(context).pop(),
             backgroundColor: Colors.white,
             borderColor: AppColors.grayPalette.shade300,
-          ),
-          const SizedBox(width: 12),
-
-          RtcButton(
-            title: 'اعمال فیلتر',
-            width: buttonWidth,
-            onPressed: _hasSelection ? _onApply : () {},
-            isActive: _hasSelection,
+            styleBtn: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: AppColors.grayPalette.shade900,
+            ),
           ),
         ],
       ),
