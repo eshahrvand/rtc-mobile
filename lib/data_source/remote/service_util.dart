@@ -14,6 +14,11 @@ class ServiceUtil {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
+          print('>> [API REQUEST] ${options.method} ${options.uri}');
+          if (options.data != null) {
+            print('>> [API BODY] ${options.data}');
+          }
+          
           final token = prefs.accessToken;
           if (token != null) {
             print('>> ACCESS TOKEN: $token');
@@ -21,7 +26,18 @@ class ServiceUtil {
           }
           return handler.next(options);
         },
+        onResponse: (response, handler) {
+          print('>> [API RESPONSE] ${response.statusCode} ${response.requestOptions.uri}');
+          print('>> [API DATA] ${response.data}');
+          return handler.next(response);
+        },
         onError: (DioException e, handler) async {
+          print('>> [API ERROR] ${e.response?.statusCode} ${e.requestOptions.uri}');
+          print('>> [API MESSAGE] ${e.message}');
+          if (e.response?.data != null) {
+            print('>> [API DATA] ${e.response?.data}');
+          }
+
           if (e.response?.statusCode == 401) {
             final refreshToken = prefs.refreshToken;
             if (refreshToken != null) {
