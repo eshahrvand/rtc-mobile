@@ -14,7 +14,7 @@ class ProductRepository {
   }) async {
     if (subPlanId != null) {
       return await _catalogService.getPlanProducts(
-        sub_plan_id: subPlanId,
+        subPlanId: subPlanId,
         search: search,
         page: page,
       );
@@ -27,10 +27,13 @@ class ProductRepository {
     }
   }
 
-  Future<ProductDtoModel> getProductDetail(String productId, {String? subPlanId}) async {
+  Future<ProductDtoModel> getProductDetail(
+    String productId, {
+    String? subPlanId,
+  }) async {
     if (subPlanId != null) {
       return await _catalogService.getPlanProductDetail(
-        sub_plan_id: subPlanId,
+        subPlanId: subPlanId,
         id: productId,
       );
     } else {
