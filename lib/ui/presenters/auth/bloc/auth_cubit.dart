@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../domain/repository/auth/auth_repository.dart';
+import '../../../../locator.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(const AuthState());
 
+  final _repo = sl<AuthRepository>();
   Timer? _timer;
 
   void onPhoneChanged(String phone) {
@@ -19,8 +22,7 @@ class AuthCubit extends Cubit<AuthState> {
   void submitPhone() {
     emit(state.copyWith(status: AuthRequestStatus.submitting, isLoading: true));
 
-    // TODO: call sl<AuthRepository>().requestOtp(state.phoneNumber)
-    Future.delayed(const Duration(seconds: 1))
+    _repo.requestOtp(state.phoneNumber)
         .then((_) {
           emit(state.copyWith(
             status: AuthRequestStatus.otpSent,
@@ -48,8 +50,7 @@ class AuthCubit extends Cubit<AuthState> {
   void submitOtp() {
     emit(state.copyWith(status: AuthRequestStatus.submitting, isLoading: true));
 
-    // TODO: call sl<AuthRepository>().verifyOtp(state.phoneNumber, state.otp)
-    Future.delayed(const Duration(seconds: 1))
+    _repo.verifyOtp(state.phoneNumber, state.otp)
         .then((_) {
           emit(state.copyWith(
             status: AuthRequestStatus.success,
@@ -68,8 +69,7 @@ class AuthCubit extends Cubit<AuthState> {
   void resendOtp() {
     emit(state.copyWith(status: AuthRequestStatus.submitting, isLoading: true));
 
-    // TODO: call sl<AuthRepository>().requestOtp(state.phoneNumber)
-    Future.delayed(const Duration(seconds: 1))
+    _repo.requestOtp(state.phoneNumber)
         .then((_) {
           emit(state.copyWith(
             status: AuthRequestStatus.otpResent,
