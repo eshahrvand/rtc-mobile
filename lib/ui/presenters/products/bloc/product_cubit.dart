@@ -115,12 +115,29 @@ class ProductCubit extends Cubit<ProductState> {
     _filterProducts();
   }
 
+  void selectFilter(String id) {
+    emit(state.copyWith(selectedFilterId: id));
+    _filterProducts();
+  }
+
+  void clearFilter() {
+    emit(state.copyWith(selectedFilterId: null));
+    _filterProducts();
+  }
+
   void onChipTap(ProductChipModel chip) {
-    final index = state.chips.indexOf(chip);
-    if (index != -1) {
-      onChipSelected(index);
+    if (chip.opensBottomSheet) {
+      emit(state.copyWith(activeFilterChip: chip));
+    } else {
+      final index = state.chips.indexOf(chip);
+      if (index != -1) {
+        onChipSelected(index);
+      }
     }
-    // BottomSheet logic added later by developer
+  }
+
+  void clearActiveFilterRequest() {
+    emit(state.copyWith(activeFilterChip: null));
   }
 
   void _filterProducts() {
@@ -135,8 +152,14 @@ class ProductCubit extends Cubit<ProductState> {
           .toList();
     }
 
-    // In a real implementation, chip filtering logic would go here
-    // For now, we just update the state
+    if (state.selectedFilterId != null) {
+      // Assuming FilterItem id matches some logic or attribute in ProductItemModel
+      // For now, implementing a basic filter as placeholder
+      filtered = filtered
+          .where((p) => p.id == state.selectedFilterId)
+          .toList();
+    }
+
     emit(state.copyWith(filteredProducts: filtered));
   }
 }

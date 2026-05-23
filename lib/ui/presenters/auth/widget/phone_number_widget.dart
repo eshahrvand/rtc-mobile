@@ -25,7 +25,7 @@ class PhoneNumberWidget extends StatelessWidget {
             Text(
               S.current.loginToSystem,
               textAlign: TextAlign.right,
-              style: theme.titleSmall!.copyWith(
+              style: theme.titleMedium!.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.grayPalette.shade900,
               ),

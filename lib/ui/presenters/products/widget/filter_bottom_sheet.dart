@@ -1,0 +1,231 @@
+import 'package:flutter/material.dart';
+
+import '../../../../generated/l10n.dart';
+import '../../../theme/colors.dart';
+import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_image.dart';
+import '../../../widget/rtc_text_button.dart';
+import 'filter_option_item.dart';
+
+/// Data model for each selectable filter option.
+class FilterItem {
+  final String id;
+  final String title;
+
+  const FilterItem({required this.id, required this.title});
+}
+
+/// A single-select filter bottom sheet with RTL support.
+class FilterBottomSheet extends StatefulWidget {
+  final String title;
+  final String subtitle;
+  final List<FilterItem> items;
+  final String? initialSelectedId;
+  final ValueChanged<FilterItem?>? onApply;
+  final VoidCallback? onClear;
+
+  const FilterBottomSheet({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.items,
+    this.initialSelectedId,
+    this.onApply,
+    this.onClear,
+  });
+
+  static Future<void> show(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required List<FilterItem> items,
+    String? initialSelectedId,
+    ValueChanged<FilterItem?>? onApply,
+    VoidCallback? onClear,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => FilterBottomSheet(
+        title: title,
+        subtitle: subtitle,
+        items: items,
+        initialSelectedId: initialSelectedId,
+        onApply: onApply,
+        onClear: onClear,
+      ),
+    );
+  }
+
+  @override
+  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  String? _selectedId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedId = widget.initialSelectedId;
+  }
+
+  bool get _hasSelection => _selectedId != null;
+
+  FilterItem? get _selectedItem => _selectedId == null
+      ? null
+      : widget.items.firstWhere((item) => item.id == _selectedId);
+
+  void _onClear() {
+    setState(() => _selectedId = null);
+    widget.onClear?.call();
+  }
+
+  void _onApply() {
+    widget.onApply?.call(_selectedItem);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDragHandle(),
+            _buildHeader(context),
+            const SizedBox(height: 24),
+            _buildSubtitle(context),
+            const SizedBox(height: 16),
+            _buildItemsList(),
+            const SizedBox(height: 32),
+            _buildActions(context, bottomPadding),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// ── Drag handle at top center ──
+  Widget _buildDragHandle() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 4),
+      child: Container(
+        width: 40,
+        height: 4,
+        decoration: BoxDecoration(
+          color: AppColors.brandPalette.shade600,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+    );
+  }
+
+  /// ── Header: [حذف فیلتر] ········ [title + icon] ──
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      child: Row(
+        children: [
+          RtcTextButton(
+            title: S.current.clearFilter,
+            onPressed: _onClear,
+            styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.grayPalette.shade500,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            widget.title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: AppColors.grayPalette.shade900,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 8),
+          RtcImage(
+            image: 'assets/images/sort.svg',
+            width: 20,
+            height: 20,
+            color: AppColors.grayPalette.shade900,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ── Instruction subtitle ──
+  Widget _buildSubtitle(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          widget.subtitle,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: AppColors.grayPalette.shade900,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// ── Scrollable list of FilterOptionItem ──
+  Widget _buildItemsList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: widget.items.length,
+      itemBuilder: (_, index) {
+        final item = widget.items[index];
+        return FilterOptionItem(
+          title: item.title,
+          isSelected: _selectedId == item.id,
+          onTap: () => setState(() => _selectedId = item.id),
+          showDivider: false, // UI in screenshot doesn't show dividers between items
+        );
+      },
+    );
+  }
+
+  Widget _buildActions(BuildContext context, double bottomPadding) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Padding 20px each side, gap 12px
+    final buttonWidth = (screenWidth - 52) / 2;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
+      child: Row(
+        children: [
+          RtcButton(
+            title: S.current.applyFilter,
+            width: buttonWidth,
+            onPressed: _onApply,
+            isActive: _hasSelection,
+          ),
+          const SizedBox(width: 12),
+          RtcButton(
+            title: S.current.back,
+            width: buttonWidth,
+            onPressed: () => Navigator.of(context).pop(),
+            backgroundColor: Colors.white,
+            borderColor: AppColors.grayPalette.shade300,
+            styleBtn: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: AppColors.grayPalette.shade900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

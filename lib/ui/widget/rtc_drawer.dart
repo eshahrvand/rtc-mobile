@@ -49,7 +49,7 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.wallet,
                       iconPath: '$baseImage/wallet_drawer.svg',
-                      onTap: () => context.go(AppRoutes.profile),
+                      onTap: () => context.push(AppRoutes.wallet),
                     ),
                     const RtcDivider(),
                   ],
