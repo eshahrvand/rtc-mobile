@@ -16,6 +16,7 @@ class ServiceUtil {
         onRequest: (options, handler) {
           final token = prefs.accessToken;
           if (token != null) {
+            print('>> ACCESS TOKEN: $token');
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
@@ -24,6 +25,7 @@ class ServiceUtil {
           if (e.response?.statusCode == 401) {
             final refreshToken = prefs.refreshToken;
             if (refreshToken != null) {
+              print('>> REFRESH TOKEN: $refreshToken');
               try {
                 // Separate Dio for refresh to avoid cycles
                 final refreshDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
@@ -34,6 +36,9 @@ class ServiceUtil {
 
                 final newAccess = response.data['access'];
                 final newRefresh = response.data['refresh'];
+
+                print('>> NEW ACCESS TOKEN: $newAccess');
+                print('>> NEW REFRESH TOKEN: $newRefresh');
 
                 await prefs.saveTokens(access: newAccess, refresh: newRefresh);
 

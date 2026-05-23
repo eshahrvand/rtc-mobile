@@ -11,8 +11,28 @@ import '../../../widget/rtc_text_field.dart';
 import '../bloc/auth_cubit.dart';
 import '../bloc/auth_state.dart';
 
-class PhoneNumberWidget extends StatelessWidget {
+class PhoneNumberWidget extends StatefulWidget {
   const PhoneNumberWidget({super.key});
+
+  @override
+  State<PhoneNumberWidget> createState() => _PhoneNumberWidgetState();
+}
+
+class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final cubit = context.read<AuthCubit>();
+    _controller = TextEditingController(text: cubit.state.phoneNumber);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +60,7 @@ class PhoneNumberWidget extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             RtcTextField(
+              controller: _controller,
               hintText: S.current.phoneNumberHint,
               hintStyle: theme.bodyLarge!.copyWith(
                 color: AppColors.grayPalette.shade400,
@@ -65,7 +86,7 @@ class PhoneNumberWidget extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: state.isPhoneValid
                       ? Colors.white
-                      : AppColors.grayPalette.shade300,
+                      : AppColors.grayPalette.shade400,
                 ),
                 isLoading: state.isLoading,
                 onPressed: () => context.read<AuthCubit>().submitPhone(),
