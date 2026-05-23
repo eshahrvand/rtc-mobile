@@ -1,57 +1,44 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rtc_mobile/config/config.dart';
-import '../../../../../data/models/product_detail_model.dart';
+import '../../../../data/models/product_detail_model.dart';
+import '../../../../repository/product/product_repository.dart';
+import '../../../../locator.dart';
 import 'product_detail_state.dart';
 
 class ProductDetailCubit extends Cubit<ProductDetailState> {
   ProductDetailCubit() : super(const ProductDetailState());
 
-  void init(String productId) {
+  final _productRepo = sl<ProductRepository>();
+
+  void init(String productId, {String? subPlanId}) {
     emit(state.copyWith(status: ProductDetailRequestStatus.loading));
 
-    // TODO: replace with real repository call
-    // sl<ProductRepository>().getProductDetail(productId)
+    _productRepo.getProductDetail(productId, subPlanId: subPlanId)
+        .then((dto) {
+          final model = ProductDetailModel(
+            id: dto.id,
+            name: dto.name,
+            price: subPlanId != null 
+                ? dto.planPrice?.toString() ?? '۰' 
+                : dto.basePrice?.toString() ?? '۰',
+            oldPrice: subPlanId != null ? dto.basePrice?.toString() ?? '' : '',
+            discountPercent: dto.discountPct?.toString() ?? '۰',
+            imageUrls: dto.images?.map((i) => i.image.file).toList() ?? 
+                       [dto.featuredImage?.file ?? ''],
+            badges: [
+               ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
+               ProductBadgeModel(label: 'دسته بندی', value: dto.category.name),
+               ProductBadgeModel(label: 'SKU', value: dto.sku),
+            ],
+            specs: [
+              if (dto.technicalDetail != null)
+                ProductSpecModel(key: 'مشخصات فنی', value: dto.technicalDetail!),
+            ],
+            description: dto.description ?? '',
+          );
 
-    // Mock data based on screenshots
-    final mockProduct = ProductDetailModel(
-      id: productId,
-      name: 'یخچال ۵۵ فوت RTC مدل Smart TV 4K مدل COOLING 880',
-      price: '۲۲,۴۹۰,۰۰۰',
-      oldPrice: '۲۸,۹۰۰,۰۰۰',
-      discountPercent: '۲۰٪',
-      imageUrls: List.generate(5, (_) => '$baseImage/frame1.png'),
-      badges: [
-        ProductBadgeModel(label: 'موجودی', value: '۱۲ عدد'),
-        ProductBadgeModel(label: 'دسته بندی', value: 'یخچال فریزر'),
-        ProductBadgeModel(label: 'SKU', value: '۱۲۳۴۵۶۷۸'),
-      ],
-      specs: [
-        ProductSpecModel(key: 'با ضمانت', value: '۲۴ ماهه پاسارگاد'),
-        ProductSpecModel(key: 'گنجایش قسمت یخچال', value: '۳۶۰ لیتر'),
-        ProductSpecModel(key: 'گنجایش قسمت فریزر', value: '۹۰ لیتر'),
-        ProductSpecModel(key: 'رنگ', value: 'سفید و سیلور'),
-        ProductSpecModel(key: 'دارای موتور اینورتر', value: '(کم مصرف)'),
-        ProductSpecModel(key: 'دارای آبریز متصل به آب شهر', value: ''),
-        ProductSpecModel(key: 'نوفراست', value: '(بدون برفک)'),
-        ProductSpecModel(key: 'قابلیت انجماد سریع', value: '(فقط برای فریزر)'),
-        ProductSpecModel(key: 'کشوی میوه و سبزیجات', value: 'دارد'),
-        ProductSpecModel(key: 'نور لمسی عمودی', value: ''),
-        ProductSpecModel(key: 'طبقات شیشه ای نشکن', value: ''),
-        ProductSpecModel(key: 'سطح مصرف انرژی', value: 'A+ در یخچال'),
-        ProductSpecModel(key: 'تکنولوژی سیستم هوای چندگانه', value: ''),
-        ProductSpecModel(key: 'یخساز اتوماتیک فقط در فریزر', value: ''),
-        ProductSpecModel(key: 'ابعاد', value: '۱۸۰ * ۴۰ * ۱۶ (سانتی متر)'),
-        ProductSpecModel(key: '۷ روز تضمین بازگشت کالا', value: ''),
-      ],
-      description: 'یخچال فریزر دوقلو از ال تی سی مدل ۸۸۰ موتور اینورتر در گریدهای مختلف و فریزر دوقلو در سی تی سی قرار می گیرند. گنجایش بالای دستگاه امکان سود دهی و فریز کردن مقدار زیادی مواد غذایی را فراهم می کند. قسمت یخچال دوقلو ال تی سی مدل ۸۸۰ دارای ۵ طبقه است که در کشور پایین ترین قسمت آن ۳ کشو قرار گرفته شده است.',
-    );
-
-    // Following .then().catchError() pattern as requested
-    Future.delayed(const Duration(milliseconds: 500))
-        .then((_) {
           emit(state.copyWith(
             status: ProductDetailRequestStatus.success,
-            product: mockProduct,
+            product: model,
           ));
         })
         .catchError((Object e) {
