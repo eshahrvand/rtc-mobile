@@ -169,12 +169,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(width: 6),
-          // Replace with RtcImage + your SVG asset path if needed:
-          // RtcImage(image: 'assets/icons/filter.svg', color: AppColors.grayPalette.shade700, width: 20, height: 20)
-          Icon(
+          const SizedBox(width: 8),
+          const Icon(
             Icons.filter_alt_outlined,
-            color: AppColors.grayPalette.shade700,
+            color: Colors.black,
             size: 20,
           ),
         ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_divider.dart';
-
+import '../../../widget/rtc_image.dart';
 
 class FilterOptionItem extends StatelessWidget {
   final String title;
@@ -31,7 +31,7 @@ class FilterOptionItem extends StatelessWidget {
             child: Row(
               children: [
                 _RadioIndicator(isSelected: isSelected),
-                const Spacer(),
+                const SizedBox(width: 12),
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -63,26 +63,12 @@ class _RadioIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
+    return RtcImage(
+      image: isSelected
+          ? 'assets/icons/radio_active.svg'
+          : 'assets/icons/radio_inactive.svg',
       width: 20,
       height: 20,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSelected
-            ? AppColors.brandPalette.shade600
-            : Colors.transparent,
-        border: isSelected
-            ? null
-            : Border.all(
-          color: AppColors.grayPalette.shade300,
-          width: 1.5,
-        ),
-      ),
-      child: isSelected
-          ? const Icon(Icons.check_rounded, color: Colors.white, size: 13)
-          : null,
     );
   }
 }
