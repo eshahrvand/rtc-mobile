@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
@@ -6,6 +7,8 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../generated/l10n.dart';
+import '../presenters/dashboard/bloc/dashboard_cubit.dart';
+import '../presenters/dashboard/bloc/dashboard_state.dart';
 
 class RtcDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -92,58 +95,73 @@ class RtcDrawer extends StatelessWidget {
 
   Widget _buildFooter(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        const RtcDivider(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 25, 24, 25),
-          child: Row(
-            children: [
-              RtcImage(
-                image: userAvatar ?? '$baseImage/Avatar.png',
-                width: 40,
-                height: 40,
-                isCircle: true,
-                circleWidth: 40,
-                circleHeight: 40,
-              ),
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        final profile = state.userProfile;
 
-              const SizedBox(width: 12),
-              Column(
-                spacing: 2,
-                crossAxisAlignment: CrossAxisAlignment.end,
+        return Column(
+          children: [
+            const RtcDivider(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 25, 24, 25),
+              child: Row(
                 children: [
-                  Text(
-                    userName ?? 'آرش فرداد',
-                    style: theme.bodyLarge!.copyWith(
-                      color: AppColors.grayPalette.shade700,
-                      fontWeight: FontWeight.w500,
+                  GestureDetector(
+                    onTap: () {
+                      context.push(AppRoutes.profile, extra: profile);
+                    },
+                    child: RtcImage(
+                      image:
+                          // profile??.file ?? userAvatar ??
+                          '$baseImage/Avatar.png',
+                      width: 40,
+                      height: 40,
+                      isCircle: true,
+                      circleWidth: 40,
+                      circleHeight: 40,
                     ),
                   ),
-                  Text(
-                    userRole ?? 'نماینده فروش',
-                    style: theme.bodyMedium!.copyWith(
-                      color: AppColors.grayPalette.shade600,
+
+                  const SizedBox(width: 12),
+                  Column(
+                    spacing: 2,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        profile != null
+                            ? '${profile.firstName} ${profile.lastName}'
+                            : userName ?? 'آرش فرداد',
+                        style: theme.bodyLarge!.copyWith(
+                          color: AppColors.grayPalette.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        profile?.role ?? userRole ?? 'نماینده فروش',
+                        style: theme.bodyMedium!.copyWith(
+                          color: AppColors.grayPalette.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      context.go(AppRoutes.profile);
+                    },
+                    icon: RtcImage(
+                      image: "$baseImage/door_close.svg",
+                      width: 24,
+                      height: 24,
                     ),
                   ),
                 ],
               ),
-
-              const Spacer(),
-              IconButton(
-                onPressed: () {
-                  context.go(AppRoutes.profile);
-                },
-                icon: RtcImage(
-                  image: "$baseImage/door_close.svg",
-                  width: 24,
-                  height: 24,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -2,6 +2,7 @@
 
 import '../../../data_source/local/prefs/prefs.dart';
 import '../../../data_source/remote/auth/auth_service.dart';
+import '../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 
 class AuthRepository {
   final AuthService _authService;

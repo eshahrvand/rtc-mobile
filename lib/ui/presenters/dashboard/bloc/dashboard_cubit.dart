@@ -7,14 +7,34 @@ import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/order_item_model.dart';
 import '../../../../data/models/pie_chart_item_model.dart';
 import '../../../../data/models/quick_access_item_model.dart';
+import '../../../../repository/dashboard/dashboard_repository.dart';
+import '../../../../locator.dart';
 import 'dashboard_state.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit() : super(const DashboardState());
 
+  final _dashboardRepo = sl<DashboardRepository>();
+
   void init() {
     emit(state.copyWith(status: DashboardRequestStatus.loading));
 
+    _dashboardRepo.getMyProfile()
+        .then((profile) {
+          emit(state.copyWith(
+            userProfile: profile,
+          ));
+          _loadDashboardData();
+        })
+        .catchError((Object e) {
+           emit(state.copyWith(
+            status: DashboardRequestStatus.error,
+            errorMessage: e.toString(),
+          ));
+        });
+  }
+
+  void _loadDashboardData() {
     // Simulate API call to fetch dashboard data
     Future.delayed(const Duration(seconds: 1))
         .then((_) {

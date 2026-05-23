@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
+import '../profile/model/user_profile_dto_model.dart';
 import 'model/token_dto_model.dart';
 
 part 'auth_service.g.dart';

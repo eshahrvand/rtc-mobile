@@ -8,11 +8,12 @@ import 'package:rtc_mobile/ui/widget/rtc_credit_limit_field.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_field.dart';
 import '../../../../generated/l10n.dart';
+import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final Map<String, dynamic>? userData;
+  final UserProfileDtoModel? userProfile;
 
-  const ProfileScreen({super.key, this.userData});
+  const ProfileScreen({super.key, this.userProfile});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['phoneNumber'] ?? '۰۹۱۲۶۰۲۴۱۷۹',
+                      text: userProfile?.mobile ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -59,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['nationalId'] ?? '۰۰۸۱۲۳۴۵۶۷',
+                      text: userProfile?.id ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -70,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['email'] ?? 'Arash.fardad@gmail.com',
+                      text: userProfile?.email ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -81,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['agencyCode'] ?? 'AG-TEH-011',
+                      text: userProfile?.creditLimit.toString() ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -92,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['workshopCode'] ?? '۱۲۳۴۵۶۷۸۹۰',
+                      text: userProfile?.id ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -103,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['province'] ?? 'تهران',
+                      text: userProfile?.province?.name ?? "",
                     ),
                   ),
                   RtcTextField(
@@ -114,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['city'] ?? 'تهران',
+                      text: userProfile?.city?.name ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -126,14 +127,12 @@ class ProfileScreen extends StatelessWidget {
                     readOnly: true,
                     maxLines: 3,
                     controller: TextEditingController(
-                      text:
-                          userData?['address'] ??
-                          'خ ولیعصر، خ پسیان، ک طلوعی، پ ۱۵۸، واحد ۱۲ خ ولیعصر، خ پسیان، ک طلوعی، پ ۱۵۸، واحد ۱۲',
+                      text: userProfile?.agentType ?? '',
                     ),
                   ),
                   RtcCreditLimitField(
                     labelText: S.current.creditLimit,
-                    value: userData?['creditLimit'] ?? '۱۰۰,۰۰۰,۰۰۰',
+                    value: userProfile?.creditLimit.toString() ?? '۰',
                     helper: Row(
                       spacing: 8,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -162,7 +161,9 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userData?['regionalManager'] ?? 'پاشا نیکچی',
+                      text: userProfile != null
+                          ? '${userProfile!.manager?.firstName} ${userProfile!.manager?.lastName}'
+                          : '',
                     ),
                   ),
                 ],
@@ -215,7 +216,9 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
                 child: RtcImage(
-                  image: userData?['avatarUrl'] ?? '$baseImage/Avatar.png',
+                  image:
+                      // userProfile?.avatar?.file ??
+                      '$baseImage/Avatar.png',
                   width: 96,
                   height: 96,
                   isCircle: true,
@@ -229,14 +232,16 @@ class ProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    userData?['fullName'] ?? 'آرش فرداد',
+                    userProfile != null
+                        ? '${userProfile!.firstName} ${userProfile!.lastName}'
+                        : '',
                     style: theme.headlineLarge!.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.grayPalette.shade900,
                     ),
                   ),
                   Text(
-                    userData?['role'] ?? 'نماینده فروش',
+                    userProfile?.role ?? '',
                     style: theme.bodyLarge!.copyWith(
                       color: AppColors.grayPalette.shade600,
                     ),

@@ -12,6 +12,7 @@ import '../presenters/wallet/transaction_list.dart';
 import '../presenters/wallet/bloc/wallet_cubit.dart';
 import '../presenters/dashboard/dashboard.dart';
 import '../presenters/dashboard/widget/profile.dart';
+import '../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 import '../presenters/product_detail/product_detail.dart';
 import '../presenters/splash/splash.dart';
 import 'app_route.dart';
@@ -35,7 +36,10 @@ final router = GoRouter(
 
     GoRoute(
       path: AppRoutes.profile,
-      builder: (context, state) => const ProfileScreen(),
+      builder: (context, state) {
+        final profile = state.extra as UserProfileDtoModel?;
+        return ProfileScreen(userProfile: profile);
+      },
     ),
     GoRoute(
       path: AppRoutes.productDetail,
