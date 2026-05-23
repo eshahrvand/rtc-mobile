@@ -25,6 +25,7 @@ class ProductState with _$ProductState {
     @Default([]) List<ProductChipModel> chips,
     @Default(0) int selectedChipIndex,
     String? selectedFilterId,
+    ProductChipModel? activeFilterChip,
 
     // Product List
     @Default([]) List<ProductItemModel> allProducts,

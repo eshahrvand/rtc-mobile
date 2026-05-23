@@ -126,11 +126,18 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void onChipTap(ProductChipModel chip) {
-    final index = state.chips.indexOf(chip);
-    if (index != -1) {
-      onChipSelected(index);
+    if (chip.opensBottomSheet) {
+      emit(state.copyWith(activeFilterChip: chip));
+    } else {
+      final index = state.chips.indexOf(chip);
+      if (index != -1) {
+        onChipSelected(index);
+      }
     }
-    // BottomSheet logic added later by developer
+  }
+
+  void clearActiveFilterRequest() {
+    emit(state.copyWith(activeFilterChip: null));
   }
 
   void _filterProducts() {
