@@ -26,116 +26,116 @@ class DashboardCubit extends Cubit<DashboardState> {
           _loadDashboardData();
         })
         .catchError((Object e) {
+          _loadDashboardData();
           emit(
             state.copyWith(
               status: DashboardRequestStatus.error,
               errorMessage: e.toString(),
             ),
           );
-          _loadDashboardData();
         });
   }
 
   void _loadDashboardData() {
     Future.wait([
-      _dashboardRepo.getSummary(),
-      _dashboardRepo.getDailyChart(),
-      _dashboardRepo.getCategories(),
-      _dashboardRepo.getSubPlanChart(),
-    ]).then((results) {
-      final summary = results[0] as DashboardSummaryDtoModel;
-      final dailyChart = results[1] as List<DailyChartDtoModel>;
-      final categories = results[2] as List<CategoryChartDtoModel>;
-      final subplans = results[3] as List<SubPlanChartDtoModel>;
+          _dashboardRepo.getSummary(),
+          _dashboardRepo.getDailyChart(),
+          _dashboardRepo.getCategories(),
+          _dashboardRepo.getSubPlanChart(),
+        ])
+        .then((results) {
+          final summary = results[0] as DashboardSummaryDtoModel;
+          final dailyChart = results[1] as List<DailyChartDtoModel>;
+          final categories = results[2] as List<CategoryChartDtoModel>;
+          final subplans = results[3] as List<SubPlanChartDtoModel>;
 
-      emit(
-        state.copyWith(
-          status: DashboardRequestStatus.success,
-          quickAccessItems: [
-            QuickAccessItemModel(
-              title: S.current.monthlySales,
-              value: summary.totalSalesAmount.toStringAsFixed(0),
-              currency: S.current.toman,
-              iconPath: 'assets/images/dollar.svg',
-              percentage: '${summary.totalSalesDeltaPct}%',
-            ),
-            QuickAccessItemModel(
-              title: S.current.approvedOrders,
-              value: summary.activeAgents.toString(),
-              currency: S.current.toman,
-              iconPath: 'assets/images/trend-up.svg',
-              percentage: '${summary.activeAgentsDelta}%',
-            ),
-            QuickAccessItemModel(
-              title: S.current.walletBalance,
-              value: summary.avgOrderAmount.toStringAsFixed(0),
-              currency: S.current.toman,
-              iconPath: 'assets/images/wallet.svg',
-              percentage: '${summary.avgOrderDeltaPct}%',
-            ),
-            QuickAccessItemModel(
-              title: S.current.cashCommission,
-              value: summary.totalCustomers.toString(),
-              currency: S.current.toman,
-              iconPath: 'assets/images/document-list-check.svg',
-              percentage: '${summary.totalCustomersDelta}%',
-            ),
-          ],
-          lineChartData: [
-            LineChartDataModel(
-              line1Data: dailyChart
-                  .asMap()
-                  .entries
+          emit(
+            state.copyWith(
+              status: DashboardRequestStatus.success,
+              quickAccessItems: [
+                QuickAccessItemModel(
+                  title: S.current.monthlySales,
+                  value: summary.totalSalesAmount.toStringAsFixed(0),
+                  currency: S.current.toman,
+                  iconPath: 'assets/images/dollar.svg',
+                  percentage: '${summary.totalSalesDeltaPct}%',
+                ),
+                QuickAccessItemModel(
+                  title: S.current.approvedOrders,
+                  value: summary.activeAgents.toString(),
+                  currency: S.current.toman,
+                  iconPath: 'assets/images/trend-up.svg',
+                  percentage: '${summary.activeAgentsDelta}%',
+                ),
+                QuickAccessItemModel(
+                  title: S.current.walletBalance,
+                  value: summary.avgOrderAmount.toStringAsFixed(0),
+                  currency: S.current.toman,
+                  iconPath: 'assets/images/wallet.svg',
+                  percentage: '${summary.avgOrderDeltaPct}%',
+                ),
+                QuickAccessItemModel(
+                  title: S.current.cashCommission,
+                  value: summary.totalCustomers.toString(),
+                  currency: S.current.toman,
+                  iconPath: 'assets/images/document-list-check.svg',
+                  percentage: '${summary.totalCustomersDelta}%',
+                ),
+              ],
+              lineChartData: [
+                LineChartDataModel(
+                  line1Data: dailyChart
+                      .asMap()
+                      .entries
+                      .map(
+                        (e) =>
+                            FlSpot(e.key.toDouble(), e.value.totalSalesAmount),
+                      )
+                      .toList(),
+                  line2Data: const [], // TODO: mapping second line if available
+                ),
+              ],
+              pieChart1Title: S.current.orderStatusChartTitle,
+              pieChart1Data: categories
                   .map(
-                    (e) => FlSpot(
-                      e.key.toDouble(),
-                      e.value.totalSalesAmount,
+                    (c) => PieChartItemModel(
+                      label: c.categoryName,
+                      value: c.totalOrders.toDouble(),
+                      color: Colors.blue, // TODO: map properly
                     ),
                   )
                   .toList(),
-              line2Data: const [], // TODO: mapping second line if available
+              pieChart2Title: S.current.salesByCategoryChartTitle,
+              pieChart2Data: categories
+                  .map(
+                    (c) => PieChartItemModel(
+                      label: c.categoryName,
+                      value: c.totalSalesAmount,
+                      color: Colors.green, // TODO: map properly
+                    ),
+                  )
+                  .toList(),
+              barChartTitle: S.current.plansSalesChartTitle,
+              barChartData: subplans
+                  .map(
+                    (s) => BarChartItemModel(
+                      label: s.planName,
+                      value: s.totalSalesAmount,
+                    ),
+                  )
+                  .toList(),
+              recentOrders: state.recentOrders, // Keep existing if any
             ),
-          ],
-          pieChart1Title: S.current.orderStatusChartTitle,
-          pieChart1Data: categories
-              .map(
-                (c) => PieChartItemModel(
-                  label: c.categoryName,
-                  value: c.totalOrders.toDouble(),
-                  color: Colors.blue, // TODO: map properly
-                ),
-              )
-              .toList(),
-          pieChart2Title: S.current.salesByCategoryChartTitle,
-          pieChart2Data: categories
-              .map(
-                (c) => PieChartItemModel(
-                  label: c.categoryName,
-                  value: c.totalSalesAmount,
-                  color: Colors.green, // TODO: map properly
-                ),
-              )
-              .toList(),
-          barChartTitle: S.current.plansSalesChartTitle,
-          barChartData: subplans
-              .map(
-                (s) => BarChartItemModel(
-                  label: s.planName,
-                  value: s.totalSalesAmount,
-                ),
-              )
-              .toList(),
-          recentOrders: state.recentOrders, // Keep existing if any
-        ),
-      );
-    }).catchError((Object e) {
-      emit(
-        state.copyWith(
-          status: DashboardRequestStatus.error,
-          errorMessage: e.toString(),
-        ),
-      );
-    });
+          );
+        })
+        .catchError((Object e) {
+          emit(
+            state.copyWith(
+              status: DashboardRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+        });
   }
 
   void onNavItemSelected(int index) {

@@ -21,7 +21,7 @@ class SplashScreen extends StatelessWidget {
           if (state.status == SplashStatus.tokenValid) {
             context.go(AppRoutes.dashboard);
           } else if (state.status == SplashStatus.tokenNotValid) {
-            context.go(AppRoutes.dashboard);
+            context.go(AppRoutes.auth);
           }
         },
         child: Scaffold(
