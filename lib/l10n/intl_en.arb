@@ -35,7 +35,38 @@
   "statusWaitingSettlement": "",
   "statusExpired": "",
   "myCustomers": "",
+  "totalBalance": "",
+  "totalCredit": "",
+  "remainingCredit": "",
+  "myPockets": "",
   "wallet": "",
+  "pocketsCount": "{count}",
+  "@pocketsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "balance": "",
+  "pocketName": "{name}",
+  "@pocketName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionType": "",
+  "registrationDate": "",
+  "amount": "",
+  "withdrawalFrom": "",
+  "depositTo": "",
+  "trackingNumber": "",
+  "share": "",
+  "transactionDetails": "",
+  "deposit": "",
+  "withdrawal": "",
   "phoneNumber": "",
   "nationalId": "",
   "email": "",

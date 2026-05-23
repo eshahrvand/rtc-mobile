@@ -35,7 +35,37 @@
   "statusWaitingSettlement": "در انتظار تسویه",
   "statusExpired": "منقضی شده",
   "myCustomers": "مشتریان من",
-  "wallet": "کیف پول",
+  "totalBalance": "موجودی کل",
+  "totalCredit": "اعتبار کلی شما",
+  "remainingCredit": "اعتبار باقی مانده",
+  "myPockets": "جیب‌های من",
+  "pocketsCount": "{count} جیب",
+  "@pocketsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "balance": "موجودی:",
+  "pocketName": "جیب {name}",
+  "@pocketName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionType": "نوع تراکنش",
+  "registrationDate": "تاریخ ثبت",
+  "amount": "مبلغ",
+  "withdrawalFrom": "برداشت از",
+  "depositTo": "واریز به",
+  "trackingNumber": "شماره پیگیری",
+  "share": "اشتراک گذاری",
+  "transactionDetails": "جزئیات تراکنش",
+  "deposit": "واریز",
+  "withdrawal": "برداشت",
   "phoneNumber": "شماره موبایل",
   "nationalId": "کد ملی",
   "email": "ایمیل",
@@ -84,6 +114,7 @@
   "differenceAmount": "مبلغ ما به تفاوت",
   "walletBalanceSufficient": "موجودی کیف پول آپ ۱۲ ماهه شما برای پرداخت ما به تفاوت مبلغ کافیست",
   "payWithWallet": "پرداخت با کیف پول",
+  "wallet": "کیف پول",
   "selectCreditPlan": "انتخاب طرح اعتباری",
   "selectProducts": "انتخاب کالاها",
   "uploadDocuments": "بارگذاری مدارک",

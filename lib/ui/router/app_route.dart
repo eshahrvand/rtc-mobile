@@ -8,4 +8,6 @@ class AppRoutes {
   static const orders = '/orders';
   static const orderDetail = '/order-detail';
   static const preInvoice = '/pre-invoice';
+  static const wallet = '/wallet';
+  static const transactionList = '/transaction-list';
 }

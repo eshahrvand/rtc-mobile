@@ -7,6 +7,9 @@ import '../presenters/orders/orders.dart';
 import '../presenters/orders/bloc/orders_cubit.dart';
 import '../presenters/orders/widget/order_detail_view.dart';
 import '../presenters/pre_invoice/pre_invoice.dart';
+import '../presenters/wallet/wallet.dart';
+import '../presenters/wallet/transaction_list.dart';
+import '../presenters/wallet/bloc/wallet_cubit.dart';
 import '../presenters/dashboard/dashboard.dart';
 import '../presenters/dashboard/widget/profile.dart';
 import '../presenters/product_detail/product_detail.dart';
@@ -61,6 +64,20 @@ final router = GoRouter(
     GoRoute(
       path: AppRoutes.preInvoice,
       builder: (context, state) => const PreInvoiceScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.wallet,
+      builder: (context, state) => const WalletScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.transactionList,
+      builder: (context, state) {
+        final cubit = state.extra as WalletCubit;
+        return BlocProvider.value(
+          value: cubit,
+          child: const TransactionListScreen(),
+        );
+      },
     ),
   ],
 );
