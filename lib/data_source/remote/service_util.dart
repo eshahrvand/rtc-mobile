@@ -5,7 +5,7 @@ class ServiceUtil {
   static Dio createDio(Prefs prefs) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://your-api-base-url.com', // TODO: update actual base URL
+        baseUrl: 'http://192.168.2.20:8001/api/v1/',
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -28,7 +28,7 @@ class ServiceUtil {
                 // Separate Dio for refresh to avoid cycles
                 final refreshDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
                 final response = await refreshDio.post(
-                  '/api/v1/accounts/token/refresh',
+                  'accounts/token/refresh',
                   data: {'refresh': refreshToken},
                 );
 
