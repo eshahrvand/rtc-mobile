@@ -7,7 +7,6 @@ import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_button.dart';
 import 'filter_option_item.dart';
 
-/// Data model for each selectable filter option.
 class FilterItem {
   final String id;
   final String title;
@@ -15,7 +14,6 @@ class FilterItem {
   const FilterItem({required this.id, required this.title});
 }
 
-/// A single-select filter bottom sheet with RTL support.
 class FilterBottomSheet extends StatefulWidget {
   final String title;
   final String subtitle;
@@ -103,7 +101,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           children: [
             _buildDragHandle(),
             _buildHeader(context),
-            const SizedBox(height: 24),
+
             _buildSubtitle(context),
             const SizedBox(height: 16),
             _buildItemsList(),
@@ -115,13 +113,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-  /// ── Drag handle at top center ──
   Widget _buildDragHandle() {
     return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 4),
+      padding: const EdgeInsets.only(top: 10),
       child: Container(
-        width: 40,
-        height: 4,
+        width: 32,
+        height: 2,
         decoration: BoxDecoration(
           color: AppColors.brandPalette.shade600,
           borderRadius: BorderRadius.circular(2),
@@ -130,40 +127,41 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-  /// ── Header: [حذف فیلتر] ········ [title + icon] ──
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       child: Row(
         children: [
-          RtcTextButton(
-            title: S.current.clearFilter,
-            onPressed: _onClear,
-            styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.grayPalette.shade500,
-            ),
+          RtcImage(
+            image: 'assets/images/filter.svg',
+            width: 20,
+            height: 20,
+            color: AppColors.grayPalette.shade900,
           ),
-          const Spacer(),
+          const SizedBox(width: 8),
           Text(
             widget.title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
               color: AppColors.grayPalette.shade900,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(width: 8),
-          RtcImage(
-            image: 'assets/images/sort.svg',
-            width: 20,
-            height: 20,
-            color: AppColors.grayPalette.shade900,
+
+          const Spacer(),
+          RtcTextButton(
+            title: S.current.clearFilter,
+            onPressed: _onClear,
+            styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.grayPalette.shade800,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
     );
   }
 
-  /// ── Instruction subtitle ──
+
   Widget _buildSubtitle(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -171,7 +169,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         alignment: Alignment.centerRight,
         child: Text(
           widget.subtitle,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
             color: AppColors.grayPalette.shade900,
             fontWeight: FontWeight.w600,
           ),
@@ -192,7 +190,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           title: item.title,
           isSelected: _selectedId == item.id,
           onTap: () => setState(() => _selectedId = item.id),
-          showDivider: false, // UI in screenshot doesn't show dividers between items
+          showDivider:
+              false, // UI in screenshot doesn't show dividers between items
         );
       },
     );
