@@ -9,44 +9,67 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
 
   final _productRepo = sl<ProductRepository>();
 
-  void init(String productId, {String? subPlanId}) {
+  void init(String productId, {String? subPlanId, String? subPlanName}) {
     emit(state.copyWith(status: ProductDetailRequestStatus.loading));
 
-    _productRepo.getProductDetail(productId, subPlanId: subPlanId)
+    _productRepo
+        .getProductDetail(productId, subPlanId: subPlanId)
         .then((dto) {
+          final List<ProductBadgeModel> badges = [];
+
+          // Add Plan Badge if subPlanId is present
+          if (subPlanId != null) {
+            badges.add(
+              ProductBadgeModel(
+                label: 'طرح',
+                value: subPlanName ?? dto.name,
+                iconPath: null,
+              ),
+            );
+          }
+
+          badges.addAll([
+            ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
+            ProductBadgeModel(label: 'دسته بندی', value: dto.category.name),
+            ProductBadgeModel(label: 'SKU', value: dto.sku),
+          ]);
+
           final model = ProductDetailModel(
             id: dto.id,
             name: dto.name,
-            price: subPlanId != null 
-                ? dto.planPrice?.toString() ?? '۰' 
+            price: subPlanId != null
+                ? dto.planPrice?.toString() ?? '۰'
                 : dto.basePrice?.toString() ?? '۰',
             oldPrice: subPlanId != null ? dto.basePrice?.toString() ?? '' : '',
             discountPercent: dto.discountPct?.toString() ?? '۰',
             imageUrls: dto.images?.isNotEmpty == true
                 ? dto.images!.map((i) => i.image.file).toList()
                 : [dto.featuredImage?.file ?? ''],
-            badges: [
-               ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
-               ProductBadgeModel(label: 'دسته بندی', value: dto.category.name),
-               ProductBadgeModel(label: 'SKU', value: dto.sku),
-            ],
+            badges: badges,
             specs: [
               if (dto.technicalDetail != null)
-                ProductSpecModel(key: 'مشخصات فنی', value: dto.technicalDetail!),
+                ProductSpecModel(
+                  key: 'مشخصات فنی',
+                  value: dto.technicalDetail!,
+                ),
             ],
             description: dto.description ?? '',
           );
 
-          emit(state.copyWith(
-            status: ProductDetailRequestStatus.success,
-            product: model,
-          ));
+          emit(
+            state.copyWith(
+              status: ProductDetailRequestStatus.success,
+              product: model,
+            ),
+          );
         })
         .catchError((Object e) {
-          emit(state.copyWith(
-            status: ProductDetailRequestStatus.error,
-            errorMessage: e.toString(),
-          ));
+          emit(
+            state.copyWith(
+              status: ProductDetailRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
         });
   }
 

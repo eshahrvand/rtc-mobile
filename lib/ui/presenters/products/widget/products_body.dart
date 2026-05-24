@@ -71,7 +71,12 @@ class ProductsBody extends StatelessWidget {
               const SizedBox(height: 16),
               RtcChipList(
                 chips: state.chips,
-                selectedIndex: state.selectedChipIndex,
+                isChipSelected: (index, chip) {
+                  if (chip.id == 1) return state.selectedCategoryId != null;
+                  if (chip.id == 2) return state.selectedSubPlanId != null;
+                  if (chip.id == 3) return state.isOnlyAvailable;
+                  return false;
+                },
                 onChipTap: (index, chip) => cubit.onChipTap(chip),
               ),
               const SizedBox(height: 16),
@@ -91,6 +96,8 @@ class ProductsBody extends StatelessWidget {
                                 AppRoutes.productDetail,
                                 extra: {
                                   'productId': product.id,
+                                  'subPlanId': state.selectedSubPlanId,
+                                  'subPlanName': state.selectedSubPlanName,
                                   'showPrice': hasPlan,
                                 },
                               );

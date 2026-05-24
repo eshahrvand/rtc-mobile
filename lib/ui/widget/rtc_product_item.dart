@@ -70,7 +70,10 @@ class RtcProductItem extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (product.discount != null && showPrice)
+                          if (product.discount != null &&
+                              showPrice &&
+                              product.discount != '۰٪' &&
+                              product.discount != '0٪')
                             RtcDiscountBadge(discount: product.discount!),
                           const Spacer(),
                           if (showPrice)

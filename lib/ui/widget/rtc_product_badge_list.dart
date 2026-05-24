@@ -15,18 +15,30 @@ class RtcProductBadgeList extends StatelessWidget {
     // Separate "Availability" (موجودی) from others if present
     final availabilityBadge = badges.firstWhere(
       (b) => b.label.contains('موجودی'),
-      orElse: () =>
-          badges.first, // Fallback, though we might want to handle it better
+      orElse: () => badges.first,
     );
 
-    final otherBadges = badges.where((b) => b != availabilityBadge).toList();
+    final planBadge = badges.any((b) => b.label.contains('طرح')) 
+        ? badges.firstWhere((b) => b.label.contains('طرح'))
+        : null;
+
+    final otherBadges = badges
+        .where((b) => b != availabilityBadge && b != planBadge)
+        .toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _BadgeItem(badge: availabilityBadge, isGreen: true),
+          Row(
+            spacing: 8,
+            children: [
+              _BadgeItem(badge: availabilityBadge, isGreen: true),
+              if (planBadge != null)
+                _BadgeItem(badge: planBadge, color: AppColors.brandPalette.shade600),
+            ],
+          ),
           if (otherBadges.isNotEmpty) ...[
             const SizedBox(height: 8),
             Wrap(
@@ -45,18 +57,25 @@ class RtcProductBadgeList extends StatelessWidget {
 class _BadgeItem extends StatelessWidget {
   final ProductBadgeModel badge;
   final bool isGreen;
+  final Color? color;
 
-  const _BadgeItem({required this.badge, this.isGreen = false});
+  const _BadgeItem({
+    required this.badge, 
+    this.isGreen = false,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    Color bgColor = AppColors.grayPalette.shade900;
+    if (isGreen) bgColor = AppColors.successPalette.shade500;
+    if (color != null) bgColor = color!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isGreen
-            ? AppColors.successPalette.shade500
-            : AppColors.grayPalette.shade900,
+        color: bgColor,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(

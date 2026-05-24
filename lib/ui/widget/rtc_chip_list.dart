@@ -5,13 +5,13 @@ import 'rtc_chip_item.dart';
 
 class RtcChipList extends StatelessWidget {
   final List<ProductChipModel> chips;
-  final int selectedIndex;
+  final bool Function(int index, ProductChipModel chip) isChipSelected;
   final Function(int index, ProductChipModel chip) onChipTap;
 
   const RtcChipList({
     super.key,
     required this.chips,
-    required this.selectedIndex,
+    required this.isChipSelected,
     required this.onChipTap,
   });
 
@@ -28,7 +28,7 @@ class RtcChipList extends StatelessWidget {
           final chip = chips[index];
           return RtcChipItem(
             chip: chip,
-            isSelected: selectedIndex == index,
+            isSelected: isChipSelected(index, chip),
             onTap: () => onChipTap(index, chip),
           );
         },

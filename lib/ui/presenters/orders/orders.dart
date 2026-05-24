@@ -96,7 +96,7 @@ class OrdersView extends StatelessWidget {
 
     return RtcChipList(
       chips: chips,
-      selectedIndex: -1, // No single selection logic in spec for badges list here
+      isChipSelected: (index, chip) => false,
       onChipTap: (index, chip) {
         // Handle filter logic
       },

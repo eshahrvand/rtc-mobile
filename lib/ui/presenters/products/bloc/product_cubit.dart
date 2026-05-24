@@ -104,8 +104,13 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void selectSubPlan(String? subPlanId) {
+    final subPlanName = subPlanId != null 
+        ? state.availableSubPlans.firstWhere((s) => s.id == subPlanId).name 
+        : null;
+        
     emit(state.copyWith(
       selectedSubPlanId: subPlanId,
+      selectedSubPlanName: subPlanName,
       selectedChipIndex: subPlanId != null ? 1 : -1,
     ));
     _fetchProducts();
@@ -121,7 +126,17 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void onChipTap(ProductChipModel chip) {
-    if (chip.opensBottomSheet) {
+    final bool isCategoryActive = chip.id == 1 && state.selectedCategoryId != null;
+    final bool isPlanActive = chip.id == 2 && state.selectedSubPlanId != null;
+    final bool isStockActive = chip.id == 3 && state.isOnlyAvailable;
+
+    if (isCategoryActive) {
+      selectCategory(null);
+    } else if (isPlanActive) {
+      selectSubPlan(null);
+    } else if (isStockActive) {
+      toggleOnlyAvailable();
+    } else if (chip.opensBottomSheet) {
       emit(state.copyWith(activeFilterChip: chip));
     } else if (chip.id == 3) {
       toggleOnlyAvailable();

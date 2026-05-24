@@ -71,7 +71,7 @@ class PreInvoiceStep2View extends StatelessWidget {
                             ),
                           )
                           .toList(),
-                      selectedIndex: -1,
+                      isChipSelected: (index, chip) => false,
                       onChipTap: (index, chip) => cubit.onChipSelected(index),
                     ),
                   ),

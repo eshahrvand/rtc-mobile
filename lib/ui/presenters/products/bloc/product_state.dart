@@ -28,6 +28,7 @@ class ProductState with _$ProductState {
     @Default(-1) int selectedChipIndex, // -1 means no chip is selected by default
     String? selectedCategoryId,
     String? selectedSubPlanId,
+    String? selectedSubPlanName,
     @Default(false) bool isOnlyAvailable,
     ProductChipModel? activeFilterChip,
 

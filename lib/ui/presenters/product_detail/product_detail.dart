@@ -13,18 +13,27 @@ import '../../../../config/config.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final String productId;
+  final String? subPlanId;
+  final String? subPlanName;
   final bool showPrice;
 
   const ProductDetailScreen({
     super.key,
     required this.productId,
+    this.subPlanId,
+    this.subPlanName,
     this.showPrice = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProductDetailCubit()..init(productId),
+      create: (context) => ProductDetailCubit()
+        ..init(
+          productId,
+          subPlanId: subPlanId,
+          subPlanName: subPlanName,
+        ),
       child: ProductDetailView(showPrice: showPrice),
     );
   }
@@ -134,9 +143,10 @@ class _PriceBlock extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (product.discountPercent != null)
+              if (product.discountPercent != null &&
+                  product.discountPercent != '۰' &&
+                  product.discountPercent != '0')
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -154,7 +164,7 @@ class _PriceBlock extends StatelessWidget {
                     ),
                   ),
                 ),
-
+              const Spacer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

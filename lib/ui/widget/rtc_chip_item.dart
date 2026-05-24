@@ -45,29 +45,24 @@ class RtcChipItem extends StatelessWidget {
               ),
             ),
 
-            if (chip.opensBottomSheet)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: RtcImage(
-                  image: '$baseImage/angle-down-thick.svg',
-                  // Placeholder for chevron-down
-                  width: 16,
-                  height: 16,
-
-                  color: isSelected
-                      ? Colors.white
-                      : AppColors.grayPalette.shade700,
-                ),
-              ),
-            if (isSelected && !chip.opensBottomSheet)
+            if (isSelected)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: RtcImage(
                   image: '$baseImage/close.svg',
                   width: 16,
                   height: 16,
-
                   color: Colors.white,
+                ),
+              )
+            else if (chip.opensBottomSheet)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: RtcImage(
+                  image: '$baseImage/angle-down-thick.svg',
+                  width: 16,
+                  height: 16,
+                  color: AppColors.grayPalette.shade700,
                 ),
               ),
           ],

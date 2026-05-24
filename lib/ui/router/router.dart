@@ -47,6 +47,8 @@ final router = GoRouter(
         final extra = state.extra as Map<String, dynamic>;
         return ProductDetailScreen(
           productId: extra['productId'] as String,
+          subPlanId: extra['subPlanId'] as String?,
+          subPlanName: extra['subPlanName'] as String?,
           showPrice: extra['showPrice'] as bool? ?? true,
         );
       },
