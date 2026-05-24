@@ -30,7 +30,9 @@ class TransactionListScreen extends StatelessWidget {
           ),
           body: Column(
             children: [
+              const SizedBox(height: 16),
               _buildFilters(context),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(
@@ -77,15 +79,12 @@ class TransactionListScreen extends StatelessWidget {
         opensBottomSheet: true,
       ),
     ];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: RtcChipList(
-        chips: chips,
-        isChipSelected: (index, chip) => false,
-        onChipTap: (index, chip) {
-          // TODO: Implement filter logic
-        },
-      ),
+    return RtcChipList(
+      chips: chips,
+      isChipSelected: (index, chip) => false,
+      onChipTap: (index, chip) {
+        // TODO: Implement filter logic
+      },
     );
   }
 }
@@ -124,8 +123,8 @@ class _TransactionCard extends StatelessWidget {
                 child: Center(
                   child: RtcImage(
                     image: isDeposit
-                        ? '$baseImage/arrow-down-tray.svg'
-                        : '$baseImage/arrow-up-tray.svg',
+                        ? '$baseImage/received.svg'
+                        : '$baseImage/send.svg',
                     width: 24,
                     height: 24,
                   ),
