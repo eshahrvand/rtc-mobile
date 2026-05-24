@@ -91,7 +91,7 @@ class DashboardBody extends StatelessWidget {
                   message: state.messageText,
                   iconPath: state.messageIconPath,
                 ),
-
+              if (state.messageText.isEmpty) SizedBox(height: 18),
               // Pre-Invoice Container
               RtcPreInvoiceCard(onTap: () {}),
 

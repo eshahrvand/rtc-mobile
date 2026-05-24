@@ -18,23 +18,24 @@ class DashboardCubit extends Cubit<DashboardState> {
   final _dashboardRepo = sl<DashboardRepository>();
 
   void init() {
-    emit(state.copyWith(status: DashboardRequestStatus.loading));
+    _loadDashboardData();
+    // emit(state.copyWith(status: DashboardRequestStatus.loading));
 
-    _dashboardRepo
-        .getMyProfile()
-        .then((profile) {
-          emit(state.copyWith(userProfile: profile));
-          _loadDashboardData();
-        })
-        .catchError((Object e) {
-          _loadDashboardData();
-          emit(
-            state.copyWith(
-              status: DashboardRequestStatus.error,
-              errorMessage: e.toString(),
-            ),
-          );
-        });
+    // _dashboardRepo
+    //     .getMyProfile()
+    //     .then((profile) {
+    //       emit(state.copyWith(userProfile: profile));
+    //       _loadDashboardData();
+    //     })
+    //     .catchError((Object e) {
+    //       _loadDashboardData();
+    //       emit(
+    //         state.copyWith(
+    //           status: DashboardRequestStatus.error,
+    //           errorMessage: e.toString(),
+    //         ),
+    //       );
+    //     });
   }
 
   void _loadDashboardData() {

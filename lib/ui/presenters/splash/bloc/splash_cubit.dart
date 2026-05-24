@@ -16,9 +16,11 @@ class SplashCubit extends Cubit<SplashState> {
 
     Future.wait([delay, summaryFetch])
         .then((_) {
+          print('>> SPLASH: Summary fetched successfully. Emitting tokenValid');
           emit(state.copyWith(status: SplashStatus.tokenValid));
         })
         .catchError((Object error) {
+          print('>> SPLASH: Summary fetch failed: $error. Emitting tokenNotValid');
           emit(state.copyWith(status: SplashStatus.tokenNotValid));
         });
   }

@@ -18,9 +18,12 @@ class SplashScreen extends StatelessWidget {
       child: BlocListener<SplashCubit, SplashState>(
         listenWhen: (prev, curr) => prev.status != curr.status,
         listener: (context, state) {
+          print('>> SPLASH UI: Status changed to ${state.status}');
           if (state.status == SplashStatus.tokenValid) {
+            print('>> SPLASH UI: Navigating to DASHBOARD');
             context.go(AppRoutes.dashboard);
           } else if (state.status == SplashStatus.tokenNotValid) {
+            print('>> SPLASH UI: Navigating to AUTH');
             context.go(AppRoutes.auth);
           }
         },
