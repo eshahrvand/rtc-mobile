@@ -13,23 +13,31 @@ import '../../../../config/config.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final String productId;
+  final bool showPrice;
 
-  const ProductDetailScreen({super.key, required this.productId});
+  const ProductDetailScreen({
+    super.key,
+    required this.productId,
+    this.showPrice = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ProductDetailCubit()..init(productId),
-      child: const ProductDetailView(),
+      child: ProductDetailView(showPrice: showPrice),
     );
   }
 }
 
 class ProductDetailView extends StatelessWidget {
-  const ProductDetailView({super.key});
+  final bool showPrice;
+
+  const ProductDetailView({super.key, required this.showPrice});
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context).textTheme;
     return MultiBlocListener(
       listeners: [
         BlocListener<ProductDetailCubit, ProductDetailState>(
@@ -74,7 +82,18 @@ class ProductDetailView extends StatelessWidget {
                     onImageChanged: (index) => cubit.onImageSelected(index),
                   ),
                   const SizedBox(height: 26),
-                  _PriceBlock(product: product),
+                  if (showPrice) _PriceBlock(product: product),
+                  if (!showPrice)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        product.name,
+                        style: theme.titleSmall!.copyWith(
+                          color: AppColors.grayPalette.shade20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 12),
                   RtcProductBadgeList(badges: product.badges),
                   const SizedBox(height: 28),

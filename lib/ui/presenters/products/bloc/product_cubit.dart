@@ -20,34 +20,49 @@ class ProductCubit extends Cubit<ProductState> {
       ProductChipModel(id: 3, label: 'فقط کالاهای موجود'),
     ];
 
-    _productRepo.getProducts(
-      subPlanId: subPlanId,
-      search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
-    ).then((response) {
-      final products = response.results.map((dto) => ProductItemModel(
-        id: dto.id,
-        name: dto.name,
-        imageUrl: dto.featuredImage?.file ?? '',
-        price: subPlanId != null 
-            ? dto.planPrice?.toString() ?? '۰' 
-            : dto.basePrice?.toString() ?? '۰',
-        oldPrice: subPlanId != null ? dto.basePrice?.toString() : null,
-        inventory: dto.stockQty.toString(),
-        discount: dto.discountPct != null ? '${dto.discountPct}٪' : null,
-      )).toList();
+    _productRepo
+        .getProducts(
+          subPlanId: subPlanId,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+        )
+        .then((response) {
+          final products = response.results
+              .map(
+                (dto) => ProductItemModel(
+                  id: dto.id,
+                  name: dto.name,
+                  imageUrl: dto.featuredImage?.file ?? '',
+                  price: subPlanId != null
+                      ? dto.planPrice?.toString() ?? '۰'
+                      : dto.basePrice?.toString() ?? '۰',
+                  oldPrice: subPlanId != null
+                      ? dto.basePrice?.toString()
+                      : null,
+                  inventory: dto.stockQty.toString(),
+                  discount: dto.discountPct != null
+                      ? '${dto.discountPct}٪'
+                      : null,
+                ),
+              )
+              .toList();
 
-      emit(state.copyWith(
-        status: ProductRequestStatus.success,
-        chips: chips,
-        allProducts: products,
-        filteredProducts: products,
-      ));
-    }).catchError((Object e) {
-      emit(state.copyWith(
-        status: ProductRequestStatus.error,
-        errorMessage: e.toString(),
-      ));
-    });
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.success,
+              chips: chips,
+              allProducts: products,
+              filteredProducts: products,
+            ),
+          );
+        })
+        .catchError((Object e) {
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+        });
   }
 
   void activateSearch() {
@@ -112,9 +127,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
 
     if (state.selectedFilterId != null) {
-      filtered = filtered
-          .where((p) => p.id == state.selectedFilterId)
-          .toList();
+      filtered = filtered.where((p) => p.id == state.selectedFilterId).toList();
     }
 
     emit(state.copyWith(filteredProducts: filtered));

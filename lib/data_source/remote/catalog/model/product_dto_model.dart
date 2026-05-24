@@ -57,7 +57,7 @@ class ImageDtoModel with _$ImageDtoModel {
     required int width,
     required int height,
     @JsonKey(name: 'file_size') required int fileSize,
-    @JsonKey(name: 'uploaded_by_id') required String uploadedById,
+    @JsonKey(name: 'uploaded_by_id') String? uploadedById,
     @JsonKey(name: 'created_at') required String createdAt,
   }) = _ImageDtoModel;
 

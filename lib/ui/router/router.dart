@@ -43,9 +43,13 @@ final router = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.productDetail,
-      builder: (context, state) => ProductDetailScreen(
-        productId: (state.extra as Map<String, dynamic>)['productId'] as String,
-      ),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return ProductDetailScreen(
+          productId: extra['productId'] as String,
+          showPrice: extra['showPrice'] as bool? ?? true,
+        );
+      },
     ),
     GoRoute(
       path: AppRoutes.customers,

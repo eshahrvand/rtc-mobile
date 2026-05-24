@@ -71,7 +71,7 @@ class RtcImage extends StatelessWidget {
   }
 
   Widget getImage() {
-    if (image!.contains("https")) {
+    if (image!.startsWith("http")) {
 
 
       if (image!.contains(".svg")) {

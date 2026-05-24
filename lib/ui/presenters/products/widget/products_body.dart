@@ -65,10 +65,14 @@ class ProductsBody extends StatelessWidget {
                       final product = state.filteredProducts[index];
                       return RtcProductItem(
                         product: product,
+                        showPrice: state.selectedChipIndex != 0, // Assuming index 0 is "No Plan/All" or based on your plan logic
                         onTap: () {
                           context.push(
                             AppRoutes.productDetail,
-                            extra: {'productId': product.id},
+                            extra: {
+                              'productId': product.id,
+                              'showPrice': state.selectedChipIndex != 0,
+                            },
                           );
                         },
                       );

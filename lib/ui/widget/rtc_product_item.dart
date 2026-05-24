@@ -8,8 +8,14 @@ import 'rtc_image.dart';
 class RtcProductItem extends StatelessWidget {
   final ProductItemModel product;
   final VoidCallback onTap;
+  final bool showPrice;
 
-  const RtcProductItem({super.key, required this.product, required this.onTap});
+  const RtcProductItem({
+    super.key,
+    required this.product,
+    required this.onTap,
+    this.showPrice = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +31,7 @@ class RtcProductItem extends StatelessWidget {
             boxShadow: AppColors.primaryShadow,
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -38,21 +45,21 @@ class RtcProductItem extends StatelessWidget {
 
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
                         product.name,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: theme.labelMedium!.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.grayPalette.shade20,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Text(
                         'موجودی (${product.inventory})',
                         style: theme.labelSmall!.copyWith(
@@ -63,46 +70,47 @@ class RtcProductItem extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (product.discount != null)
+                          if (product.discount != null && showPrice)
                             RtcDiscountBadge(discount: product.discount!),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (product.oldPrice != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 18),
-                                  child: Text(
-                                    product.oldPrice!,
-                                    style: theme.bodyMedium!.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.grayPalette.shade500,
-                                      decoration: TextDecoration.lineThrough,
+                          const Spacer(),
+                          if (showPrice)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (product.oldPrice != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 18),
+                                    child: Text(
+                                      product.oldPrice!,
+                                      style: theme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.grayPalette.shade500,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
                                     ),
                                   ),
+                                Row(
+                                  spacing: 2,
+                                  children: [
+                                    Text(
+                                      product.price,
+                                      style: theme.labelLarge!.copyWith(
+                                        color: AppColors.grayPalette.shade900,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+
+                                    Text(
+                                      S.current.toman,
+                                      style: theme.labelLarge!.copyWith(
+                                        color: AppColors.grayPalette.shade900,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              Row(
-                                spacing: 2,
-                                children: [
-                                  Text(
-                                    product.price,
-                                    style: theme.labelLarge!.copyWith(
-                                      color: AppColors.grayPalette.shade900,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-
-                                  Text(
-                                    S.current.toman,
-                                    style: theme.labelLarge!.copyWith(
-                                      color: AppColors.grayPalette.shade900,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                         ],
                       ),
                     ],

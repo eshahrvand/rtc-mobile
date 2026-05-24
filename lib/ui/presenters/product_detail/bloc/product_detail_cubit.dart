@@ -22,8 +22,9 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
                 : dto.basePrice?.toString() ?? '۰',
             oldPrice: subPlanId != null ? dto.basePrice?.toString() ?? '' : '',
             discountPercent: dto.discountPct?.toString() ?? '۰',
-            imageUrls: dto.images?.map((i) => i.image.file).toList() ?? 
-                       [dto.featuredImage?.file ?? ''],
+            imageUrls: dto.images?.isNotEmpty == true
+                ? dto.images!.map((i) => i.image.file).toList()
+                : [dto.featuredImage?.file ?? ''],
             badges: [
                ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
                ProductBadgeModel(label: 'دسته بندی', value: dto.category.name),
