@@ -62,7 +62,9 @@ class ProductCubit extends Cubit<ProductState> {
             : dto.basePrice?.toString() ?? '۰',
         oldPrice: state.selectedSubPlanId != null ? dto.basePrice?.toString() : null,
         inventory: dto.stockQty.toString(),
-        discount: dto.discountPct != null ? '${dto.discountPct}٪' : null,
+        discount: dto.discountPct != null && dto.discountPct != 0 
+            ? '${dto.discountPct}٪' 
+            : null,
       )).toList();
 
       emit(state.copyWith(
@@ -96,6 +98,8 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void selectCategory(String? categoryId) {
+    if (state.selectedCategoryId == categoryId) return;
+
     emit(state.copyWith(
       selectedCategoryId: categoryId,
       selectedChipIndex: categoryId != null ? 0 : -1,
@@ -104,6 +108,8 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void selectSubPlan(String? subPlanId) {
+    if (state.selectedSubPlanId == subPlanId) return;
+
     final subPlanName = subPlanId != null 
         ? state.availableSubPlans.firstWhere((s) => s.id == subPlanId).name 
         : null;
@@ -126,18 +132,18 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void onChipTap(ProductChipModel chip) {
-    final bool isCategoryActive = chip.id == 1 && state.selectedCategoryId != null;
-    final bool isPlanActive = chip.id == 2 && state.selectedSubPlanId != null;
-    final bool isStockActive = chip.id == 3 && state.isOnlyAvailable;
-
-    if (isCategoryActive) {
-      selectCategory(null);
-    } else if (isPlanActive) {
-      selectSubPlan(null);
-    } else if (isStockActive) {
-      toggleOnlyAvailable();
-    } else if (chip.opensBottomSheet) {
+    if (chip.opensBottomSheet) {
       emit(state.copyWith(activeFilterChip: chip));
+    } else if (chip.id == 3) {
+      toggleOnlyAvailable();
+    }
+  }
+
+  void onChipClose(ProductChipModel chip) {
+    if (chip.id == 1) {
+      selectCategory(null);
+    } else if (chip.id == 2) {
+      selectSubPlan(null);
     } else if (chip.id == 3) {
       toggleOnlyAvailable();
     }
@@ -151,6 +157,7 @@ class ProductCubit extends Cubit<ProductState> {
     emit(state.copyWith(
       selectedCategoryId: null,
       selectedSubPlanId: null,
+      selectedSubPlanName: null,
       isOnlyAvailable: false,
       selectedChipIndex: -1,
     ));

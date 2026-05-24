@@ -7,12 +7,14 @@ class RtcChipList extends StatelessWidget {
   final List<ProductChipModel> chips;
   final bool Function(int index, ProductChipModel chip) isChipSelected;
   final Function(int index, ProductChipModel chip) onChipTap;
+  final Function(int index, ProductChipModel chip)? onChipClose;
 
   const RtcChipList({
     super.key,
     required this.chips,
     required this.isChipSelected,
     required this.onChipTap,
+    this.onChipClose,
   });
 
   @override
@@ -30,6 +32,7 @@ class RtcChipList extends StatelessWidget {
             chip: chip,
             isSelected: isChipSelected(index, chip),
             onTap: () => onChipTap(index, chip),
+            onClose: onChipClose != null ? () => onChipClose!(index, chip) : null,
           );
         },
       ),

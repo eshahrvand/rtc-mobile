@@ -85,6 +85,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     Navigator.of(context).pop();
   }
 
+  void _onItemTap(String id) {
+    setState(() {
+      if (_selectedId == id) {
+        _selectedId = null; // Unselect if already selected
+      } else {
+        _selectedId = id; // Select new item (replaces previous in single selection)
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -152,7 +162,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             title: S.current.clearFilter,
             onPressed: _onClear,
             styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.grayPalette.shade800,
+              color: _hasSelection 
+                  ? AppColors.errorPalette.shade600 
+                  : AppColors.grayPalette.shade800,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -185,12 +197,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       itemCount: widget.items.length,
       itemBuilder: (_, index) {
         final item = widget.items[index];
+        final isSelected = _selectedId == item.id;
         return FilterOptionItem(
           title: item.title,
-          isSelected: _selectedId == item.id,
-          onTap: () => setState(() => _selectedId = item.id),
-          showDivider:
-              false, // UI in screenshot doesn't show dividers between items
+          isSelected: isSelected,
+          onTap: () => _onItemTap(item.id),
+          showDivider: false,
         );
       },
     );

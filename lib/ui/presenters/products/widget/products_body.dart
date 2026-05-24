@@ -17,39 +17,41 @@ class ProductsBody extends StatelessWidget {
     ProductChipModel chip,
     ProductState state,
   ) {
-    final List<FilterItem> items = chip.id == 1
-        ? state.availableCategories
-              .map((c) => FilterItem(id: c.id, title: c.name))
-              .toList()
-        : state.availableSubPlans
-              .map((s) => FilterItem(id: s.id, title: s.name))
-              .toList();
-
-    FilterBottomSheet.show(
-      context,
-      title: chip.label,
-      subtitle: '$chip.label مورد نظر را انتخاب کنید',
-      items: items,
-      initialSelectedId: chip.id == 1
-          ? state.selectedCategoryId
-          : state.selectedSubPlanId,
-      onApply: (selected) {
-        if (selected != null) {
-          if (chip.id == 1) {
-            context.read<ProductCubit>().selectCategory(selected.id);
-          } else {
-            context.read<ProductCubit>().selectSubPlan(selected.id);
-          }
-        }
-      },
-      onClear: () {
-        if (chip.id == 1) {
+    if (chip.id == 1) {
+      // Category Filter (Single-selection)
+      FilterBottomSheet.show(
+        context,
+        title: chip.label,
+        subtitle: '${chip.label} مورد نظر را انتخاب کنید',
+        items: state.availableCategories
+            .map((c) => FilterItem(id: c.id, title: c.name))
+            .toList(),
+        initialSelectedId: state.selectedCategoryId,
+        onApply: (selected) {
+          context.read<ProductCubit>().selectCategory(selected?.id);
+        },
+        onClear: () {
           context.read<ProductCubit>().selectCategory(null);
-        } else {
+        },
+      );
+    } else if (chip.id == 2) {
+      // Plan Filter
+      FilterBottomSheet.show(
+        context,
+        title: chip.label,
+        subtitle: '${chip.label} مورد نظر را انتخاب کنید',
+        items: state.availableSubPlans
+            .map((s) => FilterItem(id: s.id, title: s.name))
+            .toList(),
+        initialSelectedId: state.selectedSubPlanId,
+        onApply: (selected) {
+          context.read<ProductCubit>().selectSubPlan(selected?.id);
+        },
+        onClear: () {
           context.read<ProductCubit>().selectSubPlan(null);
-        }
-      },
-    );
+        },
+      );
+    }
   }
 
   @override
@@ -78,6 +80,7 @@ class ProductsBody extends StatelessWidget {
                   return false;
                 },
                 onChipTap: (index, chip) => cubit.onChipTap(chip),
+                onChipClose: (index, chip) => cubit.onChipClose(chip),
               ),
               const SizedBox(height: 16),
               Expanded(

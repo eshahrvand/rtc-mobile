@@ -8,12 +8,14 @@ class RtcChipItem extends StatelessWidget {
   final ProductChipModel chip;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback? onClose;
 
   const RtcChipItem({
     super.key,
     required this.chip,
     required this.isSelected,
     required this.onTap,
+    this.onClose,
   });
 
   @override
@@ -48,11 +50,15 @@ class RtcChipItem extends StatelessWidget {
             if (isSelected)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: RtcImage(
-                  image: '$baseImage/close.svg',
-                  width: 16,
-                  height: 16,
-                  color: Colors.white,
+                child: GestureDetector(
+                  onTap: (onClose ?? onTap),
+                  behavior: HitTestBehavior.opaque,
+                  child: RtcImage(
+                    image: '$baseImage/close.svg',
+                    width: 16,
+                    height: 16,
+                    color: Colors.white,
+                  ),
                 ),
               )
             else if (chip.opensBottomSheet)
