@@ -40,17 +40,32 @@ class TransactionDetailsSheet extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDragHandle(),
-                _buildHeader(context),
-                const SizedBox(height: 24),
-                _buildDetailsList(context, transaction),
-                const SizedBox(height: 32),
-                _buildActions(context),
-              ],
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+                    child: _buildDragHandle(),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    child: _buildHeader(context),
+                  ),
+                  RtcDivider(),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                    child: _buildDetailsList(context, transaction),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    child: _buildActions(context),
+                  ),
+                ],
+              ),
             ),
           ),
         );
