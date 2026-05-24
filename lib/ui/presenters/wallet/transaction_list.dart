@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -8,12 +9,54 @@ import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../widget/rtc_chip_list.dart';
+import '../products/widget/filter_bottom_sheet.dart';
 import 'bloc/wallet_cubit.dart';
 import 'bloc/wallet_state.dart';
 import 'widget/transaction_details_sheet.dart';
 
 class TransactionListScreen extends StatelessWidget {
   const TransactionListScreen({super.key});
+
+  void _showTypeFilter(BuildContext context, WalletState state) {
+    FilterBottomSheet.show(
+      context,
+      title: S.current.transactionType,
+      subtitle: S.current.transactionType,
+      items: [
+        FilterItem(id: 'credit', title: S.current.deposit),
+        FilterItem(id: 'debit', title: S.current.withdrawal),
+      ],
+      initialSelectedId: state.selectedTransactionType,
+      onApply: (selected) {
+        context.read<WalletCubit>().setTypeFilter(selected?.id);
+      },
+      onClear: () {
+        context.read<WalletCubit>().setTypeFilter(null);
+      },
+    );
+  }
+
+  Future<void> _showDateFilter(BuildContext context, WalletState state) async {
+    // final picked = await showPersianDateRangePicker(
+    //   context: context,
+    //   initialEntryMode: PDatePickerEntryMode.calendar,
+    //   initialDateRange: state.selectedDateFrom != null && state.selectedDateTo != null
+    //       ? JalaliRange(
+    //           start: Jalali.fromDateTime(DateTime.parse(state.selectedDateFrom!)),
+    //           end: Jalali.fromDateTime(DateTime.parse(state.selectedDateTo!)),
+    //         )
+    //       : null,
+    //   firstDate: Jalali(1400, 1, 1),
+    //   lastDate: Jalali.now(),
+    // );
+    //
+    // if (picked != null && context.mounted) {
+    //   context.read<WalletCubit>().setDateFilter(
+    //         picked.start.toDateTime().toIso8601String(),
+    //         picked.end.toDateTime().toIso8601String(),
+    //       );
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,33 +74,37 @@ class TransactionListScreen extends StatelessWidget {
           body: Column(
             children: [
               const SizedBox(height: 16),
-              _buildFilters(context),
+              _buildFilters(context, state),
               const SizedBox(height: 16),
               Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                  itemCount: state.transactions.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final transaction = state.transactions[index];
-                    return _TransactionCard(
-                      transaction: transaction,
-                      onTap: () {
-                        context.read<WalletCubit>().selectTransaction(
-                          transaction,
-                        );
-                        TransactionDetailsSheet.show(
-                          context,
-                          context.read<WalletCubit>(),
-                        );
-                      },
-                    );
-                  },
-                ),
+                child: state.status == WalletRequestStatus.loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : state.transactions.isEmpty
+                        ? const Center(child: Text('تراکنشی یافت نشد'))
+                        : ListView.separated(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                            itemCount: state.transactions.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final transaction = state.transactions[index];
+                              return _TransactionCard(
+                                transaction: transaction,
+                                onTap: () {
+                                  context.read<WalletCubit>().selectTransaction(
+                                        transaction,
+                                      );
+                                  TransactionDetailsSheet.show(
+                                    context,
+                                    context.read<WalletCubit>(),
+                                  );
+                                },
+                              );
+                            },
+                          ),
               ),
             ],
           ),
@@ -66,7 +113,7 @@ class TransactionListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFilters(BuildContext context) {
+  Widget _buildFilters(BuildContext context, WalletState state) {
     final chips = [
       ProductChipModel(
         id: 1,
@@ -81,9 +128,24 @@ class TransactionListScreen extends StatelessWidget {
     ];
     return RtcChipList(
       chips: chips,
-      isChipSelected: (index, chip) => false,
+      isChipSelected: (index, chip) {
+        if (chip.id == 1) return state.selectedTransactionType != null;
+        if (chip.id == 2) return state.selectedDateFrom != null;
+        return false;
+      },
       onChipTap: (index, chip) {
-        // TODO: Implement filter logic
+        if (chip.id == 1) {
+          _showTypeFilter(context, state);
+        } else if (chip.id == 2) {
+          _showDateFilter(context, state);
+        }
+      },
+      onChipClose: (index, chip) {
+        if (chip.id == 1) {
+          context.read<WalletCubit>().setTypeFilter(null);
+        } else if (chip.id == 2) {
+          context.read<WalletCubit>().setDateFilter(null, null);
+        }
       },
     );
   }
@@ -98,11 +160,10 @@ class _TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    final isDeposit = transaction.type == 'واریز';
+    final isDeposit = transaction.isCredit;
 
     return InkWell(
       onTap: onTap,
-
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
         decoration: BoxDecoration(

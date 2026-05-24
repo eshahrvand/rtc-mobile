@@ -1,53 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/models/wallet_model.dart';
+import '../../../../locator.dart';
+import '../../../../repository/wallet/wallet_repository.dart';
 import 'wallet_state.dart';
 
 class WalletCubit extends Cubit<WalletState> {
+  final _repository = sl<WalletRepository>();
+
   WalletCubit() : super(const WalletState());
 
   void init() {
     emit(state.copyWith(status: WalletRequestStatus.loading));
 
-    // Simulate API call to fetch wallet data
-    Future.delayed(const Duration(milliseconds: 500))
-        .then((_) {
+    _repository.getWallet()
+        .then((summary) {
           emit(state.copyWith(
             status: WalletRequestStatus.success,
-            walletSummary: const WalletSummaryModel(
-              totalBalance: '۱۲۴,۰۰۰,۰۰۰',
-              totalCredit: '۱۰۰,۰۰۰,۰۰۰',
-              remainingCredit: '۱۲۴,۰۰۰,۰۰۰',
-              pockets: [
-                PocketModel(
-                  id: '1',
-                  bankName: 'بانک ملی',
-                  planName: 'طرح ۱۲ ماهه',
-                  balance: '۱۲۴,۰۰۰,۰۰۰',
-                  logoPath: 'assets/images/melli.png',
-                ),
-                PocketModel(
-                  id: '2',
-                  bankName: 'اسنپ‌پی',
-                  planName: 'طرح ۱۲ ماهه',
-                  balance: '۱۲۴,۰۰۰,۰۰۰',
-                  logoPath: 'assets/images/snapp.png',
-                ),
-                PocketModel(
-                  id: '3',
-                  bankName: 'بانک تجارت',
-                  planName: 'طرح ۶ ماهه',
-                  balance: '۱۲۴,۰۰۰,۰۰۰',
-                  logoPath: 'assets/images/tejarat.png',
-                ),
-                PocketModel(
-                  id: '4',
-                  bankName: 'تارا',
-                  planName: 'طرح ۱۲ ماهه',
-                  balance: '۱۲۴,۰۰۰,۰۰۰',
-                  logoPath: 'assets/images/tara.png',
-                ),
-              ],
-            ),
+            walletSummary: summary,
           ));
         })
         .catchError((Object e) {
@@ -62,56 +31,50 @@ class WalletCubit extends Cubit<WalletState> {
     emit(state.copyWith(
       selectedPocket: pocket,
       status: WalletRequestStatus.loading,
+      selectedDateFrom: null,
+      selectedDateTo: null,
+      selectedTransactionType: null,
     ));
 
-    // Simulate fetching transactions for the pocket
-    Future.delayed(const Duration(milliseconds: 300))
-        .then((_) {
-          emit(state.copyWith(
-            status: WalletRequestStatus.success,
-            transactions: [
-              const TransactionModel(
-                id: '1',
-                type: 'واریز',
-                amount: '۱,۲۰۰,۰۰۰',
-                date: '۱۴۰۳/۱۱/۱۳',
-                time: '۰۸:۱۲',
-                isCredit: true,
-                fromAccount: 'IR۱۰۰۵۷۰۰۸۷۵۲۳۹۸۹۸۳۰۳۴۵۰۶',
-                toAccount: 'IR۱۰۰۵۷۰۰۸۷۵۲۳۹۸۹۸۳۰۳۴۵۰۶',
-                trackingNumber: '۹۸۳۰۳۴۵۰۶',
-              ),
-              const TransactionModel(
-                id: '2',
-                type: 'واریز',
-                amount: '۱,۲۰۰,۰۰۰',
-                date: '۱۴۰۳/۱۱/۱۳',
-                time: '۰۸:۱۲',
-                isCredit: true,
-                fromAccount: 'IR۱۰۰۵۷۰۰۸۷۵۲۳۹۸۹۸۳۰۳۴۵۰۶',
-                toAccount: 'IR۱۰۰۵۷۰۰۸۷۵۲۳۹۸۹۸۳۰۳۴۵۰۶',
-                trackingNumber: '۹۸۳۰۳۴۵۰۶',
-              ),
-              const TransactionModel(
-                id: '3',
-                type: 'برداشت',
-                amount: '۱,۲۰۰,۰۰۰',
-                date: '۱۴۰۳/۱۱/۱۳',
-                time: '۰۸:۱۲',
-                isCredit: false,
-                fromAccount: 'IR۱۰۰۵۷۰۰۸۷۵۲۳۹۸۹۸۳۰۳۴۵۰۶',
-                toAccount: 'IR۱۰۰۵۷۰۰۸۷۵۲۳۹۸۹۸۳۰۳۴۵۰۶',
-                trackingNumber: '۹۸۳۰۳۴۵۰۶',
-              ),
-            ],
-          ));
-        })
-        .catchError((Object e) {
-          emit(state.copyWith(
-            status: WalletRequestStatus.error,
-            errorMessage: e.toString(),
-          ));
-        });
+    _fetchTransactions();
+  }
+
+  void _fetchTransactions() {
+    if (state.selectedPocket == null) return;
+    
+    emit(state.copyWith(status: WalletRequestStatus.loading));
+
+    _repository.getTransactions(
+      subPlanId: state.selectedPocket!.id,
+      dateFrom: state.selectedDateFrom,
+      dateTo: state.selectedDateTo,
+      transactionType: state.selectedTransactionType,
+    ).then((transactions) {
+      emit(state.copyWith(
+        status: WalletRequestStatus.success,
+        transactions: transactions,
+      ));
+    }).catchError((Object e) {
+      emit(state.copyWith(
+        status: WalletRequestStatus.error,
+        errorMessage: e.toString(),
+      ));
+    });
+  }
+
+  void setTypeFilter(String? type) {
+    if (state.selectedTransactionType == type) return;
+    emit(state.copyWith(selectedTransactionType: type));
+    _fetchTransactions();
+  }
+
+  void setDateFilter(String? from, String? to) {
+    if (state.selectedDateFrom == from && state.selectedDateTo == to) return;
+    emit(state.copyWith(
+      selectedDateFrom: from,
+      selectedDateTo: to,
+    ));
+    _fetchTransactions();
   }
 
   void selectTransaction(TransactionModel transaction) {

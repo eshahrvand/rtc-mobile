@@ -19,5 +19,10 @@ class WalletState with _$WalletState {
     PocketModel? selectedPocket,
     @Default([]) List<TransactionModel> transactions,
     TransactionModel? selectedTransaction,
+    
+    // Filters
+    String? selectedDateFrom,
+    String? selectedDateTo,
+    String? selectedTransactionType,
   }) = _WalletState;
 }
