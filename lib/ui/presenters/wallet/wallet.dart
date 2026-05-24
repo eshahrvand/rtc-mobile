@@ -52,43 +52,54 @@ class _WalletView extends StatelessWidget {
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              S.current.myPockets,
-                              style: theme.titleMedium!.copyWith(
-                                color: AppColors.grayPalette.shade900,
-                                fontWeight: FontWeight.w600,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16, left: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                S.current.myPockets,
+                                style: theme.labelLarge!.copyWith(
+                                  color: AppColors.grayPalette.shade900,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                            Text(
-                              S.current.pocketsCount(summary.pockets.length),
-                              style: theme.bodyMedium!.copyWith(
-                                color: AppColors.grayPalette.shade600,
+                              Text(
+                                S.current.pocketsCount(summary.pockets.length),
+                                style: theme.bodyLarge!.copyWith(
+                                  color: AppColors.grayPalette.shade700,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Expanded(
                           child: ListView.separated(
                             itemCount: summary.pockets.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 12),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final pocket = summary.pockets[index];
                               return _PocketCard(
                                 pocket: pocket,
                                 onTap: () {
-                                  context.read<WalletCubit>().selectPocket(pocket);
-                                  context.push(AppRoutes.transactionList, extra: context.read<WalletCubit>());
+                                  context.read<WalletCubit>().selectPocket(
+                                    pocket,
+                                  );
+                                  context.push(
+                                    AppRoutes.transactionList,
+                                    extra: context.read<WalletCubit>(),
+                                  );
                                 },
                               );
                             },
@@ -109,15 +120,14 @@ class _WalletView extends StatelessWidget {
   Widget _buildHeader(BuildContext context, dynamic summary) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 25),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.brandPalette.shade600,
-            AppColors.brandPalette.shade700,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+        boxShadow: AppColors.mediumShadow,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF194185), Color(0xFF1570EF)],
+          begin: Alignment(-0.9, 0.8), // Approx 15deg
+          end: Alignment(0.9, -0.8),
+          stops: [0.2961, 1.1713],
         ),
       ),
       child: Column(
@@ -128,12 +138,27 @@ class _WalletView extends StatelessWidget {
               Row(
                 spacing: 4,
                 children: [
+                  RtcImage(
+                    image: '$baseImage/wallet_detail.svg',
+                    width: 24,
+                    height: 24,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    S.current.totalBalance,
+                    style: theme.bodyLarge!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                spacing: 4,
+                children: [
                   Text(
                     summary.totalBalance,
-                    style: theme.headlineLarge!.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: theme.titleLarge!.copyWith(color: Colors.white),
                   ),
                   Text(
                     S.current.toman,
@@ -141,24 +166,9 @@ class _WalletView extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                spacing: 8,
-                children: [
-                  Text(
-                    S.current.totalBalance,
-                    style: theme.titleMedium!.copyWith(color: Colors.white),
-                  ),
-                  RtcImage(
-                    image: '$baseImage/wallet.svg',
-                    width: 24,
-                    height: 24,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 43),
           Row(
             children: [
               Expanded(
@@ -197,10 +207,7 @@ class _HeaderInfoItem extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return Column(
       children: [
-        Text(
-          label,
-          style: theme.bodyMedium!.copyWith(color: Colors.white.withOpacity(0.8)),
-        ),
+        Text(label, style: theme.bodyMedium!.copyWith(color: Colors.white)),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -208,7 +215,7 @@ class _HeaderInfoItem extends StatelessWidget {
           children: [
             Text(
               value,
-              style: theme.titleMedium!.copyWith(
+              style: theme.titleSmall!.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -235,73 +242,83 @@ class _PocketCard extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grayPalette.shade200),
-          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: AppColors.primaryShadow,
         ),
         child: Column(
           children: [
             Row(
               children: [
-                RtcImage(
-                  image: '$baseImage/angle-left.svg',
-                  width: 20,
-                  height: 20,
-                  color: AppColors.grayPalette.shade400,
-                ),
-                const Spacer(),
+                Image.asset(pocket.logoPath, width: 40, height: 40),
+                const SizedBox(width: 12),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  spacing: 2,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       pocket.bankName,
-                      style: theme.bodyMedium!.copyWith(color: AppColors.grayPalette.shade600),
-                    ),
-                    Text(
-                      pocket.planName,
-                      style: theme.titleMedium!.copyWith(
+                      style: theme.bodyMedium!.copyWith(
                         color: AppColors.grayPalette.shade900,
-                        fontWeight: FontWeight.w600,
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          pocket.planName,
+                          style: theme.labelLarge!.copyWith(
+                            color: AppColors.grayPalette.shade900,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        RtcImage(
+                          image: '$baseImage/angle-left.svg',
+                          width: 20,
+                          height: 20,
+                          color: AppColors.grayPalette.shade400,
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(width: 12),
-                Image.asset(
-                  pocket.logoPath,
-                  width: 40,
-                  height: 40,
-                ),
               ],
             ),
-            const SizedBox(height: 12),
-            const RtcDivider(isDashed: true),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
+            const RtcDivider(isDashed: false),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Text(
+                  S.current.balance,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade700,
+                  ),
+                ),
                 Row(
                   spacing: 4,
                   children: [
                     Text(
                       pocket.balance,
-                      style: theme.titleMedium!.copyWith(
+                      style: theme.labelMedium!.copyWith(
                         color: AppColors.grayPalette.shade900,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+
                     Text(
                       S.current.toman,
-                      style: theme.bodySmall!.copyWith(color: AppColors.grayPalette.shade700),
+                      style: theme.bodySmall!.copyWith(
+                        color: AppColors.grayPalette.shade700,
+                      ),
                     ),
                   ],
-                ),
-                Text(
-                  S.current.balance,
-                  style: theme.bodyMedium!.copyWith(color: AppColors.grayPalette.shade600),
                 ),
               ],
             ),
