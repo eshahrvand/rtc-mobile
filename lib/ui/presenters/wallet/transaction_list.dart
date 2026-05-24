@@ -5,8 +5,9 @@ import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
-import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import '../../../../data/models/product_chip_model.dart';
+import '../../widget/rtc_chip_list.dart';
 import 'bloc/wallet_cubit.dart';
 import 'bloc/wallet_state.dart';
 import 'widget/transaction_details_sheet.dart';
@@ -32,16 +33,25 @@ class TransactionListScreen extends StatelessWidget {
               _buildFilters(context),
               Expanded(
                 child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   itemCount: state.transactions.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final transaction = state.transactions[index];
                     return _TransactionCard(
                       transaction: transaction,
                       onTap: () {
-                        context.read<WalletCubit>().selectTransaction(transaction);
-                        TransactionDetailsSheet.show(context, context.read<WalletCubit>());
+                        context.read<WalletCubit>().selectTransaction(
+                          transaction,
+                        );
+                        TransactionDetailsSheet.show(
+                          context,
+                          context.read<WalletCubit>(),
+                        );
                       },
                     );
                   },
@@ -55,50 +65,26 @@ class TransactionListScreen extends StatelessWidget {
   }
 
   Widget _buildFilters(BuildContext context) {
+    final chips = [
+      ProductChipModel(
+        id: 1,
+        label: S.current.transactionType,
+        opensBottomSheet: true,
+      ),
+      ProductChipModel(
+        id: 2,
+        label: S.current.registrationDate,
+        opensBottomSheet: true,
+      ),
+    ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          _FilterChip(label: S.current.transactionType),
-          const SizedBox(width: 8),
-          _FilterChip(label: S.current.registrationDate),
-        ],
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-
-  const _FilterChip({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.grayPalette.shade50,
-        borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: AppColors.grayPalette.shade200),
-      ),
-      child: Row(
-        spacing: 4,
-        children: [
-          RtcImage(
-            image: '$baseImage/angle-down_tab.svg',
-            width: 16,
-            height: 16,
-            color: AppColors.grayPalette.shade600,
-          ),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade700,
-                ),
-          ),
-        ],
+      child: RtcChipList(
+        chips: chips,
+        isChipSelected: (index, chip) => false,
+        onChipTap: (index, chip) {
+          // TODO: Implement filter logic
+        },
       ),
     );
   }
@@ -117,84 +103,89 @@ class _TransactionCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
         decoration: BoxDecoration(
-          color: AppColors.grayPalette.shade25,
-          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  spacing: 4,
-                  children: [
-                    Text(
-                      transaction.amount,
-                      style: theme.titleMedium!.copyWith(
-                        color: AppColors.grayPalette.shade900,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      S.current.toman,
-                      style: theme.bodySmall!.copyWith(color: AppColors.grayPalette.shade600),
-                    ),
-                  ],
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.brandPalette.shade25,
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '...',
-                  style: theme.bodyMedium!.copyWith(color: AppColors.grayPalette.shade400),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  transaction.type,
-                  style: theme.titleMedium!.copyWith(
-                    color: AppColors.grayPalette.shade900,
-                    fontWeight: FontWeight.w600,
+                child: Center(
+                  child: RtcImage(
+                    image: isDeposit
+                        ? '$baseImage/arrow-down-tray.svg'
+                        : '$baseImage/arrow-up-tray.svg',
+                    width: 24,
+                    height: 24,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  spacing: 4,
-                  children: [
-                    Text(
-                      '${transaction.date}  |  ${transaction.time}',
-                      style: theme.bodySmall!.copyWith(color: AppColors.grayPalette.shade500),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction.type,
+                    style: theme.bodyLarge!.copyWith(
+                      color: AppColors.grayPalette.shade900,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isDeposit ? AppColors.brandPalette.shade100 : AppColors.errorPalette.shade100,
-                ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${transaction.date}  |  ${transaction.time}',
+                    style: theme.bodyMedium!.copyWith(
+                      color: AppColors.grayPalette.shade700,
+                    ),
+                  ),
+                ],
               ),
-              child: Center(
-                child: Icon(
-                  isDeposit ? Icons.arrow_downward : Icons.arrow_upward,
-                  color: isDeposit ? AppColors.brandPalette.shade600 : AppColors.errorPalette.shade600,
-                  size: 20,
-                ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Row(
+                    spacing: 4,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        transaction.amount,
+                        style: theme.bodyLarge!.copyWith(
+                          color: AppColors.grayPalette.shade900,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        S.current.toman,
+                        style: theme.bodySmall!.copyWith(
+                          color: AppColors.grayPalette.shade600,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '...',
+                    style: theme.bodyMedium!.copyWith(
+                      color: AppColors.grayPalette.shade400,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
