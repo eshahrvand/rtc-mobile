@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../data/models/product_chip_model.dart';
 import '../../../router/app_route.dart';
 import '../bloc/product_cubit.dart';
 import '../bloc/product_state.dart';
@@ -11,36 +12,54 @@ import 'filter_bottom_sheet.dart';
 class ProductsBody extends StatelessWidget {
   const ProductsBody({super.key});
 
-  void _showFilterSheet(BuildContext context, String title,
-      List<FilterItem> items) {
+  void _showFilterSheet(
+    BuildContext context,
+    ProductChipModel chip,
+    ProductState state,
+  ) {
+    final List<FilterItem> items = chip.id == 1
+        ? state.availableCategories
+              .map((c) => FilterItem(id: c.id, title: c.name))
+              .toList()
+        : state.availableSubPlans
+              .map((s) => FilterItem(id: s.id, title: s.name))
+              .toList();
+
     FilterBottomSheet.show(
       context,
-      title: title,
-      subtitle: '$title مورد نظر را انتخاب کنید',
+      title: chip.label,
+      subtitle: '$chip.label مورد نظر را انتخاب کنید',
       items: items,
+      initialSelectedId: chip.id == 1
+          ? state.selectedCategoryId
+          : state.selectedSubPlanId,
       onApply: (selected) {
         if (selected != null) {
-          context.read<ProductCubit>().selectFilter(selected.id);
+          if (chip.id == 1) {
+            context.read<ProductCubit>().selectCategory(selected.id);
+          } else {
+            context.read<ProductCubit>().selectSubPlan(selected.id);
+          }
         }
       },
-      onClear: () => context.read<ProductCubit>().clearFilter(),
+      onClear: () {
+        if (chip.id == 1) {
+          context.read<ProductCubit>().selectCategory(null);
+        } else {
+          context.read<ProductCubit>().selectSubPlan(null);
+        }
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<ProductCubit, ProductState>(
-      listenWhen: (prev, curr) => prev.activeFilterChip != curr.activeFilterChip && curr.activeFilterChip != null,
+      listenWhen: (prev, curr) =>
+          prev.activeFilterChip != curr.activeFilterChip &&
+          curr.activeFilterChip != null,
       listener: (context, state) {
-        final chip = state.activeFilterChip!;
-        _showFilterSheet(
-          context,
-          chip.label,
-          const [
-            FilterItem(id: '1', title: 'گزینه آزمایشی ۱'),
-            FilterItem(id: '2', title: 'گزینه آزمایشی ۲'),
-          ],
-        );
+        _showFilterSheet(context, state.activeFilterChip!, state);
         context.read<ProductCubit>().clearActiveFilterRequest();
       },
       child: BlocBuilder<ProductCubit, ProductState>(
@@ -55,34 +74,35 @@ class ProductsBody extends StatelessWidget {
                 selectedIndex: state.selectedChipIndex,
                 onChipTap: (index, chip) => cubit.onChipTap(chip),
               ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: state.status == ProductRequestStatus.loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                    itemCount: state.filteredProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = state.filteredProducts[index];
-                      return RtcProductItem(
-                        product: product,
-                        showPrice: state.selectedChipIndex != 0, // Assuming index 0 is "No Plan/All" or based on your plan logic
-                        onTap: () {
-                          context.push(
-                            AppRoutes.productDetail,
-                            extra: {
-                              'productId': product.id,
-                              'showPrice': state.selectedChipIndex != 0,
+              const SizedBox(height: 16),
+              Expanded(
+                child: state.status == ProductRequestStatus.loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: state.filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = state.filteredProducts[index];
+                          final hasPlan = state.selectedSubPlanId != null;
+                          return RtcProductItem(
+                            product: product,
+                            showPrice: hasPlan,
+                            onTap: () {
+                              context.push(
+                                AppRoutes.productDetail,
+                                extra: {
+                                  'productId': product.id,
+                                  'showPrice': hasPlan,
+                                },
+                              );
                             },
                           );
                         },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+                      ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

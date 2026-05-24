@@ -1,4 +1,5 @@
 import '../../data_source/remote/catalog/catalog_service.dart';
+import '../../data_source/remote/catalog/model/category_dto_model.dart';
 import '../../data_source/remote/catalog/model/product_dto_model.dart';
 
 class ProductRepository {
@@ -6,11 +7,16 @@ class ProductRepository {
 
   ProductRepository(this._catalogService);
 
+  Future<CategoryListResponse> getCategories() async {
+    return await _catalogService.getCategories();
+  }
+
   Future<ProductListResponse> getProducts({
     String? subPlanId,
     String? categoryId,
     String? search,
     int? page,
+    bool? inStock,
   }) async {
     if (subPlanId != null) {
       return await _catalogService.getPlanProducts(
@@ -23,6 +29,7 @@ class ProductRepository {
         categoryId: categoryId,
         search: search,
         page: page,
+        inStock: inStock,
       );
     }
   }

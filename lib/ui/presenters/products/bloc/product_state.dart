@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../../data/models/product_chip_model.dart';
 import '../../../../../data/models/product_item_model.dart';
+import '../../../../../data_source/remote/catalog/model/category_dto_model.dart';
+import '../../../../../data_source/remote/plans/model/plan_dto_model.dart';
 
 part 'product_state.freezed.dart';
 
@@ -23,9 +25,15 @@ class ProductState with _$ProductState {
 
     // Choice Chips
     @Default([]) List<ProductChipModel> chips,
-    @Default(0) int selectedChipIndex,
-    String? selectedFilterId,
+    @Default(-1) int selectedChipIndex, // -1 means no chip is selected by default
+    String? selectedCategoryId,
+    String? selectedSubPlanId,
+    @Default(false) bool isOnlyAvailable,
     ProductChipModel? activeFilterChip,
+
+    // Dynamic Filter Data
+    @Default([]) List<CategoryDtoModel> availableCategories,
+    @Default([]) List<SubPlanDtoModel> availableSubPlans,
 
     // Product List
     @Default([]) List<ProductItemModel> allProducts,

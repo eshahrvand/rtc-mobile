@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
+import 'model/category_dto_model.dart';
 import 'model/product_dto_model.dart';
 
 part 'catalog_service.g.dart';
@@ -7,6 +8,9 @@ part 'catalog_service.g.dart';
 @RestApi()
 abstract class CatalogService {
   factory CatalogService(Dio dio, {String baseUrl}) = _CatalogService;
+
+  @GET('catalog/categories')
+  Future<CategoryListResponse> getCategories();
 
   // Type 1: General Catalog
   @GET('catalog/products')

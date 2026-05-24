@@ -4,9 +4,11 @@ import 'data_source/local/prefs/prefs.dart';
 import 'data_source/remote/auth/auth_service.dart';
 import 'data_source/remote/catalog/catalog_service.dart';
 import 'data_source/remote/dashboard/dashboard_service.dart';
+import 'data_source/remote/plans/plans_service.dart';
 import 'data_source/remote/service_util.dart';
 import 'domain/repository/auth/auth_repository.dart';
 import 'repository/dashboard/dashboard_repository.dart';
+import 'repository/plans/plans_repository.dart';
 import 'repository/product/product_repository.dart';
 
 final sl = GetIt.instance;
@@ -26,9 +28,11 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => AuthService(sl()));
   sl.registerLazySingleton(() => DashboardService(sl()));
   sl.registerLazySingleton(() => CatalogService(sl()));
+  sl.registerLazySingleton(() => PlansService(sl()));
 
   // Repositories
   sl.registerLazySingleton(() => AuthRepository(sl(), sl()));
   sl.registerLazySingleton(() => DashboardRepository(sl()));
   sl.registerLazySingleton(() => ProductRepository(sl()));
+  sl.registerLazySingleton(() => PlansRepository(sl()));
 }
