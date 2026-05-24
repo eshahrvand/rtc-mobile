@@ -1,0 +1,20 @@
+import '../../data_source/remote/customers/customers_service.dart';
+import '../../data_source/remote/customers/model/customer_dto_model.dart';
+
+class CustomersRepository {
+  final CustomersService _customersService;
+
+  CustomersRepository(this._customersService);
+
+  Future<CustomerListResponse> getCustomers({
+    String? search,
+    int? page,
+    int? pageSize,
+  }) async {
+    return await _customersService.getCustomers(
+      search: search,
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+}

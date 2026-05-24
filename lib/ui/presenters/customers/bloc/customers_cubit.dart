@@ -1,83 +1,88 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/models/customer_model.dart';
+import '../../../../repository/customers/customers_repository.dart';
+import '../../../../locator.dart';
 import 'customers_state.dart';
 
 class CustomersCubit extends Cubit<CustomersState> {
   CustomersCubit() : super(const CustomersState());
 
+  final _customersRepo = sl<CustomersRepository>();
+
   void init() {
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
-    // Simulated fetch with mock data
-    Future.delayed(const Duration(milliseconds: 500))
-        .then((_) {
-          final mockCustomers = [
-            CustomerItemModel(id: '1', name: 'سامان راد', phoneNumber: '۰۹۱۲۶۰۲۷۹۴۱', city: 'تهران'),
-            CustomerItemModel(id: '2', name: 'علی محمدی', phoneNumber: '۰۹۱۲۱۱۱۱۱۱۱', city: 'کرج'),
-            CustomerItemModel(id: '3', name: 'مریم رضایی', phoneNumber: '۰۹۱۲۲۲۲۲۲۲۲', city: 'مشهد'),
-            CustomerItemModel(id: '4', name: 'سامان راد', phoneNumber: '۰۹۱۲۶۰۲۷۹۴۱', city: 'تهران'),
-            CustomerItemModel(id: '5', name: 'سامان راد', phoneNumber: '۰۹۱۲۶۰۲۷۹۴۱', city: 'تهران'),
-            CustomerItemModel(id: '6', name: 'سامان راد', phoneNumber: '۰۹۱۲۶۰۲۷۹۴۱', city: 'تهران'),
-          ];
-          emit(state.copyWith(
-            status: CustomersRequestStatus.success,
-            allCustomers: mockCustomers,
-            filteredCustomers: mockCustomers,
-          ));
+    _customersRepo
+        .getCustomers(
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+        )
+        .then((response) {
+          final customers = response.results
+              .map(
+                (dto) => CustomerItemModel(
+                  id: dto.id,
+                  name: '${dto.firstName} ${dto.lastName}',
+                  phoneNumber: dto.mobile,
+                  city: '', // City not available in this API response yet
+                ),
+              )
+              .toList();
+
+          emit(
+            state.copyWith(
+              status: CustomersRequestStatus.success,
+              allCustomers: customers,
+              filteredCustomers: customers,
+            ),
+          );
         })
-        .catchError((e) {
-          emit(state.copyWith(
-            status: CustomersRequestStatus.error,
-            errorMessage: e.toString(),
-          ));
+        .catchError((Object e) {
+          emit(
+            state.copyWith(
+              status: CustomersRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
         });
   }
 
   void onSearchChanged(String query) {
-    final filtered = state.allCustomers.where((customer) {
-      return customer.name.contains(query) || customer.phoneNumber.contains(query);
-    }).toList();
-    
-    emit(state.copyWith(
-      searchQuery: query,
-      filteredCustomers: filtered,
-    ));
+    emit(state.copyWith(searchQuery: query));
+    init(); // Trigger a new API fetch based on search query
   }
 
   void onCustomerTapped(CustomerItemModel customer) {
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
-    // Simulated detail fetch
-    Future.delayed(const Duration(milliseconds: 300))
-        .then((_) {
+    // Fetching from allCustomers list as we don't have a specific Detail API yet
+    // but the getCustomers response has most details except orders.
+    _customersRepo
+        .getCustomers(search: customer.phoneNumber)
+        .then((response) {
+          if (response.results.isEmpty) {
+             throw Exception('Customer not found');
+          }
+          
+          final dto = response.results.first;
+          
           final detail = CustomerDetailModel(
-            id: customer.id,
-            name: customer.name,
-            nationalCode: '۰۰۸۱۲۳۴۵۶۷',
-            phoneNumber: customer.phoneNumber,
-            postalCode: '۱۹۳۳۹۴۳۱۱۱',
-            address: 'تهران، خیابان ولیعصر، خیابان پسیان، ساختمان آراد، واحد ۲۴',
+            id: dto.id,
+            name: '${dto.firstName} ${dto.lastName}',
+            nationalCode: dto.nationalId,
+            phoneNumber: dto.mobile,
+            postalCode: dto.postalCode,
+            address: dto.address,
             orders: [
+              // Orders API not yet implemented per requirements
               CustomerOrderItemModel(
                 orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
                 amount: '۸۰,۲۰۰,۰۰۰',
                 date: '۱۴۰۴/۱۰/۱۶',
                 status: 'پیش فاکتور',
               ),
-              CustomerOrderItemModel(
-                orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-                amount: '۸۰,۲۰۰,۰۰۰',
-                date: '۱۴۰۴/۱۰/۱۶',
-                status: 'رد شده',
-              ),
-              CustomerOrderItemModel(
-                orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-                amount: '۸۰,۲۰۰,۰۰۰',
-                date: '۱۴۰۴/۱۰/۱۶',
-                status: 'منقضی شده',
-              ),
             ],
           );
+          
           emit(state.copyWith(
             status: CustomersRequestStatus.success,
             step: CustomersStep.customerDetail,
@@ -85,11 +90,13 @@ class CustomersCubit extends Cubit<CustomersState> {
             selectedTabIndex: 0,
           ));
         })
-        .catchError((e) {
-          emit(state.copyWith(
-            status: CustomersRequestStatus.error,
-            errorMessage: e.toString(),
-          ));
+        .catchError((Object e) {
+          emit(
+            state.copyWith(
+              status: CustomersRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
         });
   }
 
