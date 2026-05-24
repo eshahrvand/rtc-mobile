@@ -256,36 +256,37 @@ class _PocketCard extends StatelessWidget {
               children: [
                 Image.asset(pocket.logoPath, width: 40, height: 40),
                 const SizedBox(width: 12),
-                Column(
-                  spacing: 2,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      pocket.bankName,
-                      style: theme.bodyMedium!.copyWith(
-                        color: AppColors.grayPalette.shade900,
+                Expanded(
+                  child: Column(
+                    spacing: 2,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        pocket.bankName,
+                        style: theme.bodyMedium!.copyWith(
+                          color: AppColors.grayPalette.shade900,
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          pocket.planName,
-                          style: theme.labelLarge!.copyWith(
-                            color: AppColors.grayPalette.shade900,
-                            fontWeight: FontWeight.w600,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            pocket.planName,
+                            style: theme.labelLarge!.copyWith(
+                              color: AppColors.grayPalette.shade900,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-
-                        RtcImage(
-                          image: '$baseImage/angle-left.svg',
-                          width: 20,
-                          height: 20,
-                          color: AppColors.grayPalette.shade400,
-                        ),
-                      ],
-                    ),
-                  ],
+                          RtcImage(
+                            image: '$baseImage/angle-left.svg',
+                            width: 20,
+                            height: 20,
+                            color: AppColors.grayPalette.shade400,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
