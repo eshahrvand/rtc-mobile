@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../config/config.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_divider.dart';
 import '../../../widget/rtc_image.dart';
@@ -21,7 +22,7 @@ class FilterOptionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
           onTap: onTap,
@@ -31,18 +32,16 @@ class FilterOptionItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               children: [
-                const Spacer(),
+                _RadioIndicator(isSelected: isSelected),
+                const SizedBox(width: 8),
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: isSelected
-                        ? AppColors.grayPalette.shade900
-                        : AppColors.grayPalette.shade700,
-                    fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+                    color: AppColors.grayPalette.shade800,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(width: 12),
-                _RadioIndicator(isSelected: isSelected),
+                const Spacer(),
               ],
             ),
           ),
@@ -64,21 +63,12 @@ class _RadioIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isSelected) {
-      return RtcImage(
-        image: 'assets/images/tick_circle.svg',
-        width: 24,
-        height: 24,
-      );
-    } else {
-      return Container(
-        width: 24,
-        height: 24,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.grayPalette.shade300, width: 1),
-        ),
-      );
-    }
+    return RtcImage(
+      image: isSelected
+          ? "$baseImage/brand_check_circle.svg"
+          : "$baseImage/gray_check_circle.svg",
+      width: 24,
+      height: 24,
+    );
   }
 }

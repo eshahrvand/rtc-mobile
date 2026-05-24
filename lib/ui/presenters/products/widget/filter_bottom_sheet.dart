@@ -161,7 +161,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-
   Widget _buildSubtitle(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -205,22 +204,27 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
       child: Row(
+        spacing: 12,
         children: [
-          RtcButton(
-            title: S.current.applyFilter,
-            width: buttonWidth,
-            onPressed: _onApply,
-            isActive: _hasSelection,
-          ),
-          const SizedBox(width: 12),
           RtcButton(
             title: S.current.back,
             width: buttonWidth,
             onPressed: () => Navigator.of(context).pop(),
             backgroundColor: Colors.white,
             borderColor: AppColors.grayPalette.shade300,
-            styleBtn: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppColors.grayPalette.shade900,
+            styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: AppColors.grayPalette.shade700,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          RtcButton(
+            title: S.current.applyFilter,
+            width: buttonWidth,
+            onPressed: _onApply,
+            isActive: _hasSelection,
+            styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
