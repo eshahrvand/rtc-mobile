@@ -61,8 +61,8 @@ class TransactionDetailsSheet extends StatelessWidget {
   Widget _buildDragHandle() {
     return Center(
       child: Container(
-        width: 40,
-        height: 4,
+        width: 31,
+        height: 2,
         decoration: BoxDecoration(
           color: AppColors.brandPalette.shade600,
           borderRadius: BorderRadius.circular(2),
@@ -77,21 +77,23 @@ class TransactionDetailsSheet extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: RtcImage(
+          Text(
+            S.current.transactionDetails,
+            style: theme.labelLarge!.copyWith(
+              color: AppColors.grayPalette.shade900,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          const Spacer(),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: RtcImage(
               image: '$baseImage/close.svg',
               width: 20,
               height: 20,
-              color: AppColors.grayPalette.shade600,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            S.current.transactionDetails,
-            style: theme.titleMedium!.copyWith(
-              color: AppColors.grayPalette.shade900,
-              fontWeight: FontWeight.w700,
+              color: AppColors.grayPalette.shade800,
+              boxFit: BoxFit.fill,
             ),
           ),
         ],
@@ -104,7 +106,10 @@ class TransactionDetailsSheet extends StatelessWidget {
       children: [
         _DetailRow(label: S.current.transactionType, value: transaction.type),
         const RtcDivider(),
-        _DetailRow(label: S.current.registrationDate, value: '${transaction.date} - ${transaction.time}'),
+        _DetailRow(
+          label: S.current.registrationDate,
+          value: '${transaction.date} - ${transaction.time}',
+        ),
         const RtcDivider(),
         _DetailRow(
           label: S.current.amount,
@@ -112,12 +117,18 @@ class TransactionDetailsSheet extends StatelessWidget {
           unit: S.current.toman,
           isBold: true,
         ),
-        const RtcDivider(),
-        _DetailRow(label: S.current.withdrawalFrom, value: transaction.fromAccount),
+        RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
+        _DetailRow(
+          label: S.current.withdrawalFrom,
+          value: transaction.fromAccount,
+        ),
         const RtcDivider(),
         _DetailRow(label: S.current.depositTo, value: transaction.toAccount),
         const RtcDivider(),
-        _DetailRow(label: S.current.trackingNumber, value: transaction.trackingNumber),
+        _DetailRow(
+          label: S.current.trackingNumber,
+          value: transaction.trackingNumber,
+        ),
       ],
     );
   }
@@ -125,14 +136,8 @@ class TransactionDetailsSheet extends StatelessWidget {
   Widget _buildActions(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Row(
+      spacing: 12,
       children: [
-        Expanded(
-          child: RtcButton(
-            title: S.current.share,
-            onPressed: () {},
-          ),
-        ),
-        const SizedBox(width: 12),
         Expanded(
           child: RtcButton(
             title: S.current.back,
@@ -143,6 +148,16 @@ class TransactionDetailsSheet extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
             onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        Expanded(
+          child: RtcButton(
+            title: S.current.share,
+            onPressed: () {},
+            styleBtn: theme.labelLarge!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -173,23 +188,29 @@ class _DetailRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: theme.bodyMedium!.copyWith(color: AppColors.grayPalette.shade600),
+            style: theme.bodyLarge!.copyWith(
+              color: AppColors.grayPalette.shade700,
+            ),
           ),
           Row(
             spacing: 4,
             children: [
-              if (unit != null)
-                Text(
-                  unit!,
-                  style: theme.bodySmall!.copyWith(color: AppColors.grayPalette.shade600),
-                ),
               Text(
                 value,
                 style: theme.bodyLarge!.copyWith(
                   color: AppColors.grayPalette.shade900,
-                  fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
+
+              if (unit != null)
+                Text(
+                  unit!,
+                  style: theme.bodyLarge!.copyWith(
+                    color: AppColors.grayPalette.shade900,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
             ],
           ),
         ],
