@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import 'package:rtc_mobile/ui/widget/rtc_date_picker.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../products/widget/filter_bottom_sheet.dart';
@@ -36,26 +36,17 @@ class TransactionListScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _showDateFilter(BuildContext context, WalletState state) async {
-    // final picked = await showPersianDateRangePicker(
-    //   context: context,
-    //   initialEntryMode: PDatePickerEntryMode.calendar,
-    //   initialDateRange: state.selectedDateFrom != null && state.selectedDateTo != null
-    //       ? JalaliRange(
-    //           start: Jalali.fromDateTime(DateTime.parse(state.selectedDateFrom!)),
-    //           end: Jalali.fromDateTime(DateTime.parse(state.selectedDateTo!)),
-    //         )
-    //       : null,
-    //   firstDate: Jalali(1400, 1, 1),
-    //   lastDate: Jalali.now(),
-    // );
-    //
-    // if (picked != null && context.mounted) {
-    //   context.read<WalletCubit>().setDateFilter(
-    //         picked.start.toDateTime().toIso8601String(),
-    //         picked.end.toDateTime().toIso8601String(),
-    //       );
-    // }
+  void _showDateFilter(BuildContext context, WalletState state) {
+    showJalaliDatePickerSheet(
+      context,
+      S.current.registrationDate,
+      (selectedDate) {
+        context.read<WalletCubit>().setDateFilter(
+              selectedDate.toDateTime().toIso8601String(),
+              selectedDate.toDateTime().toIso8601String(),
+            );
+      },
+    );
   }
 
   @override
@@ -178,7 +169,9 @@ class _TransactionCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColors.brandPalette.shade25,
+                  color: isDeposit
+                      ? AppColors.brandPalette.shade25
+                      : AppColors.errorPalette.shade25,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -188,6 +181,9 @@ class _TransactionCard extends StatelessWidget {
                         : '$baseImage/send.svg',
                     width: 24,
                     height: 24,
+                    color: isDeposit
+                        ? AppColors.brandPalette.shade600
+                        : AppColors.errorPalette.shade600,
                   ),
                 ),
               ),

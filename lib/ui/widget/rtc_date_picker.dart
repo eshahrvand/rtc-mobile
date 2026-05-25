@@ -1,23 +1,16 @@
-
-
-import 'package:axino/ui/theme/colors.dart';
-import 'package:axino/ui/theme/theme.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 import '../../../generated/l10n.dart';
-import 'axino_button.dart';
+import 'rtc_button.dart';
 
 class JalaliDatePicker extends StatefulWidget {
   final Jalali? initialDate;
   final void Function(Jalali selectedDate)? onDateSelected;
 
-  const JalaliDatePicker({
-    super.key,
-    this.initialDate,
-    this.onDateSelected,
-  });
+  const JalaliDatePicker({super.key, this.initialDate, this.onDateSelected});
 
   @override
   State<JalaliDatePicker> createState() => _JalaliDatePickerState();
@@ -66,8 +59,9 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
 
     dayController = FixedExtentScrollController(initialItem: selectedDay - 1);
     monthController = FixedExtentScrollController(initialItem: selectedMonth);
-    yearController =
-        FixedExtentScrollController(initialItem: years.indexOf(selectedYear));
+    yearController = FixedExtentScrollController(
+      initialItem: years.indexOf(selectedYear),
+    );
   }
 
   void _adjustDayIfNeeded() {
@@ -81,7 +75,6 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
   @override
   Widget build(BuildContext context) {
     _adjustDayIfNeeded();
-    bool isDark = isDarkMode(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24),
       child: Column(
@@ -97,12 +90,17 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                 selectedIndex: selectedDay - 1,
                 onChanged: (index) {
                   final newDay = index + 1;
-                  if (Jalali(selectedYear, selectedMonth + 1, newDay)
-                      .isAfter(today)) return;
+                  if (Jalali(
+                    selectedYear,
+                    selectedMonth + 1,
+                    newDay,
+                  ).isAfter(today))
+                    return;
                   setState(() {
                     selectedDay = newDay;
                     widget.onDateSelected?.call(
-                        Jalali(selectedYear, selectedMonth + 1, selectedDay));
+                      Jalali(selectedYear, selectedMonth + 1, selectedDay),
+                    );
                   });
                 },
                 controller: dayController,
@@ -119,7 +117,8 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                     selectedMonth = index;
                     _adjustDayIfNeeded();
                     widget.onDateSelected?.call(
-                        Jalali(selectedYear, selectedMonth + 1, selectedDay));
+                      Jalali(selectedYear, selectedMonth + 1, selectedDay),
+                    );
                   });
                 },
                 controller: monthController,
@@ -136,7 +135,8 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                     selectedYear = newYear;
                     _adjustDayIfNeeded();
                     widget.onDateSelected?.call(
-                        Jalali(selectedYear, selectedMonth + 1, selectedDay));
+                      Jalali(selectedYear, selectedMonth + 1, selectedDay),
+                    );
                   });
                 },
                 controller: yearController,
@@ -160,11 +160,12 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
       height: 180,
       child: Column(
         children: [
-          Text(label,
-              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  color: isDarkMode(context)
-                      ? AppColors.grayPalette.shade200
-                      : AppColors.grayPalette.shade600)),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+              color: AppColors.grayPalette.shade600,
+            ),
+          ),
           const SizedBox(height: 30),
           Expanded(
             child: Stack(
@@ -173,16 +174,18 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                 Positioned(
                   top: 38,
                   child: Container(
-                      width: 60,
-                      height: 1,
-                      color: AppColors.grayPalette.shade200),
+                    width: 60,
+                    height: 1,
+                    color: AppColors.grayPalette.shade200,
+                  ),
                 ),
                 Positioned(
                   bottom: 38,
                   child: Container(
-                      width: 60,
-                      height: 1,
-                      color: AppColors.grayPalette.shade200),
+                    width: 60,
+                    height: 1,
+                    color: AppColors.grayPalette.shade200,
+                  ),
                 ),
                 ListWheelScrollView.useDelegate(
                   controller: controller,
@@ -196,22 +199,20 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                     builder: (context, index) {
                       final isSelected = index == selectedIndex;
                       return Center(
-                        child: Text(items[index],
-                            style: isSelected
-                                ? Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                color: isDarkMode(context)
-                                    ? AppColors.grayPalette.shade100
-                                    : AppColors.grayPalette.shade800)
-                                : Theme.of(context)
-                                .textTheme
-                                .displayLarge!
-                                .copyWith(
-                                color: isDarkMode(context)
-                                    ? AppColors.grayPalette.shade400
-                                    : AppColors.grayPalette.shade400)),
+                        child: Text(
+                          items[index],
+                          style: isSelected
+                              ? Theme.of(
+                                  context,
+                                ).textTheme.titleMedium!.copyWith(
+                                  color: AppColors.grayPalette.shade800,
+                                )
+                              : Theme.of(
+                                  context,
+                                ).textTheme.displayLarge!.copyWith(
+                                  color: AppColors.grayPalette.shade400,
+                                ),
+                        ),
                       );
                     },
                   ),
@@ -231,7 +232,7 @@ class _DotSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 48, left: 4, right: 4),
+      padding: const EdgeInsets.only(top: 48, left: 4, right: 4),
       child: Text(
         '●',
         style: TextStyle(fontSize: 6, color: AppColors.grayPalette.shade800),
@@ -241,22 +242,19 @@ class _DotSeparator extends StatelessWidget {
 }
 
 showJalaliDatePickerSheet(
-    BuildContext context,
-    String title,
-    void Function(Jalali selectedDate) onDateSelected,
-    ) {
+  BuildContext context,
+  String title,
+  void Function(Jalali selectedDate) onDateSelected,
+) {
   Jalali selectedDate = Jalali.now();
 
   showModalBottomSheet(
-    backgroundColor:
-    isDarkMode(context) ? AppColors.grayPalette.shade900 : null,
     context: context,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     isScrollControlled: true,
     builder: (context) {
-      bool isDark = isDarkMode(context);
       return SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
@@ -266,7 +264,7 @@ showJalaliDatePickerSheet(
               Container(
                 height: 2,
                 width: 48,
-                color: AppColors.primaryDark,
+                color: AppColors.brandPalette.shade600,
               ),
               const SizedBox(height: 20),
               Align(
@@ -274,9 +272,8 @@ showJalaliDatePickerSheet(
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: isDark
-                          ? AppColors.grayPalette.shade100
-                          : AppColors.grayPalette.shade800),
+                    color: AppColors.grayPalette.shade800,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -289,28 +286,23 @@ showJalaliDatePickerSheet(
               Row(
                 children: [
                   Expanded(
-                    child: AxinoButton(
-                      title: S.current.select,
-                      size: AxinoButtonSize.medium,
+                    child: RtcButton(
+                      title: S.current.confirm,
+                      size: RtcButtonSize.medium,
                       onPressed: () {
                         onDateSelected(selectedDate);
                         Navigator.pop(context);
                       },
                     ),
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: AxinoButton(
+                    child: RtcButton(
                       title: S.current.back,
-                      backgroundColor:
-                      isDark ? AppColors.grayPalette.shade900 : Colors.white,
-                      size: AxinoButtonSize.medium,
-                      styleBtn: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(color: AppColors.primaryDark),
+                      backgroundColor: Colors.white,
+                      size: RtcButtonSize.medium,
+                      styleBtn: Theme.of(context).textTheme.titleMedium!
+                          .copyWith(color: AppColors.brandPalette.shade600),
                       onPressed: () {
                         Navigator.pop(context);
                       },
