@@ -131,7 +131,7 @@ class RtcDrawer extends StatelessWidget {
                       Text(
                         profile != null
                             ? '${profile.firstName} ${profile.lastName}'
-                            : userName ?? 'آرش فرداد',
+                            : userName ?? '',
                         style: theme.bodyLarge!.copyWith(
                           color: AppColors.grayPalette.shade700,
                           fontWeight: FontWeight.w500,

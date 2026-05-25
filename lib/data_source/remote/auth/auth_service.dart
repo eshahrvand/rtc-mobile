@@ -17,4 +17,7 @@ abstract class AuthService {
 
   @POST('accounts/token/refresh')
   Future<TokenDtoModel> refreshToken(@Body() Map<String, dynamic> body);
+
+  @GET('accounts/me')
+  Future<UserProfileDtoModel> getMe();
 }

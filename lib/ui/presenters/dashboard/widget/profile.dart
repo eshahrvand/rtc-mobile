@@ -60,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userProfile?.id ?? '',
+                      text: userProfile?.nationalCode ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -82,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userProfile?.creditLimit.toString() ?? '',
+                      text: userProfile?.agentCode ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -93,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userProfile?.id ?? '',
+                      text: userProfile?.insuranceId ?? '',
                     ),
                   ),
                   RtcTextField(
@@ -127,12 +127,12 @@ class ProfileScreen extends StatelessWidget {
                     readOnly: true,
                     maxLines: 3,
                     controller: TextEditingController(
-                      text: userProfile?.agentType ?? '',
+                      text: userProfile?.address ?? '',
                     ),
                   ),
                   RtcCreditLimitField(
                     labelText: S.current.creditLimit,
-                    value: userProfile?.creditLimit.toString() ?? '۰',
+                    value: userProfile?.creditLimit?.toStringAsFixed(0) ?? '۰',
                     helper: Row(
                       spacing: 8,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -161,7 +161,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     readOnly: true,
                     controller: TextEditingController(
-                      text: userProfile != null
+                      text: userProfile != null && userProfile!.manager != null
                           ? '${userProfile!.manager?.firstName} ${userProfile!.manager?.lastName}'
                           : '',
                     ),
@@ -216,9 +216,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
                 child: RtcImage(
-                  image:
-                      // userProfile?.avatar?.file ??
-                      '$baseImage/Avatar.png',
+                  image: userProfile?.avatar?.file ?? '$baseImage/Avatar.png',
                   width: 96,
                   height: 96,
                   isCircle: true,

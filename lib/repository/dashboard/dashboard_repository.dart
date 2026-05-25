@@ -1,18 +1,16 @@
+import '../../data_source/remote/auth/auth_service.dart';
 import '../../data_source/remote/dashboard/dashboard_service.dart';
 import '../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../data_source/remote/profile/model/user_profile_dto_model.dart';
 
 class DashboardRepository {
   final DashboardService _dashboardService;
+  final AuthService _authService;
 
-  DashboardRepository(this._dashboardService);
+  DashboardRepository(this._dashboardService, this._authService);
 
   Future<UserProfileDtoModel?> getMyProfile() async {
-    final response = await _dashboardService.getUserProfiles();
-    if (response.results.isNotEmpty) {
-      return response.results.first;
-    }
-    return null;
+    return await _authService.getMe();
   }
 
   Future<DashboardSummaryDtoModel> getSummary() async {

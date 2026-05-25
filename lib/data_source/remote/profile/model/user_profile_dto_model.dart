@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../catalog/model/product_dto_model.dart';
 
 part 'user_profile_dto_model.freezed.dart';
 part 'user_profile_dto_model.g.dart';
@@ -23,15 +24,25 @@ class UserProfileDtoModel with _$UserProfileDtoModel {
     required String role,
     @JsonKey(name: 'first_name') required String firstName,
     @JsonKey(name: 'last_name') required String lastName,
+    String? email,
     @JsonKey(name: 'is_active') required bool isActive,
     @JsonKey(name: 'date_joined') required String dateJoined,
-    @JsonKey(name: 'agent_type') required String agentType,
-    CityProvinceDtoModel? city,
+    @JsonKey(name: 'updated_at') String? updatedAt,
+    ImageDtoModel? avatar,
+    @JsonKey(name: 'agent_type') String? agentType,
+    @JsonKey(name: 'national_code') String? nationalCode,
+    @JsonKey(name: 'insurance_id') String? insuranceId,
     CityProvinceDtoModel? province,
-    @JsonKey(name: 'credit_limit') required int creditLimit,
-    required int tolerance,
+    CityProvinceDtoModel? city,
+    String? address,
+    @JsonKey(name: 'credit_limit') double? creditLimit,
+    double? tolerance,
+    @JsonKey(name: 'agent_code') String? agentCode,
     ManagerDtoModel? manager,
-    String? email, // Email wasn't in your last snippet, but was in the previous one. Adding as optional.
+    @JsonKey(name: 'completed_orders_count') int? completedOrdersCount,
+    @JsonKey(name: 'sales_last_30_days') double? salesLast30Days,
+    @JsonKey(name: 'total_sales') double? totalSales,
+    @JsonKey(name: 'wallet_balance') double? walletBalance,
   }) = _UserProfileDtoModel;
 
   factory UserProfileDtoModel.fromJson(Map<String, dynamic> json) => _$UserProfileDtoModelFromJson(json);

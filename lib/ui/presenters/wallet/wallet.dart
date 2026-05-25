@@ -250,11 +250,17 @@ class _PocketCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: AppColors.primaryShadow,
         ),
+        height: 110,
         child: Column(
           children: [
             Row(
               children: [
-                RtcImage(image: pocket.logoPath, width: 40, height: 40 , boxFit: BoxFit.fill,),
+                RtcImage(
+                  image: pocket.logoPath,
+                  width: 44,
+                  height: 44,
+                  boxFit: BoxFit.fill,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -291,15 +297,21 @@ class _PocketCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            const RtcDivider(isDashed: false),
+            Padding(
+              padding: const EdgeInsets.only(right: 52),
+              child: const RtcDivider(isDashed: false),
+            ),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  S.current.balance,
-                  style: theme.bodyMedium!.copyWith(
-                    color: AppColors.grayPalette.shade700,
+                Padding(
+                  padding: const EdgeInsets.only(right: 52),
+                  child: Text(
+                    S.current.balance,
+                    style: theme.bodyMedium!.copyWith(
+                      color: AppColors.grayPalette.shade700,
+                    ),
                   ),
                 ),
                 Row(

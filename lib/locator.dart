@@ -41,7 +41,7 @@ Future<void> initLocator() async {
 
   // Repositories
   sl.registerLazySingleton(() => AuthRepository(sl(), sl()));
-  sl.registerLazySingleton(() => DashboardRepository(sl()));
+  sl.registerLazySingleton(() => DashboardRepository(sl(), sl()));
   sl.registerLazySingleton(() => ProductRepository(sl()));
   sl.registerLazySingleton(() => PlansRepository(sl()));
   sl.registerLazySingleton(() => CustomersRepository(sl()));
