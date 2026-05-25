@@ -26,4 +26,7 @@ abstract class CustomersService {
     @Path('id') String id,
     @Body() Map<String, dynamic> body,
   );
+
+  @POST('orders/customers')
+  Future<CustomerDtoModel> createCustomer(@Body() Map<String, dynamic> body);
 }

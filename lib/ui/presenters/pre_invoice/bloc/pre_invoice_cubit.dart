@@ -11,6 +11,7 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
+import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
 import 'pre_invoice_state.dart';
 
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
@@ -71,7 +72,51 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     if (step == PreInvoiceStep.products && state.selectedCreditPlanId != null) {
       _loadProducts();
     }
+
+    if (step == PreInvoiceStep.documents && state.customerInfo != null) {
+      _submitCustomerInfo();
+      return; // Navigation handled in _submitCustomerInfo
+    }
+
     emit(state.copyWith(currentStep: step, isEditMode: false));
+  }
+
+  void _submitCustomerInfo() {
+    final info = state.customerInfo!;
+    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+
+    final body = {
+      'first_name': info.firstName,
+      'last_name': info.lastName,
+      'national_id': info.nationalId,
+      'mobile': info.phoneNumber,
+      'postal_code': info.postalCode,
+      'address': info.address,
+    };
+
+    Future<CustomerDtoModel> request;
+    if (state.isExistingCustomer && info.id != null) {
+      // Existing customer -> PATCH
+      request = _customerRepo.updateCustomer(info.id!, body);
+    } else {
+      // New customer -> POST
+      request = _customerRepo.createCustomer(body);
+    }
+
+    request.then((response) {
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.success,
+        customerInfo: info.copyWith(id: response.id),
+        isExistingCustomer: true,
+        currentStep: PreInvoiceStep.documents,
+        isEditMode: false,
+      ));
+    }).catchError((e) {
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.error,
+        errorMessage: 'خطا در ثبت اطلاعات مشتری',
+      ));
+    });
   }
 
   void _loadProducts() {
@@ -157,12 +202,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void onChipSelected(int index) {
     emit(state.copyWith(selectedChipIndex: index));
-    // Implementation for available only chip etc.
   }
 
   void toggleShowAvailableOnly() {
     emit(state.copyWith(showAvailableOnly: !state.showAvailableOnly));
-    // Re-filter locally or reload from API if backend supports in_stock for plan products
     _loadProducts();
   }
 
@@ -267,6 +310,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           if (response.results.isNotEmpty) {
             final dto = response.results.first;
             final info = CustomerInfoModel(
+              id: dto.id,
               firstName: dto.firstName,
               lastName: dto.lastName,
               nationalId: dto.nationalId,

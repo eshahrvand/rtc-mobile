@@ -55,6 +55,7 @@ class CartItemModel {
 }
 
 class CustomerInfoModel {
+  final String? id; // UUID from server
   final String firstName;
   final String lastName;
   final String nationalId;
@@ -64,6 +65,7 @@ class CustomerInfoModel {
   final bool isOrderSentToCustomerAddress;
 
   CustomerInfoModel({
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.nationalId,
@@ -74,6 +76,7 @@ class CustomerInfoModel {
   });
 
   CustomerInfoModel copyWith({
+    String? id,
     String? firstName,
     String? lastName,
     String? nationalId,
@@ -83,6 +86,7 @@ class CustomerInfoModel {
     bool? isOrderSentToCustomerAddress,
   }) {
     return CustomerInfoModel(
+      id: id ?? this.id,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       nationalId: nationalId ?? this.nationalId,
