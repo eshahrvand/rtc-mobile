@@ -34,6 +34,7 @@ class WalletCubit extends Cubit<WalletState> {
       selectedDateFrom: null,
       selectedDateTo: null,
       selectedTransactionType: null,
+      selectedDateOptionId: null,
     ));
 
     _fetchTransactions();
@@ -68,11 +69,15 @@ class WalletCubit extends Cubit<WalletState> {
     _fetchTransactions();
   }
 
-  void setDateFilter(String? from, String? to) {
-    if (state.selectedDateFrom == from && state.selectedDateTo == to) return;
+  void setDateFilter(String? from, String? to, {String? optionId}) {
+    if (state.selectedDateFrom == from && 
+        state.selectedDateTo == to && 
+        state.selectedDateOptionId == optionId) return;
+
     emit(state.copyWith(
       selectedDateFrom: from,
       selectedDateTo: to,
+      selectedDateOptionId: optionId,
     ));
     _fetchTransactions();
   }

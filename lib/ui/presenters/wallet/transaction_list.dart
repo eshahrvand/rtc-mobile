@@ -42,7 +42,9 @@ class TransactionListScreen extends StatelessWidget {
     Jalali? endJalali;
 
     if (state.selectedDateFrom != null) {
-      startJalali = Jalali.fromDateTime(DateTime.parse(state.selectedDateFrom!));
+      startJalali = Jalali.fromDateTime(
+        DateTime.parse(state.selectedDateFrom!),
+      );
     }
     if (state.selectedDateTo != null) {
       endJalali = Jalali.fromDateTime(DateTime.parse(state.selectedDateTo!));
@@ -52,14 +54,16 @@ class TransactionListScreen extends StatelessWidget {
       context,
       initialStartDate: startJalali,
       initialEndDate: endJalali,
-      onApply: (start, end) {
+      initialOptionId: state.selectedDateOptionId,
+      onApply: (start, end, optionId) {
         context.read<WalletCubit>().setDateFilter(
-              start?.toDateTime().toIso8601String(),
-              end?.toDateTime().toIso8601String(),
-            );
+          start?.toDateTime().toIso8601String(),
+          end?.toDateTime().toIso8601String(),
+          optionId: optionId,
+        );
       },
       onClear: () {
-        context.read<WalletCubit>().setDateFilter(null, null);
+        context.read<WalletCubit>().setDateFilter(null, null, optionId: null);
       },
     );
   }
@@ -86,31 +90,31 @@ class TransactionListScreen extends StatelessWidget {
                 child: state.status == WalletRequestStatus.loading
                     ? const Center(child: CircularProgressIndicator())
                     : state.transactions.isEmpty
-                        ? const Center(child: Text('تراکنشی یافت نشد'))
-                        : ListView.separated(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 16,
-                            ),
-                            itemCount: state.transactions.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              final transaction = state.transactions[index];
-                              return _TransactionCard(
-                                transaction: transaction,
-                                onTap: () {
-                                  context.read<WalletCubit>().selectTransaction(
-                                        transaction,
-                                      );
-                                  TransactionDetailsSheet.show(
-                                    context,
-                                    context.read<WalletCubit>(),
-                                  );
-                                },
+                    ? const Center(child: Text('تراکنشی یافت نشد'))
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        itemCount: state.transactions.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final transaction = state.transactions[index];
+                          return _TransactionCard(
+                            transaction: transaction,
+                            onTap: () {
+                              context.read<WalletCubit>().selectTransaction(
+                                transaction,
+                              );
+                              TransactionDetailsSheet.show(
+                                context,
+                                context.read<WalletCubit>(),
                               );
                             },
-                          ),
+                          );
+                        },
+                      ),
               ),
             ],
           ),
@@ -150,7 +154,7 @@ class TransactionListScreen extends StatelessWidget {
         if (chip.id == 1) {
           context.read<WalletCubit>().setTypeFilter(null);
         } else if (chip.id == 2) {
-          context.read<WalletCubit>().setDateFilter(null, null);
+          context.read<WalletCubit>().setDateFilter(null, null, optionId: null);
         }
       },
     );

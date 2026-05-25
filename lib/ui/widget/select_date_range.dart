@@ -86,7 +86,13 @@ class _SelectDateRangeWidgetState extends State<SelectDateRangeWidget> {
                 controller: _startDateController,
                 readOnly: true,
                 labelText: S.current.fromDate,
+                labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade700,
+                ),
                 hintText: S.current.startDate,
+                hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: AppColors.grayPalette.shade400,
+                ),
                 suffix: Container(
                   width: 44,
                   height: 44,
@@ -114,8 +120,13 @@ class _SelectDateRangeWidgetState extends State<SelectDateRangeWidget> {
                 controller: _endDateController,
                 readOnly: true,
                 labelText: S.current.toDate,
-
+                labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade700,
+                ),
                 hintText: S.current.endDate,
+                hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: AppColors.grayPalette.shade400,
+                ),
 
                 suffix: Container(
                   width: 44,

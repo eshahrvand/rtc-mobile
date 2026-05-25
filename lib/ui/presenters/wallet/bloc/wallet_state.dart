@@ -3,12 +3,7 @@ import '../../../../data/models/wallet_model.dart';
 
 part 'wallet_state.freezed.dart';
 
-enum WalletRequestStatus {
-  initial,
-  loading,
-  success,
-  error,
-}
+enum WalletRequestStatus { initial, loading, success, error }
 
 @freezed
 class WalletState with _$WalletState {
@@ -19,10 +14,11 @@ class WalletState with _$WalletState {
     PocketModel? selectedPocket,
     @Default([]) List<TransactionModel> transactions,
     TransactionModel? selectedTransaction,
-    
+
     // Filters
     String? selectedDateFrom,
     String? selectedDateTo,
     String? selectedTransactionType,
+    String? selectedDateOptionId,
   }) = _WalletState;
 }
