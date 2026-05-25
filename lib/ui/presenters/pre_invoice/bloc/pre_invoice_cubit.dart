@@ -1,110 +1,124 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import '../../../../config/config.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../data/models/pre_invoice_model.dart';
+import '../../../../locator.dart';
+import '../../../../repository/plans/plans_repository.dart';
+import '../../../../repository/product/product_repository.dart';
+import '../../../../repository/customers/customers_repository.dart';
+import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
+import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import 'pre_invoice_state.dart';
 
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
-  PreInvoiceCubit() : super(const PreInvoiceState());
-
+  final _plansRepo = sl<PlansRepository>();
+  final _productRepo = sl<ProductRepository>();
+  final _customerRepo = sl<CustomersRepository>();
   final ImagePicker _picker = ImagePicker();
+  Timer? _debounce;
+
+  PreInvoiceCubit() : super(const PreInvoiceState());
 
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    // Simulate loading credit plans and products
-    Future.delayed(const Duration(milliseconds: 500)).then((_) {
-      final mockPlans = [
-        CreditPlanItemModel(
-          id: '1',
-          logo: 'assets/images/snapp.png',
-          providerName: 'اسنپ پی',
-          planName: 'طرح ۶ ماهه',
-          validityDuration: '۴۸ ساعت',
-        ),
-        CreditPlanItemModel(
-          id: '2',
-          logo: 'assets/images/tejarat.png',
-          providerName: 'بانک تجارت',
-          planName: 'طرح ۶ ماهه',
-          validityDuration: '۴۸ ساعت',
-        ),
-        CreditPlanItemModel(
-          id: '3',
-          logo: 'assets/images/tara.png',
-          providerName: 'تارا',
-          planName: 'طرح ۶ ماهه',
-          validityDuration: '۴۸ ساعت',
-        ),
-        CreditPlanItemModel(
-          id: '4',
-          logo: 'assets/images/melli.png',
-          providerName: 'بانک ملی',
-          planName: 'طرح ۶ ماهه',
-          validityDuration: '۴۸ ساعت',
-        ),
-      ];
+    // Step 1: Fetch Plans
+    _plansRepo
+        .getSubPlans()
+        .then((response) {
+          final plans = response.results.map((dto) {
+            return CreditPlanItemModel(
+              id: dto.id,
+              logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
+              providerName: dto.creditPlan.name,
+              planName: 'طرح ${dto.repaymentDurationMonths} ماهه',
+              validityDuration: '۴۸ ساعت', // Mocked as not in DTO yet
+            );
+          }).toList();
 
-      final mockProducts = [
-        PreInvoiceProductModel(
-          id: '1',
-          name: 'ماکروویو ۵۵ اینچ RTC مدل Smart TV 4K',
-          imageUrl: '$baseImage/frame1.png',
-          price: '۱۴,۴۹۰,۰۰۰',
-          oldPrice: '۱۶,۱۰۰,۰۰۰',
-          discount: '۲۰٪',
-          inventory: '۸',
-        ),
-        PreInvoiceProductModel(
-          id: '2',
-          name: 'یخچال اسنوا ۵۵ اینچ RTC مدل Smart TV 4K',
-          imageUrl: '$baseImage/frame2.png',
-          price: '۱۴,۴۹۰,۰۰۰',
-          inventory: '۲',
-        ),
-        PreInvoiceProductModel(
-          id: '3',
-          name: 'قهوه ساز ۵۵ اینچ RTC مدل Smart TV 4K',
-          imageUrl: '$baseImage/frame3.png',
-          price: '۱۴,۴۹۰,۰۰۰',
-          inventory: '۰',
-          isAvailable: false,
-        ),
-        PreInvoiceProductModel(
-          id: '4',
-          name: 'کتری برقی آر تی سی مدل Smart 4K',
-          imageUrl: '$baseImage/frame4.png',
-          price: '۱۴,۴۹۰,۰۰۰',
-          oldPrice: '۱۶,۱۰۰,۰۰۰',
-          discount: '۲۰٪',
-          inventory: '۲',
-        ),
-      ];
+          final chips = [
+            PreInvoiceChipModel(
+              id: 1,
+              label: 'دسته بندی',
+              opensBottomSheet: true,
+            ),
+            PreInvoiceChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
+            PreInvoiceChipModel(id: 3, label: 'نمایش کالاهای موجود'),
+          ];
 
-      final mockChips = [
-        PreInvoiceChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
-        PreInvoiceChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
-        PreInvoiceChipModel(id: 3, label: 'نمایش کالاهای موجود'),
-      ];
-
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.success,
-        creditPlans: mockPlans,
-        allProducts: mockProducts,
-        filteredProducts: mockProducts,
-        filterChips: mockChips,
-      ));
-    }).catchError((e) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: e.toString(),
-      ));
-    });
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.success,
+              creditPlans: plans,
+              filterChips: chips,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+        });
   }
 
   void goToStep(PreInvoiceStep step) {
+    if (step == PreInvoiceStep.products && state.selectedCreditPlanId != null) {
+      _loadProducts();
+    }
     emit(state.copyWith(currentStep: step, isEditMode: false));
+  }
+
+  void _loadProducts() {
+    if (state.selectedCreditPlanId == null) return;
+
+    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedCreditPlanId!,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          categoryId: state.selectedCategoryId,
+        )
+        .then((response) {
+          final products = response.results
+              .map((dto) => _mapProductDtoToModel(dto))
+              .toList();
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.success,
+              allProducts: products,
+              filteredProducts: products,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+        });
+  }
+
+  PreInvoiceProductModel _mapProductDtoToModel(ProductDtoModel dto) {
+    final formatter = NumberFormat('#,###', 'en_US');
+    return PreInvoiceProductModel(
+      id: dto.id,
+      name: dto.name,
+      imageUrl: dto.featuredImage?.file ?? '$baseImage/frame1.png',
+      price: formatter.format(dto.planPrice ?? 0),
+      oldPrice: dto.basePrice != null ? formatter.format(dto.basePrice!) : null,
+      discount: dto.discountPct != null ? '${dto.discountPct}%' : null,
+      inventory: dto.stockQty.toString(),
+      isAvailable: dto.stockQty > 0,
+    );
   }
 
   void enterEditMode(PreInvoiceStep step) {
@@ -124,46 +138,38 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void deactivateSearch() {
-    emit(state.copyWith(
-      isSearchActive: false,
-      searchQuery: '',
-      filteredProducts: state.allProducts,
-    ));
+    emit(state.copyWith(isSearchActive: false, searchQuery: ''));
+    _loadProducts();
   }
 
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
-    _filterProducts();
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(seconds: 1), () {
+      _loadProducts();
+    });
+  }
+
+  void onCategorySelected(String? categoryId) {
+    emit(state.copyWith(selectedCategoryId: categoryId));
+    _loadProducts();
   }
 
   void onChipSelected(int index) {
     emit(state.copyWith(selectedChipIndex: index));
-    _filterProducts();
+    // Implementation for available only chip etc.
   }
 
   void toggleShowAvailableOnly() {
     emit(state.copyWith(showAvailableOnly: !state.showAvailableOnly));
-    _filterProducts();
-  }
-
-  void _filterProducts() {
-    var filtered = state.allProducts;
-    if (state.searchQuery.isNotEmpty) {
-      filtered = filtered
-          .where((p) => p.name.contains(state.searchQuery))
-          .toList();
-    }
-
-    if (state.showAvailableOnly) {
-      filtered = filtered.where((p) => p.isAvailable).toList();
-    }
-
-    // Add chip filtering logic here if needed
-    emit(state.copyWith(filteredProducts: filtered));
+    // Re-filter locally or reload from API if backend supports in_stock for plan products
+    _loadProducts();
   }
 
   void addToCart(PreInvoiceProductModel product) {
-    final existingIndex = state.cartItems.indexWhere((item) => item.productId == product.id);
+    final existingIndex = state.cartItems.indexWhere(
+      (item) => item.productId == product.id,
+    );
     final updatedCart = List<CartItemModel>.from(state.cartItems);
 
     if (existingIndex != -1) {
@@ -177,14 +183,16 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         quantity: existingItem.quantity + 1,
       );
     } else {
-      updatedCart.add(CartItemModel(
-        productId: product.id,
-        name: product.name,
-        imageUrl: product.imageUrl,
-        price: product.price,
-        discount: product.discount,
-        quantity: 1,
-      ));
+      updatedCart.add(
+        CartItemModel(
+          productId: product.id,
+          name: product.name,
+          imageUrl: product.imageUrl,
+          price: product.price,
+          discount: product.discount,
+          quantity: 1,
+        ),
+      );
     }
     emit(state.copyWith(cartItems: updatedCart));
   }
@@ -252,26 +260,54 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     emit(state.copyWith(customerSearchLoading: true));
 
-    Future.delayed(const Duration(seconds: 1)).then((_) {
-      final mockCustomer = CustomerInfoModel(
-        firstName: 'سامان',
-        lastName: 'راد',
-        nationalId: state.customerIdQuery,
-        phoneNumber: '۰۹۱۲۶۰۷۷۴۵۶',
-        postalCode: '۱۹۳۳۹۴۳۱۱۱',
-        address: 'تجریش، ابتدای شریعتی، کوچه پروین، پلاک ۲۸، زنگ ۳',
-      );
-      emit(state.copyWith(
-        customerSearchLoading: false,
-        customerInfo: mockCustomer,
-      ));
-    }).catchError((e) {
-      emit(state.copyWith(
-        customerSearchLoading: false,
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: 'مشتری یافت نشد',
-      ));
-    });
+    // Using getCustomers with national_id filter
+    _customerRepo
+        .getCustomers(nationalId: state.customerIdQuery)
+        .then((response) {
+          if (response.results.isNotEmpty) {
+            final dto = response.results.first;
+            final info = CustomerInfoModel(
+              firstName: dto.firstName,
+              lastName: dto.lastName,
+              nationalId: dto.nationalId,
+              phoneNumber: dto.mobile,
+              postalCode: dto.postalCode,
+              address: dto.address,
+            );
+            emit(
+              state.copyWith(
+                customerSearchLoading: false,
+                customerInfo: info,
+                isExistingCustomer: true,
+              ),
+            );
+          } else {
+            // Clear previous info and allow new entry
+            emit(
+              state.copyWith(
+                customerSearchLoading: false,
+                customerInfo: CustomerInfoModel(
+                  firstName: '',
+                  lastName: '',
+                  nationalId: state.customerIdQuery,
+                  phoneNumber: '',
+                  postalCode: '',
+                  address: '',
+                ),
+                isExistingCustomer: false,
+              ),
+            );
+          }
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              customerSearchLoading: false,
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در جستجوی مشتری',
+            ),
+          );
+        });
   }
 
   void onCustomerFieldChanged(String field, dynamic value) {
@@ -305,30 +341,41 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void pickMandatoryDoc() {
-    _picker.pickImage(source: ImageSource.gallery).then((image) {
-      if (image != null) {
-        emit(state.copyWith(mandatoryDocPath: image.path));
-      }
-    }).catchError((e) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: 'خطا در انتخاب تصویر',
-      ));
-    });
+    _picker
+        .pickImage(source: ImageSource.gallery)
+        .then((image) {
+          if (image != null) {
+            emit(state.copyWith(mandatoryDocPath: image.path));
+          }
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در انتخاب تصویر',
+            ),
+          );
+        });
   }
 
   void pickOptionalDoc() {
-    _picker.pickImage(source: ImageSource.gallery).then((image) {
-      if (image != null) {
-        final updatedPaths = List<String>.from(state.optionalDocPaths)..add(image.path);
-        emit(state.copyWith(optionalDocPaths: updatedPaths));
-      }
-    }).catchError((e) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: 'خطا در انتخاب تصویر',
-      ));
-    });
+    _picker
+        .pickImage(source: ImageSource.gallery)
+        .then((image) {
+          if (image != null) {
+            final updatedPaths = List<String>.from(state.optionalDocPaths)
+              ..add(image.path);
+            emit(state.copyWith(optionalDocPaths: updatedPaths));
+          }
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در انتخاب تصویر',
+            ),
+          );
+        });
   }
 
   void removeMandatoryDoc() {
@@ -336,31 +383,22 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void removeOptionalDoc(int index) {
-    final updatedPaths = List<String>.from(state.optionalDocPaths)..removeAt(index);
+    final updatedPaths = List<String>.from(state.optionalDocPaths)
+      ..removeAt(index);
     emit(state.copyWith(optionalDocPaths: updatedPaths));
   }
 
   void submitPreInvoice() {
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
-    Future.delayed(const Duration(seconds: 1)).then((_) {
-      emit(state.copyWith(status: PreInvoiceRequestStatus.submitted));
-    }).catchError((e) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: e.toString(),
-      ));
-    });
+    // Stage 1 ends here as per requirements
   }
 
   void submitAndClear() {
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
-    Future.delayed(const Duration(seconds: 1)).then((_) {
-      emit(state.copyWith(status: PreInvoiceRequestStatus.submittedAndCleared));
-    }).catchError((e) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: e.toString(),
-      ));
-    });
+    // Stage 1 ends here as per requirements
+  }
+
+  @override
+  Future<void> close() {
+    _debounce?.cancel();
+    return super.close();
   }
 }

@@ -43,12 +43,14 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(false) bool showAvailableOnly,
     @Default([]) List<CartItemModel> cartItems,
     @Default(false) bool isCartVisible,
+    String? selectedCategoryId,
 
     // Step 3 — Customer Info
     @Default('') String customerIdQuery,
     @Default(true) bool isNationalIdValid,
     CustomerInfoModel? customerInfo,
     @Default(false) bool customerSearchLoading,
+    @Default(false) bool isExistingCustomer,
 
     // Step 4 — Documents
     String? mandatoryDocPath,

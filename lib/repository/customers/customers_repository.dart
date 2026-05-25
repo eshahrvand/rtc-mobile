@@ -10,11 +10,13 @@ class CustomersRepository {
     String? search,
     int? page,
     int? pageSize,
+    String? nationalId,
   }) async {
     return await _customersService.getCustomers(
       search: search,
       page: page,
       pageSize: pageSize,
+      nationalId: nationalId,
     );
   }
 }

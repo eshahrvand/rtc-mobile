@@ -17,4 +17,13 @@ abstract class CustomersService {
     @Query('page_size') int? pageSize,
     @Query('search') String? search,
   });
+
+  @GET('orders/customers/{id}')
+  Future<CustomerDtoModel> getCustomerDetail(@Path('id') String id);
+
+  @PATCH('orders/customers/{id}')
+  Future<CustomerDtoModel> updateCustomer(
+    @Path('id') String id,
+    @Body() Map<String, dynamic> body,
+  );
 }

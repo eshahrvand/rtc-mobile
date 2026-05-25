@@ -6,14 +6,41 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/pre_invoice_model.dart';
+import '../../../../locator.dart';
+import '../../../../repository/product/product_repository.dart';
 import '../../../widget/rtc_chip_list.dart';
 import '../../../widget/rtc_text_field.dart';
+import '../../products/widget/filter_bottom_sheet.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'rtc_pre_invoice_product_item.dart';
 
 class PreInvoiceStep2View extends StatelessWidget {
   const PreInvoiceStep2View({super.key});
+
+  void _showCategoryFilter(BuildContext context, PreInvoiceCubit cubit, PreInvoiceState state) {
+    sl<ProductRepository>().getCategories().then((response) {
+      final items = response.results
+          .map((c) => FilterItem(id: c.id, title: c.name))
+          .toList();
+
+      if (context.mounted) {
+        FilterBottomSheet.show(
+          context,
+          title: S.current.categoryTitle,
+          subtitle: S.current.categoryFilterSubtitle,
+          items: items,
+          initialSelectedId: state.selectedCategoryId,
+          onApply: (selected) {
+            cubit.onCategorySelected(selected?.id);
+          },
+          onClear: () {
+            cubit.onCategorySelected(null);
+          },
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,18 +88,15 @@ class PreInvoiceStep2View extends StatelessWidget {
                     height: 48,
                     width: 140,
                     child: RtcChipList(
-                      chips: state.filterChips
-                          .where((c) => c.label == "دسته بندی")
-                          .map(
-                            (c) => ProductChipModel(
-                              id: c.id,
-                              label: c.label,
-                              opensBottomSheet: c.opensBottomSheet,
-                            ),
-                          )
-                          .toList(),
-                      isChipSelected: (index, chip) => false,
-                      onChipTap: (index, chip) => cubit.onChipSelected(index),
+                      chips: [
+                        ProductChipModel(
+                          id: 1,
+                          label: 'دسته بندی',
+                          opensBottomSheet: true,
+                        ),
+                      ],
+                      isChipSelected: (index, chip) => state.selectedCategoryId != null,
+                      onChipTap: (index, chip) => _showCategoryFilter(context, cubit, state),
                     ),
                   ),
                   const Spacer(),
@@ -115,29 +139,31 @@ class PreInvoiceStep2View extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: state.filteredProducts.length,
-                itemBuilder: (context, index) {
-                  final product = state.filteredProducts[index];
-                  final cartItem = state.cartItems.firstWhere(
-                    (item) => item.productId == product.id,
-                    orElse: () => CartItemModel(
-                      productId: '',
-                      name: '',
-                      imageUrl: '',
-                      price: '',
-                      quantity: 0,
-                    ),
-                  );
+              child: state.status == PreInvoiceRequestStatus.loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: state.filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = state.filteredProducts[index];
+                        final cartItem = state.cartItems.firstWhere(
+                          (item) => item.productId == product.id,
+                          orElse: () => CartItemModel(
+                            productId: '',
+                            name: '',
+                            imageUrl: '',
+                            price: '',
+                            quantity: 0,
+                          ),
+                        );
 
-                  return RtcPreInvoiceProductItem(
-                    product: product,
-                    quantity: cartItem.quantity,
-                    onAdd: () => cubit.addToCart(product),
-                    onRemove: () => cubit.removeFromCart(product.id),
-                  );
-                },
-              ),
+                        return RtcPreInvoiceProductItem(
+                          product: product,
+                          quantity: cartItem.quantity,
+                          onAdd: () => cubit.addToCart(product),
+                          onRemove: () => cubit.removeFromCart(product.id),
+                        );
+                      },
+                    ),
             ),
           ],
         );

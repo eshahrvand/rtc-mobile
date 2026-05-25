@@ -62,7 +62,12 @@ class RtcCreditPlanItem extends StatelessWidget {
                   ),
                 ),
 
-                RtcImage(image: plan.logo, width: 48, height: 48),
+                RtcImage(
+                  image: plan.logo,
+                  width: 44,
+                  height: 44,
+                  boxFit: BoxFit.fill,
+                ),
               ],
             ),
             const SizedBox(height: 12),
