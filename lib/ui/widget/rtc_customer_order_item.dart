@@ -34,6 +34,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: AppColors.grayPalette.shade900,
                     ),
+                    // maxLines: 2,
                   ),
 
                   Text(
