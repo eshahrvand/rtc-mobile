@@ -67,6 +67,6 @@ class WalletRepository {
     if (name.contains('اسنپ')) return 'assets/images/snapp.png';
     if (name.contains('تجارت')) return 'assets/images/tejarat.png';
     if (name.contains('تارا')) return 'assets/images/tara.png';
-    return 'assets/images/wallet.png';
+    return 'assets/images/wallet.svg';
   }
 }

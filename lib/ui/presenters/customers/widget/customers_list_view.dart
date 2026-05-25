@@ -9,19 +9,38 @@ import '../../../widget/rtc_text_field.dart';
 import '../bloc/customers_cubit.dart';
 import '../bloc/customers_state.dart';
 
-class CustomersListView extends StatelessWidget {
+class CustomersListView extends StatefulWidget {
   const CustomersListView({super.key});
+
+  @override
+  State<CustomersListView> createState() => _CustomersListViewState();
+}
+
+class _CustomersListViewState extends State<CustomersListView> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return BlocBuilder<CustomersCubit, CustomersState>(
       builder: (context, state) {
+        // Sync controller with state (e.g. when cleared from outside)
+        if (_searchController.text != state.searchQuery) {
+          _searchController.text = state.searchQuery;
+        }
+
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16 , 10 , 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
               child: RtcTextField(
+                controller: _searchController,
                 hintText: S.current.search,
                 hintStyle: theme.bodyLarge!.copyWith(
                   color: AppColors.grayPalette.shade400,
@@ -29,6 +48,23 @@ class CustomersListView extends StatelessWidget {
                 onChanged: (value) =>
                     context.read<CustomersCubit>().onSearchChanged(value),
                 prefix: RtcImage(image: "$baseImage/search.svg"),
+                suffix: state.searchQuery.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          context.read<CustomersCubit>().onSearchChanged('');
+                        },
+                        child: Padding(
+                          padding:  EdgeInsets.only(left: 10),
+                          child: RtcImage(
+                            image: "$baseImage/close.svg",
+                            width: 20,
+                            height: 20,
+                            boxFit: BoxFit.fill,
+                            color: AppColors.grayPalette.shade700),
+                        ),
+                      )
+                    : null,
               ),
             ),
             Expanded(

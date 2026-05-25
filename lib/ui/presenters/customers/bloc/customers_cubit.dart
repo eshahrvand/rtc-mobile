@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/models/customer_model.dart';
 import '../../../../repository/customers/customers_repository.dart';
@@ -8,6 +9,7 @@ import 'customers_state.dart';
 class CustomersCubit extends Cubit<CustomersState> {
   final _customersRepo = sl<CustomersRepository>();
   final _ordersRepo = sl<OrdersRepository>();
+  Timer? _debounce;
 
   CustomersCubit() : super(const CustomersState());
 
@@ -50,7 +52,25 @@ class CustomersCubit extends Cubit<CustomersState> {
 
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
-    init(); // Trigger a new API fetch based on search query
+
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+
+    if (query.isEmpty) {
+      init();
+      return;
+    }
+
+    if (query.length < 2) return;
+
+    _debounce = Timer(const Duration(seconds: 1), () {
+      init();
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _debounce?.cancel();
+    return super.close();
   }
 
   void onCustomerTapped(CustomerItemModel customer) {
