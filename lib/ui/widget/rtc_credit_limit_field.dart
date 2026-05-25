@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../theme/colors.dart';
 
 class RtcCreditLimitField extends StatelessWidget {
@@ -12,6 +13,14 @@ class RtcCreditLimitField extends StatelessWidget {
     this.value,
     this.helper,
   });
+
+  String _formatValue(String? val) {
+    if (val == null || val.isEmpty) return '';
+    final cleanVal = val.replaceAll(RegExp(r'[^0-9]'), '');
+    final number = int.tryParse(cleanVal);
+    if (number == null) return val;
+    return NumberFormat('#,###', 'en_US').format(number);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,23 +57,21 @@ class RtcCreditLimitField extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: Text(
-                    value ?? '',
-                    textAlign: TextAlign.left,
+                    _formatValue(value),
+                    textAlign: TextAlign.right,
+                    // BUG FIX: Set to right for RTL compliance
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: AppColors
-                          .grayPalette
-                          .shade900, // TODO: replace with theme color
+                      color: AppColors.grayPalette.shade900,
                     ),
                   ),
                 ),
               ),
-              // Badge "تومان"
+
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
                   color: AppColors.brandPalette.shade600,
-                  // TODO: replace with theme color
                   borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(0),
                     bottomRight: Radius.circular(0),
