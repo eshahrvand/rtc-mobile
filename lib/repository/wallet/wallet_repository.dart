@@ -20,7 +20,7 @@ class WalletRepository {
             bankName: p.subPlan.name,
             planName: 'طرح ${p.subPlan.repaymentDurationMonths} ماهه',
             balance: _formatCurrency(p.balance),
-            logoPath: _getLogoForPlan(p.subPlan.name),
+            logoPath: p.subPlan.creditPlan?.image?.file ?? 'assets/images/wallet.svg',
           )).toList(),
         ));
   }
@@ -60,13 +60,5 @@ class WalletRepository {
   String _formatCurrency(double value) {
     final formatter = NumberFormat('#,###', 'en_US');
     return formatter.format(value.abs().toInt());
-  }
-
-  String _getLogoForPlan(String name) {
-    if (name.contains('ملی')) return 'assets/images/melli.png';
-    if (name.contains('اسنپ')) return 'assets/images/snapp.png';
-    if (name.contains('تجارت')) return 'assets/images/tejarat.png';
-    if (name.contains('تارا')) return 'assets/images/tara.png';
-    return 'assets/images/wallet.svg';
   }
 }

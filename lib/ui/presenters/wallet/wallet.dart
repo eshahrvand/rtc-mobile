@@ -254,7 +254,7 @@ class _PocketCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(pocket.logoPath, width: 40, height: 40),
+                RtcImage(image: pocket.logoPath, width: 40, height: 40 , boxFit: BoxFit.fill,),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

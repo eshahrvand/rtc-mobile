@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../plans/model/plan_dto_model.dart';
 
 part 'wallet_dto_model.freezed.dart';
 part 'wallet_dto_model.g.dart';
@@ -34,6 +35,7 @@ class WalletSubPlanDtoModel with _$WalletSubPlanDtoModel {
     required String id,
     required String name,
     @JsonKey(name: 'repayment_duration_months') required int repaymentDurationMonths,
+    @JsonKey(name: 'credit_plan') CreditPlanSummaryDtoModel? creditPlan,
   }) = _WalletSubPlanDtoModel;
 
   factory WalletSubPlanDtoModel.fromJson(Map<String, dynamic> json) => _$WalletSubPlanDtoModelFromJson(json);
