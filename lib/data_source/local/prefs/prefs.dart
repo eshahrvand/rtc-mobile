@@ -20,4 +20,8 @@ class Prefs {
     await _prefs.remove(_accessTokenKey);
     await _prefs.remove(_refreshTokenKey);
   }
+
+  Future<void> clear() async {
+    await _prefs.clear();
+  }
 }

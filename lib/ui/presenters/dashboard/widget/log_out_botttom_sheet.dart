@@ -1,149 +1,133 @@
-
-
-import 'package:axino/config/constant.dart';
-import 'package:axino/generated/l10n.dart';
-import 'package:axino/locator.dart';
-import 'package:axino/ui/presenters/widget/axino_button.dart';
-import 'package:axino/ui/presenters/widget/axino_icon_button.dart';
-import 'package:axino/ui/presenters/widget/axino_image.dart';
-import 'package:axino/ui/router/app_route.dart';
-import 'package:axino/ui/theme/colors.dart';
-import 'package:axino/ui/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rtc_mobile/ui/router/app_route.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_button.dart';
+import 'package:rtc_mobile/ui/widget/rtc_icon_button.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
+import '../../../../config/config.dart';
 import '../../../../data_source/local/prefs/prefs.dart';
-import '../../../../data_source/repository/splash/catch_wallet_info.dart';
+import '../../../../locator.dart';
 
-void logOutBottomSheet({
-  required BuildContext context,
-}) {
+void showLogOutBottomSheet({required BuildContext context}) {
   showModalBottomSheet(
     isScrollControlled: true,
-    backgroundColor:
-    isDarkMode(context) ? AppColors.grayPalette.shade900 : null,
+    backgroundColor: Colors.transparent,
     context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-          topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-    ),
     builder: (BuildContext bottomSheetContext) {
-      bool isDark = isDarkMode(context);
-      return Padding(
-        padding:
-        EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom),
-        child: Wrap(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20, bottom: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(height: 12),
-                  Center(
-                    child: Container(
-                      height: 2,
-                      width: 48,
-                      color: AppColors.primaryDark,
-                    ),
+      var theme = Theme.of(context).textTheme;
+
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewPadding.bottom,
+          ),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    height: 2,
+                    width: 32,
+                    color: AppColors.brandPalette.shade600,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Row(
-                      spacing: 8,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
-                        AxinoImage(
-                          image: '$baseImage/exit.svg',
-                          color: isDark
-                              ? AppColors.grayPalette.shade100
-                              : AppColors.grayPalette.shade800,
+                        RtcImage(
+                          image: "$baseImage/door_close.svg",
+                          color: AppColors.grayPalette.shade800,
                           width: 20,
                           height: 20,
                         ),
-                        Text(
-                          S.current.logOut,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                              color: isDark
-                                  ? AppColors.grayPalette.shade100
-                                  : AppColors.grayPalette.shade800),
-                        ),
-                        Expanded(child: SizedBox()),
-                        AxinoIconButton(
-                          icon: '$baseImage/close.svg',
-                          color: isDark ? AppColors.grayPalette.shade100 : null,
-                          size: 20,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        )
+                        const SizedBox(width: 8),
+                        Text("خروج", style: theme.labelLarge!.copyWith()),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  Text(S.current.logOutConfirmation,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(
-                          color: isDark
-                              ? AppColors.grayPalette.shade100
-                              : AppColors.grayPalette.shade800)),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 48),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AxinoButton(
-                            title: S.current.logOut,
-                            size: AxinoButtonSize.medium,
-                            onPressed: () {
-                              logOut(context);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: AxinoButton(
-                            title: S.current.back,
-                            backgroundColor: isDark
-                                ? AppColors.grayPalette.shade900
-                                : Colors.white,
-                            size: AxinoButtonSize.medium,
-                            styleBtn: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: AppColors.primaryDark),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: RtcImage(
+                        image: '$baseImage/close.svg',
+                        width: 20,
+                        height: 20,
+                        color: AppColors.grayPalette.shade800,
+                        boxFit: BoxFit.fill,
+                      ),
                     ),
-                  )
-                ],
-              ),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                Text(
+                  "آیا از خروج از حساب کاربری خود اطمینان دارید؟",
+                  style: theme.bodyLarge!.copyWith(
+                    color: AppColors.grayPalette.shade800,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RtcButton(
+                        title: "خروج",
+                        size: RtcButtonSize.medium,
+                        onPressed: () {
+                          _performLogOut(context);
+                        },
+                        styleBtn: theme.labelLarge!.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        backgroundColor: AppColors.errorPalette.shade600,
+                        borderColor: AppColors.errorPalette.shade600,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: RtcButton(
+                        title: "بازگشت",
+                        borderColor: Colors.white,
+                        backgroundColor: Colors.white,
+
+                        size: RtcButtonSize.medium,
+                        styleBtn: theme.labelLarge!.copyWith(
+                          color: AppColors.grayPalette.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
     },
   );
 }
 
-void logOut(BuildContext context) async {
-  await Preferences.clear();
-  final walletCache = locator.get<WalletCache>();
-  walletCache.clearAll();
-  context.pushReplacement(AppRoutes.auth);
+void _performLogOut(BuildContext context) async {
+  final prefs = sl<Prefs>();
+  await prefs.clear();
+
+  if (context.mounted) {
+    context.go(AppRoutes.auth);
+  }
 }

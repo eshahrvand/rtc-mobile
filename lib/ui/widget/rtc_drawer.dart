@@ -9,6 +9,7 @@ import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../generated/l10n.dart';
 import '../presenters/dashboard/bloc/dashboard_cubit.dart';
 import '../presenters/dashboard/bloc/dashboard_state.dart';
+import '../presenters/dashboard/widget/log_out_botttom_sheet.dart';
 
 class RtcDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -148,7 +149,7 @@ class RtcDrawer extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     onPressed: () {
-                      context.go(AppRoutes.profile);
+                      showLogOutBottomSheet(context: context);
                     },
                     icon: RtcImage(
                       image: "$baseImage/door_close.svg",
