@@ -204,5 +204,16 @@
   "cashCommission": "",
   "orderStatusChartTitle": "",
   "salesByCategoryChartTitle": "",
-  "plansSalesChartTitle": ""
+  "plansSalesChartTitle": "",
+  "select": "",
+  "fromDate": "",
+  "toDate": "",
+  "selectEndDate": "",
+  "day": "",
+  "month": "",
+  "year": "",
+  "startDate": "",
+  "endDate": "",
+  "selectStartDate": "",
+  "selectDate": ""
 }

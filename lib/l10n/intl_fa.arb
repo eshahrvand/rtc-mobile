@@ -204,5 +204,16 @@
   "cashCommission": "پورسانت نقدی",
   "orderStatusChartTitle": "وضعیت سفارش‌ها",
   "salesByCategoryChartTitle": "تعداد فروش بر اساس دسته‌بندی کالا",
-  "plansSalesChartTitle": "جمع فروش طرح‌ها در ماه جاری"
+  "plansSalesChartTitle": "جمع فروش طرح‌ها در ماه جاری",
+  "select": "انتخاب",
+  "fromDate": "از تاریخ",
+  "toDate": "تا تاریخ",
+  "selectEndDate": "تاریخ پایان را انتخاب کنید",
+  "day": "روز",
+  "month": "ماه",
+  "year": "سال",
+  "startDate": "تاریخ شروع",
+  "endDate": "تاریخ پایان",
+  "selectStartDate": "تاریخ شروع را انتخاب کنید",
+  "selectDate": "تاریخ مورد نظر را انتخاب کنید"
 }

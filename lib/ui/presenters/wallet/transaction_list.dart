@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
-import 'package:rtc_mobile/ui/widget/rtc_date_picker.dart';
+import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../products/widget/filter_bottom_sheet.dart';
@@ -37,14 +38,28 @@ class TransactionListScreen extends StatelessWidget {
   }
 
   void _showDateFilter(BuildContext context, WalletState state) {
-    showJalaliDatePickerSheet(
+    Jalali? startJalali;
+    Jalali? endJalali;
+
+    if (state.selectedDateFrom != null) {
+      startJalali = Jalali.fromDateTime(DateTime.parse(state.selectedDateFrom!));
+    }
+    if (state.selectedDateTo != null) {
+      endJalali = Jalali.fromDateTime(DateTime.parse(state.selectedDateTo!));
+    }
+
+    FilterDateBottomSheet.show(
       context,
-      S.current.registrationDate,
-      (selectedDate) {
+      initialStartDate: startJalali,
+      initialEndDate: endJalali,
+      onApply: (start, end) {
         context.read<WalletCubit>().setDateFilter(
-              selectedDate.toDateTime().toIso8601String(),
-              selectedDate.toDateTime().toIso8601String(),
+              start?.toDateTime().toIso8601String(),
+              end?.toDateTime().toIso8601String(),
             );
+      },
+      onClear: () {
+        context.read<WalletCubit>().setDateFilter(null, null);
       },
     );
   }

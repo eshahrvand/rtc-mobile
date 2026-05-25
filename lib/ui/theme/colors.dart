@@ -264,4 +264,7 @@ class AppColors {
       color: Color(0x14676E76),
     ),
   ];
+
+
+  static const calenderDark = Color(0xFF499989);
 }
