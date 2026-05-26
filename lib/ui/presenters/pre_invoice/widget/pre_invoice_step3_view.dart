@@ -244,12 +244,16 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                                 height: 20,
                               ),
                             ),
-                            Text(
-                              state.customerInfo!.isOrderSentToCustomerAddress
-                                  ? S.current.active
-                                  : S.current.inactive,
-                              style: theme.bodyMedium!.copyWith(
-                                color: AppColors.grayPalette.shade700,
+                            SizedBox(
+                              width: 48,
+                              child: Text(
+                                textAlign: TextAlign.left,
+                                state.customerInfo!.isOrderSentToCustomerAddress
+                                    ? S.current.active
+                                    : S.current.inactive,
+                                style: theme.bodyMedium!.copyWith(
+                                  color: AppColors.grayPalette.shade700,
+                                ),
                               ),
                             ),
                           ],
