@@ -48,7 +48,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                     _buildUploadBox(
                       context,
                       path: state.mandatoryDocPath,
-                      onTap: () => cubit.pickMandatoryDoc(),
+                      onTap: () => cubit.pickMandatoryDoc(context),
                       onRemove: () => cubit.removeMandatoryDoc(),
                     ),
                     const SizedBox(height: 32),
@@ -64,7 +64,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                         ),
                         if (state.optionalDocPaths.isNotEmpty)
                           RtcTextButton(
-                            onPressed: () => cubit.pickOptionalDoc(),
+                            onPressed: () => cubit.pickOptionalDoc(context),
                             title: S.current.add,
                             leftIcon: "$baseImage/plus.svg",
                             leftIconColor: AppColors.brandPalette.shade600,
@@ -95,7 +95,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                     if (state.optionalDocPaths.isEmpty)
                       _buildUploadPlaceholder(
                         context,
-                        onTap: () => cubit.pickOptionalDoc(),
+                        onTap: () => cubit.pickOptionalDoc(context),
                       ),
                   ],
                 ),

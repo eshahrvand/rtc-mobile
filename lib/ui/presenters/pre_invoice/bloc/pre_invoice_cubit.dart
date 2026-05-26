@@ -12,6 +12,7 @@ import '../../../../repository/customers/customers_repository.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
+import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
 
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
@@ -26,7 +27,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    // Step 1: Fetch Plans
     _plansRepo
         .getSubPlans()
         .then((response) {
@@ -36,16 +36,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
               providerName: dto.creditPlan.name,
               planName: 'طرح ${dto.repaymentDurationMonths} ماهه',
-              validityDuration: '۴۸ ساعت', // Mocked as not in DTO yet
+              validityDuration: '۴۸ ساعت',
             );
           }).toList();
 
           final chips = [
-            PreInvoiceChipModel(
-              id: 1,
-              label: 'دسته بندی',
-              opensBottomSheet: true,
-            ),
+            PreInvoiceChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
             PreInvoiceChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
             PreInvoiceChipModel(id: 3, label: 'نمایش کالاهای موجود'),
           ];
@@ -72,12 +68,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     if (step == PreInvoiceStep.products && state.selectedCreditPlanId != null) {
       _loadProducts();
     }
-
     if (step == PreInvoiceStep.documents && state.customerInfo != null) {
       _submitCustomerInfo();
-      return; // Navigation handled in _submitCustomerInfo
+      return;
     }
-
     emit(state.copyWith(currentStep: step, isEditMode: false));
   }
 
@@ -96,10 +90,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     Future<CustomerDtoModel> request;
     if (state.isExistingCustomer && info.id != null) {
-      // Existing customer -> PATCH
       request = _customerRepo.updateCustomer(info.id!, body);
     } else {
-      // New customer -> POST
       request = _customerRepo.createCustomer(body);
     }
 
@@ -121,7 +113,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void _loadProducts() {
     if (state.selectedCreditPlanId == null) return;
-
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
     _productRepo
@@ -210,9 +201,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void addToCart(PreInvoiceProductModel product) {
-    final existingIndex = state.cartItems.indexWhere(
-      (item) => item.productId == product.id,
-    );
+    final existingIndex = state.cartItems.indexWhere((item) => item.productId == product.id);
     final updatedCart = List<CartItemModel>.from(state.cartItems);
 
     if (existingIndex != -1) {
@@ -226,16 +215,14 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         quantity: existingItem.quantity + 1,
       );
     } else {
-      updatedCart.add(
-        CartItemModel(
-          productId: product.id,
-          name: product.name,
-          imageUrl: product.imageUrl,
-          price: product.price,
-          discount: product.discount,
-          quantity: 1,
-        ),
-      );
+      updatedCart.add(CartItemModel(
+        productId: product.id,
+        name: product.name,
+        imageUrl: product.imageUrl,
+        price: product.price,
+        discount: product.discount,
+        quantity: 1,
+      ));
     }
     emit(state.copyWith(cartItems: updatedCart));
   }
@@ -300,10 +287,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void searchCustomer() {
     if (state.customerIdQuery.isEmpty) return;
-
     emit(state.copyWith(customerSearchLoading: true));
 
-    // Using getCustomers with national_id filter
     _customerRepo
         .getCustomers(nationalId: state.customerIdQuery)
         .then((response) {
@@ -318,39 +303,32 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               postalCode: dto.postalCode,
               address: dto.address,
             );
-            emit(
-              state.copyWith(
-                customerSearchLoading: false,
-                customerInfo: info,
-                isExistingCustomer: true,
-              ),
-            );
+            emit(state.copyWith(
+              customerSearchLoading: false,
+              customerInfo: info,
+              isExistingCustomer: true,
+            ));
           } else {
-            // Clear previous info and allow new entry
-            emit(
-              state.copyWith(
-                customerSearchLoading: false,
-                customerInfo: CustomerInfoModel(
-                  firstName: '',
-                  lastName: '',
-                  nationalId: state.customerIdQuery,
-                  phoneNumber: '',
-                  postalCode: '',
-                  address: '',
-                ),
-                isExistingCustomer: false,
+            emit(state.copyWith(
+              customerSearchLoading: false,
+              customerInfo: CustomerInfoModel(
+                firstName: '',
+                lastName: '',
+                nationalId: state.customerIdQuery,
+                phoneNumber: '',
+                postalCode: '',
+                address: '',
               ),
-            );
+              isExistingCustomer: false,
+            ));
           }
         })
         .catchError((e) {
-          emit(
-            state.copyWith(
-              customerSearchLoading: false,
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در جستجوی مشتری',
-            ),
-          );
+          emit(state.copyWith(
+            customerSearchLoading: false,
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: 'خطا در جستجوی مشتری',
+          ));
         });
   }
 
@@ -359,67 +337,31 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     var updated = state.customerInfo!;
 
     switch (field) {
-      case 'firstName':
-        updated = updated.copyWith(firstName: value);
-        break;
-      case 'lastName':
-        updated = updated.copyWith(lastName: value);
-        break;
-      case 'nationalId':
-        updated = updated.copyWith(nationalId: value);
-        break;
-      case 'phoneNumber':
-        updated = updated.copyWith(phoneNumber: value);
-        break;
-      case 'postalCode':
-        updated = updated.copyWith(postalCode: value);
-        break;
-      case 'address':
-        updated = updated.copyWith(address: value);
-        break;
-      case 'isOrderSentToCustomerAddress':
-        updated = updated.copyWith(isOrderSentToCustomerAddress: value);
-        break;
+      case 'firstName': updated = updated.copyWith(firstName: value); break;
+      case 'lastName': updated = updated.copyWith(lastName: value); break;
+      case 'nationalId': updated = updated.copyWith(nationalId: value); break;
+      case 'phoneNumber': updated = updated.copyWith(phoneNumber: value); break;
+      case 'postalCode': updated = updated.copyWith(postalCode: value); break;
+      case 'address': updated = updated.copyWith(address: value); break;
+      case 'isOrderSentToCustomerAddress': updated = updated.copyWith(isOrderSentToCustomerAddress: value); break;
     }
     emit(state.copyWith(customerInfo: updated));
   }
 
-  void pickMandatoryDoc() {
-    _picker
-        .pickImage(source: ImageSource.gallery)
-        .then((image) {
-          if (image != null) {
-            emit(state.copyWith(mandatoryDocPath: image.path));
-          }
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در انتخاب تصویر',
-            ),
-          );
-        });
+  Future<void> pickMandatoryDoc(dynamic context) async {
+    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: false);
+    if (result != null && result.isNotEmpty) {
+      emit(state.copyWith(mandatoryDocPath: result.first.file.path));
+    }
   }
 
-  void pickOptionalDoc() {
-    _picker
-        .pickImage(source: ImageSource.gallery)
-        .then((image) {
-          if (image != null) {
-            final updatedPaths = List<String>.from(state.optionalDocPaths)
-              ..add(image.path);
-            emit(state.copyWith(optionalDocPaths: updatedPaths));
-          }
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در انتخاب تصویر',
-            ),
-          );
-        });
+  Future<void> pickOptionalDoc(dynamic context) async {
+    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: true);
+    if (result != null && result.isNotEmpty) {
+      final updatedPaths = List<String>.from(state.optionalDocPaths)
+        ..addAll(result.map((m) => m.file.path));
+      emit(state.copyWith(optionalDocPaths: updatedPaths));
+    }
   }
 
   void removeMandatoryDoc() {
@@ -427,18 +369,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void removeOptionalDoc(int index) {
-    final updatedPaths = List<String>.from(state.optionalDocPaths)
-      ..removeAt(index);
+    final updatedPaths = List<String>.from(state.optionalDocPaths)..removeAt(index);
     emit(state.copyWith(optionalDocPaths: updatedPaths));
   }
 
-  void submitPreInvoice() {
-    // Stage 1 ends here as per requirements
-  }
-
-  void submitAndClear() {
-    // Stage 1 ends here as per requirements
-  }
+  void submitPreInvoice() {}
+  void submitAndClear() {}
 
   @override
   Future<void> close() {

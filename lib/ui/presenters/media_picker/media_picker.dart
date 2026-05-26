@@ -1,0 +1,257 @@
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:photo_manager/photo_manager.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+
+import 'bloc/media_picker_cubit.dart';
+import 'bloc/media_picker_state.dart';
+import 'bloc/model/media_item.dart';
+
+class MediaPickerBottomSheet extends StatefulWidget {
+  final bool isMultiSelection;
+
+  const MediaPickerBottomSheet({super.key, this.isMultiSelection = false});
+
+  static Future<List<MediaItem>?> show(BuildContext context, {bool isMultiSelection = false}) {
+    return showModalBottomSheet<List<MediaItem>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BlocProvider(
+        create: (context) => MediaPickerCubit(isMultiSelection: isMultiSelection),
+        child: MediaPickerBottomSheet(isMultiSelection: isMultiSelection),
+      ),
+    );
+  }
+
+  @override
+  State<MediaPickerBottomSheet> createState() => _MediaPickerBottomSheetState();
+}
+
+class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<MediaPickerCubit>().loadInitialGallery();
+
+    _scrollController.addListener(() {
+      final cubit = context.read<MediaPickerCubit>();
+      if (_scrollController.position.pixels >
+          _scrollController.position.maxScrollExtent - 300) {
+        cubit.loadNextPage();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<MediaPickerCubit, MediaPickerState>(
+      listenWhen: (prev, curr) =>
+          prev.error != curr.error || prev.confirmed != curr.confirmed,
+      listener: (context, state) {
+        if (state.confirmed) {
+          Navigator.of(context).pop(state.selectedMedia);
+        }
+        if (state.error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error!)),
+          );
+        }
+      },
+      builder: (context, state) {
+        return SafeArea(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.85,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                _buildHeader(context),
+                Expanded(child: _buildGallery(context, state)),
+                if (widget.isMultiSelection && state.selectedMedia.isNotEmpty)
+                  _buildConfirmFooter(state),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.grayPalette.shade300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  S.current.uploadDocuments,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.grayPalette.shade900,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: RtcImage(
+                  // TODO: Ensure close.svg exists
+                  image: "$baseImage/close.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.grayPalette.shade700,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGallery(BuildContext context, MediaPickerState state) {
+    if (state.isLoadingGallery && state.loadedAssetIds.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return GridView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.all(4),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 2,
+        mainAxisSpacing: 2,
+      ),
+      itemCount: state.loadedAssetIds.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) return _buildCameraItem(context);
+
+        final assetId = state.loadedAssetIds[index - 1];
+        return KeyedSubtree(
+          key: ValueKey(assetId),
+          child: FutureBuilder<AssetEntity?>(
+            future: AssetEntity.fromId(assetId),
+            builder: (context, snapshot) {
+              final asset = snapshot.data;
+              if (asset == null) return Container(color: AppColors.grayPalette.shade100);
+              return _buildAssetItem(context, asset, state);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCameraItem(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.read<MediaPickerCubit>().pickFromCamera(),
+      child: Container(
+        color: AppColors.grayPalette.shade100,
+        child: Icon(Icons.camera_alt, size: 32, color: AppColors.grayPalette.shade600),
+      ),
+    );
+  }
+
+  Widget _buildAssetItem(BuildContext context, AssetEntity asset, MediaPickerState state) {
+    final isSelected = state.selectedMedia.any((m) => m.assetId == asset.id);
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        GestureDetector(
+          onTap: () => context.read<MediaPickerCubit>().addMediaFromAsset(asset),
+          child: FutureBuilder<Uint8List?>(
+            future: context.read<MediaPickerCubit>().getThumb(asset),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Image.memory(snapshot.data!, fit: BoxFit.cover);
+              }
+              return Container(color: AppColors.grayPalette.shade100);
+            },
+          ),
+        ),
+        if (widget.isMultiSelection)
+          Positioned(
+            right: 8,
+            top: 8,
+            child: GestureDetector(
+              onTap: () {
+                if (isSelected) {
+                  context.read<MediaPickerCubit>().removeMediaByAssetId(asset.id);
+                } else {
+                  context.read<MediaPickerCubit>().addMediaFromAsset(asset);
+                }
+              },
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.brandPalette.shade600 : Colors.black26,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+                child: isSelected
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
+                    : null,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmFooter(MediaPickerState state) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.grayPalette.shade200)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '${state.selectedMedia.length} تصویر انتخاب شده',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          const SizedBox(width: 16),
+          ElevatedButton(
+            onPressed: () => context.read<MediaPickerCubit>().confirmSelection(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brandPalette.shade600,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text(S.current.confirm),
+          ),
+        ],
+      ),
+    );
+  }
+}
