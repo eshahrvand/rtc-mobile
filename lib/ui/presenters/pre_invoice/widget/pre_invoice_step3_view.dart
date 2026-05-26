@@ -149,7 +149,9 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                               },
                             ),
                           ),
-                          if (state.customerInfo == null)
+                          if (state.customerInfo == null ||
+                              state.customerIdQuery !=
+                                  state.customerInfo!.nationalId)
                             Padding(
                               padding: EdgeInsets.fromLTRB(
                                 2,

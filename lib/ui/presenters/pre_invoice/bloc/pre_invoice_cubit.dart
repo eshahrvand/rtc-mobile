@@ -316,7 +316,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void onCustomerIdChanged(String value) {
     bool isValid = isNationalIDValid(value);
-    emit(state.copyWith(customerIdQuery: value, isNationalIdValid: isValid));
+    emit(state.copyWith(
+      customerIdQuery: value,
+      isNationalIdValid: isValid,
+    ));
   }
 
   void searchCustomer() {
