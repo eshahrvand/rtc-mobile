@@ -9,12 +9,15 @@ class RtcCounter extends StatelessWidget {
   final VoidCallback onRemove;
   final bool isAvailable;
 
+  final bool? isCardItem;
+
   const RtcCounter({
     super.key,
     required this.quantity,
     required this.onAdd,
     required this.onRemove,
     this.isAvailable = true,
+    this.isCardItem,
   });
 
   @override
@@ -43,8 +46,10 @@ class RtcCounter extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: AppColors.grayPalette.shade200),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(isCardItem == true ? 8 : 20),
       ),
+      width: isCardItem == true ? 108 : null,
+      height: isCardItem == true ? 32 : null,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -56,12 +61,12 @@ class RtcCounter extends StatelessWidget {
               height: 16,
             ),
           ),
-          const SizedBox(width: 14),
+          isCardItem == true ? Spacer() : const SizedBox(width: 14),
           Text(
             '$quantity',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(width: 14),
+          isCardItem == true ? Spacer() : const SizedBox(width: 14),
           GestureDetector(
             onTap: onRemove,
             child: RtcImage(

@@ -102,7 +102,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
           ),
         Row(
           children: [
-            if (product.discount != null)
+            if (product.discount != "0%")
               RtcDiscountBadge(
                 discount: product.discount!,
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
