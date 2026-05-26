@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -104,7 +106,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                       trailing: _buildEditButton(
                         () => cubit.enterEditMode(PreInvoiceStep.documents),
                       ),
-                      child: _buildDocuments(state),
+                      child: _buildDocuments(state, context),
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.financialSummaryTitle,
@@ -363,21 +365,26 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildDocuments(PreInvoiceState state) {
+  Widget _buildDocuments(PreInvoiceState state, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildDocItem(
-            S.current.nationalCardFront,
-            '۶ MB',
-            'national_card_front',
-          ),
+          if (state.mandatoryDocPath != null)
+            _buildDocItem(
+              S.current.nationalCardFront,
+              '۱۶ MB',
+              state.mandatoryDocPath!.split('/').last,
+              state.mandatoryDocPath!,
+              context,
+            ),
           ...state.optionalDocPaths.asMap().entries.map((entry) {
             return _buildDocItem(
               S.current.otherDocumentsLabel(entry.key + 1),
-              '۶ MB',
-              'optional_doc_${entry.key + 1}',
+              '۱۶ MB',
+              entry.value.split('/').last,
+              entry.value,
+              context,
             );
           }),
         ],
@@ -385,32 +392,59 @@ class PreInvoiceStep5View extends StatelessWidget {
     );
   }
 
-  Widget _buildDocItem(String title, String size, String fileName) {
+  Widget _buildDocItem(
+    String title,
+    String size,
+    String fileName,
+    String path,
+    BuildContext context,
+  ) {
     return PreInvoiceDocumentItem(
       title: title,
       fileName: fileName,
       fileSize: size,
       onDelete: () {},
-      onView: () {},
+      onView: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.black,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                iconTheme: const IconThemeData(color: Colors.white),
+              ),
+              body: Center(
+                child: InteractiveViewer(
+                  child: Image.file(File(path), fit: BoxFit.contain),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
       showDeleteButton: false,
     );
   }
 
   Widget _buildFinancialSummary(PreInvoiceState state, TextTheme theme) {
+    int totalItems = state.cartItems.fold(0, (sum, item) => sum + item.quantity);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         spacing: 7,
         children: [
           _buildInfoRow(
-            '${S.current.totalBasePrice} (۳ ${S.current.products})',
-            '۱۴,۴۹۰,۰۰۰',
+            '${S.current.totalBasePrice} ($totalItems ${S.current.products})',
+            state.totalAmount,
             theme,
             isPrice: true,
           ),
           _buildInfoRow(
             S.current.totalDiscounts,
-            '۴۹۰,۰۰۰',
+            state.totalDiscounts,
             theme,
             isPrice: true,
           ),
@@ -422,11 +456,11 @@ class PreInvoiceStep5View extends StatelessWidget {
           ),
           _buildInfoRow(
             S.current.payableAmount,
-            '۱۴,۰۰۰,۰۰۰',
+            state.payableAmount,
             theme,
             isBold: true,
             isPrice: true,
-            valueColor: Colors.blue,
+            valueColor: AppColors.brandPalette.shade600,
           ),
         ],
       ),
