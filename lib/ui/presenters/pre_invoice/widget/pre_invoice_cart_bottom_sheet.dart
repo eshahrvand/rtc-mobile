@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/data/models/pre_invoice_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
@@ -212,11 +210,19 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
   Widget _buildSummary(PreInvoiceState state, BuildContext context) {
     return Column(
       children: [
-        _buildSummaryRow(S.current.totalAmount, '۱۴,۴۹۰,۰۰۰', context: context),
-        _buildSummaryRow(S.current.totalDiscounts, '۴۹۰,۰۰۰', context: context),
+        _buildSummaryRow(
+          S.current.totalAmount,
+          state.totalAmount,
+          context: context,
+        ),
+        _buildSummaryRow(
+          S.current.totalDiscounts,
+          state.totalDiscounts,
+          context: context,
+        ),
         _buildSummaryRow(
           S.current.payableAmount,
-          '۱۴,۰۰۰,۰۰۰',
+          state.payableAmount,
           isBold: true,
           color: AppColors.brandPalette.shade600,
           context: context,

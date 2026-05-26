@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../generated/l10n.dart';
@@ -93,7 +95,7 @@ class DashboardBody extends StatelessWidget {
                 ),
               if (state.messageText.isEmpty) SizedBox(height: 18),
               // Pre-Invoice Container
-              RtcPreInvoiceCard(onTap: () {}),
+              RtcPreInvoiceCard(onTap: () => context.push(AppRoutes.preInvoice)),
 
               // Line Chart
               if (state.lineChartData.isNotEmpty)

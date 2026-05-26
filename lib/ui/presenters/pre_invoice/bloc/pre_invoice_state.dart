@@ -45,6 +45,11 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(false) bool isCartVisible,
     String? selectedCategoryId,
 
+    // Summary
+    @Default('0') String totalAmount,
+    @Default('0') String totalDiscounts,
+    @Default('0') String payableAmount,
+
     // Step 3 — Customer Info
     @Default('') String customerIdQuery,
     @Default(true) bool isNationalIdValid,

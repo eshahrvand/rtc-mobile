@@ -227,6 +227,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       ));
     }
     emit(state.copyWith(cartItems: updatedCart));
+    _updateSummary();
   }
 
   void increaseQuantity(String productId) {
@@ -244,6 +245,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         quantity: item.quantity + 1,
       );
       emit(state.copyWith(cartItems: updatedCart));
+      _updateSummary();
     }
   }
 
@@ -268,12 +270,40 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       }
     }
     emit(state.copyWith(cartItems: updatedCart));
+    _updateSummary();
   }
 
   void deleteFromCart(String productId) {
     final updatedCart = List<CartItemModel>.from(state.cartItems)
       ..removeWhere((item) => item.productId == productId);
     emit(state.copyWith(cartItems: updatedCart));
+    _updateSummary();
+  }
+
+  void _updateSummary() {
+    int totalAmount = 0;
+    int totalDiscounts = 0;
+
+    for (final item in state.cartItems) {
+      final price = int.tryParse(item.price.replaceAll(',', '')) ?? 0;
+      final oldPrice = item.oldPrice != null ? int.tryParse(item.oldPrice!.replaceAll(',', '')) : null;
+
+      if (oldPrice != null && oldPrice > price) {
+        totalAmount += oldPrice * item.quantity;
+        totalDiscounts += (oldPrice - price) * item.quantity;
+      } else {
+        totalAmount += price * item.quantity;
+      }
+    }
+
+    final payableAmount = totalAmount - totalDiscounts;
+    final formatter = NumberFormat('#,###', 'en_US');
+
+    emit(state.copyWith(
+      totalAmount: formatter.format(totalAmount),
+      totalDiscounts: formatter.format(totalDiscounts),
+      payableAmount: formatter.format(payableAmount),
+    ));
   }
 
   void showCart() {
