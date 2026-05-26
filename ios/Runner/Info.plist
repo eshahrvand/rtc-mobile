@@ -43,6 +43,10 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>این اپلیکیشن برای گرفتن عکس مدارک به دسترسی دوربین نیاز دارد.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>این اپلیکیشن برای انتخاب عکس مدارک به دسترسی گالری نیاز دارد.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>

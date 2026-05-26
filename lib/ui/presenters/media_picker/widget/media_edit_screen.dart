@@ -7,10 +7,7 @@ import '../bloc/model/media_item.dart';
 class MediaEditScreen extends StatelessWidget {
   final MediaItem mediaItem;
 
-  const MediaEditScreen({
-    super.key,
-    required this.mediaItem,
-  });
+  const MediaEditScreen({super.key, required this.mediaItem});
 
   static Future<MediaItem?> crop(BuildContext context, MediaItem item) async {
     final croppedFile = await ImageCropper().cropImage(
@@ -24,9 +21,7 @@ class MediaEditScreen extends StatelessWidget {
           hideBottomControls: false,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(
-          title: 'ویرایش تصویر',
-        ),
+        IOSUiSettings(title: 'ویرایش تصویر'),
       ],
     );
 

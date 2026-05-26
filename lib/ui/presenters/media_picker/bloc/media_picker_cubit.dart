@@ -35,30 +35,41 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
     ));
 
     try {
+      // COMMENT: Explicitly requesting permission using PhotoManager.
+      // This should trigger the OS permission dialog.
+      print(">> [MEDIA PICKER] Requesting permissions...");
       final PermissionState ps = await PhotoManager.requestPermissionExtend();
-      if (!ps.isAuth) {
+      print(">> [MEDIA PICKER] Permission State: $ps");
+      
+      if (!ps.isAuth && ps != PermissionState.limited) {
+        print(">> [MEDIA PICKER] Permission denied");
         emit(state.copyWith(
-          error: 'دسترسی به گالری رد شد',
+          error: 'دسترسی به گالری تایید نشد. لطفا دسترسی را در تنظیمات فعال کنید.',
           isLoadingGallery: false,
         ));
         return;
       }
 
+      print(">> [MEDIA PICKER] Fetching albums...");
       final albums = await PhotoManager.getAssetPathList(
         onlyAll: true,
         type: RequestType.image, // Strictly image
       );
+      print(">> [MEDIA PICKER] Albums found: ${albums.length}");
 
       if (albums.isEmpty) {
+        print(">> [MEDIA PICKER] No albums found");
         emit(state.copyWith(isLoadingGallery: false, hasMore: false));
         return;
       }
 
       final album = albums[0];
+      print(">> [MEDIA PICKER] Loading assets from album: ${album.name}");
       final newAssets = await album.getAssetListPaged(
         page: 0,
         size: state.pageSize,
       );
+      print(">> [MEDIA PICKER] Assets loaded: ${newAssets.length}");
 
       emit(state.copyWith(
         loadedAssetIds: newAssets.map((e) => e.id).toList(),
@@ -67,6 +78,7 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
         hasMore: newAssets.length == state.pageSize,
       ));
     } catch (e) {
+      print(">> [MEDIA PICKER] ERROR: $e");
       emit(state.copyWith(
         error: 'خطا در بارگذاری گالری: $e',
         isLoadingGallery: false,
