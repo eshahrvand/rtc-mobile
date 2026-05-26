@@ -88,7 +88,29 @@ class PreInvoiceStep4View extends StatelessWidget {
                         // Mock size as in screenshot
                         onDelete: () => cubit.removeOptionalDoc(index),
                         onView: () {
-                          // View logic if needed
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                backgroundColor: Colors.black,
+                                appBar: AppBar(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  iconTheme: const IconThemeData(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                body: Center(
+                                  child: InteractiveViewer(
+                                    child: Image.file(
+                                      File(path),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
                         },
                       );
                     }),
