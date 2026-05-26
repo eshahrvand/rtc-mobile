@@ -41,6 +41,7 @@ class CartItemModel {
   final String name;
   final String imageUrl;
   final String price;
+  final String? oldPrice;
   final String? discount;
   final int quantity;
 
@@ -49,6 +50,7 @@ class CartItemModel {
     required this.name,
     required this.imageUrl,
     required this.price,
+    this.oldPrice,
     this.discount,
     required this.quantity,
   });

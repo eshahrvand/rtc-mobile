@@ -211,6 +211,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         name: existingItem.name,
         imageUrl: existingItem.imageUrl,
         price: existingItem.price,
+        oldPrice: existingItem.oldPrice,
         discount: existingItem.discount,
         quantity: existingItem.quantity + 1,
       );
@@ -220,6 +221,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         name: product.name,
         imageUrl: product.imageUrl,
         price: product.price,
+        oldPrice: product.oldPrice,
         discount: product.discount,
         quantity: 1,
       ));
@@ -237,6 +239,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         name: item.name,
         imageUrl: item.imageUrl,
         price: item.price,
+        oldPrice: item.oldPrice,
         discount: item.discount,
         quantity: item.quantity + 1,
       );
@@ -256,6 +259,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           name: existingItem.name,
           imageUrl: existingItem.imageUrl,
           price: existingItem.price,
+          oldPrice: existingItem.oldPrice,
           discount: existingItem.discount,
           quantity: existingItem.quantity - 1,
         );
