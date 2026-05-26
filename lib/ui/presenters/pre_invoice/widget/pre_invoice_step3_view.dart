@@ -126,7 +126,12 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             ),
                           ),
                           Padding(
-                            padding:  EdgeInsets.fromLTRB(2,!state.isNationalIdValid ? 10  : 21, 2, 10),
+                            padding: EdgeInsets.fromLTRB(
+                              2,
+                              !state.isNationalIdValid ? 10 : 21,
+                              2,
+                              10,
+                            ),
                             child: RtcTextButton(
                               title: S.current.checkButton,
                               isActive: state.isNationalIdValid,
@@ -136,7 +141,10 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                                     : AppColors.grayPalette.shade400,
                                 fontWeight: FontWeight.w600,
                               ),
-                              onPressed: () => cubit.searchCustomer(),
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                cubit.searchCustomer();
+                              },
                             ),
                           ),
                         ],
@@ -230,7 +238,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                                     state
                                         .customerInfo!
                                         .isOrderSentToCustomerAddress
-                                    ? "$baseImage/toggle_base.svg"
+                                    ? "$baseImage/toggle_active.svg"
                                     : "$baseImage/toggle_base.svg",
                                 width: 36,
                                 height: 20,
