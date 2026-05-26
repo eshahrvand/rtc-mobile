@@ -159,21 +159,31 @@ class DashboardBody extends StatelessWidget {
               ),
 
               // Recent Orders List
-              ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: state.recentOrders.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: RtcDashboardOrderItem(
-                      order: state.recentOrders[index],
-                      onTap: () {},
+              state.recentOrders.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Text(
+                        S.current.noItemsFound,
+                        style: theme.bodyLarge?.copyWith(
+                          color: AppColors.grayPalette.shade600,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.recentOrders.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: RtcDashboardOrderItem(
+                            order: state.recentOrders[index],
+                            onTap: () {},
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ],
           ),
         );

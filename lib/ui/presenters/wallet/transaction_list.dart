@@ -90,8 +90,15 @@ class TransactionListScreen extends StatelessWidget {
                 child: state.status == WalletRequestStatus.loading
                     ? const Center(child: CircularProgressIndicator())
                     : state.transactions.isEmpty
-                    ? const Center(child: Text('تراکنشی یافت نشد'))
-                    : ListView.separated(
+                        ? Center(
+                            child: Text(
+                              S.current.noItemsFound,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColors.grayPalette.shade600,
+                                  ),
+                            ),
+                          )
+                        : ListView.separated(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 16,

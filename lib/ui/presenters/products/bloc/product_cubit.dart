@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/product_item_model.dart';
@@ -11,6 +12,7 @@ class ProductCubit extends Cubit<ProductState> {
 
   final _productRepo = sl<ProductRepository>();
   final _plansRepo = sl<PlansRepository>();
+  Timer? _debounce;
 
   void init() {
     emit(state.copyWith(status: ProductRequestStatus.loading));
@@ -85,6 +87,7 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void deactivateSearch() {
+    _debounce?.cancel();
     emit(state.copyWith(
       isSearchActive: false,
       searchQuery: '',
@@ -94,7 +97,19 @@ class ProductCubit extends Cubit<ProductState> {
 
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
-    _fetchProducts();
+
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+
+    if (query.isEmpty) {
+      _fetchProducts();
+      return;
+    }
+
+    if (query.length < 2) return;
+
+    _debounce = Timer(const Duration(seconds: 1), () {
+      _fetchProducts();
+    });
   }
 
   void selectCategory(String? categoryId) {
@@ -162,5 +177,11 @@ class ProductCubit extends Cubit<ProductState> {
       selectedChipIndex: -1,
     ));
     _fetchProducts();
+  }
+
+  @override
+  Future<void> close() {
+    _debounce?.cancel();
+    return super.close();
   }
 }

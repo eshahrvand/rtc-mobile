@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../data/models/product_chip_model.dart';
+import '../../../../generated/l10n.dart';
 import '../../../router/app_route.dart';
+import '../../../theme/colors.dart';
 import '../bloc/product_cubit.dart';
 import '../bloc/product_state.dart';
 import '../../../widget/rtc_chip_list.dart';
@@ -86,28 +88,37 @@ class ProductsBody extends StatelessWidget {
               Expanded(
                 child: state.status == ProductRequestStatus.loading
                     ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: state.filteredProducts.length,
-                        itemBuilder: (context, index) {
-                          final product = state.filteredProducts[index];
-                          final hasPlan = state.selectedSubPlanId != null;
-                          return RtcProductItem(
-                            product: product,
-                            showPrice: hasPlan,
-                            onTap: () {
-                              context.push(
-                                AppRoutes.productDetail,
-                                extra: {
-                                  'productId': product.id,
-                                  'subPlanId': state.selectedSubPlanId,
-                                  'subPlanName': state.selectedSubPlanName,
-                                  'showPrice': hasPlan,
+                    : state.filteredProducts.isEmpty
+                        ? Center(
+                            child: Text(
+                              S.current.noItemsFound,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColors.grayPalette.shade600,
+                                  ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: state.filteredProducts.length,
+                            itemBuilder: (context, index) {
+                              final product = state.filteredProducts[index];
+                              final hasPlan = state.selectedSubPlanId != null;
+                              return RtcProductItem(
+                                product: product,
+                                showPrice: hasPlan,
+                                onTap: () {
+                                  context.push(
+                                    AppRoutes.productDetail,
+                                    extra: {
+                                      'productId': product.id,
+                                      'subPlanId': state.selectedSubPlanId,
+                                      'subPlanName': state.selectedSubPlanName,
+                                      'showPrice': hasPlan,
+                                    },
+                                  );
                                 },
                               );
                             },
-                          );
-                        },
-                      ),
+                          ),
               ),
             ],
           );
