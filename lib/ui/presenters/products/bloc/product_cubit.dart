@@ -21,65 +21,85 @@ class ProductCubit extends Cubit<ProductState> {
     final chips = [
       ProductChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
       ProductChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
-      ProductChipModel(id: 3, label: 'فقط کالاهای موجود', opensBottomSheet: false),
+      ProductChipModel(
+        id: 3,
+        label: 'فقط کالاهای موجود',
+        opensBottomSheet: false,
+      ),
     ];
 
-    Future.wait([
-      _productRepo.getCategories(),
-      _plansRepo.getSubPlans(),
-    ]).then((results) {
-      final categoriesResponse = results[0];
-      final subPlansResponse = results[1];
-      
-      emit(state.copyWith(
-        chips: chips,
-        availableCategories: (categoriesResponse as dynamic).results,
-        availableSubPlans: (subPlansResponse as dynamic).results,
-      ));
-      
-      _fetchProducts();
-    }).catchError((Object e) {
-      emit(state.copyWith(
-        status: ProductRequestStatus.error,
-        errorMessage: e.toString(),
-      ));
-    });
+    Future.wait([_productRepo.getCategories(), _plansRepo.getSubPlans()])
+        .then((results) {
+          final categoriesResponse = results[0];
+          final subPlansResponse = results[1];
+
+          emit(
+            state.copyWith(
+              chips: chips,
+              availableCategories: (categoriesResponse as dynamic).results,
+              availableSubPlans: (subPlansResponse as dynamic).results,
+            ),
+          );
+
+          _fetchProducts();
+        })
+        .catchError((Object e) {
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+        });
   }
 
   void _fetchProducts() {
     emit(state.copyWith(status: ProductRequestStatus.loading));
 
-    _productRepo.getProducts(
-      subPlanId: state.selectedSubPlanId,
-      categoryId: state.selectedCategoryId,
-      search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
-      inStock: state.isOnlyAvailable ? true : null,
-    ).then((response) {
-      final products = response.results.map((dto) => ProductItemModel(
-        id: dto.id,
-        name: dto.name,
-        imageUrl: dto.featuredImage?.file ?? '',
-        price: state.selectedSubPlanId != null 
-            ? dto.planPrice?.toString() ?? '۰' 
-            : dto.basePrice?.toString() ?? '۰',
-        oldPrice: state.selectedSubPlanId != null ? dto.basePrice?.toString() : null,
-        inventory: dto.stockQty.toString(),
-        discount: dto.discountPct != null && dto.discountPct != 0 
-            ? '${dto.discountPct}٪' 
-            : null,
-      )).toList();
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedSubPlanId,
+          categoryId: state.selectedCategoryId,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          inStock: state.isOnlyAvailable ? true : null,
+        )
+        .then((response) {
+          final products = response.results
+              .map(
+                (dto) => ProductItemModel(
+                  id: dto.id,
+                  name: dto.name,
+                  imageUrl: dto.featuredImage?.file ?? '',
+                  price: state.selectedSubPlanId != null
+                      ? dto.planPrice?.toString() ?? '۰'
+                      : dto.basePrice?.toString() ?? '۰',
+                  oldPrice: state.selectedSubPlanId != null
+                      ? dto.basePrice?.toString()
+                      : null,
+                  inventory: dto.stockQty.toString(),
+                  discount: dto.discountPct != null && dto.discountPct != 0
+                      ? '${dto.discountPct}٪'
+                      : null,
+                ),
+              )
+              .toList();
 
-      emit(state.copyWith(
-        status: ProductRequestStatus.success,
-        allProducts: products,
-        filteredProducts: products,
-      ));
-    }).catchError((Object e) {
-      emit(state.copyWith(
-        status: ProductRequestStatus.error,
-        errorMessage: e.toString(),
-      ));
-    });
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.success,
+              allProducts: products,
+              filteredProducts: products,
+            ),
+          );
+        })
+        .catchError((Object e) {
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+        });
   }
 
   void activateSearch() {
@@ -88,10 +108,7 @@ class ProductCubit extends Cubit<ProductState> {
 
   void deactivateSearch() {
     _debounce?.cancel();
-    emit(state.copyWith(
-      isSearchActive: false,
-      searchQuery: '',
-    ));
+    emit(state.copyWith(isSearchActive: false, searchQuery: ''));
     _fetchProducts();
   }
 
@@ -115,34 +132,40 @@ class ProductCubit extends Cubit<ProductState> {
   void selectCategory(String? categoryId) {
     if (state.selectedCategoryId == categoryId) return;
 
-    emit(state.copyWith(
-      selectedCategoryId: categoryId,
-      selectedChipIndex: categoryId != null ? 0 : -1,
-    ));
+    emit(
+      state.copyWith(
+        selectedCategoryId: categoryId,
+        selectedChipIndex: categoryId != null ? 0 : -1,
+      ),
+    );
     _fetchProducts();
   }
 
   void selectSubPlan(String? subPlanId) {
     if (state.selectedSubPlanId == subPlanId) return;
 
-    final subPlanName = subPlanId != null 
-        ? state.availableSubPlans.firstWhere((s) => s.id == subPlanId).name 
+    final subPlanName = subPlanId != null
+        ? state.availableSubPlans.firstWhere((s) => s.id == subPlanId).name
         : null;
-        
-    emit(state.copyWith(
-      selectedSubPlanId: subPlanId,
-      selectedSubPlanName: subPlanName,
-      selectedChipIndex: subPlanId != null ? 1 : -1,
-    ));
+
+    emit(
+      state.copyWith(
+        selectedSubPlanId: subPlanId,
+        selectedSubPlanName: subPlanName,
+        selectedChipIndex: subPlanId != null ? 1 : -1,
+      ),
+    );
     _fetchProducts();
   }
 
   void toggleOnlyAvailable() {
     final newValue = !state.isOnlyAvailable;
-    emit(state.copyWith(
-      isOnlyAvailable: newValue,
-      selectedChipIndex: newValue ? 2 : -1,
-    ));
+    emit(
+      state.copyWith(
+        isOnlyAvailable: newValue,
+        selectedChipIndex: newValue ? 2 : -1,
+      ),
+    );
     _fetchProducts();
   }
 
@@ -169,13 +192,15 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void clearAllFilters() {
-    emit(state.copyWith(
-      selectedCategoryId: null,
-      selectedSubPlanId: null,
-      selectedSubPlanName: null,
-      isOnlyAvailable: false,
-      selectedChipIndex: -1,
-    ));
+    emit(
+      state.copyWith(
+        selectedCategoryId: null,
+        selectedSubPlanId: null,
+        selectedSubPlanName: null,
+        isOnlyAvailable: false,
+        selectedChipIndex: -1,
+      ),
+    );
     _fetchProducts();
   }
 
