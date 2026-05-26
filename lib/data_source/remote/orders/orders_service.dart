@@ -15,4 +15,13 @@ abstract class OrdersService {
     @Query('page') int? page,
     @Query('page_size') int? pageSize,
   });
+
+  @POST('orders/orders')
+  Future<OrderDtoModel> createOrder(@Body() OrderCreateRequest request);
+
+  @POST('orders/orders/{id}/documents')
+  Future<OrderDocumentResponse> addOrderDocument(
+    @Path('id') String orderId,
+    @Body() OrderDocumentRequest request,
+  );
 }

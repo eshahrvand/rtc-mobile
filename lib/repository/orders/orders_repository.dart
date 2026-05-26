@@ -1,12 +1,24 @@
 import 'package:intl/intl.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import '../../data/models/customer_model.dart';
+import '../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../data_source/remote/orders/orders_service.dart';
 
 class OrdersRepository {
   final OrdersService _service;
 
   OrdersRepository(this._service);
+
+  Future<OrderDtoModel> createOrder(OrderCreateRequest request) {
+    return _service.createOrder(request);
+  }
+
+  Future<OrderDocumentResponse> addOrderDocument(
+    String orderId,
+    OrderDocumentRequest request,
+  ) {
+    return _service.addOrderDocument(orderId, request);
+  }
 
   Future<List<CustomerOrderItemModel>> getCustomerOrders(String customerId) {
     return _service.getOrders(customerId: customerId).then((response) {

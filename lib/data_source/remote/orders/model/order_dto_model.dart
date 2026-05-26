@@ -30,3 +30,48 @@ class OrderDtoModel with _$OrderDtoModel {
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDtoModelFromJson(json);
 }
+
+@freezed
+class OrderCreateRequest with _$OrderCreateRequest {
+  const factory OrderCreateRequest({
+    @JsonKey(name: 'customer_id') required String customerId,
+    @JsonKey(name: 'sub_plan_id') required String subPlanId,
+    required List<OrderLineRequest> lines,
+    @JsonKey(name: 'delivery_to_agent') required bool deliveryToAgent,
+  }) = _OrderCreateRequest;
+
+  factory OrderCreateRequest.fromJson(Map<String, dynamic> json) => _$OrderCreateRequestFromJson(json);
+}
+
+@freezed
+class OrderLineRequest with _$OrderLineRequest {
+  const factory OrderLineRequest({
+    @JsonKey(name: 'product_id') required String productId,
+    required int quantity,
+  }) = _OrderLineRequest;
+
+  factory OrderLineRequest.fromJson(Map<String, dynamic> json) => _$OrderLineRequestFromJson(json);
+}
+
+@freezed
+class OrderDocumentRequest with _$OrderDocumentRequest {
+  const factory OrderDocumentRequest({
+    @JsonKey(name: 'document_type') required String documentType,
+    @JsonKey(name: 'file_id') required String fileId,
+  }) = _OrderDocumentRequest;
+
+  factory OrderDocumentRequest.fromJson(Map<String, dynamic> json) => _$OrderDocumentRequestFromJson(json);
+}
+
+@freezed
+class OrderDocumentResponse with _$OrderDocumentResponse {
+  const factory OrderDocumentResponse({
+    required String id,
+    @JsonKey(name: 'document_type') required String documentType,
+    @JsonKey(name: 'file_id') required String fileId,
+    @JsonKey(name: 'uploaded_by_id') required String uploadedById,
+    @JsonKey(name: 'created_at') required String createdAt,
+  }) = _OrderDocumentResponse;
+
+  factory OrderDocumentResponse.fromJson(Map<String, dynamic> json) => _$OrderDocumentResponseFromJson(json);
+}

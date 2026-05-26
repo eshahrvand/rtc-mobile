@@ -10,7 +10,9 @@ import '../../../../locator.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../repository/customers/customers_repository.dart';
+import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/media/media_repository.dart';
+import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
@@ -22,6 +24,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _productRepo = sl<ProductRepository>();
   final _customerRepo = sl<CustomersRepository>();
   final _mediaRepo = sl<MediaRepository>();
+  final _ordersRepo = sl<OrdersRepository>();
   final ImagePicker _picker = ImagePicker();
   Timer? _debounce;
 
@@ -44,7 +47,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           }).toList();
 
           final chips = [
-            PreInvoiceChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
+            PreInvoiceChipModel(
+              id: 1,
+              label: 'دسته بندی',
+              opensBottomSheet: true,
+            ),
             PreInvoiceChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
             PreInvoiceChipModel(id: 3, label: 'نمایش کالاهای موجود'),
           ];
@@ -89,28 +96,36 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final uploadTasks = <Future<String>>[];
 
     // Upload mandatory
-    uploadTasks.add(_mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id));
+    uploadTasks.add(
+      _mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id),
+    );
 
     // Upload optionals
     for (final path in state.optionalDocPaths) {
-      uploadTasks.add(_mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id));
+      uploadTasks.add(
+        _mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id),
+      );
     }
 
     Future.wait(uploadTasks)
         .then((ids) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.success,
-            mandatoryDocId: ids.first,
-            optionalDocIds: ids.skip(1).toList(),
-            currentStep: PreInvoiceStep.review,
-            isEditMode: false,
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.success,
+              mandatoryDocId: ids.first,
+              optionalDocIds: ids.skip(1).toList(),
+              currentStep: PreInvoiceStep.review,
+              isEditMode: false,
+            ),
+          );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: 'خطا در بارگذاری مدارک: ${e.toString()}',
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در بارگذاری مدارک: ${e.toString()}',
+            ),
+          );
         });
   }
 
@@ -134,20 +149,26 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       request = _customerRepo.createCustomer(body);
     }
 
-    request.then((response) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.success,
-        customerInfo: info.copyWith(id: response.id),
-        isExistingCustomer: true,
-        currentStep: PreInvoiceStep.documents,
-        isEditMode: false,
-      ));
-    }).catchError((e) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: 'خطا در ثبت اطلاعات مشتری',
-      ));
-    });
+    request
+        .then((response) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.success,
+              customerInfo: info.copyWith(id: response.id),
+              isExistingCustomer: true,
+              currentStep: PreInvoiceStep.documents,
+              isEditMode: false,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در ثبت اطلاعات مشتری',
+            ),
+          );
+        });
   }
 
   void _loadProducts() {
@@ -240,7 +261,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void addToCart(PreInvoiceProductModel product) {
-    final existingIndex = state.cartItems.indexWhere((item) => item.productId == product.id);
+    final existingIndex = state.cartItems.indexWhere(
+      (item) => item.productId == product.id,
+    );
     final updatedCart = List<CartItemModel>.from(state.cartItems);
 
     if (existingIndex != -1) {
@@ -255,15 +278,17 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         quantity: existingItem.quantity + 1,
       );
     } else {
-      updatedCart.add(CartItemModel(
-        productId: product.id,
-        name: product.name,
-        imageUrl: product.imageUrl,
-        price: product.price,
-        oldPrice: product.oldPrice,
-        discount: product.discount,
-        quantity: 1,
-      ));
+      updatedCart.add(
+        CartItemModel(
+          productId: product.id,
+          name: product.name,
+          imageUrl: product.imageUrl,
+          price: product.price,
+          oldPrice: product.oldPrice,
+          discount: product.discount,
+          quantity: 1,
+        ),
+      );
     }
     emit(state.copyWith(cartItems: updatedCart));
     _updateSummary();
@@ -325,7 +350,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     for (final item in state.cartItems) {
       final price = int.tryParse(item.price.replaceAll(',', '')) ?? 0;
-      final oldPrice = item.oldPrice != null ? int.tryParse(item.oldPrice!.replaceAll(',', '')) : null;
+      final oldPrice = item.oldPrice != null
+          ? int.tryParse(item.oldPrice!.replaceAll(',', ''))
+          : null;
 
       if (oldPrice != null && oldPrice > price) {
         totalAmount += oldPrice * item.quantity;
@@ -338,11 +365,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final payableAmount = totalAmount - totalDiscounts;
     final formatter = NumberFormat('#,###', 'en_US');
 
-    emit(state.copyWith(
-      totalAmount: formatter.format(totalAmount),
-      totalDiscounts: formatter.format(totalDiscounts),
-      payableAmount: formatter.format(payableAmount),
-    ));
+    emit(
+      state.copyWith(
+        totalAmount: formatter.format(totalAmount),
+        totalDiscounts: formatter.format(totalDiscounts),
+        payableAmount: formatter.format(payableAmount),
+      ),
+    );
   }
 
   void showCart() {
@@ -355,10 +384,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void onCustomerIdChanged(String value) {
     bool isValid = isNationalIDValid(value);
-    emit(state.copyWith(
-      customerIdQuery: value,
-      isNationalIdValid: isValid,
-    ));
+    emit(state.copyWith(customerIdQuery: value, isNationalIdValid: isValid));
   }
 
   void searchCustomer() {
@@ -379,32 +405,38 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               postalCode: dto.postalCode,
               address: dto.address,
             );
-            emit(state.copyWith(
-              customerSearchLoading: false,
-              customerInfo: info,
-              isExistingCustomer: true,
-            ));
-          } else {
-            emit(state.copyWith(
-              customerSearchLoading: false,
-              customerInfo: CustomerInfoModel(
-                firstName: '',
-                lastName: '',
-                nationalId: state.customerIdQuery,
-                phoneNumber: '',
-                postalCode: '',
-                address: '',
+            emit(
+              state.copyWith(
+                customerSearchLoading: false,
+                customerInfo: info,
+                isExistingCustomer: true,
               ),
-              isExistingCustomer: false,
-            ));
+            );
+          } else {
+            emit(
+              state.copyWith(
+                customerSearchLoading: false,
+                customerInfo: CustomerInfoModel(
+                  firstName: '',
+                  lastName: '',
+                  nationalId: state.customerIdQuery,
+                  phoneNumber: '',
+                  postalCode: '',
+                  address: '',
+                ),
+                isExistingCustomer: false,
+              ),
+            );
           }
         })
         .catchError((e) {
-          emit(state.copyWith(
-            customerSearchLoading: false,
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: 'خطا در جستجوی مشتری',
-          ));
+          emit(
+            state.copyWith(
+              customerSearchLoading: false,
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در جستجوی مشتری',
+            ),
+          );
         });
   }
 
@@ -413,19 +445,36 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     var updated = state.customerInfo!;
 
     switch (field) {
-      case 'firstName': updated = updated.copyWith(firstName: value); break;
-      case 'lastName': updated = updated.copyWith(lastName: value); break;
-      case 'nationalId': updated = updated.copyWith(nationalId: value); break;
-      case 'phoneNumber': updated = updated.copyWith(phoneNumber: value); break;
-      case 'postalCode': updated = updated.copyWith(postalCode: value); break;
-      case 'address': updated = updated.copyWith(address: value); break;
-      case 'isOrderSentToCustomerAddress': updated = updated.copyWith(isOrderSentToCustomerAddress: value); break;
+      case 'firstName':
+        updated = updated.copyWith(firstName: value);
+        break;
+      case 'lastName':
+        updated = updated.copyWith(lastName: value);
+        break;
+      case 'nationalId':
+        updated = updated.copyWith(nationalId: value);
+        break;
+      case 'phoneNumber':
+        updated = updated.copyWith(phoneNumber: value);
+        break;
+      case 'postalCode':
+        updated = updated.copyWith(postalCode: value);
+        break;
+      case 'address':
+        updated = updated.copyWith(address: value);
+        break;
+      case 'isOrderSentToCustomerAddress':
+        updated = updated.copyWith(isOrderSentToCustomerAddress: value);
+        break;
     }
     emit(state.copyWith(customerInfo: updated));
   }
 
   Future<void> pickMandatoryDoc(dynamic context) async {
-    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: false);
+    final result = await MediaPickerBottomSheet.show(
+      context,
+      isMultiSelection: false,
+    );
     if (result != null && result.isNotEmpty) {
       emit(state.copyWith(mandatoryDocPath: result.first.file.path));
     }
@@ -433,26 +482,37 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   Future<void> pickOptionalDoc(dynamic context) async {
     if (state.optionalDocPaths.length >= 5) {
-      emit(state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: 'حداکثر ۵ تصویر اختیاری مجاز است',
-      ));
+      emit(
+        state.copyWith(
+          status: PreInvoiceRequestStatus.error,
+          errorMessage: 'حداکثر ۵ تصویر اختیاری مجاز است',
+        ),
+      );
       return;
     }
-    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: true);
+    final result = await MediaPickerBottomSheet.show(
+      context,
+      isMultiSelection: true,
+    );
     if (result != null && result.isNotEmpty) {
       final availableSlots = 5 - state.optionalDocPaths.length;
-      final newPaths = result.take(availableSlots).map((m) => m.file.path).toList();
+      final newPaths = result
+          .take(availableSlots)
+          .map((m) => m.file.path)
+          .toList();
 
       final updatedPaths = List<String>.from(state.optionalDocPaths)
         ..addAll(newPaths);
       emit(state.copyWith(optionalDocPaths: updatedPaths));
 
       if (result.length > availableSlots) {
-        emit(state.copyWith(
-          status: PreInvoiceRequestStatus.error,
-          errorMessage: 'فقط $availableSlots تصویر دیگر اضافه شد (حداکثر ۵ عدد)',
-        ));
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage:
+                'فقط $availableSlots تصویر دیگر اضافه شد (حداکثر ۵ عدد)',
+          ),
+        );
       }
     }
   }
@@ -462,12 +522,103 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void removeOptionalDoc(int index) {
-    final updatedPaths = List<String>.from(state.optionalDocPaths)..removeAt(index);
+    final updatedPaths = List<String>.from(state.optionalDocPaths)
+      ..removeAt(index);
     emit(state.copyWith(optionalDocPaths: updatedPaths));
   }
 
-  void submitPreInvoice() {}
-  void submitAndClear() {}
+  void submitPreInvoice() {
+    _createOrder(false);
+  }
+
+  void submitAndClear() {
+    _createOrder(true);
+  }
+
+  void _createOrder(bool shouldClear) {
+    if (state.customerInfo == null || state.selectedCreditPlanId == null)
+      return;
+
+    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+
+    final lines = state.cartItems.map((item) {
+      return OrderLineRequest(
+        productId: item.productId,
+        quantity: item.quantity,
+      );
+    }).toList();
+
+    final request = OrderCreateRequest(
+      customerId: state.customerInfo!.id!,
+      subPlanId: state.selectedCreditPlanId!,
+      lines: lines,
+      deliveryToAgent: true, // As per JSON example
+    );
+
+    _ordersRepo
+        .createOrder(request)
+        .then((order) {
+          _submitOrderDocuments(order.id, shouldClear);
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: 'خطا در ثبت پیش فاکتور: ${e.toString()}',
+            ),
+          );
+        });
+  }
+
+  void _submitOrderDocuments(String orderId, bool shouldClear) {
+    final docTasks = <Future<OrderDocumentResponse>>[];
+
+    // Mandatory doc
+    if (state.mandatoryDocId != null) {
+      docTasks.add(
+        _ordersRepo.addOrderDocument(
+          orderId,
+          OrderDocumentRequest(
+            documentType: 'national_id_front',
+            fileId: state.mandatoryDocId!,
+          ),
+        ),
+      );
+    }
+
+    // Optional docs
+    for (final fileId in state.optionalDocIds) {
+      docTasks.add(
+        _ordersRepo.addOrderDocument(
+          orderId,
+          OrderDocumentRequest(documentType: 'supporting', fileId: fileId),
+        ),
+      );
+    }
+
+    Future.wait(docTasks)
+        .then((_) {
+          emit(
+            state.copyWith(
+              status: shouldClear
+                  ? PreInvoiceRequestStatus.submittedAndCleared
+                  : PreInvoiceRequestStatus.submitted,
+            ),
+          );
+        })
+        .catchError((e) {
+          // Even if docs fail, the order was created.
+          // We show an error but proceed as submitted since we can't "un-create" the order easily.
+          emit(
+            state.copyWith(
+              status: shouldClear
+                  ? PreInvoiceRequestStatus.submittedAndCleared
+                  : PreInvoiceRequestStatus.submitted,
+              errorMessage: 'پیش فاکتور ثبت شد اما خطا در پیوست مدارک رخ داد.',
+            ),
+          );
+        });
+  }
 
   @override
   Future<void> close() {
