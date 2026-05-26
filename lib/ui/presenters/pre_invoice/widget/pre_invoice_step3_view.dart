@@ -126,7 +126,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(2, 10, 2, 10),
+                            padding:  EdgeInsets.fromLTRB(2,!state.isNationalIdValid ? 10  : 21, 2, 10),
                             child: RtcTextButton(
                               title: S.current.checkButton,
                               isActive: state.isNationalIdValid,

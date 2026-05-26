@@ -83,11 +83,28 @@ class PreInvoiceView extends StatelessWidget {
                   cubit.goToStep(prevStep);
                 }
               },
+              hideBackIcon:
+                  (state.currentStep == PreInvoiceStep.creditPlan ||
+                  state.isEditMode),
               backIconPath:
-                  (state.currentStep == PreInvoiceStep.creditPlan &&
-                      !state.isEditMode)
-                  ? '$baseImage/close.svg'
+                  (state.currentStep == PreInvoiceStep.creditPlan ||
+                      state.isEditMode)
+                  ? ""
                   : '$baseImage/angle-right.svg',
+              actions: [
+                if (!state.isEditMode)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: GestureDetector(
+                      onTap: () => context.pop(),
+                      child: RtcImage(
+                        image: '$baseImage/close_appbar.svg',
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             body: Column(
               children: [

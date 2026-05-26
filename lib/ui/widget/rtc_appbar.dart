@@ -15,6 +15,7 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final bool centerTitle;
   final bool showShadow;
+  final bool hideBackIcon;
   final Color backgroundColor;
 
   const RtcAppBar({
@@ -30,6 +31,7 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.bottom,
     this.centerTitle = true,
     this.showShadow = true,
+    this.hideBackIcon = false,
     this.backgroundColor = Colors.white,
   });
 
@@ -42,7 +44,7 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor,
       surfaceTintColor: Colors.transparent,
       leading: leading ??
-          (onBack != null
+          ((onBack != null && !hideBackIcon)
               ? GestureDetector(
                   onTap: onBack,
                   child: Container(
