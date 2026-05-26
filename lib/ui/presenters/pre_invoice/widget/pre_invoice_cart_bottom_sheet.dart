@@ -28,24 +28,25 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
             children: [
               // Top Handle
               Container(
-                width: 40,
-                height: 4,
+                width: 32,
+                height: 2,
                 decoration: BoxDecoration(
-                  color: AppColors.grayPalette.shade300,
+                  color: AppColors.brandPalette.shade600,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
-              _buildHeader(state.cartItems.length),
+              _buildHeader(state.cartItems.length, context),
               const SizedBox(height: 16),
               Flexible(
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: state.cartItems.length,
-                  separatorBuilder: (context, index) => const Divider(height: 32),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 32),
                   itemBuilder: (context, index) {
                     final item = state.cartItems[index];
-                    return _buildCartItem(item, cubit);
+                    return _buildCartItem(item, cubit, context);
                   },
                 ),
               ),
@@ -59,141 +60,137 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(int count) {
+  Widget _buildHeader(int count, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.successPalette.shade50,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            '$count ${S.current.productsFound.replaceAll('کالا پیدا شد', 'کالا')}',
-            style: TextStyle(
-              color: AppColors.successPalette.shade700,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-        ),
         Row(
           children: [
-            Text(
-              S.current.cartTitle,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.grayPalette.shade900,
-              ),
+            RtcImage(
+              image: "$baseImage/cart_bottom_sheet.svg",
+              width: 20,
+              height: 20,
             ),
             const SizedBox(width: 8),
-            RtcImage(
-              image: "$baseImage/cart_dashboard.svg",
-              width: 24,
-              height: 24,
-              color: AppColors.grayPalette.shade900,
+            Text(
+              S.current.cartTitle,
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.grayPalette.shade20,
+              ),
             ),
           ],
+        ),
+
+        Container(
+          width: 42,
+          height: 22,
+
+          decoration: BoxDecoration(
+            color: AppColors.successPalette.shade500,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Center(
+            child: Text(
+              '$count ${S.current.productsFound.replaceAll('کالا پیدا شد', 'کالا')}',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildCartItem(CartItemModel item, PreInvoiceCubit cubit) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildCartItem(
+    CartItemModel item,
+    PreInvoiceCubit cubit,
+    BuildContext context,
+  ) {
+    return Column(
+      spacing: 10,
       children: [
-        // Product Details and Counter on the Left
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.name,
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grayPalette.shade900,
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (item.oldPrice != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.oldPrice!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.grayPalette.shade400,
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
-                  ],
-                ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              padding: const EdgeInsets.all(8),
+
+              child: RtcImage(image: item.imageUrl, boxFit: BoxFit.contain),
+            ),
+
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    S.current.toman,
-                    style: TextStyle(fontSize: 11, color: AppColors.grayPalette.shade500),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    item.price,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    item.name,
+                    textAlign: TextAlign.right,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.w500,
                       color: AppColors.grayPalette.shade900,
                     ),
                   ),
+                  const SizedBox(height: 18),
+                  if (item.oldPrice != null)
+                    Text(
+                      item.oldPrice!,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.price,
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.grayPalette.shade900,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        S.current.toman,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.grayPalette.shade500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              const SizedBox(height: 12),
-              _buildCounter(item, cubit),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        // Product Image on the Right
-        Stack(
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.grayPalette.shade25,
-                border: Border.all(color: AppColors.grayPalette.shade100),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: RtcImage(image: item.imageUrl, boxFit: BoxFit.contain),
             ),
+
             if (item.discount != null)
-              Positioned(
-                bottom: 8,
-                right: -4,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.errorPalette.shade500,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    item.discount!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.errorPalette.shade500,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  item.discount!,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
           ],
         ),
+
+        _buildCounter(item, cubit),
+
       ],
     );
   }
@@ -227,7 +224,11 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
           IconButton(
             onPressed: () => cubit.removeFromCart(item.productId),
             icon: item.quantity == 1
-                ? Icon(Icons.delete_outline, color: AppColors.errorPalette.shade500, size: 20)
+                ? Icon(
+                    Icons.delete_outline,
+                    color: AppColors.errorPalette.shade500,
+                    size: 20,
+                  )
                 : const Icon(Icons.remove, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -265,13 +266,18 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Label on the Right (First child in RTL)
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.grayPalette.shade600,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          // Value and Toman on the Left (Second child in RTL)
           Row(
             children: [
-              Text(
-                S.current.toman,
-                style: TextStyle(fontSize: 12, color: AppColors.grayPalette.shade500),
-              ),
-              const SizedBox(width: 4),
               Text(
                 value,
                 style: TextStyle(
@@ -280,15 +286,15 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                   color: color ?? AppColors.grayPalette.shade900,
                 ),
               ),
+              const SizedBox(width: 4),
+              Text(
+                S.current.toman,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.grayPalette.shade500,
+                ),
+              ),
             ],
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.grayPalette.shade600,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            ),
           ),
         ],
       ),
