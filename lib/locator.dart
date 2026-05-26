@@ -1,10 +1,12 @@
 import 'package:get_it/get_it.dart';
+import 'package:rtc_mobile/repository/media/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data_source/local/prefs/prefs.dart';
 import 'data_source/remote/auth/auth_service.dart';
 import 'data_source/remote/catalog/catalog_service.dart';
 import 'data_source/remote/customers/customers_service.dart';
 import 'data_source/remote/dashboard/dashboard_service.dart';
+import 'data_source/remote/media/media_service.dart';
 import 'data_source/remote/orders/orders_service.dart';
 import 'data_source/remote/plans/plans_service.dart';
 import 'data_source/remote/service_util.dart';
@@ -38,6 +40,7 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => CustomersService(sl()));
   sl.registerLazySingleton(() => WalletService(sl()));
   sl.registerLazySingleton(() => OrdersService(sl()));
+  sl.registerLazySingleton(() => MediaService(sl()));
 
   // Repositories
   sl.registerLazySingleton(() => AuthRepository(sl(), sl()));
@@ -47,4 +50,5 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => CustomersRepository(sl()));
   sl.registerLazySingleton(() => WalletRepository(sl()));
   sl.registerLazySingleton(() => OrdersRepository(sl()));
+  sl.registerLazySingleton(() => MediaRepository(sl()));
 }

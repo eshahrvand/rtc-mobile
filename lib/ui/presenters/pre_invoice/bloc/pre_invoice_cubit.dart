@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +10,7 @@ import '../../../../locator.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../repository/customers/customers_repository.dart';
+import '../../../../repository/media/media_repository.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
@@ -19,6 +21,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _plansRepo = sl<PlansRepository>();
   final _productRepo = sl<ProductRepository>();
   final _customerRepo = sl<CustomersRepository>();
+  final _mediaRepo = sl<MediaRepository>();
   final ImagePicker _picker = ImagePicker();
   Timer? _debounce;
 
@@ -72,7 +75,43 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       _submitCustomerInfo();
       return;
     }
+    if (step == PreInvoiceStep.review && state.mandatoryDocPath != null) {
+      _uploadDocuments();
+      return;
+    }
     emit(state.copyWith(currentStep: step, isEditMode: false));
+  }
+
+  void _uploadDocuments() {
+    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+
+    final mandatoryFile = File(state.mandatoryDocPath!);
+    final uploadTasks = <Future<String>>[];
+
+    // Upload mandatory
+    uploadTasks.add(_mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id));
+
+    // Upload optionals
+    for (final path in state.optionalDocPaths) {
+      uploadTasks.add(_mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id));
+    }
+
+    Future.wait(uploadTasks)
+        .then((ids) {
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.success,
+            mandatoryDocId: ids.first,
+            optionalDocIds: ids.skip(1).toList(),
+            currentStep: PreInvoiceStep.review,
+            isEditMode: false,
+          ));
+        })
+        .catchError((e) {
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: 'خطا در بارگذاری مدارک: ${e.toString()}',
+          ));
+        });
   }
 
   void _submitCustomerInfo() {
@@ -393,11 +432,28 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   Future<void> pickOptionalDoc(dynamic context) async {
+    if (state.optionalDocPaths.length >= 5) {
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.error,
+        errorMessage: 'حداکثر ۵ تصویر اختیاری مجاز است',
+      ));
+      return;
+    }
     final result = await MediaPickerBottomSheet.show(context, isMultiSelection: true);
     if (result != null && result.isNotEmpty) {
+      final availableSlots = 5 - state.optionalDocPaths.length;
+      final newPaths = result.take(availableSlots).map((m) => m.file.path).toList();
+
       final updatedPaths = List<String>.from(state.optionalDocPaths)
-        ..addAll(result.map((m) => m.file.path));
+        ..addAll(newPaths);
       emit(state.copyWith(optionalDocPaths: updatedPaths));
+
+      if (result.length > availableSlots) {
+        emit(state.copyWith(
+          status: PreInvoiceRequestStatus.error,
+          errorMessage: 'فقط $availableSlots تصویر دیگر اضافه شد (حداکثر ۵ عدد)',
+        ));
+      }
     }
   }
 
