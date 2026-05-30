@@ -209,6 +209,8 @@ class OrdersCubit extends Cubit<OrdersState> {
     );
     if (result != null && result.isNotEmpty) {
       final filePath = result.first.file.path;
+      // Emit a "null" value first to ensure the listener triggers if the path is the same
+      emit(state.copyWith(uploadedClearanceDocPath: null));
       emit(state.copyWith(uploadedClearanceDocPath: filePath));
     }
   }

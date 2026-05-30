@@ -47,7 +47,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
         final isPreInvoice = widget.order.status == 'پیش فاکتور';
         final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
         final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
-        final isAmountEntered = state.clearanceStep == ClearanceStep.amountSelected;
+        final isAmountEntered =
+            state.clearanceStep == ClearanceStep.amountSelected;
 
         return Column(
           children: [

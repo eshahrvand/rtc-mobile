@@ -82,20 +82,8 @@ class OrderOperationItemWidget extends StatelessWidget {
                 onAction: () {
                   if (state.gatewayType == GatewayType.online) {
                     // Trigger OTP flow via cubit
-                    // context.read<OrdersCubit>().requestCode();
                   } else {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => OrderUploadDocumentsSheet(
-                        onConfirm: () {
-                          Navigator.pop(context);
-                          // Handle confirmation
-                        },
-                        filePath: '',
-                      ),
-                    );
+                    context.read<OrdersCubit>().pickClearanceDocument(context);
                   }
                 },
               ),
