@@ -60,12 +60,12 @@ class _OrdersViewState extends State<OrdersView> {
             appBar: RtcSearchAppBar(
               isSearchActive: state.searchQuery.isNotEmpty,
               showShadow: false,
-              title: 'سفارشات',
+              title: '',
               titleStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
-              searchLabel: 'جستجو در سفارشات',
+              searchHint: "",
               onSearchChanged: (value) => cubit.onSearchChanged(value),
               onSearchActivated: () => cubit.onSearchChanged(' '),
               onSearchDeactivated: () => cubit.onSearchChanged(''),
@@ -101,18 +101,31 @@ class _OrdersViewState extends State<OrdersView> {
     return RtcChipList(
       chips: chips,
       isChipSelected: (index, chip) {
-        if (index == 0) return state.selectedStatusId != null;
-        if (index == 1) return state.selectedSubPlanId != null;
-        if (index == 2) return state.startDate != null || state.endDate != null;
+        if (chip.id == 1) return state.selectedStatusId != null;
+        if (chip.id == 2) return state.selectedSubPlanId != null;
+        if (chip.id == 3) return state.startDate != null || state.endDate != null;
         return false;
       },
       onChipTap: (index, chip) {
-        if (index == 0) {
+        debugPrint('>> OrdersScreen: Chip tapped: ${chip.label} (ID: ${chip.id})');
+        if (chip.id == 1) {
+          debugPrint('>> OrdersScreen: Opening Status Filter');
           _showStatusFilter(context, cubit, state);
-        } else if (index == 1) {
+        } else if (chip.id == 2) {
+          debugPrint('>> OrdersScreen: Opening Plan Filter');
           _showPlanFilter(context, cubit, state);
-        } else if (index == 2) {
+        } else if (chip.id == 3) {
+          debugPrint('>> OrdersScreen: Opening Date Filter');
           _showDateFilter(context, cubit, state);
+        }
+      },
+      onChipClose: (index, chip) {
+        if (chip.id == 1) {
+          cubit.onStatusFilterChanged(null);
+        } else if (chip.id == 2) {
+          cubit.onSubPlanFilterChanged(null);
+        } else if (chip.id == 3) {
+          cubit.clearDateFilter();
         }
       },
     );
@@ -123,6 +136,7 @@ class _OrdersViewState extends State<OrdersView> {
     OrdersCubit cubit,
     OrdersState state,
   ) {
+    debugPrint('>> OrdersScreen: _showStatusFilter called');
     final statusItems = [
       const FilterItem(id: 'pre_invoice', title: 'پیش فاکتور'),
       const FilterItem(id: 'approved', title: 'تایید شده'),
@@ -158,6 +172,7 @@ class _OrdersViewState extends State<OrdersView> {
     OrdersCubit cubit,
     OrdersState state,
   ) {
+    debugPrint('>> OrdersScreen: _showPlanFilter called');
     final planItems = state.subPlans
         .map((p) => FilterItem(id: p.id, title: p.name))
         .toList();
@@ -178,6 +193,7 @@ class _OrdersViewState extends State<OrdersView> {
     OrdersCubit cubit,
     OrdersState state,
   ) {
+    debugPrint('>> OrdersScreen: _showDateFilter called');
     FilterDateBottomSheet.show(
       context,
       initialStartDate: state.startDate,

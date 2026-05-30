@@ -14,11 +14,9 @@ import 'filter_bottom_sheet.dart';
 class ProductsBody extends StatelessWidget {
   const ProductsBody({super.key});
 
-  void _showFilterSheet(
-    BuildContext context,
-    ProductChipModel chip,
-    ProductState state,
-  ) {
+  void _showFilterSheet(BuildContext context,
+      ProductChipModel chip,
+      ProductState state,) {
     if (chip.id == 1) {
       // Category Filter (Single-selection)
       FilterBottomSheet.show(
@@ -60,7 +58,7 @@ class ProductsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<ProductCubit, ProductState>(
       listenWhen: (prev, curr) =>
-          prev.activeFilterChip != curr.activeFilterChip &&
+      prev.activeFilterChip != curr.activeFilterChip &&
           curr.activeFilterChip != null,
       listener: (context, state) {
         _showFilterSheet(context, state.activeFilterChip!, state);
@@ -89,36 +87,40 @@ class ProductsBody extends StatelessWidget {
                 child: state.status == ProductRequestStatus.loading
                     ? const Center(child: CircularProgressIndicator())
                     : state.filteredProducts.isEmpty
-                        ? Center(
-                            child: Text(
-                              S.current.noItemsFound,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppColors.grayPalette.shade600,
-                                  ),
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: state.filteredProducts.length,
-                            itemBuilder: (context, index) {
-                              final product = state.filteredProducts[index];
-                              final hasPlan = state.selectedSubPlanId != null;
-                              return RtcProductItem(
-                                product: product,
-                                showPrice: hasPlan,
-                                onTap: () {
-                                  context.push(
-                                    AppRoutes.productDetail,
-                                    extra: {
-                                      'productId': product.id,
-                                      'subPlanId': state.selectedSubPlanId,
-                                      'subPlanName': state.selectedSubPlanName,
-                                      'showPrice': hasPlan,
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                    ? Center(
+                  child: Text(
+                    S.current.noItemsFound,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: state.filteredProducts.length,
+                  itemBuilder: (context, index) {
+                    final product = state.filteredProducts[index];
+                    final hasPlan = state.selectedSubPlanId != null;
+                    return RtcProductItem(
+                      product: product,
+                      showPrice: hasPlan,
+                      onTap: () {
+                        context.push(
+                          AppRoutes.productDetail,
+                          extra: {
+                            'productId': product.id,
+                            'subPlanId': state.selectedSubPlanId,
+                            'subPlanName': state.selectedSubPlanName,
+                            'showPrice': hasPlan,
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           );

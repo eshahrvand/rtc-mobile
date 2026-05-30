@@ -159,11 +159,7 @@ class MainView extends StatelessWidget {
         isSearchActive: ordersState.searchQuery.isNotEmpty,
         showShadow: true,
         title: '',
-        titleStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-        searchLabel: 'جستجو در سفارشات',
+        searchHint: 'جستجو در سفارشات',
         onSearchChanged: (value) =>
             context.read<OrdersCubit>().onSearchChanged(value),
         onSearchActivated: () =>
@@ -171,11 +167,6 @@ class MainView extends StatelessWidget {
         onSearchDeactivated: () =>
             context.read<OrdersCubit>().onSearchChanged(''),
         scaffoldKey: scaffoldKey,
-        searchSuffix: RtcImage(
-          image: '$baseImage/search.svg',
-          width: 20,
-          height: 20,
-        ),
       );
     }
     return null;

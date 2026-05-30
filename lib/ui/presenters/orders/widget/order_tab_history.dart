@@ -11,19 +11,24 @@ class OrderTabHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final historyLength = order.history.length;
+    final splitIndex = (historyLength - 2).clamp(0, historyLength);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (historyLength > 2) ...[
+            ...order.history
+                .take(splitIndex)
+                .map((h) => _buildHistoryRow(h.label, h.value, theme)),
+            _divider(),
+          ],
           ...order.history
-              .take(order.history.length - 2)
+              .skip(splitIndex)
               .map((h) => _buildHistoryRow(h.label, h.value, theme)),
-          _divider(),
-          ...order.history
-              .skip(order.history.length - 2)
-              .map((h) => _buildHistoryRow(h.label, h.value, theme)),
-          _divider(),
+          if (historyLength > 0) _divider(),
           if (order.rejectionReason != null) ...[
             const SizedBox(height: 15),
             Text(
