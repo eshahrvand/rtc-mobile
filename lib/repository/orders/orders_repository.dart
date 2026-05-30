@@ -11,14 +11,19 @@ class OrdersRepository {
   OrdersRepository(this._service);
 
   Future<OrderDtoModel> createOrder(OrderCreateRequest request) {
-    return _service.createOrder(request);
+    final body = request.toJson();
+    // Ensure lines are serialized to List<Map>
+    body['lines'] = request.lines.map((l) => l.toJson()).toList();
+    // Ensure documents are serialized to List<Map>
+    body['documents'] = request.documents.map((d) => d.toJson()).toList();
+    return _service.createOrder(body);
   }
 
   Future<OrderDocumentResponse> addOrderDocument(
     String orderId,
     OrderDocumentRequest request,
   ) {
-    return _service.addOrderDocument(orderId, request);
+    return _service.addOrderDocument(orderId, request.toJson());
   }
 
   Future<List<OrderSummaryModel>> getOrders({

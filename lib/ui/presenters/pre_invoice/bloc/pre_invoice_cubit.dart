@@ -131,6 +131,27 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void _submitCustomerInfo() {
     final info = state.customerInfo!;
+    final original = state.originalCustomerInfo;
+
+    // Check if data has actually changed
+    final hasChanged = original == null ||
+        info.firstName != original.firstName ||
+        info.lastName != original.lastName ||
+        info.nationalId != original.nationalId ||
+        info.phoneNumber != original.phoneNumber ||
+        info.postalCode != original.postalCode ||
+        info.address != original.address;
+
+    if (!hasChanged) {
+      emit(
+        state.copyWith(
+          currentStep: PreInvoiceStep.documents,
+          isEditMode: false,
+        ),
+      );
+      return;
+    }
+
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
     final body = {
@@ -151,10 +172,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     request
         .then((response) {
+          final updatedInfo = info.copyWith(id: response.id);
           emit(
             state.copyWith(
               status: PreInvoiceRequestStatus.success,
-              customerInfo: info.copyWith(id: response.id),
+              customerInfo: updatedInfo,
+              originalCustomerInfo: updatedInfo,
               isExistingCustomer: true,
               currentStep: PreInvoiceStep.documents,
               isEditMode: false,
@@ -392,49 +415,40 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     emit(state.copyWith(customerSearchLoading: true));
 
     _customerRepo
-        .getCustomers(nationalId: state.customerIdQuery)
-        .then((response) {
-          if (response.results.isNotEmpty) {
-            final dto = response.results.first;
-            final info = CustomerInfoModel(
-              id: dto.id,
-              firstName: dto.firstName,
-              lastName: dto.lastName,
-              nationalId: dto.nationalId,
-              phoneNumber: dto.mobile,
-              postalCode: dto.postalCode,
-              address: dto.address,
-            );
-            emit(
-              state.copyWith(
-                customerSearchLoading: false,
-                customerInfo: info,
-                isExistingCustomer: true,
-              ),
-            );
-          } else {
-            emit(
-              state.copyWith(
-                customerSearchLoading: false,
-                customerInfo: CustomerInfoModel(
-                  firstName: '',
-                  lastName: '',
-                  nationalId: state.customerIdQuery,
-                  phoneNumber: '',
-                  postalCode: '',
-                  address: '',
-                ),
-                isExistingCustomer: false,
-              ),
-            );
-          }
+        .getCustomerByNationalId(state.customerIdQuery)
+        .then((dto) {
+          final info = CustomerInfoModel(
+            id: dto.id,
+            firstName: dto.firstName,
+            lastName: dto.lastName,
+            nationalId: dto.nationalId,
+            phoneNumber: dto.mobile,
+            postalCode: dto.postalCode,
+            address: dto.address,
+          );
+          emit(
+            state.copyWith(
+              customerSearchLoading: false,
+              customerInfo: info,
+              originalCustomerInfo: info,
+              isExistingCustomer: true,
+            ),
+          );
         })
         .catchError((e) {
           emit(
             state.copyWith(
               customerSearchLoading: false,
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در جستجوی مشتری',
+              customerInfo: CustomerInfoModel(
+                firstName: '',
+                lastName: '',
+                nationalId: state.customerIdQuery,
+                phoneNumber: '',
+                postalCode: '',
+                address: '',
+              ),
+              originalCustomerInfo: null,
+              isExistingCustomer: false,
             ),
           );
         });
@@ -548,73 +562,46 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       );
     }).toList();
 
+    final documents = <OrderDocumentRequest>[];
+    if (state.mandatoryDocId != null) {
+      documents.add(
+        OrderDocumentRequest(
+          documentType: 'national_id_front',
+          fileId: state.mandatoryDocId!,
+        ),
+      );
+    }
+
+    for (final fileId in state.optionalDocIds) {
+      documents.add(
+        OrderDocumentRequest(documentType: 'supporting', fileId: fileId),
+      );
+    }
+
     final request = OrderCreateRequest(
       customerId: state.customerInfo!.id!,
       subPlanId: state.selectedCreditPlanId!,
       lines: lines,
+      documents: documents,
       deliveryToAgent: true, // As per JSON example
     );
 
     _ordersRepo
         .createOrder(request)
         .then((order) {
-          _submitOrderDocuments(order.id, shouldClear);
+          emit(
+            state.copyWith(
+              status: shouldClear
+                  ? PreInvoiceRequestStatus.submittedAndCleared
+                  : PreInvoiceRequestStatus.submitted,
+            ),
+          );
         })
         .catchError((e) {
           emit(
             state.copyWith(
               status: PreInvoiceRequestStatus.error,
               errorMessage: 'خطا در ثبت پیش فاکتور: ${e.toString()}',
-            ),
-          );
-        });
-  }
-
-  void _submitOrderDocuments(String orderId, bool shouldClear) {
-    final docTasks = <Future<OrderDocumentResponse>>[];
-
-    // Mandatory doc
-    if (state.mandatoryDocId != null) {
-      docTasks.add(
-        _ordersRepo.addOrderDocument(
-          orderId,
-          OrderDocumentRequest(
-            documentType: 'national_id_front',
-            fileId: state.mandatoryDocId!,
-          ),
-        ),
-      );
-    }
-
-    // Optional docs
-    for (final fileId in state.optionalDocIds) {
-      docTasks.add(
-        _ordersRepo.addOrderDocument(
-          orderId,
-          OrderDocumentRequest(documentType: 'supporting', fileId: fileId),
-        ),
-      );
-    }
-
-    Future.wait(docTasks)
-        .then((_) {
-          emit(
-            state.copyWith(
-              status: shouldClear
-                  ? PreInvoiceRequestStatus.submittedAndCleared
-                  : PreInvoiceRequestStatus.submitted,
-            ),
-          );
-        })
-        .catchError((e) {
-          // Even if docs fail, the order was created.
-          // We show an error but proceed as submitted since we can't "un-create" the order easily.
-          emit(
-            state.copyWith(
-              status: shouldClear
-                  ? PreInvoiceRequestStatus.submittedAndCleared
-                  : PreInvoiceRequestStatus.submitted,
-              errorMessage: 'پیش فاکتور ثبت شد اما خطا در پیوست مدارک رخ داد.',
             ),
           );
         });

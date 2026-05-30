@@ -26,11 +26,11 @@ abstract class OrdersService {
   Future<OrderDtoModel> getOrderById(@Path('id') String id);
 
   @POST('orders/orders')
-  Future<OrderDtoModel> createOrder(@Body() OrderCreateRequest request);
+  Future<OrderDtoModel> createOrder(@Body() Map<String, dynamic> request);
 
   @POST('orders/orders/{id}/documents')
   Future<OrderDocumentResponse> addOrderDocument(
     @Path('id') String orderId,
-    @Body() OrderDocumentRequest request,
+    @Body() Map<String, dynamic> request,
   );
 }

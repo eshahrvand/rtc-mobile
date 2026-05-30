@@ -21,6 +21,11 @@ abstract class CustomersService {
   @GET('orders/customers/{id}')
   Future<CustomerDtoModel> getCustomerDetail(@Path('id') String id);
 
+  @GET('orders/customers/by-national-id/{national_id}')
+  Future<CustomerDtoModel> getCustomerByNationalId(
+    @Path('national_id') String nationalId,
+  );
+
   @PATCH('orders/customers/{id}')
   Future<CustomerDtoModel> updateCustomer(
     @Path('id') String id,

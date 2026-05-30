@@ -20,6 +20,14 @@ class CustomersRepository {
     );
   }
 
+  Future<CustomerDtoModel> getCustomerDetail(String id) async {
+    return await _customersService.getCustomerDetail(id);
+  }
+
+  Future<CustomerDtoModel> getCustomerByNationalId(String nationalId) async {
+    return await _customersService.getCustomerByNationalId(nationalId);
+  }
+
   Future<CustomerDtoModel> updateCustomer(
     String id,
     Map<String, dynamic> body,

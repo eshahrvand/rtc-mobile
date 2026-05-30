@@ -103,9 +103,10 @@ class OrderProductSummaryDtoModel with _$OrderProductSummaryDtoModel {
 @freezed
 class OrderCreateRequest with _$OrderCreateRequest {
   const factory OrderCreateRequest({
-    @JsonKey(name: 'customer_id') required String customerId,
-    @JsonKey(name: 'sub_plan_id') required String subPlanId,
+    @JsonKey(name: 'customer') required String customerId,
+    @JsonKey(name: 'sub_plan') required String subPlanId,
     required List<OrderLineRequest> lines,
+    required List<OrderDocumentRequest> documents,
     @JsonKey(name: 'delivery_to_agent') required bool deliveryToAgent,
   }) = _OrderCreateRequest;
 
@@ -115,7 +116,7 @@ class OrderCreateRequest with _$OrderCreateRequest {
 @freezed
 class OrderLineRequest with _$OrderLineRequest {
   const factory OrderLineRequest({
-    @JsonKey(name: 'product_id') required String productId,
+    @JsonKey(name: 'product') required String productId,
     required int quantity,
   }) = _OrderLineRequest;
 
@@ -126,7 +127,7 @@ class OrderLineRequest with _$OrderLineRequest {
 class OrderDocumentRequest with _$OrderDocumentRequest {
   const factory OrderDocumentRequest({
     @JsonKey(name: 'document_type') required String documentType,
-    @JsonKey(name: 'file_id') required String fileId,
+    @JsonKey(name: 'file') required String fileId,
   }) = _OrderDocumentRequest;
 
   factory OrderDocumentRequest.fromJson(Map<String, dynamic> json) => _$OrderDocumentRequestFromJson(json);

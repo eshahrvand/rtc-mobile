@@ -54,6 +54,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default('') String customerIdQuery,
     @Default(true) bool isNationalIdValid,
     CustomerInfoModel? customerInfo,
+    CustomerInfoModel? originalCustomerInfo,
     @Default(false) bool customerSearchLoading,
     @Default(false) bool isExistingCustomer,
 
