@@ -112,8 +112,7 @@ class OrdersRepository {
             name: line.product.name,
             price: _formatCurrency(line.unitPriceAtCreation),
             quantity: line.quantity.toString(),
-            imageUrl:
-                '', // Product image not in order line DTO, might need product detail call or baseImageUrl
+            imageUrl: line.product.featuredImage?.file ?? '',
           );
         }).toList(),
         customer: OrderCustomerModel(

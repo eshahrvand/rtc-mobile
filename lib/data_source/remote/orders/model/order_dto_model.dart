@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../customers/model/customer_dto_model.dart';
 import '../../wallet/model/wallet_dto_model.dart';
+import '../../catalog/model/product_dto_model.dart';
 
 part 'order_dto_model.freezed.dart';
 part 'order_dto_model.g.dart';
@@ -95,6 +96,7 @@ class OrderProductSummaryDtoModel with _$OrderProductSummaryDtoModel {
     required String id,
     required String name,
     required String sku,
+    @JsonKey(name: 'featured_image') ImageDtoModel? featuredImage,
   }) = _OrderProductSummaryDtoModel;
 
   factory OrderProductSummaryDtoModel.fromJson(Map<String, dynamic> json) => _$OrderProductSummaryDtoModelFromJson(json);
