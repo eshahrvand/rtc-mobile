@@ -12,6 +12,13 @@ class RtcBarChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final double maxDataValue = data.isEmpty
+        ? 0
+        : data
+            .map((e) => e.value)
+            .reduce((curr, next) => curr > next ? curr : next);
+    final double maxY = maxDataValue == 0 ? 10 : maxDataValue * 1.2;
+
     return Padding(
       padding: const EdgeInsets.only(top: 18.0),
       child: Container(
@@ -39,7 +46,7 @@ class RtcBarChartCard extends StatelessWidget {
                 child: BarChart(
                   BarChartData(
                     alignment: BarChartAlignment.spaceAround,
-                    maxY: 25,
+                    maxY: maxY,
                     barTouchData: BarTouchData(enabled: false),
                     titlesData: FlTitlesData(
                       show: true,
