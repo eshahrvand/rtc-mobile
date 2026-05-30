@@ -151,14 +151,19 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
-    final isDone =
-        detail.status == 'در انتظار تسویه' ||
+    final isDone = detail.status == 'در انتظار تسویه' ||
+        detail.status == 'تایید شده' ||
         state.clearanceStep == ClearanceStep.success;
 
-    if (detail.status == 'پیش فاکتور' ||
-        detail.status == 'در انتظار تسویه' ||
-        detail.status == 'در انتظار تایید ' ||
-        detail.status == 'تایید شده') {
+    final statusesToShowDisburse = [
+      'پیش فاکتور',
+      'در انتظار تایید',
+      'تایید شده',
+      'رد شده',
+      'در انتظار تسویه'
+    ];
+
+    if (statusesToShowDisburse.contains(detail.status)) {
       return OrderOperationModel(
         step: 1,
         title: 'عملیات تخلیه',

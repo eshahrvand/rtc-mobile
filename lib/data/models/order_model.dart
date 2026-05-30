@@ -35,6 +35,7 @@ class OrderDetailModel {
   final FinancialSummaryModel financialSummary;
   final List<OrderOperationModel> operations;
   final List<OrderHistoryModel> history;
+  final List<OrderPaymentModel> payments;
   final String? rejectionReason;
   final bool isSettled;
 
@@ -49,6 +50,7 @@ class OrderDetailModel {
     required this.financialSummary,
     required this.operations,
     required this.history,
+    required this.payments,
     this.rejectionReason,
     this.isSettled = false,
   });
@@ -151,5 +153,21 @@ class OrderHistoryModel {
   OrderHistoryModel({
     required this.label,
     required this.value,
+  });
+}
+
+class OrderPaymentModel {
+  final String amount;
+  final String type;
+  final String date;
+  final String? trackingCode;
+  final String? status;
+
+  OrderPaymentModel({
+    required this.amount,
+    required this.type,
+    required this.date,
+    this.trackingCode,
+    this.status,
   });
 }

@@ -155,6 +155,20 @@ class OrdersRepository {
           totalDiscount: '۰',
           finalAmount: _formatCurrency(dto.total),
         ),
+        payments: (dto.payments ?? []).map((p) {
+          final pDateTime = DateTime.parse(p.createdAt);
+          final pJalali = Jalali.fromDateTime(pDateTime);
+          final pDateStr =
+              '${pJalali.year}/${pJalali.month.toString().padLeft(2, '0')}/${pJalali.day.toString().padLeft(2, '0')}';
+
+          return OrderPaymentModel(
+            amount: _formatCurrency(p.amount),
+            type: p.paymentType,
+            date: pDateStr,
+            trackingCode: p.trackingCode,
+            status: p.status,
+          );
+        }).toList(),
         operations: [],
         history: [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)],
       );

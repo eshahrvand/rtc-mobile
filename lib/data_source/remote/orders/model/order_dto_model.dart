@@ -33,9 +33,24 @@ class OrderDtoModel with _$OrderDtoModel {
     @JsonKey(name: 'settlement_tracking_code') String? settlementTrackingCode,
     @JsonKey(name: 'delivery_to_agent') bool? deliveryToAgent,
     OrderAgentDtoModel? agent,
+    List<PaymentDtoModel>? payments,
   }) = _OrderDtoModel;
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDtoModelFromJson(json);
+}
+
+@freezed
+class PaymentDtoModel with _$PaymentDtoModel {
+  const factory PaymentDtoModel({
+    required String id,
+    required double amount,
+    @JsonKey(name: 'payment_type') required String paymentType,
+    @JsonKey(name: 'created_at') required String createdAt,
+    @JsonKey(name: 'tracking_code') String? trackingCode,
+    String? status,
+  }) = _PaymentDtoModel;
+
+  factory PaymentDtoModel.fromJson(Map<String, dynamic> json) => _$PaymentDtoModelFromJson(json);
 }
 
 @freezed

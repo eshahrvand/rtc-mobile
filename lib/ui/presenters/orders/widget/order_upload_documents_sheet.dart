@@ -99,7 +99,8 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
               title: S.current.paymentDocuments,
               fileName: fileName,
               fileSize: sizeStr,
-              url: filePath, // Locally for preview
+              url: filePath,
+              // Locally for preview
               iconPath: '$baseImage/featured-icon.svg',
             ),
           ),
