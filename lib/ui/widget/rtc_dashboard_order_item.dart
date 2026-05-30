@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 import '../../data/models/order_item_model.dart';
@@ -40,7 +41,7 @@ class RtcDashboardOrderItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    order.amount,
+                    order.amount.formatCurrency,
                     style: theme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.w500,
                       color: AppColors.grayPalette.shade900,

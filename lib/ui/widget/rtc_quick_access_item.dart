@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -101,7 +102,7 @@ class RtcQuickAccessItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    value,
+                    value.formatCurrency,
                     style: theme.titleSmall!.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.grayPalette.shade900,
