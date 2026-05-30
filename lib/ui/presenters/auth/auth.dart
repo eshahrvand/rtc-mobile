@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 
 import '../../../config/config.dart';
@@ -28,12 +29,16 @@ class AuthScreen extends StatelessWidget {
               if (state.status == AuthRequestStatus.success) {
                 context.go(AppRoutes.dashboard);
               } else if (state.status == AuthRequestStatus.error) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.errorMessage)),
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.error,
+                  message: state.errorMessage,
                 );
               } else if (state.status == AuthRequestStatus.otpResent) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(S.current.otpResent)),
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.success,
+                  message: S.current.otpResent,
                 );
               }
             },

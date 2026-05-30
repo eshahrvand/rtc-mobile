@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import '../../widget/rtc_image.dart';
 import 'bloc/dashboard_cubit.dart';
@@ -46,12 +47,10 @@ class MainView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == DashboardRequestStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage),
-                  backgroundColor:
-                      Colors.red, // TODO: replace with theme values
-                ),
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.error,
+                message: state.errorMessage,
               );
             }
           },
@@ -60,12 +59,10 @@ class MainView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == ProductRequestStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage),
-                  backgroundColor:
-                      Colors.red, // TODO: replace with theme values
-                ),
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.error,
+                message: state.errorMessage,
               );
             }
           },
@@ -74,12 +71,10 @@ class MainView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == OrdersRequestStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage),
-                  backgroundColor:
-                      Colors.red, // TODO: replace with theme values
-                ),
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.error,
+                message: state.errorMessage,
               );
             }
           },

@@ -10,6 +10,7 @@ import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'bloc/media_picker_cubit.dart';
 import 'bloc/media_picker_state.dart';
 import 'bloc/model/media_item.dart';
+import 'package:rtc_mobile/config/snackbar.dart';
 
 class MediaPickerBottomSheet extends StatefulWidget {
   final bool isMultiSelection;
@@ -65,8 +66,10 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
           Navigator.of(context).pop(state.selectedMedia);
         }
         if (state.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error!)),
+          rtcSnackBar(
+            context: context,
+            type: SnackBarType.error,
+            message: state.error!,
           );
         }
       },

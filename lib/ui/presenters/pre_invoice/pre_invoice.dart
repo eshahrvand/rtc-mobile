@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_cart_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -41,9 +42,11 @@ class PreInvoiceView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == PreInvoiceRequestStatus.error) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.error,
+                message: state.errorMessage,
+              );
             }
             if (state.status == PreInvoiceRequestStatus.submitted) {
               context.go(AppRoutes.orderDetail, extra: state.createdOrderId);

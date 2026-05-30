@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../generated/l10n.dart';
@@ -53,12 +54,10 @@ class ProductDetailView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == ProductDetailRequestStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage),
-                  // TODO: replace with theme color
-                  backgroundColor: Colors.red,
-                ),
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.error,
+                message: state.errorMessage,
               );
             }
           },

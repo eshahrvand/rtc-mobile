@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/presenters/products/widget/filter_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
 import '../../../../data/models/product_chip_model.dart';
@@ -41,11 +42,10 @@ class _OrdersViewState extends State<OrdersView> {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == OrdersRequestStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage),
-                  backgroundColor: Colors.red,
-                ),
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.error,
+                message: state.errorMessage,
               );
             }
           },
