@@ -67,5 +67,10 @@ class PreInvoiceState with _$PreInvoiceState {
     String? createdOrderId,
 
     @Default(false) bool isEditMode,
+
+    @Default(false) bool isSubmittingPreInvoice,
+    @Default(false) bool isSubmittingAndClearing,
+    @Default(false) bool isUploadingDocuments,
+    @Default(false) bool isSubmittingCustomerInfo,
   }) = _PreInvoiceState;
 }

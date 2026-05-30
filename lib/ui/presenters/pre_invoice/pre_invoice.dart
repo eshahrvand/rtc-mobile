@@ -206,8 +206,9 @@ class PreInvoiceView extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: AppColors.brandPalette.shade700,
                 ),
+                isLoading: state.isSubmittingPreInvoice,
+                onPressed: () => cubit.submitAndClear(),
 
-                onPressed: () => cubit.submitPreInvoice(),
                 borderColor: AppColors.brandPalette.shade50,
               ),
             ),
@@ -218,7 +219,8 @@ class PreInvoiceView extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
-                onPressed: () => cubit.submitAndClear(),
+                isLoading: state.isSubmittingAndClearing,
+                onPressed: () => cubit.submitPreInvoice(),
               ),
             ),
           ],
@@ -228,6 +230,7 @@ class PreInvoiceView extends StatelessWidget {
 
     String title = S.current.nextStep;
     bool isActive = false;
+    bool isLoading = false;
     VoidCallback onPressed = () {};
 
     if (state.currentStep == PreInvoiceStep.creditPlan) {
@@ -245,9 +248,11 @@ class PreInvoiceView extends StatelessWidget {
       onPressed = () => cubit.goToStep(PreInvoiceStep.customerInfo);
     } else if (state.currentStep == PreInvoiceStep.customerInfo) {
       isActive = state.customerInfo != null;
+      isLoading = state.isSubmittingCustomerInfo;
       onPressed = () => cubit.goToStep(PreInvoiceStep.documents);
     } else if (state.currentStep == PreInvoiceStep.documents) {
       isActive = state.mandatoryDocPath != null;
+      isLoading = state.isUploadingDocuments;
       onPressed = () => cubit.goToStep(PreInvoiceStep.review);
     }
 
@@ -270,6 +275,7 @@ class PreInvoiceView extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 isActive: isActive,
+                isLoading: isLoading,
                 onPressed: onPressed,
               ),
             ),

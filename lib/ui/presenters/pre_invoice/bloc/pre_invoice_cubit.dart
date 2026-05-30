@@ -89,7 +89,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void _uploadDocuments() {
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: PreInvoiceRequestStatus.loading,
+        isUploadingDocuments: true,
+      ),
+    );
 
     final mandatoryFile = File(state.mandatoryDocPath!);
     final uploadTasks = <Future<String>>[];
@@ -115,6 +120,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               optionalDocIds: ids.skip(1).toList(),
               currentStep: PreInvoiceStep.review,
               isEditMode: false,
+              isUploadingDocuments: false,
             ),
           );
         })
@@ -123,6 +129,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             state.copyWith(
               status: PreInvoiceRequestStatus.error,
               errorMessage: 'خطا در بارگذاری مدارک: ${e.toString()}',
+              isUploadingDocuments: false,
             ),
           );
         });
@@ -151,7 +158,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       return;
     }
 
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: PreInvoiceRequestStatus.loading,
+        isSubmittingCustomerInfo: true,
+      ),
+    );
 
     final body = {
       'first_name': info.firstName,
@@ -180,6 +192,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               isExistingCustomer: true,
               currentStep: PreInvoiceStep.documents,
               isEditMode: false,
+              isSubmittingCustomerInfo: false,
             ),
           );
         })
@@ -188,6 +201,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             state.copyWith(
               status: PreInvoiceRequestStatus.error,
               errorMessage: 'خطا در ثبت اطلاعات مشتری',
+              isSubmittingCustomerInfo: false,
             ),
           );
         });
@@ -552,7 +566,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     if (state.customerInfo == null || state.selectedCreditPlanId == null)
       return;
 
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: PreInvoiceRequestStatus.loading,
+        isSubmittingPreInvoice: !shouldClear,
+        isSubmittingAndClearing: shouldClear,
+      ),
+    );
 
     final lines = state.cartItems.map((item) {
       return OrderLineRequest(
@@ -594,6 +614,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
                   ? PreInvoiceRequestStatus.submittedAndCleared
                   : PreInvoiceRequestStatus.submitted,
               createdOrderId: order.id,
+              isSubmittingPreInvoice: false,
+              isSubmittingAndClearing: false,
             ),
           );
         })
@@ -602,6 +624,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             state.copyWith(
               status: PreInvoiceRequestStatus.error,
               errorMessage: 'خطا در ثبت پیش فاکتور: ${e.toString()}',
+              isSubmittingPreInvoice: false,
+              isSubmittingAndClearing: false,
             ),
           );
         });
