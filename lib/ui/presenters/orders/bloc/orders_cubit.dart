@@ -76,6 +76,15 @@ class OrdersCubit extends Cubit<OrdersState> {
     fetchOrders();
   }
 
+  void activateSearch() {
+    emit(state.copyWith(isSearchActive: true));
+  }
+
+  void deactivateSearch() {
+    emit(state.copyWith(isSearchActive: false, searchQuery: ''));
+    fetchOrders();
+  }
+
   void onStatusFilterChanged(String? statusId) {
     emit(state.copyWith(selectedStatusId: statusId));
     fetchOrders();

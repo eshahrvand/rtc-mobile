@@ -25,6 +25,7 @@ class OrdersState with _$OrdersState {
     @Default([]) List<OrderSummaryModel> allOrders,
     @Default([]) List<OrderSummaryModel> filteredOrders,
     @Default('') String searchQuery,
+    @Default(false) bool isSearchActive,
     @Default([]) List<String> selectedBadges,
     OrderDetailModel? selectedOrder,
     @Default(0) int selectedTabIndex,

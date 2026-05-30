@@ -156,16 +156,15 @@ class MainView extends StatelessWidget {
       );
     } else if (index == 2) {
       return RtcSearchAppBar(
-        isSearchActive: ordersState.searchQuery.isNotEmpty,
+        isSearchActive: ordersState.isSearchActive,
         showShadow: true,
         title: '',
         searchHint: 'جستجو در سفارشات',
         onSearchChanged: (value) =>
             context.read<OrdersCubit>().onSearchChanged(value),
-        onSearchActivated: () =>
-            context.read<OrdersCubit>().onSearchChanged(' '),
+        onSearchActivated: () => context.read<OrdersCubit>().activateSearch(),
         onSearchDeactivated: () =>
-            context.read<OrdersCubit>().onSearchChanged(''),
+            context.read<OrdersCubit>().deactivateSearch(),
         scaffoldKey: scaffoldKey,
       );
     }
