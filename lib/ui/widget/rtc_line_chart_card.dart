@@ -47,7 +47,7 @@ class RtcLineChartCard extends StatelessWidget {
                   children: [
                     _buildLegendItem(
                       label: line1Label ?? S.current.lastMonth,
-                      color: AppColors.successPalette.shade500,
+                      color: AppColors.successPalette.shade400,
                       theme: theme,
                     ),
                     _buildLegendItem(
@@ -114,8 +114,8 @@ class RtcLineChartCard extends StatelessWidget {
                     LineChartBarData(
                       spots: line1Data,
                       isCurved: true,
-                      color: Colors.green,
-                      // // TODO: replace with theme values
+                      color: AppColors.successPalette.shade400,
+
                       barWidth: 2,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
@@ -124,8 +124,7 @@ class RtcLineChartCard extends StatelessWidget {
                     LineChartBarData(
                       spots: line2Data,
                       isCurved: true,
-                      color: Colors.blue,
-                      // // TODO: replace with theme values
+                      color: AppColors.brandPalette.shade600,
                       barWidth: 2,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
