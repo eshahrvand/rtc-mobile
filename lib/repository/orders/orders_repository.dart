@@ -124,10 +124,22 @@ class OrdersRepository {
           address: dto.customer.address,
         ),
         documents: (dto.documents ?? []).map((doc) {
+          final sizeInBytes = doc.file.sizeBytes ?? 0;
+          String sizeStr;
+          if (sizeInBytes < 1024) {
+            // Display small files or 0-size as KB 0
+            sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(0)}';
+          } else if (sizeInBytes < 1024 * 1024) {
+            sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(1)}';
+          } else {
+            sizeStr = 'MB ${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)}';
+          }
+
           return OrderDocumentModel(
             title: _mapDocType(doc.documentType),
             fileName: doc.file.originalName,
-            fileSize: '${(doc.file.sizeBytes ?? 0) ~/ 1024} KB',
+            fileSize: sizeStr,
+            url: doc.file.file,
             iconPath: 'assets/images/alert.svg',
           );
         }).toList(),

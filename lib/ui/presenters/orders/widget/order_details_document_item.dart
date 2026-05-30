@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../theme/colors.dart';
@@ -38,10 +39,15 @@ class OrderDetailsDocumentItem extends StatelessWidget {
                   color: AppColors.grayPalette.shade900,
                 ),
               ),
-              Text(
-                doc.fileName,
-                style: theme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade600,
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.35,
+                child: Text(
+                  doc.fileName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                  ),
                 ),
               ),
             ],
@@ -57,14 +63,60 @@ class OrderDetailsDocumentItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              RtcImage(
-                image: '$baseImage/eye-document.svg',
-                width: 20,
-                height: 20,
-              ),
+              if (doc.url != null)
+                GestureDetector(
+                  onTap: () => _viewDocument(context, doc.url!, doc.title),
+                  child: RtcImage(
+                    image: '$baseImage/eye-document.svg',
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _viewDocument(BuildContext context, String url, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text(
+              title,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: CachedNetworkImage(
+                imageUrl: url,
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(color: Colors.white),
+                errorWidget: (context, url, error) => const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error, color: Colors.white, size: 48),
+                    SizedBox(height: 16),
+                    Text(
+                      'خطا در بارگذاری تصویر',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

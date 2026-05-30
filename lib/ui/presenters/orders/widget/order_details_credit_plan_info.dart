@@ -17,11 +17,6 @@ class OrderDetailsCreditPlanInfo extends StatelessWidget {
           OrderDetailsInfoRow(label: S.current.providerLabel, value: plan.provider),
           OrderDetailsInfoRow(label: S.current.planNameLabel, value: plan.planName),
           OrderDetailsInfoRow(
-            label: S.current.priceIncreaseLabel,
-            value: plan.priceIncrease,
-            valueColor: Colors.blue,
-          ),
-          OrderDetailsInfoRow(
             label: S.current.validityPeriodLabel,
             value: plan.validityPeriod,
           ),

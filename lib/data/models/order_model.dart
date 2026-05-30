@@ -107,12 +107,14 @@ class OrderDocumentModel {
   final String fileName;
   final String fileSize;
   final String iconPath;
+  final String? url;
 
   OrderDocumentModel({
     required this.title,
     required this.fileName,
     required this.fileSize,
     required this.iconPath,
+    this.url,
   });
 }
 
