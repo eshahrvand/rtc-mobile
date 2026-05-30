@@ -12,6 +12,11 @@ enum OrdersRequestStatus {
   error,
 }
 
+enum GatewayType {
+  online,
+  offline,
+}
+
 @freezed
 class OrdersState with _$OrdersState {
   const factory OrdersState({
@@ -39,6 +44,9 @@ class OrdersState with _$OrdersState {
     // Clearance Flow
     @Default(ClearanceStep.initial) ClearanceStep clearanceStep,
     @Default('') String clearanceAmount,
+    String? excessAmount,
+    GatewayType? gatewayType,
+    String? walletName,
     String? uploadedClearanceDocPath,
     String? uploadedClearanceDocId,
   }) = _OrdersState;

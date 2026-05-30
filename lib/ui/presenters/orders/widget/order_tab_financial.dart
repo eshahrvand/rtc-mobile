@@ -11,7 +11,6 @@ import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'order_clearance_amount_sheet.dart';
 import 'order_operation_item_widget.dart';
-import 'order_settlement_operations_widget.dart';
 
 class OrderTabFinancial extends StatefulWidget {
   final OrderDetailModel order;
@@ -79,12 +78,10 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         context,
                       ),
                     ),
-                    ...widget.order.operations.map((op) {
-                      if (op.step == 2 && isWaitingSettlement) {
-                        return OrderSettlementOperationsWidget(op: op);
-                      }
-                      return OrderOperationItemWidget(op: op);
-                    }).toList(),
+                    if (widget.order.operations.isNotEmpty)
+                      ...widget.order.operations.map(
+                        (op) => OrderOperationItemWidget(op: op),
+                      ),
                   ],
                 ),
               ),
