@@ -219,5 +219,15 @@
   "endDate": "تاریخ پایان",
   "selectStartDate": "تاریخ شروع را انتخاب کنید",
   "selectDate": "تاریخ مورد نظر را انتخاب کنید",
+  "clearanceOperation": "عملیات تخلیه",
+  "excessAmountOutOfTolerance": "مبلغ مازاد خارج از تولرانس مجاز است.",
+  "excessAmountAddedToWallet": "مبلغ مازاد به جیب \"{walletName}\" اضافه خواهد شد.",
+  "@excessAmountAddedToWallet": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
   "noItemsFound": "موردی یافت نشد"
 }

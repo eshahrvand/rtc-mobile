@@ -226,6 +226,29 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final amount = double.tryParse(amountStr.replaceAll(',', '')) ?? 0;
+    final orderAmount = double.tryParse(
+          state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
+        ) ??
+        0;
+
+    // TODO: Get tolerance from config/API
+    const tolerancePercent = 0.2;
+    final minAllowed = orderAmount * (1 - tolerancePercent);
+    final maxAllowed = orderAmount * (1 + tolerancePercent);
+
+    if (amount < minAllowed || amount > maxAllowed) {
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.success,
+          clearanceStep: ClearanceStep.amountEntered,
+          clearanceAmount: amountStr,
+          orderAmount: state.selectedOrder!.financialSummary.finalAmount,
+          excessAmount: (amount - orderAmount).abs().toStringAsFixed(0),
+          isOutOfTolerance: true,
+        ),
+      );
+      return;
+    }
 
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
@@ -236,6 +259,12 @@ class OrdersCubit extends Cubit<OrdersState> {
               gatewayType: GatewayType.offline,
               clearanceStep: ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
+              orderAmount: state.selectedOrder!.financialSummary.finalAmount,
+              excessAmount: amount > orderAmount
+                  ? (amount - orderAmount).toStringAsFixed(0)
+                  : null,
+              walletName: 'آپ - ۱۲ ماهه', // TODO: From API
+              isOutOfTolerance: false,
             ),
           );
           // Refresh disburse operation in state

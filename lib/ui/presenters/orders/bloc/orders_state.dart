@@ -52,6 +52,8 @@ class OrdersState with _$OrdersState {
     String? walletName,
     String? uploadedClearanceDocPath,
     String? uploadedClearanceDocId,
+    String? orderAmount,
+    @Default(false) bool isOutOfTolerance,
   }) = _OrdersState;
 }
 

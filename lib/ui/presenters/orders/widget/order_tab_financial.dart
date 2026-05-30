@@ -10,6 +10,7 @@ import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'order_clearance_amount_sheet.dart';
+import 'order_clearance_operation_widget.dart';
 import 'order_operation_item_widget.dart';
 
 class OrderTabFinancial extends StatefulWidget {
@@ -83,8 +84,33 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                       ),
                     ),
 
-                    if (state.disburseOperation != null && state.clearanceAmount.isNotEmpty)
-                      OrderOperationItemWidget(op: state.disburseOperation!),
+                    if (state.disburseOperation != null &&
+                        (state.clearanceAmount.isNotEmpty ||
+                            widget.order.status == 'در انتظار تایید' ||
+                            widget.order.status == 'تایید شده' ||
+                            widget.order.status == 'رد شده'))
+                      OrderClearanceOperationWidget(
+                        amount: state.clearanceAmount.isEmpty
+                            ? widget.order.financialSummary.finalAmount
+                            : state.clearanceAmount,
+                        orderAmount:
+                            state.orderAmount ??
+                            widget.order.financialSummary.finalAmount,
+                        excessAmount: state.excessAmount,
+                        walletName: state.walletName,
+                        isOutOfTolerance: state.isOutOfTolerance,
+                        isOnline: state.gatewayType == GatewayType.online,
+                        onAction: () {
+                          if (state.gatewayType == GatewayType.online) {
+                            // TODO: Show OTP sheet
+                          } else {
+                            // TODO: Show Upload sheet
+                          }
+                        },
+                        onEdit: state.clearanceAmount.isNotEmpty
+                            ? () => cubit.resetClearance()
+                            : null,
+                      ),
 
                     if (widget.order.operations.isNotEmpty)
                       ...widget.order.operations.map(
@@ -107,6 +133,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                   ),
                   title: S.current.dischargeAndSettlement,
                   onPressed: () {
+                    _amountController.text =
+                        widget.order.financialSummary.finalAmount;
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -156,7 +184,10 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
     );
   }
 
-  Widget _buildPaymentHistory(List<OrderPaymentModel> payments, BuildContext context) {
+  Widget _buildPaymentHistory(
+    List<OrderPaymentModel> payments,
+    BuildContext context,
+  ) {
     var theme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,52 +202,66 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
             ),
           ),
         ),
-        ...payments.map((p) => Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.grayPalette.shade200),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(p.type, style: theme.bodyMedium),
-                      Text(p.date,
-                          style: theme.bodySmall!.copyWith(
-                              color: AppColors.grayPalette.shade600)),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(p.amount,
-                              style: theme.titleSmall!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.brandPalette.shade600)),
-                          const SizedBox(width: 4),
-                          Text(S.current.toman,
-                              style: theme.bodySmall!.copyWith(
-                                  color: AppColors.brandPalette.shade600)),
-                        ],
+        ...payments.map(
+          (p) => Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.grayPalette.shade200),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(p.type, style: theme.bodyMedium),
+                    Text(
+                      p.date,
+                      style: theme.bodySmall!.copyWith(
+                        color: AppColors.grayPalette.shade600,
                       ),
-                      if (p.status != null)
-                        Text(p.status!,
-                            style: theme.labelSmall!.copyWith(
-                                color: p.status == 'موفق'
-                                    ? AppColors.successPalette.shade600
-                                    : AppColors.errorPalette.shade600)),
-                    ],
-                  ),
-                ],
-              ),
-            )),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          p.amount,
+                          style: theme.titleSmall!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.brandPalette.shade600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          S.current.toman,
+                          style: theme.bodySmall!.copyWith(
+                            color: AppColors.brandPalette.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (p.status != null)
+                      Text(
+                        p.status!,
+                        style: theme.labelSmall!.copyWith(
+                          color: p.status == 'موفق'
+                              ? AppColors.successPalette.shade600
+                              : AppColors.errorPalette.shade600,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

@@ -219,5 +219,15 @@
   "endDate": "",
   "selectStartDate": "",
   "selectDate": "",
-  "noItemsFound": ""
+  "clearanceOperation": "Clearance Operation",
+  "excessAmountOutOfTolerance": "Excess amount is out of allowed tolerance.",
+  "excessAmountAddedToWallet": "Excess amount will be added to \"{walletName}\" pocket.",
+  "@excessAmountAddedToWallet": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "noItemsFound": "No items found"
 }
