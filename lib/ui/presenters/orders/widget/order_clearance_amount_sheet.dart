@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/core/utils/thousands_separator_input_formatter.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
@@ -95,13 +96,13 @@ class OrderClearanceAmountSheet extends StatelessWidget {
 
             Row(
               spacing: 16,
-
               children: [
                 Expanded(
                   child: RtcTextField(
                     controller: amountController,
                     textAlign: TextAlign.left,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [ThousandsSeparatorInputFormatter()],
                     suffix: Padding(
                       padding: const EdgeInsets.fromLTRB(14, 12, 0, 12),
                       child: Text(
