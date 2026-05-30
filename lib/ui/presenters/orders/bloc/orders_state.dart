@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../data/models/order_model.dart';
+import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 
 part 'orders_state.freezed.dart';
 
@@ -27,5 +29,11 @@ class OrdersState with _$OrdersState {
     @Default(true) bool isCustomerInfoExpanded,
     @Default(true) bool isDocumentsExpanded,
     @Default(true) bool isFinancialSummaryExpanded,
+    String? selectedStatusId,
+    String? selectedSubPlanId,
+    @Default([]) List<SubPlanDtoModel> subPlans,
+    Jalali? startDate,
+    Jalali? endDate,
+    String? selectedDateOptionId,
   }) = _OrdersState;
 }

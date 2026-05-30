@@ -23,6 +23,7 @@ class RtcChipItem extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(

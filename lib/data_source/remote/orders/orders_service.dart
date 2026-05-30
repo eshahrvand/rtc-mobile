@@ -10,8 +10,14 @@ abstract class OrdersService {
 
   @GET('orders/orders')
   Future<OrderListResponse> getOrders({
+    @Query('agent') String? agentId,
     @Query('customer') String? customerId,
-    @Query('status') String? status,
+    @Query('status') List<String>? status,
+    @Query('sub_plan') String? subPlanId,
+    @Query('created_after') String? createdAfter,
+    @Query('created_before') String? createdBefore,
+    @Query('search') String? search,
+    @Query('ordering') String? ordering,
     @Query('page') int? page,
     @Query('page_size') int? pageSize,
   });

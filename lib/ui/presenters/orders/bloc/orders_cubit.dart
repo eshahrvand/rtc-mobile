@@ -1,77 +1,53 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
+import '../../../../locator.dart';
+import '../../../../repository/orders/orders_repository.dart';
+import '../../../../repository/plans/plans_repository.dart';
 import 'orders_state.dart';
 
 class OrdersCubit extends Cubit<OrdersState> {
+  final _ordersRepo = sl<OrdersRepository>();
+  final _plansRepo = sl<PlansRepository>();
+
   OrdersCubit() : super(const OrdersState());
 
   void init() {
+    _plansRepo.getSubPlans().then((response) {
+      emit(state.copyWith(subPlans: response.results));
+    }).catchError((_) {});
+    fetchOrders();
+  }
+
+  void fetchOrders() {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    // Simulated fetch
-    Future.delayed(const Duration(milliseconds: 500))
-        .then((_) {
-          final mockOrders = [
-            OrderSummaryModel(
-              id: '0',
-              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-              customerName: 'سامان راد',
-              itemCount: '۳ کالا',
-              status: 'پیش فاکتور',
-              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
-              amount: '۸۰,۲۰۰,۰۰۰',
-            ),
-            OrderSummaryModel(
-              id: '1',
-              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-              customerName: 'سامان راد',
-              itemCount: '۳ کالا',
-              status: 'در انتظار تسویه',
-              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
-              amount: '۸۰,۲۰۰,۰۰۰',
-            ),
-            OrderSummaryModel(
-              id: '2',
-              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-              customerName: 'آرش مهبان',
-              itemCount: '۳ کالا',
-              status: 'در انتظار تایید',
-              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
-              amount: '۸۰,۲۰۰,۰۰۰',
-            ),
-            OrderSummaryModel(
-              id: '3',
-              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-              customerName: 'سارا قریشی',
-              itemCount: '۳ کالا',
-              status: 'تایید شده',
-              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
-              amount: '۸۰,۲۰۰,۰۰۰',
-            ),
-            OrderSummaryModel(
-              id: '4',
-              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-              customerName: 'مهدی علوی',
-              itemCount: '۳ کالا',
-              status: 'رد شده',
-              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
-              amount: '۸۰,۲۰۰,۰۰۰',
-            ),
-            OrderSummaryModel(
-              id: '5',
-              orderId: 'PF-۱۴۰۴-۰۰۱۲۵',
-              customerName: 'حسین حسینی',
-              itemCount: '۳ کالا',
-              status: 'منقضی شده',
-              dateTime: '۱۴۰۵/۰۱/۲۵ | ۱۲:۱۵',
-              amount: '۸۰,۲۰۰,۰۰۰',
-            ),
-          ];
+    String? createdAfter;
+    if (state.startDate != null) {
+      createdAfter =
+          '${state.startDate!.year}-${state.startDate!.month.toString().padLeft(2, '0')}-${state.startDate!.day.toString().padLeft(2, '0')}';
+    }
+
+    String? createdBefore;
+    if (state.endDate != null) {
+      createdBefore =
+          '${state.endDate!.year}-${state.endDate!.month.toString().padLeft(2, '0')}-${state.endDate!.day.toString().padLeft(2, '0')}';
+    }
+
+    _ordersRepo
+        .getOrders(
+          status: state.selectedStatusId != null ? [state.selectedStatusId!] : null,
+          subPlanId: state.selectedSubPlanId,
+          createdAfter: createdAfter,
+          createdBefore: createdBefore,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+        )
+        .then((orders) {
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
-            allOrders: mockOrders,
-            filteredOrders: mockOrders,
+            allOrders: orders,
+            filteredOrders: orders,
           ));
         })
         .catchError((e) {
@@ -84,31 +60,40 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
-    _filterOrders();
+    fetchOrders();
+  }
+
+  void onStatusFilterChanged(String? statusId) {
+    emit(state.copyWith(selectedStatusId: statusId));
+    fetchOrders();
+  }
+
+  void onSubPlanFilterChanged(String? subPlanId) {
+    emit(state.copyWith(selectedSubPlanId: subPlanId));
+    fetchOrders();
+  }
+
+  void onDateFilterChanged(Jalali? start, Jalali? end, String? optionId) {
+    emit(state.copyWith(
+      startDate: start,
+      endDate: end,
+      selectedDateOptionId: optionId,
+    ));
+    fetchOrders();
+  }
+
+  void clearDateFilter() {
+    emit(state.copyWith(
+      startDate: null,
+      endDate: null,
+      selectedDateOptionId: null,
+    ));
+    fetchOrders();
   }
 
   void onBadgeSelected(String badge) {
-    final updatedBadges = List<String>.from(state.selectedBadges);
-    if (updatedBadges.contains(badge)) {
-      updatedBadges.remove(badge);
-    } else {
-      updatedBadges.add(badge);
-    }
-    emit(state.copyWith(selectedBadges: updatedBadges));
-    _filterOrders();
-  }
-
-  void _filterOrders() {
-    var filtered = state.allOrders;
-    if (state.searchQuery.isNotEmpty) {
-      filtered = filtered
-          .where((o) => o.customerName.contains(state.searchQuery) || o.orderId.contains(state.searchQuery))
-          .toList();
-    }
-    if (state.selectedBadges.isNotEmpty) {
-      filtered = filtered.where((o) => state.selectedBadges.contains(o.status)).toList();
-    }
-    emit(state.copyWith(filteredOrders: filtered));
+    // Keeping this for compatibility with existing UI if any, 
+    // but the 3 main filters will use the specific methods above.
   }
 
   void onOrderTapped(OrderSummaryModel order) {

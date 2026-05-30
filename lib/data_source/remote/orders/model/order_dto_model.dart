@@ -26,9 +26,37 @@ class OrderDtoModel with _$OrderDtoModel {
     required String status,
     required double total,
     @JsonKey(name: 'created_at') required String createdAt,
+    List<OrderLineDtoModel>? lines,
+    @JsonKey(name: 'rejection_note') String? rejectionNote,
+    @JsonKey(name: 'settlement_tracking_code') String? settlementTrackingCode,
+    @JsonKey(name: 'delivery_to_agent') bool? deliveryToAgent,
   }) = _OrderDtoModel;
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDtoModelFromJson(json);
+}
+
+@freezed
+class OrderLineDtoModel with _$OrderLineDtoModel {
+  const factory OrderLineDtoModel({
+    required String id,
+    required OrderProductSummaryDtoModel product,
+    required int quantity,
+    @JsonKey(name: 'unit_price_at_creation') required double unitPriceAtCreation,
+    @JsonKey(name: 'line_total') required double lineTotal,
+  }) = _OrderLineDtoModel;
+
+  factory OrderLineDtoModel.fromJson(Map<String, dynamic> json) => _$OrderLineDtoModelFromJson(json);
+}
+
+@freezed
+class OrderProductSummaryDtoModel with _$OrderProductSummaryDtoModel {
+  const factory OrderProductSummaryDtoModel({
+    required String id,
+    required String name,
+    required String sku,
+  }) = _OrderProductSummaryDtoModel;
+
+  factory OrderProductSummaryDtoModel.fromJson(Map<String, dynamic> json) => _$OrderProductSummaryDtoModelFromJson(json);
 }
 
 @freezed

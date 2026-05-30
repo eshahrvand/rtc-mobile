@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/presenters/products/widget/filter_bottom_sheet.dart';
+import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
 import '../../widget/rtc_image.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../../widget/rtc_search_appbar.dart';
@@ -21,12 +23,18 @@ class OrdersScreen extends StatelessWidget {
   }
 }
 
-class OrdersView extends StatelessWidget {
+class OrdersView extends StatefulWidget {
   const OrdersView({super.key});
+
+  @override
+  State<OrdersView> createState() => _OrdersViewState();
+}
+
+class _OrdersViewState extends State<OrdersView> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
     return MultiBlocListener(
       listeners: [
         BlocListener<OrdersCubit, OrdersState>(
@@ -36,7 +44,6 @@ class OrdersView extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.errorMessage),
-                  // TODO: replace with theme color
                   backgroundColor: Colors.red,
                 ),
               );
@@ -52,10 +59,9 @@ class OrdersView extends StatelessWidget {
             key: scaffoldKey,
             appBar: RtcSearchAppBar(
               isSearchActive: state.searchQuery.isNotEmpty,
-              showShadow: false, // Matches original RtcOrdersAppBar
+              showShadow: false,
               title: 'سفارشات',
               titleStyle: const TextStyle(
-                // TODO: replace with AppTextStyle
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
@@ -73,10 +79,8 @@ class OrdersView extends StatelessWidget {
             body: Column(
               children: [
                 const SizedBox(height: 16),
-                // Filter badges
                 _buildBadgeList(context, state),
                 const SizedBox(height: 8),
-                // Orders list view
                 const Expanded(child: OrdersListWidget()),
               ],
             ),
@@ -87,7 +91,7 @@ class OrdersView extends StatelessWidget {
   }
 
   Widget _buildBadgeList(BuildContext context, OrdersState state) {
-    // Mock chips for filtering orders
+    final cubit = context.read<OrdersCubit>();
     final chips = [
       ProductChipModel(id: 1, label: 'وضعیت', opensBottomSheet: true),
       ProductChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
@@ -96,10 +100,92 @@ class OrdersView extends StatelessWidget {
 
     return RtcChipList(
       chips: chips,
-      isChipSelected: (index, chip) => false,
-      onChipTap: (index, chip) {
-        // Handle filter logic
+      isChipSelected: (index, chip) {
+        if (index == 0) return state.selectedStatusId != null;
+        if (index == 1) return state.selectedSubPlanId != null;
+        if (index == 2) return state.startDate != null || state.endDate != null;
+        return false;
       },
+      onChipTap: (index, chip) {
+        if (index == 0) {
+          _showStatusFilter(context, cubit, state);
+        } else if (index == 1) {
+          _showPlanFilter(context, cubit, state);
+        } else if (index == 2) {
+          _showDateFilter(context, cubit, state);
+        }
+      },
+    );
+  }
+
+  void _showStatusFilter(
+    BuildContext context,
+    OrdersCubit cubit,
+    OrdersState state,
+  ) {
+    final statusItems = [
+      const FilterItem(id: 'pre_invoice', title: 'پیش فاکتور'),
+      const FilterItem(id: 'approved', title: 'تایید شده'),
+      const FilterItem(id: 'rejected', title: 'رد شده'),
+      const FilterItem(id: 'waiting_settlement', title: 'در انتظار تسویه'),
+      const FilterItem(id: 'expired', title: 'منقضی شده'),
+      const FilterItem(
+        id: 'pending_sales_review',
+        title: 'در انتظار بررسی فروش',
+      ),
+      const FilterItem(
+        id: 'pending_finance_review',
+        title: 'در انتظار بررسی مالی',
+      ),
+      const FilterItem(id: 'returned_for_revision', title: 'بازگشت برای اصلاح'),
+      const FilterItem(id: 'unassigned_sales', title: 'تخصیص نیافته - فروش'),
+      const FilterItem(id: 'unassigned_finance', title: 'تخصیص نیافته - مالی'),
+    ];
+
+    FilterBottomSheet.show(
+      context,
+      title: 'وضعیت',
+      subtitle: 'وضعیت سفارش را انتخاب کنید',
+      items: statusItems,
+      initialSelectedId: state.selectedStatusId,
+      onApply: (item) => cubit.onStatusFilterChanged(item?.id),
+      onClear: () => cubit.onStatusFilterChanged(null),
+    );
+  }
+
+  void _showPlanFilter(
+    BuildContext context,
+    OrdersCubit cubit,
+    OrdersState state,
+  ) {
+    final planItems = state.subPlans
+        .map((p) => FilterItem(id: p.id, title: p.name))
+        .toList();
+
+    FilterBottomSheet.show(
+      context,
+      title: 'طرح',
+      subtitle: 'طرح اعتباری را انتخاب کنید',
+      items: planItems,
+      initialSelectedId: state.selectedSubPlanId,
+      onApply: (item) => cubit.onSubPlanFilterChanged(item?.id),
+      onClear: () => cubit.onSubPlanFilterChanged(null),
+    );
+  }
+
+  void _showDateFilter(
+    BuildContext context,
+    OrdersCubit cubit,
+    OrdersState state,
+  ) {
+    FilterDateBottomSheet.show(
+      context,
+      initialStartDate: state.startDate,
+      initialEndDate: state.endDate,
+      initialOptionId: state.selectedDateOptionId,
+      onApply: (start, end, optionId) =>
+          cubit.onDateFilterChanged(start, end, optionId),
+      onClear: () => cubit.clearDateFilter(),
     );
   }
 }
