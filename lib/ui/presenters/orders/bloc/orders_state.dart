@@ -34,6 +34,7 @@ class OrdersState with _$OrdersState {
     @Default(true) bool isCustomerInfoExpanded,
     @Default(true) bool isDocumentsExpanded,
     @Default(true) bool isFinancialSummaryExpanded,
+    @Default(true) bool isClearanceSectionExpanded,
     String? selectedStatusId,
     String? selectedSubPlanId,
     @Default([]) List<SubPlanDtoModel> subPlans,
@@ -44,6 +45,7 @@ class OrdersState with _$OrdersState {
     // Clearance Flow
     @Default(ClearanceStep.initial) ClearanceStep clearanceStep,
     @Default('') String clearanceAmount,
+    OrderOperationModel? disburseOperation,
     String? excessAmount,
     GatewayType? gatewayType,
     String? walletName,

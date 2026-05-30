@@ -46,6 +46,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
         final cubit = context.read<OrdersCubit>();
         final isPreInvoice = widget.order.status == 'پیش فاکتور';
         final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
+        final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
+        final isAmountEntered = state.clearanceStep == ClearanceStep.amountSelected;
 
         return Column(
           children: [
@@ -78,15 +80,21 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         context,
                       ),
                     ),
-                    if (widget.order.operations.isNotEmpty)
-                      ...widget.order.operations.map(
-                        (op) => OrderOperationItemWidget(op: op),
-                      ),
+
+                    if (isPreInvoice && isAmountEntered)
+                      if (state.disburseOperation != null)
+                        OrderOperationItemWidget(op: state.disburseOperation!),
+
+                    if (!isPreInvoice || isInitialClearance)
+                      if (widget.order.operations.isNotEmpty)
+                        ...widget.order.operations.map(
+                          (op) => OrderOperationItemWidget(op: op),
+                        ),
                   ],
                 ),
               ),
             ),
-            if (isPreInvoice && state.clearanceStep == ClearanceStep.initial)
+            if (isPreInvoice && isInitialClearance)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
                 child: RtcButton(

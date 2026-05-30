@@ -155,20 +155,7 @@ class OrdersRepository {
           totalDiscount: '۰',
           finalAmount: _formatCurrency(dto.total),
         ),
-        operations: [
-          OrderOperationModel(
-            step: 1,
-            title: 'عملیات تخلیه',
-            status: dto.deliveryToAgent == true ? 'انجام شده' : '',
-            isCompleted: dto.deliveryToAgent == true,
-          ),
-          OrderOperationModel(
-            step: 2,
-            title: 'عملیات تسویه',
-            status: dto.status == 'approved' ? 'انجام شده' : '',
-            isCompleted: dto.status == 'approved',
-          ),
-        ],
+        operations: [],
         history: [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)],
       );
     });

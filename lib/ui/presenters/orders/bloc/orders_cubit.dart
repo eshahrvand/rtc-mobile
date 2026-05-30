@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
@@ -105,6 +104,12 @@ class OrdersCubit extends Cubit<OrdersState> {
     fetchOrderDetail(order.id);
   }
 
+  void toggleFinancialSummary() {
+    emit(state.copyWith(
+      isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded,
+    ));
+  }
+
   void fetchOrderDetail(String orderId) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
@@ -114,6 +119,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
             selectedOrder: detail,
+            disburseOperation: _createDisburseOp(detail),
             selectedTabIndex: 0,
           ));
         })
@@ -123,6 +129,18 @@ class OrdersCubit extends Cubit<OrdersState> {
             errorMessage: 'خطا در بارگذاری جزئیات سفارش: ${e.toString()}',
           ));
         });
+  }
+
+  OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
+    if (detail.status == 'پیش فاکتور') {
+      return OrderOperationModel(
+        step: 1,
+        title: 'عملیات تخلیه',
+        status: state.clearanceStep == ClearanceStep.success ? 'انجام شده' : '',
+        isCompleted: state.clearanceStep == ClearanceStep.success,
+      );
+    }
+    return null;
   }
 
   void onTabChanged(int index) {
@@ -149,9 +167,9 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(isDocumentsExpanded: !state.isDocumentsExpanded));
   }
 
-  void toggleFinancialSummary() {
+  void toggleClearanceSection() {
     emit(state.copyWith(
-      isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded,
+      isClearanceSectionExpanded: !state.isClearanceSectionExpanded,
     ));
   }
 
@@ -166,12 +184,15 @@ class OrdersCubit extends Cubit<OrdersState> {
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
-          // For now focusing on offline case
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
-            clearanceStep: ClearanceStep.documentsPending,
+            clearanceStep: ClearanceStep.amountSelected,
             clearanceAmount: amountStr,
           ));
+          // Refresh disburse operation in state
+          if (state.selectedOrder != null) {
+            emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
+          }
         })
         .catchError((e) {
           emit(state.copyWith(
@@ -193,22 +214,20 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void confirmClearanceDocument() {
-    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null)
+    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) {
       return;
+    }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    // 1. Upload the file to media service
     _mediaRepo
         .uploadOrderDocument(File(state.uploadedClearanceDocPath!))
         .then((media) {
-          // 2. Link the document to the order
           return _ordersRepo.addOrderDocument(
             state.selectedOrder!.id,
             OrderDocumentRequest(documentType: 'supporting', fileId: media.id),
           );
         })
         .then((_) {
-          // 3. Finalize disburse
           return _ordersRepo.disburse(state.selectedOrder!.id);
         })
         .then((_) {
@@ -216,6 +235,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             status: OrdersRequestStatus.success,
             clearanceStep: ClearanceStep.success,
           ));
+          // Refresh disburse operation in state
+          if (state.selectedOrder != null) {
+            emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
+          }
         })
         .catchError((e) {
           emit(state.copyWith(
@@ -231,5 +254,8 @@ class OrdersCubit extends Cubit<OrdersState> {
       uploadedClearanceDocPath: null,
       uploadedClearanceDocId: null,
     ));
+    if (state.selectedOrder != null) {
+      emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
+    }
   }
 }
