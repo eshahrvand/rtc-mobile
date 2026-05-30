@@ -166,6 +166,7 @@ class OrdersRepository {
       case 'national_id_front':
         return 'کارت ملی - روی';
       case 'supporting':
+      case 'disbursement_proof':
         return 'سایر مدارک';
       default:
         return type;
@@ -185,7 +186,7 @@ class OrdersRepository {
         return 'تایید شده';
       case 'rejected':
         return 'رد شده';
-      case 'pending':
+      case 'under_review':
         return 'در انتظار تایید';
       case 'waiting_settlement':
         return 'در انتظار تسویه';

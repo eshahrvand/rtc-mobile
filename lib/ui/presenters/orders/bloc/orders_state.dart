@@ -56,7 +56,8 @@ class OrdersState with _$OrdersState {
 
 enum ClearanceStep {
   initial,
-  amountSelected,
+  amountEntered,
+  otpPending,
   documentsPending,
   success,
 }

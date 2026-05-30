@@ -140,7 +140,7 @@ class OrderDocumentResponse with _$OrderDocumentResponse {
   const factory OrderDocumentResponse({
     required String id,
     @JsonKey(name: 'document_type') required String documentType,
-    @JsonKey(name: 'file_id') required String fileId,
+    required OrderFileDtoModel file,
     @JsonKey(name: 'uploaded_by_id') required String uploadedById,
     @JsonKey(name: 'created_at') required String createdAt,
   }) = _OrderDocumentResponse;

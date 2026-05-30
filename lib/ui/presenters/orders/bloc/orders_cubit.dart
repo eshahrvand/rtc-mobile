@@ -186,7 +186,8 @@ class OrdersCubit extends Cubit<OrdersState> {
         .then((response) {
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
-            clearanceStep: ClearanceStep.amountSelected,
+            gatewayType: GatewayType.offline,
+            clearanceStep: ClearanceStep.documentsPending,
             clearanceAmount: amountStr,
           ));
           // Refresh disburse operation in state
@@ -226,7 +227,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         .then((media) {
           return _ordersRepo.addOrderDocument(
             state.selectedOrder!.id,
-            OrderDocumentRequest(documentType: 'supporting', fileId: media.id),
+            OrderDocumentRequest(documentType: 'disbursement_proof', fileId: media.id),
           );
         })
         .then((_) {

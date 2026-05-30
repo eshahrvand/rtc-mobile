@@ -47,8 +47,9 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
         final isPreInvoice = widget.order.status == 'پیش فاکتور';
         final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
         final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
-        final isAmountEntered =
-            state.clearanceStep == ClearanceStep.amountSelected;
+        final isClearanceInProgress =
+            state.clearanceStep == ClearanceStep.amountEntered ||
+            state.clearanceStep == ClearanceStep.documentsPending;
 
         return Column(
           children: [
@@ -82,7 +83,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                       ),
                     ),
 
-                    if (isPreInvoice && isAmountEntered)
+                    if (isPreInvoice && isClearanceInProgress)
                       if (state.disburseOperation != null)
                         OrderOperationItemWidget(op: state.disburseOperation!),
 
