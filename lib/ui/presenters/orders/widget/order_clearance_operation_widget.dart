@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import '../../../../config/config.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
@@ -103,7 +104,7 @@ class OrderClearanceOperationWidget extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                orderAmount!,
+                                orderAmount!.formatCurrency,
                                 style: theme.titleSmall!.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.grayPalette.shade900,
@@ -136,7 +137,7 @@ class OrderClearanceOperationWidget extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              amount,
+                              amount.formatCurrency,
                               style: theme.titleSmall!.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: isOutOfTolerance
@@ -171,7 +172,7 @@ class OrderClearanceOperationWidget extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                excessAmount!,
+                                excessAmount!.formatCurrency,
                                 style: theme.titleSmall!.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: isOutOfTolerance
