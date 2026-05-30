@@ -26,6 +26,14 @@ class OrdersRepository {
     return _service.addOrderDocument(orderId, request.toJson());
   }
 
+  Future<dynamic> disburseInitiate(String orderId, double amount) {
+    return _service.disburseInitiate(orderId, {'disbursement_amount': amount});
+  }
+
+  Future<dynamic> disburse(String orderId) {
+    return _service.disburse(orderId, {});
+  }
+
   Future<List<OrderSummaryModel>> getOrders({
     List<String>? status,
     String? subPlanId,

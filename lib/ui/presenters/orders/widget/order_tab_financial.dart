@@ -10,7 +10,6 @@ import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'order_clearance_amount_sheet.dart';
-import 'order_clearance_receipt_sheet.dart';
 import 'order_operation_item_widget.dart';
 import 'order_settlement_operations_widget.dart';
 
@@ -46,6 +45,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
+        final isPreInvoice = widget.order.status == 'پیش فاکتور';
         final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
 
         return Column(
@@ -89,85 +89,30 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                 ),
               ),
             ),
-            if (widget.order.status == 'پیش فاکتور')
+            if (isPreInvoice && state.clearanceStep == ClearanceStep.initial)
               Padding(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: RtcButton(
-                        styleBtn: theme.labelLarge!.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        title: S.current.dischargeAndSettlement,
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (_) => OrderClearanceAmountSheet(
-                              totalAmount:
-                                  widget.order.financialSummary.finalAmount,
-                              amountController: _amountController,
-                              onCheckPressed: () {
-                                // Logic for checking amount will be implemented in Cubit
-                                Navigator.pop(context);
-                              },
-                            ),
-                          );
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+                child: RtcButton(
+                  styleBtn: theme.labelLarge!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  title: S.current.dischargeAndSettlement,
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => OrderClearanceAmountSheet(
+                        totalAmount: widget.order.financialSummary.finalAmount,
+                        amountController: _amountController,
+                        onCheckPressed: () {
+                          cubit.initiateClearance(_amountController.text);
+                          Navigator.pop(context);
                         },
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: RtcButton(
-                        styleBtn: theme.labelLarge!.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        title: 'تست رسید (Pending)',
-                        onPressed: () {
-                          OrderClearanceReceiptSheet.show(
-                            context,
-                            title: S.current.documentsSentSuccessTitle,
-                            subtitle: S.current.clearancePendingSubtitle,
-                            fields: [
-                              ReceiptField(
-                                label: S.current.proInvoiceNumberLabel,
-                                value: 'PF-1404-00125',
-                              ),
-                              ReceiptField(
-                                label: S.current.customerLabelWithColon,
-                                value: 'احمد رضایی',
-                              ),
-                              ReceiptField(
-                                label: S.current.clearanceAmountLabelWithColon,
-                                value: '80,000,000 ${S.current.toman}',
-                              ),
-                              ReceiptField(
-                                label: S.current.orderAmountLabel,
-                                value: '72,737,500 ${S.current.toman}',
-                              ),
-                              ReceiptField(
-                                label: S.current.gatewayLabel,
-                                value: 'آپ (BNPL)',
-                              ),
-                              ReceiptField(
-                                label: S.current.trackingNumberLabel,
-                                value: 'TRX-1404091523456',
-                              ),
-                              ReceiptField(
-                                label: S.current.documentSubmissionDateLabel,
-                                value: '1404/09/15 - 14:23',
-                              ),
-                            ],
-                            onGotIt: () {},
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
           ],

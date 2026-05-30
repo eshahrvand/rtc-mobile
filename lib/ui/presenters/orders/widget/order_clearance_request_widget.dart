@@ -4,11 +4,11 @@ import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
 
-class OrderClearanceRequestWidget extends StatelessWidget {
+class OrderAmountClearanceRequestWidget extends StatelessWidget {
   final String amount;
   final VoidCallback onRequestCode;
 
-  const OrderClearanceRequestWidget({
+  const OrderAmountClearanceRequestWidget({
     super.key,
     required this.amount,
     required this.onRequestCode,

@@ -67,7 +67,7 @@ class OrderOperationItemWidget extends StatelessWidget {
           ),
         ),
         if (!op.isCompleted)
-          OrderClearanceRequestWidget(
+          OrderAmountClearanceRequestWidget(
             amount: '۱۲۴,۰۰۰,۰۰۰',
             onRequestCode: () {
               showModalBottomSheet(
@@ -78,7 +78,7 @@ class OrderOperationItemWidget extends StatelessWidget {
                   onConfirm: () {
                     Navigator.pop(context);
                     // Handle confirmation
-                  },
+                  }, filePath: '',
                 ),
               );
             },

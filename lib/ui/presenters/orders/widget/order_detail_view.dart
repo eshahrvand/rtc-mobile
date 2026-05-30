@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
+import '../../../../generated/l10n.dart';
 import '../../../widget/rtc_appbar.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_status_badge.dart';
 import '../../../widget/rtc_tab_bar.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
+import 'order_clearance_receipt_sheet.dart';
+import 'order_upload_documents_sheet.dart';
 import 'order_tab_details.dart';
 import 'order_tab_financial.dart';
 import 'order_tab_history.dart';
@@ -18,57 +21,147 @@ class OrderDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrdersCubit, OrdersState>(
-      builder: (context, state) {
-        if (state.selectedOrder == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) => prev.status != curr.status,
+          listener: (context, state) {
+            if (state.status == OrdersRequestStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage),
+                  backgroundColor: AppColors.errorPalette.shade600,
+                ),
+              );
+            }
+          },
+        ),
+        BlocListener<OrdersCubit, OrdersState>(
+          listenWhen:
+              (prev, curr) =>
+                  prev.uploadedClearanceDocPath !=
+                  curr.uploadedClearanceDocPath,
+          listener: (context, state) {
+            if (state.uploadedClearanceDocPath != null &&
+                state.clearanceStep == ClearanceStep.documentsPending) {
+              _showUploadConfirmation(
+                context,
+                context.read<OrdersCubit>(),
+                state.uploadedClearanceDocPath!,
+              );
+            }
+          },
+        ),
+        BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) => prev.clearanceStep != curr.clearanceStep,
+          listener: (context, state) {
+            if (state.clearanceStep == ClearanceStep.success) {
+              _showSuccessReceipt(context, state);
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<OrdersCubit, OrdersState>(
+        builder: (context, state) {
+          if (state.selectedOrder == null) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          final order = state.selectedOrder!;
+          final cubit = context.read<OrdersCubit>();
+
+          return Scaffold(
+            appBar: RtcAppBar(
+              onBack: () => context.pop(),
+              backIconPath: '$baseImage/angle-right.svg',
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: RtcImage(
+                    image: '$baseImage/print.svg',
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
+              ],
+            ),
+            // Order detail body
+            body: Column(
+              children: [
+                // Order validity header
+                _buildValidityHeader(context, order),
+                // Tab bar
+                RtcTabBar(
+                  tabs: const ['جزییات سفارش', 'اطلاعات مالی', 'تاریخچه'],
+                  selectedIndex: state.selectedTabIndex,
+                  onTabChanged: (index) => cubit.onTabChanged(index),
+                ),
+                // Order content tabs
+                Expanded(
+                  child: IndexedStack(
+                    index: state.selectedTabIndex,
+                    children: [
+                      OrderTabDetails(order: order),
+                      OrderTabFinancial(order: order),
+                      OrderTabHistory(order: order),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
-        }
+        },
+      ),
+    );
+  }
 
-        final order = state.selectedOrder!;
-        final cubit = context.read<OrdersCubit>();
+  void _showUploadConfirmation(BuildContext context, OrdersCubit cubit, String filePath) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => OrderUploadDocumentsSheet(
+        filePath: filePath,
+        onConfirm: () {
+          Navigator.pop(context);
+          cubit.confirmClearanceDocument();
+        },
+      ),
+    );
+  }
 
-        return Scaffold(
-          appBar: RtcAppBar(
-            onBack: () => context.pop(),
-            backIconPath: '$baseImage/angle-right.svg',
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: RtcImage(
-                  image: '$baseImage/print.svg',
-                  width: 24,
-                  height: 24,
-                ),
-              ),
-            ],
-          ),
-          // Order detail body
-          body: Column(
-            children: [
-              // Order validity header
-              _buildValidityHeader(context, order),
-              // Tab bar
-              RtcTabBar(
-                tabs: const ['جزییات سفارش', 'اطلاعات مالی', 'تاریخچه'],
-                selectedIndex: state.selectedTabIndex,
-                onTabChanged: (index) => cubit.onTabChanged(index),
-              ),
-              // Order content tabs
-              Expanded(
-                child: IndexedStack(
-                  index: state.selectedTabIndex,
-                  children: [
-                    OrderTabDetails(order: order),
-                    OrderTabFinancial(order: order),
-                    OrderTabHistory(order: order),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+  void _showSuccessReceipt(BuildContext context, OrdersState state) {
+    OrderClearanceReceiptSheet.show(
+      context,
+      title: S.current.documentsSentSuccessTitle,
+      subtitle: S.current.clearancePendingSubtitle,
+      fields: [
+        ReceiptField(
+          label: S.current.proInvoiceNumberLabel,
+          value: state.selectedOrder!.id.substring(0, 8).toUpperCase(),
+        ),
+        ReceiptField(
+          label: S.current.customerLabelWithColon,
+          value: state.selectedOrder!.customer.name,
+        ),
+        ReceiptField(
+          label: S.current.clearanceAmountLabelWithColon,
+          value: '${state.clearanceAmount} ${S.current.toman}',
+        ),
+        ReceiptField(
+          label: S.current.orderAmountLabel,
+          value:
+              '${state.selectedOrder!.financialSummary.finalAmount} ${S.current.toman}',
+        ),
+        ReceiptField(
+          label: S.current.gatewayLabel,
+          value: 'تخلیه آفلاین',
+        ),
+      ],
+      onGotIt: () {
+        context.read<OrdersCubit>().resetClearance();
       },
     );
   }

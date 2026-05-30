@@ -33,4 +33,16 @@ abstract class OrdersService {
     @Path('id') String orderId,
     @Body() Map<String, dynamic> request,
   );
+
+  @POST('orders/orders/{id}/disburse-initiate')
+  Future<dynamic> disburseInitiate(
+    @Path('id') String orderId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @POST('orders/orders/{id}/disburse')
+  Future<dynamic> disburse(
+    @Path('id') String orderId,
+    @Body() Map<String, dynamic> body,
+  );
 }

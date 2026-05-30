@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../config/config.dart';
@@ -5,11 +6,15 @@ import '../../../../data/models/order_model.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/plans/plans_repository.dart';
+import '../../../../repository/media/media_repository.dart';
+import '../../../../data_source/remote/orders/model/order_dto_model.dart';
+import '../../media_picker/media_picker.dart';
 import 'orders_state.dart';
 
 class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
+  final _mediaRepo = sl<MediaRepository>();
 
   OrdersCubit() : super(const OrdersState());
 
@@ -145,6 +150,86 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void toggleFinancialSummary() {
-    emit(state.copyWith(isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded));
+    emit(state.copyWith(
+      isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded,
+    ));
+  }
+
+  // --- Clearance Flow Methods ---
+
+  void initiateClearance(String amountStr) {
+    if (state.selectedOrder == null) return;
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    final amount = double.tryParse(amountStr.replaceAll(',', '')) ?? 0;
+
+    _ordersRepo
+        .disburseInitiate(state.selectedOrder!.id, amount)
+        .then((response) {
+          // For now focusing on offline case
+          emit(state.copyWith(
+            status: OrdersRequestStatus.success,
+            clearanceStep: ClearanceStep.documentsPending,
+            clearanceAmount: amountStr,
+          ));
+        })
+        .catchError((e) {
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: 'خطا در شروع عملیات تخلیه: ${e.toString()}',
+          ));
+        });
+  }
+
+  Future<void> pickClearanceDocument(dynamic context) async {
+    final result = await MediaPickerBottomSheet.show(
+      context,
+      isMultiSelection: false,
+    );
+    if (result != null && result.isNotEmpty) {
+      final filePath = result.first.file.path;
+      emit(state.copyWith(uploadedClearanceDocPath: filePath));
+    }
+  }
+
+  void confirmClearanceDocument() {
+    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null)
+      return;
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    // 1. Upload the file to media service
+    _mediaRepo
+        .uploadOrderDocument(File(state.uploadedClearanceDocPath!))
+        .then((media) {
+          // 2. Link the document to the order
+          return _ordersRepo.addOrderDocument(
+            state.selectedOrder!.id,
+            OrderDocumentRequest(documentType: 'supporting', fileId: media.id),
+          );
+        })
+        .then((_) {
+          // 3. Finalize disburse
+          return _ordersRepo.disburse(state.selectedOrder!.id);
+        })
+        .then((_) {
+          emit(state.copyWith(
+            status: OrdersRequestStatus.success,
+            clearanceStep: ClearanceStep.success,
+          ));
+        })
+        .catchError((e) {
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: 'خطا در بارگذاری مدارک یا نهایی‌سازی: ${e.toString()}',
+          ));
+        });
+  }
+
+  void resetClearance() {
+    emit(state.copyWith(
+      clearanceStep: ClearanceStep.initial,
+      uploadedClearanceDocPath: null,
+      uploadedClearanceDocId: null,
+    ));
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
@@ -8,13 +10,29 @@ import '../../../widget/rtc_button.dart';
 import 'order_details_document_item.dart';
 
 class OrderUploadDocumentsSheet extends StatelessWidget {
+  final String filePath;
   final VoidCallback onConfirm;
 
-  const OrderUploadDocumentsSheet({super.key, required this.onConfirm});
+  const OrderUploadDocumentsSheet({
+    super.key,
+    required this.filePath,
+    required this.onConfirm,
+  });
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final file = File(filePath);
+    final fileName = filePath.split('/').last;
+    final sizeInBytes = file.existsSync() ? file.lengthSync() : 0;
+    String sizeStr;
+    if (sizeInBytes < 1024) {
+      sizeStr = 'KB 0';
+    } else if (sizeInBytes < 1024 * 1024) {
+      sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(1)}';
+    } else {
+      sizeStr = 'MB ${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)}';
+    }
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
@@ -79,8 +97,9 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
           OrderDetailsDocumentItem(
             doc: OrderDocumentModel(
               title: S.current.paymentDocuments,
-              fileName: 'national_card_front',
-              fileSize: '۱۶ MB',
+              fileName: fileName,
+              fileSize: sizeStr,
+              url: filePath, // Locally for preview
               iconPath: '$baseImage/featured-icon.svg',
             ),
           ),

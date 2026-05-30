@@ -35,5 +35,18 @@ class OrdersState with _$OrdersState {
     Jalali? startDate,
     Jalali? endDate,
     String? selectedDateOptionId,
+
+    // Clearance Flow
+    @Default(ClearanceStep.initial) ClearanceStep clearanceStep,
+    @Default('') String clearanceAmount,
+    String? uploadedClearanceDocPath,
+    String? uploadedClearanceDocId,
   }) = _OrdersState;
+}
+
+enum ClearanceStep {
+  initial,
+  amountSelected,
+  documentsPending,
+  success,
 }
