@@ -138,34 +138,18 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         children: [
-          if (isWaitingSettlement) ...[
-            _buildInfoRow(
-              context,
-              S.current.finalFactorAmount,
-              summary.finalAmount,
-              isBold: true,
-            ),
-          ] else if (isSettled) ...[
-            _buildInfoRow(
-              context,
-              S.current.finalFactorAmount,
-              summary.finalAmount,
-              isBold: true,
-            ),
-          ] else ...[
-            _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
-            _buildInfoRow(
-              context,
-              S.current.totalDiscounts,
-              summary.totalDiscount,
-            ),
-            _buildInfoRow(
-              context,
-              S.current.finalFactorAmount,
-              summary.finalAmount,
-              isBold: true,
-            ),
-          ],
+          _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
+          _buildInfoRow(
+            context,
+            S.current.totalDiscounts,
+            summary.totalDiscount,
+          ),
+          _buildInfoRow(
+            context,
+            S.current.finalFactorAmount,
+            summary.finalAmount,
+            isBold: true,
+          ),
         ],
       ),
     );

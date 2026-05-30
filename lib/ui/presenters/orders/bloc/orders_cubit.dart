@@ -18,9 +18,12 @@ class OrdersCubit extends Cubit<OrdersState> {
   OrdersCubit() : super(const OrdersState());
 
   void init() {
-    _plansRepo.getSubPlans().then((response) {
-      emit(state.copyWith(subPlans: response.results));
-    }).catchError((_) {});
+    _plansRepo
+        .getSubPlans()
+        .then((response) {
+          emit(state.copyWith(subPlans: response.results));
+        })
+        .catchError((_) {});
     fetchOrders();
   }
 
@@ -41,24 +44,30 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _ordersRepo
         .getOrders(
-          status: state.selectedStatusId != null ? [state.selectedStatusId!] : null,
+          status: state.selectedStatusId != null
+              ? [state.selectedStatusId!]
+              : null,
           subPlanId: state.selectedSubPlanId,
           createdAfter: createdAfter,
           createdBefore: createdBefore,
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
         )
         .then((orders) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.success,
-            allOrders: orders,
-            filteredOrders: orders,
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              allOrders: orders,
+              filteredOrders: orders,
+            ),
+          );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: e.toString(),
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
         });
   }
 
@@ -78,25 +87,29 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void onDateFilterChanged(Jalali? start, Jalali? end, String? optionId) {
-    emit(state.copyWith(
-      startDate: start,
-      endDate: end,
-      selectedDateOptionId: optionId,
-    ));
+    emit(
+      state.copyWith(
+        startDate: start,
+        endDate: end,
+        selectedDateOptionId: optionId,
+      ),
+    );
     fetchOrders();
   }
 
   void clearDateFilter() {
-    emit(state.copyWith(
-      startDate: null,
-      endDate: null,
-      selectedDateOptionId: null,
-    ));
+    emit(
+      state.copyWith(
+        startDate: null,
+        endDate: null,
+        selectedDateOptionId: null,
+      ),
+    );
     fetchOrders();
   }
 
   void onBadgeSelected(String badge) {
-    // Keeping this for compatibility with existing UI if any, 
+    // Keeping this for compatibility with existing UI if any,
     // but the 3 main filters will use the specific methods above.
   }
 
@@ -105,9 +118,11 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void toggleFinancialSummary() {
-    emit(state.copyWith(
-      isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded,
-    ));
+    emit(
+      state.copyWith(
+        isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded,
+      ),
+    );
   }
 
   void fetchOrderDetail(String orderId) {
@@ -116,28 +131,39 @@ class OrdersCubit extends Cubit<OrdersState> {
     _ordersRepo
         .getOrderDetails(orderId)
         .then((detail) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.success,
-            selectedOrder: detail,
-            disburseOperation: _createDisburseOp(detail),
-            selectedTabIndex: 0,
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              selectedOrder: detail,
+              disburseOperation: _createDisburseOp(detail),
+              selectedTabIndex: 0,
+            ),
+          );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: 'خطا در بارگذاری جزئیات سفارش: ${e.toString()}',
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: 'خطا در بارگذاری جزئیات سفارش: ${e.toString()}',
+            ),
+          );
         });
   }
 
   OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
-    if (detail.status == 'پیش فاکتور') {
+    final isDone =
+        detail.status == 'در انتظار تسویه' ||
+        state.clearanceStep == ClearanceStep.success;
+
+    if (detail.status == 'پیش فاکتور' ||
+        detail.status == 'در انتظار تسویه' ||
+        detail.status == 'در انتظار تایید ' ||
+        detail.status == 'تایید شده') {
       return OrderOperationModel(
         step: 1,
         title: 'عملیات تخلیه',
-        status: state.clearanceStep == ClearanceStep.success ? 'انجام شده' : '',
-        isCompleted: state.clearanceStep == ClearanceStep.success,
+        status: isDone ? 'انجام شده' : '',
+        isCompleted: isDone,
       );
     }
     return null;
@@ -152,7 +178,11 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void toggleFinancialSection() {
-    emit(state.copyWith(isFinancialSectionExpanded: !state.isFinancialSectionExpanded));
+    emit(
+      state.copyWith(
+        isFinancialSectionExpanded: !state.isFinancialSectionExpanded,
+      ),
+    );
   }
 
   void toggleProducts() {
@@ -168,9 +198,11 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void toggleClearanceSection() {
-    emit(state.copyWith(
-      isClearanceSectionExpanded: !state.isClearanceSectionExpanded,
-    ));
+    emit(
+      state.copyWith(
+        isClearanceSectionExpanded: !state.isClearanceSectionExpanded,
+      ),
+    );
   }
 
   // --- Clearance Flow Methods ---
@@ -184,22 +216,30 @@ class OrdersCubit extends Cubit<OrdersState> {
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.success,
-            gatewayType: GatewayType.offline,
-            clearanceStep: ClearanceStep.documentsPending,
-            clearanceAmount: amountStr,
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              gatewayType: GatewayType.offline,
+              clearanceStep: ClearanceStep.documentsPending,
+              clearanceAmount: amountStr,
+            ),
+          );
           // Refresh disburse operation in state
           if (state.selectedOrder != null) {
-            emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
+            emit(
+              state.copyWith(
+                disburseOperation: _createDisburseOp(state.selectedOrder!),
+              ),
+            );
           }
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: 'خطا در شروع عملیات تخلیه: ${e.toString()}',
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: 'خطا در شروع عملیات تخلیه: ${e.toString()}',
+            ),
+          );
         });
   }
 
@@ -227,38 +267,52 @@ class OrdersCubit extends Cubit<OrdersState> {
         .then((media) {
           return _ordersRepo.addOrderDocument(
             state.selectedOrder!.id,
-            OrderDocumentRequest(documentType: 'disbursement_proof', fileId: media.id),
+            OrderDocumentRequest(
+              documentType: 'disbursement_proof',
+              fileId: media.id,
+            ),
           );
         })
         .then((_) {
           return _ordersRepo.disburse(state.selectedOrder!.id);
         })
         .then((_) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.success,
-            clearanceStep: ClearanceStep.success,
-          ));
-          // Refresh disburse operation in state
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              clearanceStep: ClearanceStep.success,
+            ),
+          );
+          // Refresh order detail to show updated status and documents
           if (state.selectedOrder != null) {
-            emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
+            fetchOrderDetail(state.selectedOrder!.id);
           }
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: 'خطا در بارگذاری مدارک یا نهایی‌سازی: ${e.toString()}',
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage:
+                  'خطا در بارگذاری مدارک یا نهایی‌سازی: ${e.toString()}',
+            ),
+          );
         });
   }
 
   void resetClearance() {
-    emit(state.copyWith(
-      clearanceStep: ClearanceStep.initial,
-      uploadedClearanceDocPath: null,
-      uploadedClearanceDocId: null,
-    ));
+    emit(
+      state.copyWith(
+        clearanceStep: ClearanceStep.initial,
+        uploadedClearanceDocPath: null,
+        uploadedClearanceDocId: null,
+      ),
+    );
     if (state.selectedOrder != null) {
-      emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
+      emit(
+        state.copyWith(
+          disburseOperation: _createDisburseOp(state.selectedOrder!),
+        ),
+      );
     }
   }
 }
