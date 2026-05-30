@@ -99,117 +99,9 @@ class OrdersCubit extends Cubit<OrdersState> {
   void onOrderTapped(OrderSummaryModel order) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    // Simulated detail fetch
-    Future.delayed(const Duration(milliseconds: 300))
-        .then((_) {
-          final isRejected = order.status == 'رد شده';
-          final isWaitingSettlement = order.status == 'در انتظار تسویه';
-          final isConfirmed = order.status == 'تایید شده';
-          final isWaitingApproval = order.status == 'در انتظار تایید';
-          final isExpired = order.status == 'منقضی شده';
-
-          final detail = OrderDetailModel(
-            id: order.id,
-            status: order.status,
-            remainingTime: isWaitingSettlement || order.status == 'پیش فاکتور' ? '۴ ساعت' : '',
-            rejectionReason: isRejected ? 'مدارک اسکن شده با مشخصات هویتی مشتری تطابق ندارد.' : null,
-            isSettled: isConfirmed || isWaitingApproval || isRejected,
-            creditPlan: CreditPlanModel(
-              provider: 'آپ',
-              planName: 'آپ - ۱۲ ماهه',
-              priceIncrease: '۱۵ +',
-              validityPeriod: '۴۸ ساعت',
-            ),
-            products: [
-              OrderProductModel(
-                name: 'یخچال فریزر RTC مدل X۵۰۰ - ظرفیت ۵۰۰ لیتر',
-                price: '۱۷,۲۵۰,۰۰۰',
-                discount: '۲۰٪',
-                oldPrice: '۱۸,۴۵۰,۰۰۰',
-                quantity: '۱',
-                imageUrl: '$baseImage/frame1.png',
-              ),
-              OrderProductModel(
-                name: 'فرگاز RTC ظرفیت ۵۰۰ لیتر مدل X۵۰۰ - ظرفیت ۵۰۰ لیتر',
-                price: '۱۷,۲۵۰,۰۰۰',
-                quantity: '۲',
-                imageUrl: '$baseImage/frame2.png',
-              ),
-              OrderProductModel(
-                name: 'هواپز RTC ۵۰۰ لیتر مدل X۵۰۰ - ظرفیت ۵۰۰ لیتر',
-                price: '۱۷,۲۵۰,۰۰۰',
-                quantity: '۱',
-                imageUrl: '$baseImage/frame3.png',
-              ),
-            ],
-            customer: OrderCustomerModel(
-              name: order.customerName,
-              phone: '۰۹۱۲۶۰۷۷۴۵۶',
-              nationalCode: '۰۰۸۱۲۳۴۵۶۷',
-              postalCode: '۱۹۳۳۹۴۳۱۱۱',
-              address: 'تجریش، ابتدای شریعتی، کوچه پروین، پلاک ۲۸، زنگ ۳',
-            ),
-            documents: [
-              OrderDocumentModel(
-                title: 'کارت ملی - روی',
-                fileName: 'national_card_front',
-                fileSize: '۶ MB',
-                iconPath: '$baseImage/alert.svg',
-              ),
-              OrderDocumentModel(
-                title: 'سایر مدارک ۱',
-                fileName: 'national_card_front',
-                fileSize: '۶ MB',
-                iconPath: '$baseImage/alert.svg',
-              ),
-              OrderDocumentModel(
-                title: 'سایر مدارک ۲',
-                fileName: 'national_card_front',
-                fileSize: '۶ MB',
-                iconPath: '$baseImage/alert.svg',
-              ),
-            ],
-            financialSummary: FinancialSummaryModel(
-              basePrice: '۱۳۰,۰۰۰,۰۰۰',
-              totalDiscount: '۶,۰۰۰,۰۰۰',
-              finalAmount: '۱۲۴,۰۰۰,۰۰۰',
-            ),
-            operations: [
-              OrderOperationModel(
-                step: 1,
-                title: 'عملیات تخلیه',
-                status: order.status == 'پیش فاکتور' ? '' : 'انجام شده',
-                isCompleted: order.status != 'پیش فاکتور',
-              ),
-              OrderOperationModel(
-                step: 2,
-                title: 'عملیات تسویه',
-                status: isWaitingSettlement ? '' : 'انجام شده',
-                isCompleted: !isWaitingSettlement,
-              ),
-            ],
-            history: [
-              OrderHistoryModel(label: 'تاریخ ثبت:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-              if (isExpired)
-                OrderHistoryModel(label: 'تاریخ انقضا:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰')
-              else ...[
-                OrderHistoryModel(label: 'تاریخ تخلیه:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-                if (!isWaitingSettlement) ...[
-                  OrderHistoryModel(label: 'تاریخ تسویه:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰'),
-                  if (isConfirmed)
-                    OrderHistoryModel(label: 'تاریخ تایید:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰')
-                  else if (isRejected)
-                    OrderHistoryModel(label: 'تاریخ رد شدن:', value: '۱۴۰۴/۱۲/۰۹ - ۱۲:۵۰')
-                  else if (isWaitingApproval)
-                    ...[],
-                ],
-              ],
-              if (isConfirmed || isRejected) ...[
-                OrderHistoryModel(label: 'نام پشتیبان:', value: 'آرمان برزگر'),
-                OrderHistoryModel(label: 'نام سرپرست مالی:', value: 'سینا ایرانی'),
-              ],
-            ],
-          );
+    _ordersRepo
+        .getOrderDetails(order.id)
+        .then((detail) {
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
             selectedOrder: detail,
@@ -219,7 +111,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         .catchError((e) {
           emit(state.copyWith(
             status: OrdersRequestStatus.error,
-            errorMessage: e.toString(),
+            errorMessage: 'خطا در بارگذاری جزئیات سفارش: ${e.toString()}',
           ));
         });
   }

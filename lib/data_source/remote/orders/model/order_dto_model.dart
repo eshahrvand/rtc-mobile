@@ -27,12 +27,53 @@ class OrderDtoModel with _$OrderDtoModel {
     required double total,
     @JsonKey(name: 'created_at') required String createdAt,
     List<OrderLineDtoModel>? lines,
+    List<OrderDocumentDetailDtoModel>? documents,
     @JsonKey(name: 'rejection_note') String? rejectionNote,
     @JsonKey(name: 'settlement_tracking_code') String? settlementTrackingCode,
     @JsonKey(name: 'delivery_to_agent') bool? deliveryToAgent,
+    OrderAgentDtoModel? agent,
   }) = _OrderDtoModel;
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDtoModelFromJson(json);
+}
+
+@freezed
+class OrderAgentDtoModel with _$OrderAgentDtoModel {
+  const factory OrderAgentDtoModel({
+    required String id,
+    required String mobile,
+    @JsonKey(name: 'first_name') String? firstName,
+    @JsonKey(name: 'last_name') String? lastName,
+  }) = _OrderAgentDtoModel;
+
+  factory OrderAgentDtoModel.fromJson(Map<String, dynamic> json) => _$OrderAgentDtoModelFromJson(json);
+}
+
+@freezed
+class OrderDocumentDetailDtoModel with _$OrderDocumentDetailDtoModel {
+  const factory OrderDocumentDetailDtoModel({
+    required String id,
+    @JsonKey(name: 'document_type') required String documentType,
+    required OrderFileDtoModel file,
+    @JsonKey(name: 'uploaded_by_id') String? uploadedById,
+    @JsonKey(name: 'created_at') required String createdAt,
+  }) = _OrderDocumentDetailDtoModel;
+
+  factory OrderDocumentDetailDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDocumentDetailDtoModelFromJson(json);
+}
+
+@freezed
+class OrderFileDtoModel with _$OrderFileDtoModel {
+  const factory OrderFileDtoModel({
+    required String id,
+    required String category,
+    @JsonKey(name: 'original_name') required String originalName,
+    @JsonKey(name: 'mime_type') required String mimeType,
+    @JsonKey(name: 'size_bytes') int? sizeBytes,
+    required String file,
+  }) = _OrderFileDtoModel;
+
+  factory OrderFileDtoModel.fromJson(Map<String, dynamic> json) => _$OrderFileDtoModelFromJson(json);
 }
 
 @freezed

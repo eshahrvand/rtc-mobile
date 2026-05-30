@@ -22,6 +22,9 @@ abstract class OrdersService {
     @Query('page_size') int? pageSize,
   });
 
+  @GET('orders/orders/{id}')
+  Future<OrderDtoModel> getOrderById(@Path('id') String id);
+
   @POST('orders/orders')
   Future<OrderDtoModel> createOrder(@Body() OrderCreateRequest request);
 
