@@ -130,7 +130,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                         .map(
                           (c) => PieChartItemModel(
                             label: c.categoryName,
-                            value: c.totalSalesAmount,
+                            value: c.totalOrders.toDouble(),
                             color: Colors.green,
                           ),
                         )

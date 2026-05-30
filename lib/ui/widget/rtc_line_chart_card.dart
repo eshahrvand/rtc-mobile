@@ -92,14 +92,19 @@ class RtcLineChartCard extends StatelessWidget {
                         reservedSize: 22,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          return Text(
-                            value.toInt().toString(),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              // // TODO: replace with theme values
-                              fontSize: 10,
-                            ),
-                          );
+                          final day = value.toInt() + 1;
+                          if (day == 1 || day == 10 || day == 20 || day == 30) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 6.0),
+                              child: Text(
+                                day.toString(),
+                                style: theme.bodySmall!.copyWith(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
                         },
                       ),
                     ),
