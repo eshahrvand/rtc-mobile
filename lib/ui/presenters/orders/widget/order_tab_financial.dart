@@ -83,7 +83,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                       ),
                     ),
 
-                    if (state.disburseOperation != null)
+                    if (state.disburseOperation != null && state.clearanceAmount.isNotEmpty)
                       OrderOperationItemWidget(op: state.disburseOperation!),
 
                     if (widget.order.operations.isNotEmpty)
