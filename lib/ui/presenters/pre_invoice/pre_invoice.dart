@@ -46,7 +46,7 @@ class PreInvoiceView extends StatelessWidget {
               ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
             }
             if (state.status == PreInvoiceRequestStatus.submitted) {
-              context.go(AppRoutes.orderDetail);
+              context.go(AppRoutes.orderDetail, extra: state.createdOrderId);
             }
             if (state.status == PreInvoiceRequestStatus.submittedAndCleared) {
               context.pop();

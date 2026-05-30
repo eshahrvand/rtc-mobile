@@ -14,7 +14,6 @@ import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
-import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
@@ -594,6 +593,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               status: shouldClear
                   ? PreInvoiceRequestStatus.submittedAndCleared
                   : PreInvoiceRequestStatus.submitted,
+              createdOrderId: order.id,
             ),
           );
         })

@@ -64,6 +64,8 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default([]) List<String> optionalDocPaths,
     @Default([]) List<String> optionalDocIds,
 
+    String? createdOrderId,
+
     @Default(false) bool isEditMode,
   }) = _PreInvoiceState;
 }

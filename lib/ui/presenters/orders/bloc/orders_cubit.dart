@@ -97,10 +97,14 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void onOrderTapped(OrderSummaryModel order) {
+    fetchOrderDetail(order.id);
+  }
+
+  void fetchOrderDetail(String orderId) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     _ordersRepo
-        .getOrderDetails(order.id)
+        .getOrderDetails(orderId)
         .then((detail) {
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
