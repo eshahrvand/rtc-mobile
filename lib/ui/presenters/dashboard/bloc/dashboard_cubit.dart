@@ -7,15 +7,18 @@ import '../../../../data/models/pie_chart_item_model.dart';
 import '../../../../data/models/quick_access_item_model.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
+import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import 'dashboard_state.dart';
+import '../../../../data/models/order_model.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit() : super(const DashboardState());
 
   final _dashboardRepo = sl<DashboardRepository>();
+  final _ordersRepo = sl<OrdersRepository>();
 
   void init() {
     emit(state.copyWith(status: DashboardRequestStatus.loading));
@@ -43,12 +46,14 @@ class DashboardCubit extends Cubit<DashboardState> {
           _dashboardRepo.getDailyChart(),
           _dashboardRepo.getCategories(),
           _dashboardRepo.getSubPlanChart(),
+          _ordersRepo.getOrders(page: 1, pageSize: 5),
         ])
         .then((results) {
           final summary = results[0] as DashboardSummaryDtoModel;
           final dailyChart = results[1] as List<DailyChartDtoModel>;
           final categories = results[2] as List<CategoryChartDtoModel>;
           final subplans = results[3] as List<SubPlanChartDtoModel>;
+          final orders = results[4] as List<OrderSummaryModel>;
 
           emit(
             state.copyWith(
@@ -146,7 +151,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                           ),
                         )
                         .toList(),
-              recentOrders: state.recentOrders,
+              recentOrders: orders,
             ),
           );
         })

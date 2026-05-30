@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
-import '../../data/models/order_item_model.dart';
+import '../../data/models/order_model.dart';
 
 class RtcDashboardOrderItem extends StatelessWidget {
-  final OrderItemModel order;
+  final OrderSummaryModel order;
   final VoidCallback onTap;
 
   const RtcDashboardOrderItem({

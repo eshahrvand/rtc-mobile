@@ -3,7 +3,7 @@ import '../../../../data/models/quick_access_item_model.dart';
 import '../../../../data/models/pie_chart_item_model.dart';
 import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/bar_chart_item_model.dart';
-import '../../../../data/models/order_item_model.dart';
+import '../../../../data/models/order_model.dart';
 import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 
 part 'dashboard_state.freezed.dart';
@@ -43,7 +43,7 @@ class DashboardState with _$DashboardState {
     @Default('') String barChartTitle,
 
     // Recent orders
-    @Default([]) List<OrderItemModel> recentOrders,
+    @Default([]) List<OrderSummaryModel> recentOrders,
 
     // User Profile
     UserProfileDtoModel? userProfile,
