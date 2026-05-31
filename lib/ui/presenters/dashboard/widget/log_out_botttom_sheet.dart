@@ -83,6 +83,22 @@ void showLogOutBottomSheet({required BuildContext context}) {
                   children: [
                     Expanded(
                       child: RtcButton(
+                        title: "بازگشت",
+                        borderColor: AppColors.grayPalette.shade300,
+                        backgroundColor: Colors.white,
+
+                        size: RtcButtonSize.medium,
+                        styleBtn: theme.labelLarge!.copyWith(
+                          color: AppColors.grayPalette.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: RtcButton(
                         title: "خروج",
                         size: RtcButtonSize.medium,
                         onPressed: () {
@@ -94,22 +110,6 @@ void showLogOutBottomSheet({required BuildContext context}) {
                         ),
                         backgroundColor: AppColors.errorPalette.shade600,
                         borderColor: AppColors.errorPalette.shade600,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: RtcButton(
-                        title: "بازگشت",
-                        borderColor: Colors.white,
-                        backgroundColor: Colors.white,
-
-                        size: RtcButtonSize.medium,
-                        styleBtn: theme.labelLarge!.copyWith(
-                          color: AppColors.grayPalette.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
-
-                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ],

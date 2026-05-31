@@ -131,7 +131,7 @@ class RtcDrawer extends StatelessWidget {
                   const SizedBox(width: 12),
                   Column(
                     spacing: 2,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         profile != null
@@ -143,7 +143,7 @@ class RtcDrawer extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        profile?.role ?? userRole ?? 'نماینده فروش',
+                        profile?.role != "agent" ? 'نماینده' : 'نماینده فروش',
                         style: theme.bodyMedium!.copyWith(
                           color: AppColors.grayPalette.shade600,
                         ),
