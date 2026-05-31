@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -14,6 +15,8 @@ class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
   final _mediaRepo = sl<MediaRepository>();
+
+  Timer? _searchTimer;
 
   OrdersCubit() : super(const OrdersState());
 
@@ -73,7 +76,11 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
-    fetchOrders();
+
+    _searchTimer?.cancel();
+    _searchTimer = Timer(const Duration(seconds: 1), () {
+      fetchOrders();
+    });
   }
 
   void activateSearch() {
@@ -81,6 +88,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void deactivateSearch() {
+    _searchTimer?.cancel();
     emit(state.copyWith(isSearchActive: false, searchQuery: ''));
     fetchOrders();
   }
@@ -160,7 +168,8 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
-    final isDone = detail.status == 'در انتظار تسویه' ||
+    final isDone =
+        detail.status == 'در انتظار تسویه' ||
         detail.status == 'تایید شده' ||
         detail.status == 'در انتظار تایید' ||
         state.clearanceStep == ClearanceStep.success;
@@ -170,7 +179,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       'در انتظار تایید',
       'تایید شده',
       'رد شده',
-      'در انتظار تسویه'
+      'در انتظار تسویه',
     ];
 
     if (statusesToShowDisburse.contains(detail.status)) {
@@ -227,7 +236,8 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final amount = double.tryParse(amountStr.replaceAll(',', '')) ?? 0;
-    final orderAmount = double.tryParse(
+    final orderAmount =
+        double.tryParse(
           state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
         ) ??
         0;
@@ -257,7 +267,8 @@ class OrdersCubit extends Cubit<OrdersState> {
           // Determine gateway type from response or hardcode for now
           // Based on user request, if it's "otp" or "online", we show OTP sheet
           // For now, let's assume if response has something specific, it's online
-          final isOnline = response != null &&
+          final isOnline =
+              response != null &&
               (response is Map) &&
               (response['gateway_type'] == 'online' ||
                   response['type'] == 'online');
@@ -274,7 +285,8 @@ class OrdersCubit extends Cubit<OrdersState> {
               excessAmount: amount > orderAmount
                   ? (amount - orderAmount).toStringAsFixed(0)
                   : null,
-              walletName: 'آپ - ۱۲ ماهه', // TODO: From API
+              walletName: 'آپ - ۱۲ ماهه',
+              // TODO: From API
               isOutOfTolerance: false,
             ),
           );
@@ -396,5 +408,11 @@ class OrdersCubit extends Cubit<OrdersState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _searchTimer?.cancel();
+    return super.close();
   }
 }

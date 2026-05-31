@@ -20,16 +20,19 @@ class RtcChipItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('>> RtcChipItem: Building chip: ${chip.label}, isSelected: $isSelected, opensBottomSheet: ${chip.opensBottomSheet}');
+    debugPrint(
+      '>> RtcChipItem: Building chip: ${chip.label}, isSelected: $isSelected, opensBottomSheet: ${chip.opensBottomSheet}',
+    );
     var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () {
-        debugPrint('>> RtcChipItem: GestureDetector onTap triggered for ${chip.label}');
+        debugPrint(
+          '>> RtcChipItem: GestureDetector onTap triggered for ${chip.label}',
+        );
         onTap();
       },
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected ? Colors.black : Colors.white,
           boxShadow: AppColors.primaryShadow,
@@ -42,19 +45,30 @@ class RtcChipItem extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              chip.label,
-              style: theme.bodyMedium!.copyWith(
-                color: isSelected
-                    ? Colors.white
-                    : AppColors.grayPalette.shade900,
-                fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
+              child: Text(
+                chip.label,
+                style: theme.bodyMedium!.copyWith(
+                  color: isSelected
+                      ? Colors.white
+                      : AppColors.grayPalette.shade900,
+                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+                ),
               ),
             ),
-
             if (isSelected)
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 12, left: 8),
+                child: Container(
+                  width: 1,
+                  height: double.infinity,
+                  color: Colors.white,
+                ),
+              ),
+            if (isSelected)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 7, 0, 7),
                 child: GestureDetector(
                   onTap: (onClose ?? onTap),
                   behavior: HitTestBehavior.opaque,
@@ -68,14 +82,16 @@ class RtcChipItem extends StatelessWidget {
               )
             else if (chip.opensBottomSheet)
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.fromLTRB(12, 7, 8, 7),
                 child: RtcImage(
                   image: '$baseImage/angle-down-thick.svg',
                   width: 16,
                   height: 16,
                   color: AppColors.grayPalette.shade700,
                 ),
-              ),
+              )
+            else
+              const SizedBox(width: 12),
           ],
         ),
       ),

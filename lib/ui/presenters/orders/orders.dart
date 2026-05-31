@@ -139,21 +139,9 @@ class _OrdersViewState extends State<OrdersView> {
     debugPrint('>> OrdersScreen: _showStatusFilter called');
     final statusItems = [
       const FilterItem(id: 'pre_invoice', title: 'پیش فاکتور'),
+      const FilterItem(id: 'under_review', title: 'در انتظار تایید'),
       const FilterItem(id: 'approved', title: 'تایید شده'),
       const FilterItem(id: 'rejected', title: 'رد شده'),
-      const FilterItem(id: 'waiting_settlement', title: 'در انتظار تسویه'),
-      const FilterItem(id: 'expired', title: 'منقضی شده'),
-      const FilterItem(
-        id: 'pending_sales_review',
-        title: 'در انتظار بررسی فروش',
-      ),
-      const FilterItem(
-        id: 'pending_finance_review',
-        title: 'در انتظار بررسی مالی',
-      ),
-      const FilterItem(id: 'returned_for_revision', title: 'بازگشت برای اصلاح'),
-      const FilterItem(id: 'unassigned_sales', title: 'تخصیص نیافته - فروش'),
-      const FilterItem(id: 'unassigned_finance', title: 'تخصیص نیافته - مالی'),
     ];
 
     FilterBottomSheet.show(

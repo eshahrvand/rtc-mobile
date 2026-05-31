@@ -100,10 +100,9 @@ class OrdersBody extends StatelessWidget {
     debugPrint('>> OrdersBody: _showStatusFilter called');
     final statusItems = [
       const FilterItem(id: 'pre_invoice', title: 'پیش فاکتور'),
+      const FilterItem(id: 'under_review', title: 'در انتظار تایید'),
       const FilterItem(id: 'approved', title: 'تایید شده'),
       const FilterItem(id: 'rejected', title: 'رد شده'),
-      const FilterItem(id: 'waiting_settlement', title: 'در انتظار تسویه'),
-      const FilterItem(id: 'expired', title: 'منقضی شده'),
     ];
 
     FilterBottomSheet.show(

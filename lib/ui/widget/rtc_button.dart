@@ -112,16 +112,18 @@ class _RtcButtonState extends State<RtcButton> {
     final bool active = isActive ?? true;
 
     // Figma Shadows
-    final List<BoxShadow> shadows = active
-        ? AppColors.primaryShadow
-        : [
-            const BoxShadow(
-              color: Color(0x0D0A0D12),
-              offset: Offset(0, 1),
-              blurRadius: 2,
-              spreadRadius: 0,
-            ),
-          ];
+    final List<BoxShadow> shadows = widget.borderColor != null
+        ? AppColors.mediumShadow
+        : (active
+              ? AppColors.primaryShadow
+              : [
+                  const BoxShadow(
+                    color: Color(0x0D0A0D12),
+                    offset: Offset(0, 1),
+                    blurRadius: 2,
+                    spreadRadius: 0,
+                  ),
+                ]);
 
     final Color bgColor = active
         ? (widget.backgroundColor ?? AppColors.brandPalette.shade600)
@@ -165,7 +167,7 @@ class _RtcButtonState extends State<RtcButton> {
               borderRadius: BorderRadius.circular(8),
               side: BorderSide(
                 color: active
-                    ? widget.borderColor ??  AppColors.brandPalette.shade600
+                    ? widget.borderColor ?? AppColors.brandPalette.shade600
                     : AppColors.grayPalette.shade200,
                 width: 1,
               ),

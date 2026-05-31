@@ -228,6 +228,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               color: AppColors.grayPalette.shade700,
               fontWeight: FontWeight.w600,
             ),
+
           ),
           RtcButton(
             title: S.current.applyFilter,
