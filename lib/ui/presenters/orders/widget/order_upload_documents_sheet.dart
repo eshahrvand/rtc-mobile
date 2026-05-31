@@ -12,11 +12,13 @@ import 'order_details_document_item.dart';
 class OrderUploadDocumentsSheet extends StatelessWidget {
   final String filePath;
   final VoidCallback onConfirm;
+  final VoidCallback onDelete;
 
   const OrderUploadDocumentsSheet({
     super.key,
     required this.filePath,
     required this.onConfirm,
+    required this.onDelete,
   });
 
   @override
@@ -95,6 +97,11 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
 
           // File Card
           OrderDetailsDocumentItem(
+            isLocalFile: true,
+            onDelete: () {
+              Navigator.pop(context);
+              onDelete();
+            },
             doc: OrderDocumentModel(
               title: S.current.paymentDocuments,
               fileName: fileName,

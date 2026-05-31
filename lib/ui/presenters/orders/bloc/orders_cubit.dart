@@ -399,6 +399,9 @@ class OrdersCubit extends Cubit<OrdersState> {
         clearanceStep: ClearanceStep.initial,
         uploadedClearanceDocPath: null,
         uploadedClearanceDocId: null,
+        clearanceAmount: '',
+        excessAmount: null,
+        isOutOfTolerance: false,
       ),
     );
     if (state.selectedOrder != null) {
@@ -408,6 +411,15 @@ class OrdersCubit extends Cubit<OrdersState> {
         ),
       );
     }
+  }
+
+  void clearClearanceDocument() {
+    emit(
+      state.copyWith(
+        uploadedClearanceDocPath: null,
+        uploadedClearanceDocId: null,
+      ),
+    );
   }
 
   @override

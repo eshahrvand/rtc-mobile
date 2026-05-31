@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +35,10 @@ final router = GoRouter(
       builder: (context, state) {
         final indexStr = state.uri.queryParameters['index'];
         final index = int.tryParse(indexStr ?? '0') ?? 0;
-        return DashboardScreen(initialIndex: index);
+        return DashboardScreen(
+          key: ValueKey(state.uri.toString()),
+          initialIndex: index,
+        );
       },
     ),
 

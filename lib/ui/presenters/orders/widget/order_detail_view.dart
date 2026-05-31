@@ -27,7 +27,8 @@ class OrderDetailView extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        context.go('${AppRoutes.dashboard}?index=2');
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
       },
       child: MultiBlocListener(
       listeners: [
@@ -79,7 +80,10 @@ class OrderDetailView extends StatelessWidget {
 
           return Scaffold(
             appBar: RtcAppBar(
-              onBack: () => context.go('${AppRoutes.dashboard}?index=2'),
+              onBack: () {
+                final timestamp = DateTime.now().millisecondsSinceEpoch;
+                context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
+              },
               backIconPath: '$baseImage/angle-right.svg',
               actions: [
                 Padding(
@@ -143,6 +147,9 @@ class OrderDetailView extends StatelessWidget {
         onConfirm: () {
           Navigator.pop(context);
           cubit.confirmClearanceDocument();
+        },
+        onDelete: () {
+          cubit.clearClearanceDocument();
         },
       ),
     );

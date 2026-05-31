@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../config/config.dart';
@@ -7,14 +9,21 @@ import '../../../widget/rtc_image.dart';
 
 class OrderDetailsDocumentItem extends StatelessWidget {
   final OrderDocumentModel doc;
+  final VoidCallback? onDelete;
+  final bool isLocalFile;
 
-  const OrderDetailsDocumentItem({super.key, required this.doc});
+  const OrderDetailsDocumentItem({
+    super.key,
+    required this.doc,
+    this.onDelete,
+    this.isLocalFile = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.grayPalette.shade200, width: 0.5),
@@ -64,13 +73,28 @@ class OrderDetailsDocumentItem extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               if (doc.url != null)
-                GestureDetector(
-                  onTap: () => _viewDocument(context, doc.url!, doc.title),
-                  child: RtcImage(
-                    image: '$baseImage/eye-document.svg',
-                    width: 20,
-                    height: 20,
-                  ),
+                Row(
+                  spacing: 12,
+                  children: [
+                    GestureDetector(
+                      onTap: () => _viewDocument(context, doc.url!, doc.title),
+                      child: RtcImage(
+                        image: '$baseImage/eye-document.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                    ),
+                    if (onDelete != null)
+                      GestureDetector(
+                        onTap: onDelete,
+                        child: RtcImage(
+                          image: '$baseImage/delete.svg',
+                          width: 20,
+                          height: 20,
+                          color: AppColors.errorPalette.shade600,
+                        ),
+                      ),
+                  ],
                 ),
             ],
           ),
@@ -98,22 +122,38 @@ class OrderDetailsDocumentItem extends StatelessWidget {
             child: InteractiveViewer(
               minScale: 0.5,
               maxScale: 4.0,
-              child: CachedNetworkImage(
-                imageUrl: url,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(color: Colors.white),
-                errorWidget: (context, url, error) => const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error, color: Colors.white, size: 48),
-                    SizedBox(height: 16),
-                    Text(
-                      'خطا در بارگذاری تصویر',
-                      style: TextStyle(color: Colors.white),
+              child: isLocalFile
+                  ? Image.file(
+                      File(url),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error, color: Colors.white, size: 48),
+                              SizedBox(height: 16),
+                              Text(
+                                'خطا در بارگذاری تصویر',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: url,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(color: Colors.white),
+                      errorWidget: (context, url, error) => const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error, color: Colors.white, size: 48),
+                          SizedBox(height: 16),
+                          Text(
+                            'خطا در بارگذاری تصویر',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
             ),
           ),
         ),

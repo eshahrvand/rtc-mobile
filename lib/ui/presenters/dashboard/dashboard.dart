@@ -45,6 +45,15 @@ class MainView extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<DashboardCubit, DashboardState>(
+          listenWhen: (prev, curr) =>
+              prev.selectedNavIndex != curr.selectedNavIndex,
+          listener: (context, state) {
+            if (state.selectedNavIndex == 2) {
+              context.read<OrdersCubit>().fetchOrders();
+            }
+          },
+        ),
+        BlocListener<DashboardCubit, DashboardState>(
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == DashboardRequestStatus.error) {
@@ -111,9 +120,6 @@ class MainView extends StatelessWidget {
                       selectedIndex: dashboardState.selectedNavIndex,
                       onItemSelected: (index) {
                         context.read<DashboardCubit>().onNavItemSelected(index);
-                        if (index == 2) {
-                          context.read<OrdersCubit>().fetchOrders();
-                        }
                       },
                     ),
                   );
