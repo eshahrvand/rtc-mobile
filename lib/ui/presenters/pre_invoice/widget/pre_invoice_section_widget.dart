@@ -21,41 +21,44 @@ class PreInvoiceSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            spacing: 4,
-            children: [
-              icon,
-              Text(
-                title,
-                style: theme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.grayPalette.shade900,
-                ),
-              ),
-              const Spacer(),
-              if (trailing != null) trailing!,
-            ],
-          ),
-        ),
-        if (showDivider)
+    return Container(
+      color: Colors.white,
+      child: Column(
+        children: [
           Padding(
-            padding: const EdgeInsets.only(
-              top: 8,
-              bottom: 8,
-              right: 16,
-              left: 16,
-            ),
-            child: RtcDivider(
-              color: AppColors.grayPalette.shade900,
-              height: 0.5,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Row(
+              spacing: 4,
+              children: [
+                icon,
+                Text(
+                  title,
+                  style: theme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.grayPalette.shade900,
+                  ),
+                ),
+                const Spacer(),
+                if (trailing != null) trailing!,
+              ],
             ),
           ),
-        child,
-      ],
+          if (showDivider)
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 8,
+                bottom: 8,
+                right: 16,
+                left: 16,
+              ),
+              child: RtcDivider(
+                color: AppColors.grayPalette.shade900,
+                height: 0.5,
+              ),
+            ),
+          child,
+        ],
+      ),
     );
   }
 }

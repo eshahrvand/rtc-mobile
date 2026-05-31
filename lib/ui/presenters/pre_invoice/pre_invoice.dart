@@ -78,7 +78,7 @@ class PreInvoiceView extends StatelessWidget {
           final cubit = context.read<PreInvoiceCubit>();
 
           return Scaffold(
-            backgroundColor: Colors.white,
+
             appBar: RtcAppBar(
               title: state.isEditMode
                   ? _getEditTitle(state.currentStep)
@@ -116,6 +116,7 @@ class PreInvoiceView extends StatelessWidget {
                     ),
                   ),
               ],
+              showShadow: false,
             ),
             body: Column(
               children: [
@@ -160,79 +161,83 @@ class PreInvoiceView extends StatelessWidget {
     PreInvoiceCubit cubit,
   ) {
     if (state.isEditMode) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: AppColors.secondaryShadow,
-        ),
-        child: Row(
-          spacing: 12,
-          children: [
-            Expanded(
-              child: RtcButton(
-                title: S.current.back,
-                backgroundColor: AppColors.grayPalette.shade50,
-                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grayPalette.shade700,
+      return SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: AppColors.secondaryShadow,
+          ),
+          child: Row(
+            spacing: 12,
+            children: [
+              Expanded(
+                child: RtcButton(
+                  title: S.current.back,
+                  backgroundColor: AppColors.grayPalette.shade50,
+                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.grayPalette.shade700,
+                  ),
+                  onPressed: () => cubit.exitEditMode(),
+                  borderColor: AppColors.grayPalette.shade300,
                 ),
-                onPressed: () => cubit.exitEditMode(),
-                borderColor: AppColors.grayPalette.shade300,
               ),
-            ),
-            Expanded(
-              child: RtcButton(
-                title: S.current.save,
-                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: RtcButton(
+                  title: S.current.save,
+                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => cubit.exitEditMode(),
                 ),
-                onPressed: () => cubit.exitEditMode(),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
 
     if (state.currentStep == PreInvoiceStep.review) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: AppColors.secondaryShadow,
-        ),
-        child: Row(
-          spacing: 12,
-          children: [
-            Expanded(
-              child: RtcButton(
-                title: S.current.submitPreInvoice,
-                backgroundColor: AppColors.brandPalette.shade50,
-                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.brandPalette.shade700,
-                ),
-                isLoading: state.isSubmittingAndClearing,
-                onPressed: () => cubit.submitAndClear(),
+      return SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: AppColors.secondaryShadow,
+          ),
+          child: Row(
+            spacing: 12,
+            children: [
+              Expanded(
+                child: RtcButton(
+                  title: S.current.submitPreInvoice,
+                  backgroundColor: AppColors.brandPalette.shade50,
+                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.brandPalette.shade700,
+                  ),
+                  isLoading: state.isSubmittingAndClearing,
+                  onPressed: () => cubit.submitAndClear(),
 
-                borderColor: AppColors.brandPalette.shade50,
-              ),
-            ),
-            Expanded(
-              child: RtcButton(
-                title: S.current.submitAndClearCart,
-                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  borderColor: AppColors.brandPalette.shade50,
                 ),
-
-                isLoading: state.isSubmittingPreInvoice,
-                onPressed: () => cubit.submitPreInvoice(),
               ),
-            ),
-          ],
+              Expanded(
+                child: RtcButton(
+                  title: S.current.submitAndClearCart,
+                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+
+                  isLoading: state.isSubmittingPreInvoice,
+                  onPressed: () => cubit.submitPreInvoice(),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -252,7 +257,7 @@ class PreInvoiceView extends StatelessWidget {
       );
       isActive = totalItems > 0;
       title = isActive
-          ? '${S.current.nextStep} ($totalItems ${S.current.products})'
+          ? '${S.current.nextStep} ($totalItems ${S.current.product})'
           : S.current.nextStep;
       onPressed = () => cubit.goToStep(PreInvoiceStep.customerInfo);
     } else if (state.currentStep == PreInvoiceStep.customerInfo) {
@@ -280,7 +285,7 @@ class PreInvoiceView extends StatelessWidget {
               child: RtcButton(
                 title: title,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Colors.white,
+                  color: isActive ? Colors.white : AppColors.grayPalette.shade300,
                   fontWeight: FontWeight.w600,
                 ),
                 isActive: isActive,
@@ -288,7 +293,8 @@ class PreInvoiceView extends StatelessWidget {
                 onPressed: onPressed,
               ),
             ),
-            if (state.currentStep == PreInvoiceStep.products)
+            if (state.currentStep == PreInvoiceStep.products &&
+                state.cartItems.isNotEmpty)
               GestureDetector(
                 onTap: () => cubit.showCart(),
                 child: Container(

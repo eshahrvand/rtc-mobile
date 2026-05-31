@@ -29,6 +29,7 @@ class PreInvoiceStep5View extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
+                  spacing: 8,
                   children: [
                     PreInvoiceSectionWidget(
                       title: S.current.creditPlanTitle,

@@ -40,6 +40,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
+                //TODO: calculate quantity
                 _buildHeader(state.cartItems.length, context),
                 const SizedBox(height: 14),
                 Flexible(
@@ -207,6 +208,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
 
   Widget _buildSummary(PreInvoiceState state, BuildContext context) {
     return Column(
+      spacing: 10,
       children: [
         _buildSummaryRow(
           S.current.totalAmount,
@@ -236,38 +238,36 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
     Color? color,
     required BuildContext context,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Label on the Right (First child in RTL)
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: AppColors.grayPalette.shade700,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: AppColors.grayPalette.shade700,
           ),
+        ),
 
-          Row(
-            children: [
-              Text(
-                value,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: color ?? AppColors.grayPalette.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
+        Row(
+          children: [
+            Text(
+              value,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: color ?? AppColors.grayPalette.shade700,
+                fontWeight: color != null ? FontWeight.bold : FontWeight.w500,
               ),
-              const SizedBox(width: 4),
-              RtcImage(
-                image: "$baseImage/toman.svg",
-                width: 24,
-                height: 24,
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+            const SizedBox(width: 4),
+            RtcImage(
+              image: "$baseImage/toman.svg",
+              width: 16,
+              height: 16,
+              color: color,
+              boxFit: BoxFit.fill,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
