@@ -47,18 +47,13 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  late PageController _pageController;
-
   @override
   void initState() {
     super.initState();
-    final initialIndex = context.read<DashboardCubit>().state.selectedNavIndex;
-    _pageController = PageController(initialPage: initialIndex);
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -72,16 +67,6 @@ class _MainViewState extends State<MainView> {
           listenWhen: (prev, curr) =>
               prev.selectedNavIndex != curr.selectedNavIndex,
           listener: (context, state) {
-            // Sync PageView when index changes (e.g. from bottom nav tap)
-            if (_pageController.hasClients &&
-                _pageController.page?.toInt() != state.selectedNavIndex) {
-              _pageController.animateToPage(
-                state.selectedNavIndex,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            }
-
             // Reset search/filters when leaving Products or Orders tabs
             if (state.selectedNavIndex != 1) {
               context.read<ProductCubit>().clearAllFilters();
@@ -152,11 +137,8 @@ class _MainViewState extends State<MainView> {
                       productState,
                       ordersState,
                     ),
-                    body: PageView(
-                      controller: _pageController,
-                      onPageChanged: (index) {
-                        context.read<DashboardCubit>().onNavItemSelected(index);
-                      },
+                    body: IndexedStack(
+                      index: dashboardState.selectedNavIndex,
                       children: const [
                         DashboardBody(),
                         ProductsBody(),
