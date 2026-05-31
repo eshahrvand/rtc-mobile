@@ -29,44 +29,47 @@ class RtcCollapsibleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        InkWell(
-          onTap: onToggle,
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(16.0),
-            child: Row(
-              spacing: headerSpacing ?? 4,
-              children: [
-                icon,
-                Text(
-                  title,
-                  style: theme.labelLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.grayPalette.shade900,
+    return Container(
+      color: Colors.white,
+      child: Column(
+        children: [
+          InkWell(
+            onTap: onToggle,
+            child: Padding(
+              padding: padding ?? const EdgeInsets.all(16.0),
+              child: Row(
+                spacing: headerSpacing ?? 4,
+                children: [
+                  icon,
+                  Text(
+                    title,
+                    style: theme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.grayPalette.shade900,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                trailing ?? const SizedBox.shrink(),
-              ],
+                  const Spacer(),
+                  trailing ?? const SizedBox.shrink(),
+                ],
+              ),
             ),
           ),
-        ),
-        if (showDivider)
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 8,
-              bottom: 8,
-              right: 16,
-              left: 16,
+          if (showDivider)
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 8,
+                bottom: 8,
+                right: 16,
+                left: 16,
+              ),
+              child: RtcDivider(
+                color: AppColors.grayPalette.shade900,
+                height: 0.5,
+              ),
             ),
-            child: RtcDivider(
-              color: AppColors.grayPalette.shade900,
-              height: 0.5,
-            ),
-          ),
-        if (isExpanded) child,
-      ],
+          if (isExpanded) child,
+        ],
+      ),
     );
   }
 }

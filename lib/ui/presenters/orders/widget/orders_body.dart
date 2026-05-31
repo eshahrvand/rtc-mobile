@@ -26,7 +26,9 @@ class OrdersBody extends StatelessWidget {
             _buildBadgeList(context, state),
             const SizedBox(height: 8),
             Expanded(
-              child: state.status == OrdersRequestStatus.loading && state.filteredOrders.isEmpty
+              child:
+                  state.status == OrdersRequestStatus.loading &&
+                      state.filteredOrders.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
                       itemCount: state.filteredOrders.length,
@@ -62,11 +64,14 @@ class OrdersBody extends StatelessWidget {
       isChipSelected: (index, chip) {
         if (chip.id == 1) return state.selectedStatusId != null;
         if (chip.id == 2) return state.selectedSubPlanId != null;
-        if (chip.id == 3) return state.startDate != null || state.endDate != null;
+        if (chip.id == 3)
+          return state.startDate != null || state.endDate != null;
         return false;
       },
       onChipTap: (index, chip) {
-        debugPrint('>> OrdersBody: Chip tapped: ${chip.label} (ID: ${chip.id})');
+        debugPrint(
+          '>> OrdersBody: Chip tapped: ${chip.label} (ID: ${chip.id})',
+        );
         if (chip.id == 1) {
           _showStatusFilter(context, cubit, state);
         } else if (chip.id == 2) {
@@ -99,17 +104,6 @@ class OrdersBody extends StatelessWidget {
       const FilterItem(id: 'rejected', title: 'رد شده'),
       const FilterItem(id: 'waiting_settlement', title: 'در انتظار تسویه'),
       const FilterItem(id: 'expired', title: 'منقضی شده'),
-      const FilterItem(
-        id: 'pending_sales_review',
-        title: 'در انتظار بررسی فروش',
-      ),
-      const FilterItem(
-        id: 'pending_finance_review',
-        title: 'در انتظار بررسی مالی',
-      ),
-      const FilterItem(id: 'returned_for_revision', title: 'بازگشت برای اصلاح'),
-      const FilterItem(id: 'unassigned_sales', title: 'تخصیص نیافته - فروش'),
-      const FilterItem(id: 'unassigned_finance', title: 'تخصیص نیافته - مالی'),
     ];
 
     FilterBottomSheet.show(
