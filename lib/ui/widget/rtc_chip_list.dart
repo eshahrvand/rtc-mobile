@@ -20,7 +20,7 @@ class RtcChipList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      height: 32,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -32,7 +32,9 @@ class RtcChipList extends StatelessWidget {
             chip: chip,
             isSelected: isChipSelected(index, chip),
             onTap: () => onChipTap(index, chip),
-            onClose: onChipClose != null ? () => onChipClose!(index, chip) : null,
+            onClose: onChipClose != null
+                ? () => onChipClose!(index, chip)
+                : null,
           );
         },
       ),

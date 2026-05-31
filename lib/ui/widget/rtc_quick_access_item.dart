@@ -59,6 +59,7 @@ class RtcQuickAccessItem extends StatelessWidget {
                                   percentage!,
                                   style: theme.bodySmall!.copyWith(
                                     color: AppColors.successPalette.shade600,
+                                    fontSize: 12
                                   ),
                                 ),
 
