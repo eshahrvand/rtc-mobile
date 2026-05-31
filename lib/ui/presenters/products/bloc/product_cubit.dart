@@ -192,8 +192,11 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   void clearAllFilters() {
+    _debounce?.cancel();
     emit(
       state.copyWith(
+        searchQuery: '',
+        isSearchActive: false,
         selectedCategoryId: null,
         selectedSubPlanId: null,
         selectedSubPlanName: null,

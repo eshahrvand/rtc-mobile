@@ -125,6 +125,22 @@ class OrdersCubit extends Cubit<OrdersState> {
     fetchOrders();
   }
 
+  void resetSearchAndFilters() {
+    _searchTimer?.cancel();
+    emit(
+      state.copyWith(
+        searchQuery: '',
+        isSearchActive: false,
+        selectedStatusId: null,
+        selectedSubPlanId: null,
+        startDate: null,
+        endDate: null,
+        selectedDateOptionId: null,
+      ),
+    );
+    fetchOrders();
+  }
+
   void onBadgeSelected(String badge) {
     // Keeping this for compatibility with existing UI if any,
     // but the 3 main filters will use the specific methods above.

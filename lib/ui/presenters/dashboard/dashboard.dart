@@ -48,6 +48,16 @@ class MainView extends StatelessWidget {
           listenWhen: (prev, curr) =>
               prev.selectedNavIndex != curr.selectedNavIndex,
           listener: (context, state) {
+            // Reset search/filters when leaving Products or Orders tabs
+            if (state.selectedNavIndex != 1) {
+              context.read<ProductCubit>().clearAllFilters();
+            }
+
+            if (state.selectedNavIndex != 2) {
+              context.read<OrdersCubit>().resetSearchAndFilters();
+            }
+
+            // Always refresh orders when entering the tab
             if (state.selectedNavIndex == 2) {
               context.read<OrdersCubit>().fetchOrders();
             }
