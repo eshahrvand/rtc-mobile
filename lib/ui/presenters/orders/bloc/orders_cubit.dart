@@ -162,6 +162,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
     final isDone = detail.status == 'در انتظار تسویه' ||
         detail.status == 'تایید شده' ||
+        detail.status == 'در انتظار تایید' ||
         state.clearanceStep == ClearanceStep.success;
 
     final statusesToShowDisburse = [
@@ -253,11 +254,21 @@ class OrdersCubit extends Cubit<OrdersState> {
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
+          // Determine gateway type from response or hardcode for now
+          // Based on user request, if it's "otp" or "online", we show OTP sheet
+          // For now, let's assume if response has something specific, it's online
+          final isOnline = response != null &&
+              (response is Map) &&
+              (response['gateway_type'] == 'online' ||
+                  response['type'] == 'online');
+
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
-              gatewayType: GatewayType.offline,
-              clearanceStep: ClearanceStep.documentsPending,
+              gatewayType: isOnline ? GatewayType.online : GatewayType.offline,
+              clearanceStep: isOnline
+                  ? ClearanceStep.otpPending
+                  : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
               excessAmount: amount > orderAmount
@@ -337,6 +348,34 @@ class OrdersCubit extends Cubit<OrdersState> {
               status: OrdersRequestStatus.error,
               errorMessage:
                   'خطا در بارگذاری مدارک یا نهایی‌سازی: ${e.toString()}',
+            ),
+          );
+        });
+  }
+
+  void confirmClearanceOtp() {
+    if (state.selectedOrder == null) return;
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    // TODO: Call verify OTP API if available
+    _ordersRepo
+        .disburse(state.selectedOrder!.id)
+        .then((_) {
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              clearanceStep: ClearanceStep.success,
+            ),
+          );
+          if (state.selectedOrder != null) {
+            fetchOrderDetail(state.selectedOrder!.id);
+          }
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: 'خطا در تایید کد و نهایی‌سازی: ${e.toString()}',
             ),
           );
         });

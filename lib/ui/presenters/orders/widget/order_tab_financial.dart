@@ -11,6 +11,7 @@ import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'order_clearance_amount_sheet.dart';
 import 'order_clearance_operation_widget.dart';
+import 'order_clearance_otp_sheet.dart';
 import 'order_operation_item_widget.dart';
 
 class OrderTabFinancial extends StatefulWidget {
@@ -102,9 +103,20 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         isOnline: state.gatewayType == GatewayType.online,
                         onAction: () {
                           if (state.gatewayType == GatewayType.online) {
-                            // TODO: Show OTP sheet
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => OrderClearanceOtpSheet(
+                                phoneNumber: widget.order.customer.phone,
+                                onConfirm: () {
+                                  Navigator.pop(context);
+                                  cubit.confirmClearanceOtp();
+                                },
+                              ),
+                            );
                           } else {
-                            // TODO: Show Upload sheet
+                            cubit.pickClearanceDocument(context);
                           }
                         },
                         onEdit: state.clearanceAmount.isNotEmpty

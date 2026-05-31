@@ -62,38 +62,38 @@ class OrderClearanceReceiptSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildDragHandle(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             const RtcImage(
               image: 'assets/images/check_circles_green.svg',
-              width: 44,
-              height: 44,
+              width: 32,
+              height: 32,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.grayPalette.shade900,
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   subtitle!,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.grayPalette.shade600,
-                      ),
+                    color: AppColors.grayPalette.shade600,
+                  ),
                 ),
               ),
             ],
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             _buildFieldsList(context),
             const SizedBox(height: 32),
             _buildAction(context, bottomPadding),
@@ -105,13 +105,11 @@ class OrderClearanceReceiptSheet extends StatelessWidget {
 
   Widget _buildDragHandle() {
     return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 4),
+      padding: const EdgeInsets.only(top: 12),
       child: Container(
         width: 33,
         height: 2,
-        decoration: BoxDecoration(
-          color: AppColors.brandPalette.shade600,
-        ),
+        decoration: BoxDecoration(color: AppColors.brandPalette.shade600),
       ),
     );
   }
@@ -122,7 +120,11 @@ class OrderClearanceReceiptSheet extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: fields.length,
-      separatorBuilder: (_, __) => const RtcDivider(height: 1, isDashed: false),
+      separatorBuilder: (_, __) => RtcDivider(
+        height: 0.5,
+        isDashed: false,
+        color: AppColors.grayPalette.shade200,
+      ),
       itemBuilder: (_, index) {
         final field = fields[index];
         return Padding(
@@ -133,16 +135,15 @@ class OrderClearanceReceiptSheet extends StatelessWidget {
               Text(
                 field.label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.grayPalette.shade600,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  color: AppColors.grayPalette.shade600,
+                ),
               ),
               Text(
                 field.value,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.grayPalette.shade900,
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -156,6 +157,10 @@ class OrderClearanceReceiptSheet extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
       child: RtcButton(
         title: S.current.gotItButton,
+        styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
         onPressed: () {
           Navigator.of(context).pop();
           onGotIt();
