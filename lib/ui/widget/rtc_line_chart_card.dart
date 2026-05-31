@@ -163,6 +163,24 @@ class RtcLineChartCard extends StatelessWidget {
                       curveSmoothness: 0.1,
                     ),
                   ],
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipColor: (spot) =>
+                          AppColors.brandPalette.shade600,
+                      tooltipRoundedRadius: 8,
+                      getTooltipItems: (touchedSpots) {
+                        return touchedSpots.map((spot) {
+                          return LineTooltipItem(
+                            spot.y.toStringAsFixed(0),
+                            theme.bodySmall!.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),

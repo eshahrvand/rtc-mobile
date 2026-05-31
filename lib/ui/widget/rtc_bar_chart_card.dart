@@ -15,8 +15,8 @@ class RtcBarChartCard extends StatelessWidget {
     final double maxDataValue = data.isEmpty
         ? 0
         : data
-            .map((e) => e.value)
-            .reduce((curr, next) => curr > next ? curr : next);
+              .map((e) => e.value)
+              .reduce((curr, next) => curr > next ? curr : next);
     final double maxY = maxDataValue == 0 ? 10 : maxDataValue * 1.2;
 
     return Padding(
@@ -47,7 +47,23 @@ class RtcBarChartCard extends StatelessWidget {
                   BarChartData(
                     alignment: BarChartAlignment.spaceAround,
                     maxY: maxY,
-                    barTouchData: BarTouchData(enabled: false),
+                    barTouchData: BarTouchData(
+                      enabled: true,
+                      touchTooltipData: BarTouchTooltipData(
+                        getTooltipColor: (group) =>
+                            AppColors.brandPalette.shade600,
+                        tooltipRoundedRadius: 8,
+                        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          return BarTooltipItem(
+                            rod.toY.toStringAsFixed(0),
+                            theme.bodySmall!.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                     titlesData: FlTitlesData(
                       show: true,
                       bottomTitles: AxisTitles(
