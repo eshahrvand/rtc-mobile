@@ -3,15 +3,24 @@ import 'package:flutter/material.dart';
 import '../../data/models/pie_chart_item_model.dart';
 import '../theme/colors.dart';
 
-class RtcPieChartCard extends StatelessWidget {
+class RtcPieChartCard extends StatefulWidget {
   final String title;
   final List<PieChartItemModel> data;
 
   const RtcPieChartCard({super.key, required this.title, required this.data});
 
   @override
+  State<RtcPieChartCard> createState() => _RtcPieChartCardState();
+}
+
+class _RtcPieChartCardState extends State<RtcPieChartCard> {
+  int touchedIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final total = widget.data.fold<double>(0, (sum, item) => sum + item.value);
+
     return Padding(
       padding: const EdgeInsets.only(top: 18),
       child: Container(
@@ -26,7 +35,7 @@ class RtcPieChartCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                widget.title,
                 style: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.grayPalette.shade900,
@@ -38,25 +47,56 @@ class RtcPieChartCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Column(
-                      children: data
-                          .map((item) => _buildLegendItem(item, textTheme))
-                          .toList(),
+                      children: widget.data.asMap().entries.map((entry) {
+                        return _buildLegendItem(entry.value, textTheme);
+                      }).toList(),
                     ),
                   ),
-
                   SizedBox(
                     width: 142,
                     height: 142,
                     child: PieChart(
                       PieChartData(
+                        pieTouchData: PieTouchData(
+                          touchCallback:
+                              (FlTouchEvent event, pieTouchResponse) {
+                                setState(() {
+                                  if (!event.isInterestedForInteractions ||
+                                      pieTouchResponse == null ||
+                                      pieTouchResponse.touchedSection == null) {
+                                    touchedIndex = -1;
+                                    return;
+                                  }
+                                  touchedIndex = pieTouchResponse
+                                      .touchedSection!
+                                      .touchedSectionIndex;
+                                });
+                              },
+                        ),
                         sectionsSpace: 0,
                         centerSpaceRadius: 50,
-                        sections: data.map((item) {
+                        sections: widget.data.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final item = entry.value;
+                          final isTouched = index == touchedIndex;
+                          final radius = isTouched ? 30.0 : 21.0;
+
+                          // Calculate percentage
+                          final percentage = total > 0
+                              ? (item.value / total * 100).toStringAsFixed(0)
+                              : '0';
+
                           return PieChartSectionData(
                             color: item.color,
                             value: item.value,
-                            radius: 21,
-                            showTitle: false,
+                            radius: radius,
+                            showTitle: isTouched,
+                            title: '$percentage%',
+                            titleStyle: textTheme.labelSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           );
                         }).toList(),
                       ),
@@ -93,7 +133,6 @@ class RtcPieChartCard extends StatelessWidget {
             ),
           ),
           const Spacer(),
-
           Text(
             item.value.toInt().toString(),
             style: textTheme.bodyMedium?.copyWith(
