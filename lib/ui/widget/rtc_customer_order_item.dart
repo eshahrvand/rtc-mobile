@@ -15,7 +15,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -78,7 +78,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
                 ),
               ),
 
-              RtcStatusBadge(status: order.status ,   isPrimary: true,),
+              RtcStatusBadge(status: order.status, isPrimary: true),
             ],
           ),
         ],

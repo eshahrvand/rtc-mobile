@@ -147,7 +147,9 @@ class RtcTextField extends StatelessWidget {
                 borderSide: BorderSide(
                   color: (isError ?? false)
                       ? AppColors.errorPalette.shade600
-                      : borderColor ?? Theme.of(context).primaryColor,
+                      : (readOnly ?? false)
+                          ? borderColor ?? AppColors.grayPalette.shade300
+                          : borderColor ?? Theme.of(context).primaryColor,
                   width: 1,
                 ),
               ),

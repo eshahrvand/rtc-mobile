@@ -64,6 +64,7 @@ class _CustomersDetailViewState extends State<CustomersDetailView> {
                 onTabChanged: (index) =>
                     context.read<CustomersCubit>().onTabChanged(index),
               ),
+              SizedBox(height: 16),
               Expanded(
                 child: PageView(
                   controller: _pageController,
@@ -91,7 +92,7 @@ class _CustomerInfoTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -131,11 +132,14 @@ class _CustomerOrdersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        return RtcCustomerOrderItem(order: orders[index]);
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: ListView.builder(
+        itemCount: orders.length,
+        itemBuilder: (context, index) {
+          return RtcCustomerOrderItem(order: orders[index]);
+        },
+      ),
     );
   }
 }
