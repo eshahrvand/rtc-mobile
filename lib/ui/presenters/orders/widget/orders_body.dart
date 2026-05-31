@@ -38,8 +38,7 @@ class OrdersBody extends StatelessWidget {
                         return RtcOrderItem(
                           order: order,
                           onTap: () {
-                            cubit.onOrderTapped(order);
-                            context.push(AppRoutes.orderDetail, extra: cubit);
+                            context.push(AppRoutes.orderDetail, extra: order.id);
                           },
                         );
                       },

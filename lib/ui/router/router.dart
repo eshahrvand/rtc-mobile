@@ -64,23 +64,9 @@ final router = GoRouter(
     GoRoute(
       path: AppRoutes.orderDetail,
       builder: (context, state) {
-        if (state.extra is OrdersCubit) {
-          return BlocProvider.value(
-            value: state.extra as OrdersCubit,
-            child: const OrderDetailView(),
-          );
-        }
-
-        // Case when navigating from Pre-Invoice (passed orderId as String)
-        final orderId = state.extra as String?;
+        final orderId = state.extra as String;
         return BlocProvider(
-          create: (context) {
-            final cubit = OrdersCubit();
-            if (orderId != null) {
-              cubit.fetchOrderDetail(orderId);
-            }
-            return cubit;
-          },
+          create: (context) => OrdersCubit()..fetchOrderDetail(orderId),
           child: const OrderDetailView(),
         );
       },
