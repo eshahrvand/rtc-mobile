@@ -8,7 +8,7 @@ import '../../../widget/rtc_divider.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_field.dart';
 
-class OrderClearanceAmountSheet extends StatelessWidget {
+class OrderClearanceAmountSheet extends StatefulWidget {
   final String totalAmount;
   final TextEditingController amountController;
   final VoidCallback onCheckPressed;
@@ -19,6 +19,30 @@ class OrderClearanceAmountSheet extends StatelessWidget {
     required this.amountController,
     required this.onCheckPressed,
   });
+
+  @override
+  State<OrderClearanceAmountSheet> createState() =>
+      _OrderClearanceAmountSheetState();
+}
+
+class _OrderClearanceAmountSheetState extends State<OrderClearanceAmountSheet> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    // Request focus after the frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +84,7 @@ class OrderClearanceAmountSheet extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      totalAmount,
+                      widget.totalAmount,
                       style: theme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.w500,
                         color: AppColors.grayPalette.shade900,
@@ -99,7 +123,9 @@ class OrderClearanceAmountSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: RtcTextField(
-                    controller: amountController,
+                    controller: widget.amountController,
+                    focusNode: _focusNode,
+                    autoFocus: true,
                     textAlign: TextAlign.left,
                     keyboardType: TextInputType.number,
                     inputFormatters: [ThousandsSeparatorInputFormatter()],
@@ -119,7 +145,7 @@ class OrderClearanceAmountSheet extends StatelessWidget {
 
                 RtcButton(
                   title: S.current.checkButton,
-                  onPressed: onCheckPressed,
+                  onPressed: widget.onCheckPressed,
                   height: 44,
                   width: 88,
                   styleBtn: theme.titleSmall!.copyWith(

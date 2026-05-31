@@ -40,6 +40,23 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
     super.dispose();
   }
 
+  void _showAmountSheet(BuildContext context, OrdersCubit cubit) {
+    _amountController.text = widget.order.financialSummary.finalAmount;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => OrderClearanceAmountSheet(
+        totalAmount: widget.order.financialSummary.finalAmount,
+        amountController: _amountController,
+        onCheckPressed: () {
+          cubit.initiateClearance(_amountController.text);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
@@ -126,7 +143,10 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         },
                         onEdit: state.clearanceAmount.isNotEmpty &&
                                 widget.order.status == 'پیش فاکتور'
-                            ? () => cubit.resetClearance()
+                            ? () {
+                                cubit.resetClearance();
+                                _showAmountSheet(context, cubit);
+                              }
                             : null,
                       ),
 
@@ -150,23 +170,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                     fontWeight: FontWeight.w600,
                   ),
                   title: S.current.dischargeAndSettlement,
-                  onPressed: () {
-                    _amountController.text =
-                        widget.order.financialSummary.finalAmount;
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => OrderClearanceAmountSheet(
-                        totalAmount: widget.order.financialSummary.finalAmount,
-                        amountController: _amountController,
-                        onCheckPressed: () {
-                          cubit.initiateClearance(_amountController.text);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  },
+                  onPressed: () => _showAmountSheet(context, cubit),
                 ),
               ),
           ],
