@@ -110,6 +110,9 @@ class MainView extends StatelessWidget {
                       selectedIndex: dashboardState.selectedNavIndex,
                       onItemSelected: (index) {
                         context.read<DashboardCubit>().onNavItemSelected(index);
+                        if (index == 2) {
+                          context.read<OrdersCubit>().fetchOrders();
+                        }
                       },
                     ),
                   );
