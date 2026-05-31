@@ -103,12 +103,10 @@ class RtcProductItem extends StatelessWidget {
                                       ),
                                     ),
 
-                                    Text(
-                                      S.current.toman,
-                                      style: theme.labelLarge!.copyWith(
-                                        color: AppColors.grayPalette.shade900,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    RtcImage(
+                                      image: "assets/images/toman.svg",
+                                      width: 24,
+                                      height: 24,
                                     ),
                                   ],
                                 ),

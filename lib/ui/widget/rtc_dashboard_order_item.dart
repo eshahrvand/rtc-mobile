@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 import '../../data/models/order_model.dart';
 
@@ -34,7 +36,6 @@ class RtcDashboardOrderItem extends StatelessWidget {
             spacing: 16,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '# ${order.orderId}',
@@ -43,12 +44,19 @@ class RtcDashboardOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade900,
                     ),
                   ),
+                  Spacer(),
                   Text(
                     order.amount.formatCurrency,
                     style: theme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.w500,
                       color: AppColors.grayPalette.shade900,
                     ),
+                  ),
+                  SizedBox(width: 2),
+                  RtcImage(
+                    image: "$baseImage/toman.svg",
+                    width: 24,
+                    height: 24,
                   ),
                 ],
               ),

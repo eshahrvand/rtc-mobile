@@ -67,7 +67,7 @@ class OrderDetailsProductItem extends StatelessWidget {
                   ],
                 ),
                 Row(
-                  spacing: 4,
+                  spacing: 2,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
@@ -77,12 +77,10 @@ class OrderDetailsProductItem extends StatelessWidget {
                         color: AppColors.grayPalette.shade900,
                       ),
                     ),
-                    Text(
-                      S.current.toman,
-                      style: theme.labelMedium!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.grayPalette.shade900,
-                      ),
+                    RtcImage(
+                      image: "assets/images/toman.svg",
+                      width: 24,
+                      height: 24,
                     ),
                     const Spacer(),
                     Container(

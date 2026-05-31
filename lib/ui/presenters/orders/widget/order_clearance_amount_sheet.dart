@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/core/utils/thousands_separator_input_formatter.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
+import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_field.dart';
 
 class OrderClearanceAmountSheet extends StatelessWidget {
@@ -65,12 +67,10 @@ class OrderClearanceAmountSheet extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      S.current.toman,
-                      style: theme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade900,
-                      ),
+                    RtcImage(
+                      image: "$baseImage/toman.svg",
+                      width: 24,
+                      height: 24,
                     ),
                   ],
                 ),
@@ -105,11 +105,10 @@ class OrderClearanceAmountSheet extends StatelessWidget {
                     inputFormatters: [ThousandsSeparatorInputFormatter()],
                     suffix: Padding(
                       padding: const EdgeInsets.fromLTRB(14, 12, 0, 12),
-                      child: Text(
-                        S.current.toman,
-                        style: theme.bodySmall!.copyWith(
-                          color: AppColors.grayPalette.shade800,
-                        ),
+                      child: RtcImage(
+                        image: "$baseImage/toman.svg",
+                        width: 24,
+                        height: 24,
                       ),
                     ),
                     textStyle: theme.bodyLarge!.copyWith(

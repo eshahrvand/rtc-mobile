@@ -169,12 +169,10 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 2),
-                      Text(
-                        S.current.toman,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.grayPalette.shade500,
-                        ),
+                      RtcImage(
+                        image: "$baseImage/toman.svg",
+                        width: 24,
+                        height: 24,
                       ),
                       Spacer(),
 
@@ -261,12 +259,10 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Text(
-                S.current.toman,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color ?? AppColors.grayPalette.shade700,
-                ),
+              RtcImage(
+                image: "$baseImage/toman.svg",
+                width: 24,
+                height: 24,
               ),
             ],
           ),

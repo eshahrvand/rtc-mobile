@@ -59,7 +59,7 @@ class RtcQuickAccessItem extends StatelessWidget {
                                   percentage!,
                                   style: theme.bodySmall!.copyWith(
                                     color: AppColors.successPalette.shade600,
-                                    fontSize: 12
+                                    fontSize: 12,
                                   ),
                                 ),
 
@@ -99,7 +99,7 @@ class RtcQuickAccessItem extends StatelessWidget {
               const SizedBox(height: 8),
 
               Row(
-                spacing: 8,
+                spacing: 2,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
@@ -110,12 +110,8 @@ class RtcQuickAccessItem extends StatelessWidget {
                     ),
                   ),
 
-                  Text(
-                    currency,
-                    style: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  if (currency.isNotEmpty)
+                    RtcImage(image: currency, width: 24, height: 24),
                 ],
               ),
             ],

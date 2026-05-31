@@ -238,7 +238,7 @@ class _TransactionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Row(
-                    spacing: 4,
+                    spacing: 2,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
@@ -248,12 +248,10 @@ class _TransactionCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Text(
-                        S.current.toman,
-                        style: theme.bodySmall!.copyWith(
-                          color: AppColors.grayPalette.shade600,
-                          fontSize: 10,
-                        ),
+                      RtcImage(
+                        image: "$baseImage/toman.svg",
+                        width: 24,
+                        height: 24,
                       ),
                     ],
                   ),

@@ -100,7 +100,7 @@ class RtcOrderItem extends StatelessWidget {
                   ),
                 ),
                 Row(
-                  spacing: 4,
+                  spacing: 2,
                   children: [
                     Text(
                       order.amount,
@@ -109,12 +109,10 @@ class RtcOrderItem extends StatelessWidget {
                         color: AppColors.grayPalette.shade900,
                       ),
                     ),
-                    Text(
-                      S.current.toman,
-                      style: theme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade900,
-                      ),
+                    RtcImage(
+                      image: "$baseImage/toman.svg",
+                      width: 24,
+                      height: 24,
                     ),
                   ],
                 ),

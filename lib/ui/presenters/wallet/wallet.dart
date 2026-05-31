@@ -154,15 +154,16 @@ class _WalletView extends StatelessWidget {
                 ],
               ),
               Row(
-                spacing: 4,
+                spacing: 2,
                 children: [
                   Text(
                     summary.totalBalance,
                     style: theme.titleLarge!.copyWith(color: Colors.white),
                   ),
-                  Text(
-                    S.current.toman,
-                    style: theme.bodySmall!.copyWith(color: Colors.white),
+                  RtcImage(
+                    image: "$baseImage/toman.svg",
+                    width: 24,
+                    height: 24,
                   ),
                 ],
               ),
@@ -220,9 +221,10 @@ class _HeaderInfoItem extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Text(
-              S.current.toman,
-              style: theme.bodySmall!.copyWith(color: Colors.white),
+            RtcImage(
+              image: "$baseImage/toman.svg",
+              width: 24,
+              height: 24,
             ),
           ],
         ),
@@ -324,12 +326,10 @@ class _PocketCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
-                    Text(
-                      S.current.toman,
-                      style: theme.bodySmall!.copyWith(
-                        color: AppColors.grayPalette.shade700,
-                      ),
+                    RtcImage(
+                      image: "$baseImage/toman.svg",
+                      width: 24,
+                      height: 24,
                     ),
                   ],
                 ),

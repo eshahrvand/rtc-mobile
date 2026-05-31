@@ -252,12 +252,11 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                             color: AppColors.brandPalette.shade600,
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          S.current.toman,
-                          style: theme.bodySmall!.copyWith(
-                            color: AppColors.brandPalette.shade600,
-                          ),
+                        const SizedBox(width: 2),
+                        RtcImage(
+                          image: "$baseImage/toman.svg",
+                          width: 24,
+                          height: 24,
                         ),
                       ],
                     ),
@@ -307,11 +306,10 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                   color: AppColors.grayPalette.shade900,
                 ),
               ),
-              Text(
-                S.current.toman,
-                style: theme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade900,
-                ),
+              RtcImage(
+                image: "$baseImage/toman.svg",
+                width: 24,
+                height: 24,
               ),
             ],
           ),

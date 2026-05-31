@@ -107,7 +107,7 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                     ),
                   ),
                   Row(
-                    spacing: 4,
+                    spacing: 2,
                     children: [
                       Text(
                         '۲۴,۰۰۰,۰۰۰',
@@ -116,12 +116,10 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                           color: AppColors.warningPalette.shade600,
                         ),
                       ),
-                      Text(
-                        S.current.toman,
-                        style: theme.labelLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.warningPalette.shade600,
-                        ),
+                      RtcImage(
+                        image: "$baseImage/toman.svg",
+                        width: 24,
+                        height: 24,
                       ),
                     ],
                   ),

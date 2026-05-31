@@ -5,6 +5,7 @@ import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../generated/l10n.dart';
+import '../../widget/rtc_image.dart';
 import 'bloc/product_detail_cubit.dart';
 import 'bloc/product_detail_state.dart';
 import '../../widget/rtc_appbar.dart';
@@ -186,12 +187,11 @@ class _PriceBlock extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        S.current.toman,
-                        style: theme.labelLarge!.copyWith(
-                          color: AppColors.grayPalette.shade900,
-                        ),
+                      const SizedBox(width: 2),
+                      RtcImage(
+                        image: "$baseImage/toman.svg",
+                        width: 24,
+                        height: 24,
                       ),
                     ],
                   ),

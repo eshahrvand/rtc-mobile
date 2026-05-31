@@ -150,12 +150,45 @@ class OrderDetailView extends StatelessWidget {
         ),
         ReceiptField(
           label: S.current.clearanceAmountLabelWithColon,
-          value: '${state.clearanceAmount} ${S.current.toman}',
+          value: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                state.clearanceAmount,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 4),
+              RtcImage(
+                image: "$baseImage/toman.svg",
+                width: 24,
+                height: 24,
+              ),
+            ],
+          ),
         ),
         ReceiptField(
           label: S.current.orderAmountLabel,
-          value:
-              '${state.selectedOrder!.financialSummary.finalAmount} ${S.current.toman}',
+          value: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                state.selectedOrder!.financialSummary.finalAmount,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 4),
+              RtcImage(
+                image: "$baseImage/toman.svg",
+                width: 24,
+                height: 24,
+              ),
+            ],
+          ),
         ),
         ReceiptField(label: S.current.gatewayLabel, value: 'تخلیه آفلاین'),
       ],

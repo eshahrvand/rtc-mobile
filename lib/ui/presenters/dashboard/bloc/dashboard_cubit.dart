@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../config/config.dart';
 import '../../../../data/models/bar_chart_item_model.dart';
 import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/pie_chart_item_model.dart';
@@ -64,7 +65,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                 QuickAccessItemModel(
                   title: S.current.monthlySales,
                   value: summary.totalSalesAmount.toStringAsFixed(0),
-                  currency: S.current.toman,
+                  currency: "assets/images/toman.svg",
                   iconPath: 'assets/images/dollar.svg',
                   percentage:
                       '${(summary.totalSalesDeltaPct ?? 0).toStringAsFixed(0)}%',
@@ -72,20 +73,20 @@ class DashboardCubit extends Cubit<DashboardState> {
                 QuickAccessItemModel(
                   title: S.current.approvedOrders,
                   value: summary.orderCount.toString(),
-                  currency: S.current.toman,
+                  currency: "",
                   iconPath: 'assets/images/trend-up.svg',
                   percentage: '${summary.orderCountDelta}%',
                 ),
                 QuickAccessItemModel(
                   title: S.current.walletBalance,
                   value: summary.walletBalance.toStringAsFixed(0),
-                  currency: S.current.toman,
+                  currency: "assets/images/toman.svg",
                   iconPath: 'assets/images/wallet.svg',
                 ),
                 QuickAccessItemModel(
                   title: S.current.cashCommission,
                   value: summary.activeOrders.toString(),
-                  currency: S.current.toman,
+                  currency: "assets/images/toman.svg",
                   iconPath: 'assets/images/document-list-check.svg',
                 ),
               ],
@@ -132,6 +133,9 @@ class DashboardCubit extends Cubit<DashboardState> {
                       } else if (s.status == 'pre_invoice') {
                         label = S.current.preInvoice;
                         color = AppColors.brandPalette.shade400;
+                      } else if (s.status == 'expired') {
+                        label = S.current.statusExpired;
+                        color = AppColors.grayPalette.shade400;
                       }
 
                       return PieChartItemModel(

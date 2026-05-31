@@ -8,7 +8,7 @@ import '../../../widget/rtc_image.dart';
 
 class ReceiptField {
   final String label;
-  final String value;
+  final dynamic value;
 
   ReceiptField({required this.label, required this.value});
 }
@@ -138,13 +138,16 @@ class OrderClearanceReceiptSheet extends StatelessWidget {
                   color: AppColors.grayPalette.shade600,
                 ),
               ),
-              Text(
+              if (field.value is String)
+                Text(
+                  field.value,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.grayPalette.shade900,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )
+              else if (field.value is Widget)
                 field.value,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.grayPalette.shade900,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
             ],
           ),
         );

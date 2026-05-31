@@ -129,7 +129,11 @@ class TransactionDetailsSheet extends StatelessWidget {
         _DetailRow(
           label: S.current.amount,
           value: transaction.amount,
-          unit: S.current.toman,
+          unit: RtcImage(
+            image: "$baseImage/toman.svg",
+            width: 24,
+            height: 24,
+          ),
           isBold: true,
         ),
         RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
@@ -183,7 +187,7 @@ class TransactionDetailsSheet extends StatelessWidget {
 class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
-  final String? unit;
+  final dynamic unit;
   final bool isBold;
 
   const _DetailRow({
@@ -208,7 +212,7 @@ class _DetailRow extends StatelessWidget {
             ),
           ),
           Row(
-            spacing: 4,
+            spacing: 2,
             children: [
               Text(
                 value,
@@ -217,15 +221,17 @@ class _DetailRow extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-
               if (unit != null)
-                Text(
+                if (unit is String)
+                  Text(
+                    unit!,
+                    style: theme.bodyLarge!.copyWith(
+                      color: AppColors.grayPalette.shade900,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                else if (unit is Widget)
                   unit!,
-                  style: theme.bodyLarge!.copyWith(
-                    color: AppColors.grayPalette.shade900,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
             ],
           ),
         ],

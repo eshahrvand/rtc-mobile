@@ -116,13 +116,11 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
                 color: AppColors.grayPalette.shade900,
               ),
             ),
-            const SizedBox(width: 4),
-            Text(
-              S.current.toman,
-              style: theme.labelLarge!.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.grayPalette.shade900,
-              ),
+            const SizedBox(width: 2),
+            RtcImage(
+              image: "$baseImage/toman.svg",
+              width: 24,
+              height: 24,
             ),
           ],
         ),

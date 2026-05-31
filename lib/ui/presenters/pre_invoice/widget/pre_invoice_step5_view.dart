@@ -252,7 +252,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Row(
-                            spacing: 4,
+                            spacing: 2,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
@@ -262,11 +262,10 @@ class PreInvoiceStep5View extends StatelessWidget {
                                   color: AppColors.grayPalette.shade900,
                                 ),
                               ),
-                              Text(
-                                S.current.toman,
-                                style: theme.bodySmall!.copyWith(
-                                  color: AppColors.grayPalette.shade600,
-                                ),
+                              RtcImage(
+                                image: "$baseImage/toman.svg",
+                                width: 24,
+                                height: 24,
                               ),
                             ],
                           ),
@@ -500,11 +499,10 @@ class PreInvoiceStep5View extends StatelessWidget {
               ),
               if (isPrice) ...[
                 SizedBox(width: 4),
-                Text(
-                  S.current.toman,
-                  style: theme.bodySmall!.copyWith(
-                    color: valueColor ?? AppColors.grayPalette.shade700,
-                  ),
+                RtcImage(
+                  image: "$baseImage/toman.svg",
+                  width: 24,
+                  height: 24,
                 ),
               ],
             ],

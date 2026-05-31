@@ -172,12 +172,11 @@ class _OrderClearanceOperationWidgetState
                                       color: AppColors.grayPalette.shade900,
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    S.current.toman,
-                                    style: theme.bodySmall!.copyWith(
-                                      color: AppColors.grayPalette.shade900,
-                                    ),
+                                  const SizedBox(width: 2),
+                                  RtcImage(
+                                    image: "$baseImage/toman.svg",
+                                    width: 24,
+                                    height: 24,
                                   ),
                                 ],
                               ),
@@ -208,11 +207,10 @@ class _OrderClearanceOperationWidgetState
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  S.current.toman,
-                                  style: theme.bodySmall!.copyWith(
-                                    color: AppColors.brandPalette.shade600,
-                                  ),
+                                RtcImage(
+                                  image: "$baseImage/toman.svg",
+                                  width: 24,
+                                  height: 24,
                                 ),
                               ],
                             ),
@@ -243,13 +241,10 @@ class _OrderClearanceOperationWidgetState
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  Text(
-                                    S.current.toman,
-                                    style: theme.bodySmall!.copyWith(
-                                      color: widget.isOutOfTolerance
-                                          ? AppColors.errorPalette.shade600
-                                          : AppColors.successPalette.shade600,
-                                    ),
+                                  RtcImage(
+                                    image: "$baseImage/toman.svg",
+                                    width: 24,
+                                    height: 24,
                                   ),
                                 ],
                               ),
