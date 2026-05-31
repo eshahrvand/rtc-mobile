@@ -73,22 +73,30 @@ class RtcStatusBadge extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-      child: Row(
-        spacing: 4,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (iconPath != null) ...[
-            RtcImage(image: iconPath, width: 20, height: 20, color: textColor),
-          ],
-          Text(
-            status,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: textColor,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Row(
+          spacing: 4,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (iconPath != null) ...[
+              RtcImage(
+                image: iconPath,
+                width: 12,
+                height: 12,
+                color: textColor,
+              ),
+            ],
+            Text(
+              status,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

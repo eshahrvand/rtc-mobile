@@ -5,7 +5,7 @@ import 'colors.dart';
 
 ThemeData appTheme() {
   return ThemeData(
-    scaffoldBackgroundColor: AppColors.grayPalette.shade25,
+    scaffoldBackgroundColor: AppColors.grayPalette.shade50,
     useMaterial3: true,
     textTheme: textThemeFa,
     colorScheme: ColorScheme.light(

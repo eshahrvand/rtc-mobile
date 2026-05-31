@@ -118,7 +118,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                           (c) => PieChartItemModel(
                             label: c.categoryName,
                             value: c.totalOrders.toDouble(),
-                            color: Colors.blue,
+                            color: AppColors.brandPalette.shade400,
                           ),
                         )
                         .toList(),
@@ -136,7 +136,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                           (c) => PieChartItemModel(
                             label: c.categoryName,
                             value: c.totalOrders.toDouble(),
-                            color: Colors.green,
+                            color: AppColors.successPalette.shade400,
                           ),
                         )
                         .toList(),

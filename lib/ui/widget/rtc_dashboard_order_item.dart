@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -16,6 +18,7 @@ class RtcDashboardOrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(">> ${order.orderId}}");
     var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
