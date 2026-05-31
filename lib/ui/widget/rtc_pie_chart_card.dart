@@ -50,12 +50,12 @@ class RtcPieChartCard extends StatelessWidget {
                     child: PieChart(
                       PieChartData(
                         sectionsSpace: 0,
-                        centerSpaceRadius: 0,
+                        centerSpaceRadius: 50,
                         sections: data.map((item) {
                           return PieChartSectionData(
                             color: item.color,
                             value: item.value,
-                            radius: 71,
+                            radius: 21,
                             showTitle: false,
                           );
                         }).toList(),
