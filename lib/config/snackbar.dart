@@ -35,8 +35,8 @@ void rtcSnackBar({
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: type == SnackBarType.success
-                    ? AppColors.successPalette.shade400
-                    : AppColors.errorPalette.shade400,
+                    ? AppColors.successPalette.shade100
+                    : AppColors.errorPalette.shade100,
                 width: 1,
               ),
               boxShadow: [
@@ -52,7 +52,7 @@ void rtcSnackBar({
                 RtcImage(
                   image: type == SnackBarType.success
                       ? '$baseImage/done.svg'
-                      : 'assets/icons/warning.svg',
+                      : '$baseImage/warning.svg',
                   width: 14,
                   height: 14,
                 ),
@@ -60,22 +60,23 @@ void rtcSnackBar({
                 Expanded(
                   child: Text(
                     message,
-                    style: theme.textTheme.headlineSmall!.copyWith(
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.w500,
                       color: type == SnackBarType.success
-                          ? AppColors.successPalette.shade700
-                          : AppColors.errorPalette.shade700,
+                          ? AppColors.successPalette.shade600
+                          : AppColors.errorPalette.shade600,
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 GestureDetector(
                   child: RtcImage(
-                    image: "assets/icons/close.svg",
+                    image: "$baseImage/close.svg",
                     width: 10,
                     height: 10,
                     color: type == SnackBarType.success
-                        ? AppColors.successPalette.shade700
-                        : AppColors.errorPalette.shade700,
+                        ? AppColors.successPalette.shade600
+                        : AppColors.errorPalette.shade600,
                   ),
 
                   onTap: () {
@@ -116,13 +117,13 @@ void rtcBottomSnackBar({
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: type == SnackBarType.success
-            ? AppColors.successPalette.shade50
-            : AppColors.errorPalette.shade50,
+            ? AppColors.successPalette.shade25
+            : AppColors.errorPalette.shade25,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: type == SnackBarType.success
-              ? AppColors.successPalette.shade400
-              : AppColors.errorPalette.shade400,
+              ? AppColors.successPalette.shade100
+              : AppColors.errorPalette.shade100,
           width: 1,
         ),
         boxShadow: [
@@ -138,7 +139,7 @@ void rtcBottomSnackBar({
           RtcImage(
             image: type == SnackBarType.success
                 ? '$baseImage/done.svg'
-                : 'assets/icons/warning.svg',
+                : '$baseImage/warning.svg',
             width: 14,
             height: 14,
           ),
@@ -146,22 +147,23 @@ void rtcBottomSnackBar({
           Expanded(
             child: Text(
               message,
-              style: theme.textTheme.headlineSmall!.copyWith(
+              style: theme.textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.w500,
                 color: type == SnackBarType.success
-                    ? AppColors.successPalette.shade700
-                    : AppColors.errorPalette.shade700,
+                    ? AppColors.successPalette.shade600
+                    : AppColors.errorPalette.shade600,
               ),
             ),
           ),
           const SizedBox(width: 10),
           GestureDetector(
             child: RtcImage(
-              image: "assets/icons/close.svg",
+              image: "$baseImage/close.svg",
               width: 10,
               height: 10,
               color: type == SnackBarType.success
-                  ? AppColors.successPalette.shade700
-                  : AppColors.errorPalette.shade700,
+                  ? AppColors.successPalette.shade600
+                  : AppColors.errorPalette.shade600,
             ),
             onTap: () {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();

@@ -95,7 +95,9 @@ class DashboardBody extends StatelessWidget {
                 ),
               if (state.messageText.isEmpty) SizedBox(height: 18),
               // Pre-Invoice Container
-              RtcPreInvoiceCard(onTap: () => context.push(AppRoutes.preInvoice)),
+              RtcPreInvoiceCard(
+                onTap: () => context.push(AppRoutes.preInvoice),
+              ),
 
               // Line Chart
               if (state.lineChartData.isNotEmpty)
@@ -143,17 +145,21 @@ class DashboardBody extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: RtcImage(
-                        image: "$baseImage/arrow-left-dashboard.svg",
-                        width: 16,
-                        height: 16,
+                    GestureDetector(
+                      onTap: () =>
+                          context.read<DashboardCubit>().onNavItemSelected(2),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: RtcImage(
+                          image: "$baseImage/arrow-left-dashboard.svg",
+                          width: 16,
+                          height: 16,
+                        ),
                       ),
                     ),
                   ],
@@ -181,7 +187,15 @@ class DashboardBody extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: RtcDashboardOrderItem(
                             order: state.recentOrders[index],
-                            onTap: () {},
+                            onTap: () {
+                              context.read<DashboardCubit>().onNavItemSelected(
+                                2,
+                              );
+                              context.push(
+                                AppRoutes.orderDetail,
+                                extra: state.recentOrders[index].id,
+                              );
+                            },
                           ),
                         );
                       },
