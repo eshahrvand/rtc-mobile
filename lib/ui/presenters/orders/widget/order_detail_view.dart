@@ -18,8 +18,27 @@ import 'order_tab_details.dart';
 import 'order_tab_financial.dart';
 import 'order_tab_history.dart';
 
-class OrderDetailView extends StatelessWidget {
+class OrderDetailView extends StatefulWidget {
   const OrderDetailView({super.key});
+
+  @override
+  State<OrderDetailView> createState() => _OrderDetailViewState();
+}
+
+class _OrderDetailViewState extends State<OrderDetailView> {
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +82,20 @@ class OrderDetailView extends StatelessWidget {
           listener: (context, state) {
             if (state.clearanceStep == ClearanceStep.success) {
               _showSuccessReceipt(context, state);
+            }
+          },
+        ),
+        // Listener to sync PageView when state.selectedTabIndex changes
+        BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) => prev.selectedTabIndex != curr.selectedTabIndex,
+          listener: (context, state) {
+            if (_pageController.hasClients &&
+                _pageController.page?.toInt() != state.selectedTabIndex) {
+              _pageController.animateToPage(
+                state.selectedTabIndex,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
             }
           },
         ),
@@ -115,8 +148,9 @@ class OrderDetailView extends StatelessWidget {
                 ),
 
                 Expanded(
-                  child: IndexedStack(
-                    index: state.selectedTabIndex,
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) => cubit.onTabChanged(index),
                     children: [
                       OrderTabDetails(order: order),
                       OrderTabFinancial(order: order),
