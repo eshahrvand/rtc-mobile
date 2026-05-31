@@ -92,7 +92,7 @@ class RtcLineChartCard extends StatelessWidget {
                     ),
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,
+                        showTitles: false,
                         reservedSize: 32,
                         getTitlesWidget: (value, meta) {
                           if (value == 0) return const SizedBox.shrink();
@@ -118,7 +118,10 @@ class RtcLineChartCard extends StatelessWidget {
                         interval: 1,
                         getTitlesWidget: (value, meta) {
                           final day = value.toInt();
-                          if (day == 1 || day == 10 || day == 20 || day == monthLength) {
+                          if (day == 1 ||
+                              day == 10 ||
+                              day == 20 ||
+                              day == monthLength) {
                             return Padding(
                               padding: const EdgeInsets.only(top: 6.0),
                               child: Text(
@@ -140,11 +143,12 @@ class RtcLineChartCard extends StatelessWidget {
                       spots: line1Data,
                       isCurved: true,
                       color: AppColors.successPalette.shade400,
-
                       barWidth: 2,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(show: false),
+                      preventCurveOverShooting: true,
+                      curveSmoothness: 0.35,
                     ),
                     LineChartBarData(
                       spots: line2Data,
@@ -154,6 +158,9 @@ class RtcLineChartCard extends StatelessWidget {
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(show: false),
+                      preventCurveOverShooting: false,
+                      preventCurveOvershootingThreshold: 0,
+                      curveSmoothness: 0.35,
                     ),
                   ],
                 ),
