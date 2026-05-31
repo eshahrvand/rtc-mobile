@@ -20,26 +20,16 @@ class RtcChipItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-      '>> RtcChipItem: Building chip: ${chip.label}, isSelected: $isSelected, opensBottomSheet: ${chip.opensBottomSheet}',
-    );
     var theme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () {
-        debugPrint(
-          '>> RtcChipItem: GestureDetector onTap triggered for ${chip.label}',
-        );
         onTap();
       },
       behavior: HitTestBehavior.opaque,
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.white,
+          color: isSelected ? Colors.black : AppColors.grayPalette.shade50,
           boxShadow: AppColors.primaryShadow,
-          border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey.shade300,
-            width: isSelected ? 1.5 : 1,
-          ),
           borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
