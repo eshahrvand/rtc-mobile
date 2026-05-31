@@ -85,18 +85,17 @@ class OrderDetailView extends StatelessWidget {
                 ),
               ],
             ),
-            // Order detail body
+
             body: Column(
               children: [
-                // Order validity header
                 _buildValidityHeader(context, order),
-                // Tab bar
+
                 RtcTabBar(
                   tabs: const ['جزییات سفارش', 'اطلاعات مالی', 'تاریخچه'],
                   selectedIndex: state.selectedTabIndex,
                   onTabChanged: (index) => cubit.onTabChanged(index),
                 ),
-                // Order content tabs
+
                 Expanded(
                   child: IndexedStack(
                     index: state.selectedTabIndex,
@@ -161,11 +160,7 @@ class OrderDetailView extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              RtcImage(
-                image: "$baseImage/toman.svg",
-                width: 24,
-                height: 24,
-              ),
+              RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
             ],
           ),
         ),
@@ -182,11 +177,7 @@ class OrderDetailView extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              RtcImage(
-                image: "$baseImage/toman.svg",
-                width: 24,
-                height: 24,
-              ),
+              RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
             ],
           ),
         ),
@@ -202,34 +193,37 @@ class OrderDetailView extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          if (order.remainingTime.isNotEmpty)
-            Row(
-              spacing: 4,
-              children: [
-                Text(
-                  'زمان باقی‌مانده: ',
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
+      child: Container(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (order.remainingTime.isNotEmpty)
+              Row(
+                spacing: 4,
+                children: [
+                  Text(
+                    'زمان باقی‌مانده: ',
+                    style: theme.bodySmall!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
                   ),
-                ),
-                Text(
-                  order.remainingTime,
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.errorPalette.shade500,
+                  Text(
+                    order.remainingTime,
+                    style: theme.bodySmall!.copyWith(
+                      color: AppColors.errorPalette.shade500,
+                    ),
                   ),
-                ),
-              ],
-            )
-          else
-            const SizedBox.shrink(),
-          RtcStatusBadge(
-            status: order.status,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          ),
-        ],
+                ],
+              )
+            else
+              const SizedBox.shrink(),
+            RtcStatusBadge(
+              status: order.status,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            ),
+          ],
+        ),
       ),
     );
   }
