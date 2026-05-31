@@ -48,6 +48,14 @@ class PreInvoiceView extends StatelessWidget {
                 message: state.errorMessage,
               );
             }
+            if (state.status == PreInvoiceRequestStatus.submitted ||
+                state.status == PreInvoiceRequestStatus.submittedAndCleared) {
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.success,
+                message: "با موفقیت ثبت شد",
+              );
+            }
             if (state.status == PreInvoiceRequestStatus.submitted) {
               context.go(AppRoutes.orderDetail, extra: state.createdOrderId);
             }
@@ -206,7 +214,7 @@ class PreInvoiceView extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: AppColors.brandPalette.shade700,
                 ),
-                isLoading: state.isSubmittingPreInvoice,
+                isLoading: state.isSubmittingAndClearing,
                 onPressed: () => cubit.submitAndClear(),
 
                 borderColor: AppColors.brandPalette.shade50,
@@ -219,7 +227,8 @@ class PreInvoiceView extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
-                isLoading: state.isSubmittingAndClearing,
+
+                isLoading: state.isSubmittingPreInvoice,
                 onPressed: () => cubit.submitPreInvoice(),
               ),
             ),
