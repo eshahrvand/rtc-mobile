@@ -6,6 +6,7 @@ import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
 import '../../../widget/rtc_image.dart';
+import '../../../widget/rtc_status_badge.dart';
 
 class OrderClearanceOperationWidget extends StatelessWidget {
   final String amount;
@@ -32,16 +33,36 @@ class OrderClearanceOperationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final bool isCompleted = onEdit == null && !isOutOfTolerance;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Top Header with Edit Icon
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              if (isCompleted) ...[
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.grayPalette.shade900,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '1',
+                      style: theme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
               Text(
                 S.current.clearanceOperation,
                 style: theme.labelLarge!.copyWith(
@@ -49,11 +70,18 @@ class OrderClearanceOperationWidget extends StatelessWidget {
                   color: AppColors.grayPalette.shade900,
                 ),
               ),
-
+              if (isCompleted)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: RtcStatusBadge(status: 'بارگزاری شده'),
+                ),
+              Spacer(),
               if (onEdit != null)
                 GestureDetector(
                   onTap: () {
-                    debugPrint('>> OrderClearanceOperationWidget: Edit clicked');
+                    debugPrint(
+                      '>> OrderClearanceOperationWidget: Edit clicked',
+                    );
                     onEdit!();
                   },
                   child: RtcImage(
@@ -62,6 +90,13 @@ class OrderClearanceOperationWidget extends StatelessWidget {
                     height: 24,
                     color: AppColors.brandPalette.shade600,
                   ),
+                )
+              else if (isCompleted)
+                RtcImage(
+                  image: "$baseImage/angle-down_tab.svg",
+                  width: 24,
+                  height: 24,
+                  color: AppColors.grayPalette.shade600,
                 ),
             ],
           ),
@@ -262,7 +297,7 @@ class OrderClearanceOperationWidget extends StatelessWidget {
                   ),
                 ),
 
-              if (!isOutOfTolerance) ...[
+              if (!isOutOfTolerance && onEdit != null) ...[
                 const SizedBox(height: 16),
                 RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
                 const SizedBox(height: 16),

@@ -89,6 +89,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         (state.clearanceAmount.isNotEmpty ||
                             widget.order.status == 'در انتظار تایید' ||
                             widget.order.status == 'تایید شده' ||
+                            widget.order.status == 'در انتظار تسویه' ||
                             widget.order.status == 'رد شده'))
                       OrderClearanceOperationWidget(
                         amount: state.clearanceAmount.isEmpty
@@ -119,7 +120,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                             cubit.pickClearanceDocument(context);
                           }
                         },
-                        onEdit: state.clearanceAmount.isNotEmpty
+                        onEdit: state.clearanceAmount.isNotEmpty &&
+                                widget.order.status == 'پیش فاکتور'
                             ? () => cubit.resetClearance()
                             : null,
                       ),
