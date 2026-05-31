@@ -26,8 +26,12 @@ class OrderTabDetails extends StatelessWidget {
 
         return SingleChildScrollView(
           child: Column(
+            spacing: 8,
             children: [
-              OrderDetailsCreditPlanWidget(order: order),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: OrderDetailsCreditPlanWidget(order: order),
+              ),
               OrderDetailsProductsWidget(order: order),
               RtcCollapsibleSection(
                 title: S.current.customerInfo,

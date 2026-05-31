@@ -15,56 +15,57 @@ class OrderTabHistory extends StatelessWidget {
     final splitIndex = (historyLength - 2).clamp(0, historyLength);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (historyLength > 2) ...[
+      padding: const EdgeInsets.only(top: 8),
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (historyLength > 2) ...[
+              ...order.history
+                  .take(splitIndex)
+                  .map((h) => _buildHistoryRow(h.label, h.value, theme)),
+            ],
             ...order.history
-                .take(splitIndex)
+                .skip(splitIndex)
                 .map((h) => _buildHistoryRow(h.label, h.value, theme)),
-            _divider(),
-          ],
-          ...order.history
-              .skip(splitIndex)
-              .map((h) => _buildHistoryRow(h.label, h.value, theme)),
-          if (historyLength > 0) _divider(),
-          if (order.rejectionReason != null) ...[
+
             const SizedBox(height: 15),
-            Text(
-              'علت رد شدن:',
-              style: theme.labelMedium!.copyWith(
-                color: AppColors.errorPalette.shade600,
+
+            if (order.rejectionReason!.isNotEmpty ?? false) ...[
+              const SizedBox(height: 15),
+              Text(
+                'علت رد شدن:',
+                style: theme.labelMedium!.copyWith(
+                  color: AppColors.errorPalette.shade600,
+                ),
               ),
-            ),
-            const SizedBox(height: 15),
-            Text(
-              order.rejectionReason!,
-              textAlign: TextAlign.right,
-              style: theme.bodyLarge!.copyWith(
-                color: AppColors.grayPalette.shade700,
-                fontWeight: FontWeight.w500,
+              const SizedBox(height: 15),
+              Text(
+                order.rejectionReason!,
+                textAlign: TextAlign.right,
+                style: theme.bodyLarge!.copyWith(
+                  color: AppColors.grayPalette.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
 
   Widget _divider() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: RtcDivider(
-        height: 0.5,
-        color: AppColors.grayPalette.shade300,
-      ),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
     );
   }
 
   Widget _buildHistoryRow(String label, String value, TextTheme theme) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -58,30 +58,34 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
+                  spacing: 8,
                   children: [
-                    RtcCollapsibleSection(
-                      title: S.current.financialSummaryTitle,
-                      icon: RtcImage(
-                        image: '$baseImage/dollar.svg',
-                        width: 20,
-                        height: 20,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      isExpanded: state.isFinancialSummaryExpanded,
-                      onToggle: () => cubit.toggleFinancialSummary(),
-                      showDivider: true,
-                      headerSpacing: 8,
-                      trailing: RtcImage(
-                        image: state.isFinancialSummaryExpanded
-                            ? "$baseImage/arrow_up_tab.svg"
-                            : "$baseImage/angle-down_tab.svg",
-                        color: AppColors.grayPalette.shade600,
-                      ),
-                      child: _buildFinancialSummary(
-                        widget.order.financialSummary,
-                        widget.order.isSettled,
-                        isWaitingSettlement,
-                        context,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: RtcCollapsibleSection(
+                        title: S.current.financialSummaryTitle,
+                        icon: RtcImage(
+                          image: '$baseImage/dollar.svg',
+                          width: 20,
+                          height: 20,
+                          color: AppColors.grayPalette.shade700,
+                        ),
+                        isExpanded: state.isFinancialSummaryExpanded,
+                        onToggle: () => cubit.toggleFinancialSummary(),
+                        showDivider: true,
+                        headerSpacing: 8,
+                        trailing: RtcImage(
+                          image: state.isFinancialSummaryExpanded
+                              ? "$baseImage/arrow_up_tab.svg"
+                              : "$baseImage/angle-down_tab.svg",
+                          color: AppColors.grayPalette.shade600,
+                        ),
+                        child: _buildFinancialSummary(
+                          widget.order.financialSummary,
+                          widget.order.isSettled,
+                          isWaitingSettlement,
+                          context,
+                        ),
                       ),
                     ),
 
