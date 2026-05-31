@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/config.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../data/models/bar_chart_item_model.dart';
 import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/pie_chart_item_model.dart';
@@ -92,19 +92,30 @@ class DashboardCubit extends Cubit<DashboardState> {
               ],
               lineChartData: [
                 LineChartDataModel(
-                  line1Data: dailyChart.isEmpty
-                      ? const [FlSpot(0, 0)]
-                      : dailyChart
-                            .asMap()
-                            .entries
-                            .map(
-                              (e) => FlSpot(
-                                e.key.toDouble(),
-                                e.value.totalSalesAmount,
-                              ),
-                            )
-                            .toList(),
-                  line2Data: const [],
+                  line1Data: const [],
+                  line2Data: () {
+                    final now = Jalali.now();
+                    final List<FlSpot> currentMonthSpots = [];
+                    for (int i = 1; i <= now.day; i++) {
+                      final dailyData = dailyChart.where((d) {
+                        try {
+                          final dJalali =
+                              Jalali.fromDateTime(DateTime.parse(d.date));
+                          return dJalali.year == now.year &&
+                              dJalali.month == now.month &&
+                              dJalali.day == i;
+                        } catch (_) {
+                          return false;
+                        }
+                      });
+
+                      final amount = dailyData.isNotEmpty
+                          ? dailyData.first.totalSalesAmount
+                          : 0.0;
+                      currentMonthSpots.add(FlSpot(i.toDouble(), amount));
+                    }
+                    return currentMonthSpots;
+                  }(),
                 ),
               ],
               pieChart1Title: S.current.orderStatusChartTitle,

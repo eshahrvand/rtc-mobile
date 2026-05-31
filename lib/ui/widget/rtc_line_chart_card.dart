@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../generated/l10n.dart';
 import '../theme/colors.dart';
 
@@ -20,6 +21,9 @@ class RtcLineChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final now = Jalali.now();
+    final monthLength = now.monthLength;
+
     return Padding(
       padding: const EdgeInsets.only(top: 18),
       child: Container(
@@ -64,6 +68,9 @@ class RtcLineChartCard extends StatelessWidget {
               aspectRatio: 1.8,
               child: LineChart(
                 LineChartData(
+                  minX: 1,
+                  maxX: monthLength.toDouble(),
+                  minY: 0,
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
@@ -83,8 +90,26 @@ class RtcLineChartCard extends StatelessWidget {
                     topTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        getTitlesWidget: (value, meta) {
+                          if (value == 0) return const SizedBox.shrink();
+                          String text = '';
+                          if (value >= 1000000) {
+                            text = '${(value / 1000000).toStringAsFixed(0)}M';
+                          } else if (value >= 1000) {
+                            text = '${(value / 1000).toStringAsFixed(0)}K';
+                          } else {
+                            text = value.toStringAsFixed(0);
+                          }
+                          return Text(
+                            text,
+                            style: theme.bodySmall!.copyWith(fontSize: 9),
+                          );
+                        },
+                      ),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -92,8 +117,8 @@ class RtcLineChartCard extends StatelessWidget {
                         reservedSize: 22,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          final day = value.toInt() + 1;
-                          if (day == 1 || day == 10 || day == 20 || day == 30) {
+                          final day = value.toInt();
+                          if (day == 1 || day == 10 || day == 20 || day == monthLength) {
                             return Padding(
                               padding: const EdgeInsets.only(top: 6.0),
                               child: Text(
