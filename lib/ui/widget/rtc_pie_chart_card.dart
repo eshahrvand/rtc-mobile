@@ -32,7 +32,7 @@ class RtcPieChartCard extends StatelessWidget {
                   color: AppColors.grayPalette.shade900,
                 ),
               ),
-              const SizedBox(height: 33),
+              const SizedBox(height: 12),
               Row(
                 spacing: 31,
                 children: [
@@ -44,28 +44,27 @@ class RtcPieChartCard extends StatelessWidget {
                     ),
                   ),
 
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 0,
-                          centerSpaceRadius: 35,
-                          sections: data.map((item) {
-                            return PieChartSectionData(
-                              color: item.color,
-                              value: item.value,
-                              radius: 20,
-                              showTitle: false,
-                            );
-                          }).toList(),
-                        ),
+                  SizedBox(
+                    width: 142,
+                    height: 142,
+                    child: PieChart(
+                      PieChartData(
+                        sectionsSpace: 0,
+                        centerSpaceRadius: 0,
+                        sections: data.map((item) {
+                          return PieChartSectionData(
+                            color: item.color,
+                            value: item.value,
+                            radius: 71,
+                            showTitle: false,
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 21),
+              const SizedBox(height: 19),
             ],
           ),
         ),

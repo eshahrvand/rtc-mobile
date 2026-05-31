@@ -24,7 +24,7 @@ class OrdersBody extends StatelessWidget {
           children: [
             const SizedBox(height: 16),
             _buildBadgeList(context, state),
-            const SizedBox(height: 8),
+
             Expanded(
               child:
                   state.status == OrdersRequestStatus.loading &&
