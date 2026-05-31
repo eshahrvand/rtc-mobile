@@ -20,13 +20,17 @@ import '../../widget/rtc_search_appbar.dart';
 
 class DashboardScreen extends StatelessWidget {
   final int initialIndex;
+
   const DashboardScreen({super.key, this.initialIndex = 0});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => DashboardCubit(initialIndex: initialIndex)..init()),
+        BlocProvider(
+          create: (context) =>
+              DashboardCubit(initialIndex: initialIndex)..init(),
+        ),
         BlocProvider(create: (context) => ProductCubit()..init()),
         BlocProvider(create: (context) => OrdersCubit()..init()),
       ],
@@ -35,8 +39,28 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class MainView extends StatelessWidget {
+class MainView extends StatefulWidget {
   const MainView({super.key});
+
+  @override
+  State<MainView> createState() => _MainViewState();
+}
+
+class _MainViewState extends State<MainView> {
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialIndex = context.read<DashboardCubit>().state.selectedNavIndex;
+    _pageController = PageController(initialPage: initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +72,16 @@ class MainView extends StatelessWidget {
           listenWhen: (prev, curr) =>
               prev.selectedNavIndex != curr.selectedNavIndex,
           listener: (context, state) {
+            // Sync PageView when index changes (e.g. from bottom nav tap)
+            if (_pageController.hasClients &&
+                _pageController.page?.toInt() != state.selectedNavIndex) {
+              _pageController.animateToPage(
+                state.selectedNavIndex,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
+
             // Reset search/filters when leaving Products or Orders tabs
             if (state.selectedNavIndex != 1) {
               context.read<ProductCubit>().clearAllFilters();
@@ -118,8 +152,11 @@ class MainView extends StatelessWidget {
                       productState,
                       ordersState,
                     ),
-                    body: IndexedStack(
-                      index: dashboardState.selectedNavIndex,
+                    body: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        context.read<DashboardCubit>().onNavItemSelected(index);
+                      },
                       children: const [
                         DashboardBody(),
                         ProductsBody(),
