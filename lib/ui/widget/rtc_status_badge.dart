@@ -8,16 +8,16 @@ class RtcStatusBadge extends StatelessWidget {
   final String status;
   final double fontSize;
   final double iconSize;
-  final EdgeInsets padding;
   final double borderRadius;
+  final bool isPrimary;
 
   const RtcStatusBadge({
     super.key,
     required this.status,
     this.fontSize = 12,
     this.iconSize = 14,
-    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
     this.borderRadius = 8,
+    this.isPrimary = true,
   });
 
   @override
@@ -25,56 +25,55 @@ class RtcStatusBadge extends StatelessWidget {
     Color bgColor;
     Color textColor;
     String? iconPath;
+    MaterialColor palette;
 
     if (status == 'پیش فاکتور' || status == S.current.preInvoice) {
-      bgColor = AppColors.blueGrayPalette.shade500;
-      textColor = Colors.white;
+      palette = AppColors.blueGrayPalette;
       iconPath = '$baseImage/document-list-badge.svg';
     } else if (status == 'در انتظار تسویه' ||
         status == S.current.statusWaitingSettlement) {
-      bgColor = AppColors.indigoPalette.shade500;
-      textColor = Colors.white;
+      palette = AppColors.indigoPalette;
       iconPath = '$baseImage/dollar_badge.svg';
     } else if (status == 'در انتظار تایید' ||
         status == S.current.statusPending) {
-      bgColor = AppColors.warningPalette.shade500;
-      textColor = Colors.white;
+      palette = AppColors.warningPalette;
       iconPath = '$baseImage/waiting_badge.svg';
     } else if (status == 'تایید شده' ||
         status == S.current.statusApproved ||
         status == 'انجام شده' ||
         status == S.current.statusDone) {
-      bgColor = AppColors.successPalette.shade500;
-      textColor = Colors.white;
+      palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
-    } else if (status == 'بارگزاری شده' ||
-        status == S.current.statusApproved ||
-        status == 'بارگزاری شده' ||
-        status == S.current.uploaded) {
-      bgColor = AppColors.successPalette.shade500;
-      textColor = Colors.white;
+    } else if (status == 'بارگزاری شده' || status == S.current.uploaded) {
+      palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
     } else if (status == 'رد شده' || status == S.current.statusRejected) {
-      bgColor = AppColors.errorPalette.shade500;
-      textColor = Colors.white;
+      palette = AppColors.errorPalette;
       iconPath = '$baseImage/close_badge.svg';
     } else if (status == 'منقضی شده' || status == S.current.statusExpired) {
-      bgColor = AppColors.grayPalette.shade500;
-      textColor = Colors.white;
+      palette = AppColors.grayPalette;
       iconPath = '$baseImage/calendar_badge.svg';
     } else {
-      bgColor = AppColors.grayPalette.shade500;
+      palette = AppColors.grayPalette;
+    }
+
+    if (isPrimary) {
+      bgColor = palette.shade500;
       textColor = Colors.white;
+    } else {
+      bgColor = palette.shade700;
+      textColor = palette.shade50;
     }
 
     return Container(
-      padding: padding,
+      height: 22,
+
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 8),
+        padding: const EdgeInsets.only(right: 8, left: 8, top: 2, bottom: 2),
         child: Row(
           spacing: 4,
           mainAxisSize: MainAxisSize.min,

@@ -83,7 +83,7 @@ class RtcOrderItem extends StatelessWidget {
                   ),
                 ),
 
-                RtcStatusBadge(status: order.status),
+                RtcStatusBadge(status: order.status ,   isPrimary: false,),
               ],
             ),
             const SizedBox(height: 12),

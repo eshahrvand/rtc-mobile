@@ -193,37 +193,31 @@ class OrderDetailView extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Container(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (order.remainingTime.isNotEmpty)
-              Row(
-                spacing: 4,
-                children: [
-                  Text(
-                    'زمان باقی‌مانده: ',
-                    style: theme.bodySmall!.copyWith(
-                      color: AppColors.grayPalette.shade600,
-                    ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (order.remainingTime.isNotEmpty)
+            Row(
+              spacing: 4,
+              children: [
+                Text(
+                  'زمان باقی‌مانده: ',
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade600,
                   ),
-                  Text(
-                    order.remainingTime,
-                    style: theme.bodySmall!.copyWith(
-                      color: AppColors.errorPalette.shade500,
-                    ),
+                ),
+                Text(
+                  order.remainingTime,
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.errorPalette.shade500,
                   ),
-                ],
-              )
-            else
-              const SizedBox.shrink(),
-            RtcStatusBadge(
-              status: order.status,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            ),
-          ],
-        ),
+                ),
+              ],
+            )
+          else
+            const SizedBox.shrink(),
+          RtcStatusBadge(status: order.status, isPrimary: true),
+        ],
       ),
     );
   }

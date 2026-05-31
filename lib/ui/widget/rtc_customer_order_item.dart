@@ -78,7 +78,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
                 ),
               ),
 
-              RtcStatusBadge(status: order.status),
+              RtcStatusBadge(status: order.status ,   isPrimary: true,),
             ],
           ),
         ],

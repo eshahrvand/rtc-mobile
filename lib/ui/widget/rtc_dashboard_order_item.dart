@@ -69,7 +69,7 @@ class RtcDashboardOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade700,
                     ),
                   ),
-                  RtcStatusBadge(status: order.status),
+                  RtcStatusBadge(status: order.status ,   isPrimary: true,),
                 ],
               ),
             ],
