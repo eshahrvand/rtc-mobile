@@ -59,14 +59,17 @@ class OtpWidget extends StatelessWidget {
             Directionality(
               textDirection: TextDirection.ltr,
               child: Pinput(
-                separatorBuilder: (index) => const SizedBox(width: 15.75),
+                separatorBuilder: (index) => const SizedBox(width: 18),
                 length: 5,
                 onChanged: (value) =>
                     context.read<AuthCubit>().onOtpChanged(value),
                 defaultPinTheme: PinTheme(
                   width: 56,
                   height: 56,
-
+                  textStyle: theme.displaySmall!.copyWith(
+                    color: AppColors.grayPalette.shade900,
+                    fontWeight: FontWeight.w600,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8),
@@ -74,7 +77,7 @@ class OtpWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
 
             if (!state.isTimerExpired)
               Row(
@@ -88,7 +91,7 @@ class OtpWidget extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   RtcImage(
                     image: "$baseImage/clock.svg",
                     height: 20,

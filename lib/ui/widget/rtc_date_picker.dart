@@ -162,8 +162,8 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-              color: AppColors.grayPalette.shade600,
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              color: AppColors.grayPalette.shade700,
             ),
           ),
           const SizedBox(height: 30),
@@ -204,12 +204,12 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                           style: isSelected
                               ? Theme.of(
                                   context,
-                                ).textTheme.titleMedium!.copyWith(
+                                ).textTheme.labelLarge!.copyWith(
                                   color: AppColors.grayPalette.shade800,
                                 )
                               : Theme.of(
                                   context,
-                                ).textTheme.displayLarge!.copyWith(
+                                ).textTheme.labelLarge!.copyWith(
                                   color: AppColors.grayPalette.shade400,
                                 ),
                         ),
@@ -271,7 +271,7 @@ showJalaliDatePickerSheet(
                 alignment: Alignment.centerRight,
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: AppColors.grayPalette.shade800,
                   ),
                 ),
@@ -287,23 +287,32 @@ showJalaliDatePickerSheet(
                 children: [
                   Expanded(
                     child: RtcButton(
-                      title: S.current.confirm,
-                      size: RtcButtonSize.medium,
+                      title: S.current.back,
+                      backgroundColor: Colors.white,
+                      borderColor: AppColors.grayPalette.shade300,
+                      styleBtn: Theme.of(context).textTheme.labelLarge!
+                          .copyWith(
+                            color: AppColors.grayPalette.shade700,
+                            fontWeight: FontWeight.w600,
+                          ),
                       onPressed: () {
-                        onDateSelected(selectedDate);
                         Navigator.pop(context);
                       },
                     ),
                   ),
                   const SizedBox(width: 12),
+
                   Expanded(
                     child: RtcButton(
-                      title: S.current.back,
-                      backgroundColor: Colors.white,
+                      title: S.current.confirm,
                       size: RtcButtonSize.medium,
-                      styleBtn: Theme.of(context).textTheme.titleMedium!
-                          .copyWith(color: AppColors.brandPalette.shade600),
+                      styleBtn: Theme.of(context).textTheme.labelLarge!
+                          .copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                       onPressed: () {
+                        onDateSelected(selectedDate);
                         Navigator.pop(context);
                       },
                     ),

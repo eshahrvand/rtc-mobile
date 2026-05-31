@@ -108,6 +108,7 @@ class OrdersBody extends StatelessWidget {
       const FilterItem(id: 'under_review', title: 'در انتظار تایید'),
       const FilterItem(id: 'approved', title: 'تایید شده'),
       const FilterItem(id: 'rejected', title: 'رد شده'),
+      const FilterItem(id: 'awaiting_settlement', title: 'در انتظار تسویه'),
     ];
 
     FilterBottomSheet.show(

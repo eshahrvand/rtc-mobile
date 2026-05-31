@@ -214,7 +214,7 @@ class OrdersRepository {
         return 'رد شده';
       case 'under_review':
         return 'در انتظار تایید';
-      case 'waiting_settlement':
+      case 'awaiting_settlement':
         return 'در انتظار تسویه';
       case 'expired':
         return 'منقضی شده';

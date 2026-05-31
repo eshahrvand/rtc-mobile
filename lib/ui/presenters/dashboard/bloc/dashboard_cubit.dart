@@ -16,7 +16,8 @@ import 'dashboard_state.dart';
 import '../../../../data/models/order_model.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit({int initialIndex = 0}) : super(DashboardState(selectedNavIndex: initialIndex));
+  DashboardCubit({int initialIndex = 0})
+    : super(DashboardState(selectedNavIndex: initialIndex));
 
   final _dashboardRepo = sl<DashboardRepository>();
   final _ordersRepo = sl<OrdersRepository>();
@@ -99,8 +100,9 @@ class DashboardCubit extends Cubit<DashboardState> {
                     for (int i = 1; i <= now.day; i++) {
                       final dailyData = dailyChart.where((d) {
                         try {
-                          final dJalali =
-                              Jalali.fromDateTime(DateTime.parse(d.date));
+                          final dJalali = Jalali.fromDateTime(
+                            DateTime.parse(d.date),
+                          );
                           return dJalali.year == now.year &&
                               dJalali.month == now.month &&
                               dJalali.day == i;
@@ -147,6 +149,9 @@ class DashboardCubit extends Cubit<DashboardState> {
                       } else if (s.status == 'expired') {
                         label = S.current.statusExpired;
                         color = AppColors.grayPalette.shade400;
+                      } else if (s.status == 'awaiting_settlement') {
+                        label = S.current.statusWaitingSettlement;
+                        color = AppColors.grayPalette.shade700;
                       }
 
                       return PieChartItemModel(

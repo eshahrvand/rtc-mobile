@@ -97,7 +97,7 @@ class _SelectDateRangeWidgetState extends State<SelectDateRangeWidget> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppColors.calenderDark,
+                    color: AppColors.brandPalette.shade600,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
@@ -132,7 +132,7 @@ class _SelectDateRangeWidgetState extends State<SelectDateRangeWidget> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppColors.calenderDark,
+                    color: AppColors.brandPalette.shade600,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
