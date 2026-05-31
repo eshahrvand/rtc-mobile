@@ -43,19 +43,24 @@ class RtcDrawer extends StatelessWidget {
                       iconPath: '$baseImage/family.svg',
                       onTap: () => context.push(AppRoutes.customers),
                     ),
-                    const RtcDivider(),
+                    RtcDivider(
+                      height: 0.5,
+                      color: AppColors.grayPalette.shade200,
+                    ),
                     _DrawerMenuItem(
                       title: S.current.releaseFactor,
                       iconPath: '$baseImage/invoice.svg',
                       onTap: () => context.push(AppRoutes.preInvoice),
                     ),
-                    const RtcDivider(),
+                    RtcDivider(
+                      height: 0.5,
+                      color: AppColors.grayPalette.shade200,
+                    ),
                     _DrawerMenuItem(
                       title: S.current.wallet,
                       iconPath: '$baseImage/wallet_drawer.svg',
                       onTap: () => context.push(AppRoutes.wallet),
                     ),
-                    const RtcDivider(),
                   ],
                 ),
               ),
@@ -184,7 +189,7 @@ class _DrawerMenuItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+        padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
         child: Row(
           spacing: 12,
           mainAxisAlignment: MainAxisAlignment.start,
