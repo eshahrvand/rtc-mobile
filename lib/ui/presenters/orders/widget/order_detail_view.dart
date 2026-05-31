@@ -5,6 +5,7 @@ import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
 import '../../../../generated/l10n.dart';
+import '../../../router/app_route.dart';
 import '../../../widget/rtc_appbar.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_status_badge.dart';
@@ -22,7 +23,13 @@ class OrderDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.go('${AppRoutes.dashboard}?index=2');
+      },
+      child: MultiBlocListener(
       listeners: [
         BlocListener<OrdersCubit, OrdersState>(
           listenWhen: (prev, curr) => prev.status != curr.status,
@@ -72,7 +79,7 @@ class OrderDetailView extends StatelessWidget {
 
           return Scaffold(
             appBar: RtcAppBar(
-              onBack: () => context.pop(),
+              onBack: () => context.go('${AppRoutes.dashboard}?index=2'),
               backIconPath: '$baseImage/angle-right.svg',
               actions: [
                 Padding(
@@ -118,6 +125,7 @@ class OrderDetailView extends StatelessWidget {
           );
         },
       ),
+    ),
     );
   }
 

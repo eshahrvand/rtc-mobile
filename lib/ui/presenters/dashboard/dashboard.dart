@@ -19,13 +19,14 @@ import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_search_appbar.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  final int initialIndex;
+  const DashboardScreen({super.key, this.initialIndex = 0});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => DashboardCubit()..init()),
+        BlocProvider(create: (context) => DashboardCubit(initialIndex: initialIndex)..init()),
         BlocProvider(create: (context) => ProductCubit()..init()),
         BlocProvider(create: (context) => OrdersCubit()..init()),
       ],

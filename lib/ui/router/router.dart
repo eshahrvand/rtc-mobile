@@ -31,7 +31,11 @@ final router = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.dashboard,
-      builder: (context, state) => const DashboardScreen(),
+      builder: (context, state) {
+        final indexStr = state.uri.queryParameters['index'];
+        final index = int.tryParse(indexStr ?? '0') ?? 0;
+        return DashboardScreen(initialIndex: index);
+      },
     ),
 
     GoRoute(

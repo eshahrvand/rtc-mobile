@@ -16,7 +16,7 @@ import 'dashboard_state.dart';
 import '../../../../data/models/order_model.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit() : super(const DashboardState());
+  DashboardCubit({int initialIndex = 0}) : super(DashboardState(selectedNavIndex: initialIndex));
 
   final _dashboardRepo = sl<DashboardRepository>();
   final _ordersRepo = sl<OrdersRepository>();
