@@ -27,44 +27,44 @@ class RtcStatusBadge extends StatelessWidget {
     String? iconPath;
 
     if (status == 'پیش فاکتور' || status == S.current.preInvoice) {
-      bgColor = Colors.blueGrey.shade50;
-      textColor = Colors.blueGrey.shade700;
+      bgColor = AppColors.blueGrayPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/document-list-badge.svg';
     } else if (status == 'در انتظار تسویه' ||
         status == S.current.statusWaitingSettlement) {
-      bgColor = Colors.indigo.shade50;
-      textColor = Colors.indigo.shade700;
+      bgColor = AppColors.indigoPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/dollar_badge.svg';
     } else if (status == 'در انتظار تایید' ||
         status == S.current.statusPending) {
-      bgColor = AppColors.warningPalette.shade50;
-      textColor = AppColors.warningPalette.shade700;
+      bgColor = AppColors.warningPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/waiting_badge.svg';
     } else if (status == 'تایید شده' ||
         status == S.current.statusApproved ||
         status == 'انجام شده' ||
         status == S.current.statusDone) {
-      bgColor = AppColors.successPalette.shade50;
-      textColor = AppColors.successPalette.shade700;
+      bgColor = AppColors.successPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/check_badge.svg';
     } else if (status == 'بارگزاری شده' ||
         status == S.current.statusApproved ||
         status == 'بارگزاری شده' ||
         status == S.current.uploaded) {
-      bgColor = AppColors.successPalette.shade50;
-      textColor = AppColors.successPalette.shade700;
+      bgColor = AppColors.successPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/check_badge.svg';
     } else if (status == 'رد شده' || status == S.current.statusRejected) {
-      bgColor = AppColors.errorPalette.shade50;
-      textColor = AppColors.errorPalette.shade700;
+      bgColor = AppColors.errorPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/close_badge.svg';
     } else if (status == 'منقضی شده' || status == S.current.statusExpired) {
-      bgColor = AppColors.grayPalette.shade50;
-      textColor = AppColors.grayPalette.shade700;
+      bgColor = AppColors.grayPalette.shade500;
+      textColor = Colors.white;
       iconPath = '$baseImage/calendar_badge.svg';
     } else {
-      bgColor = Colors.grey.withOpacity(0.1);
-      textColor = Colors.grey;
+      bgColor = AppColors.grayPalette.shade500;
+      textColor = Colors.white;
     }
 
     return Container(

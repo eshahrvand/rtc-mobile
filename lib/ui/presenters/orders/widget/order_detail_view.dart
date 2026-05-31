@@ -185,7 +185,7 @@ class OrderDetailView extends StatelessWidget {
                 Text(
                   order.remainingTime,
                   style: theme.bodySmall!.copyWith(
-                    color: AppColors.errorPalette.shade600,
+                    color: AppColors.errorPalette.shade500,
                   ),
                 ),
               ],
