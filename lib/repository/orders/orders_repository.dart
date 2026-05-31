@@ -102,10 +102,22 @@ class OrdersRepository {
 
       final statusStr = _mapStatus(dto.status);
 
+      String remainingTimeStr = '';
+      if (dto.remainingTime != null) {
+        final rt = dto.remainingTime!;
+        if (rt.days > 0) {
+          remainingTimeStr = '${rt.days} روز';
+        } else if (rt.hours > 0) {
+          remainingTimeStr = '${rt.hours} ساعت';
+        } else if (rt.minutes > 0) {
+          remainingTimeStr = '${rt.minutes} دقیقه';
+        }
+      }
+
       return OrderDetailModel(
         id: dto.id,
         status: statusStr,
-        remainingTime: '',
+        remainingTime: remainingTimeStr,
         // Need API support or calculation if available
         isSettled: dto.status == 'approved' || dto.status == 'rejected',
         rejectionReason: dto.rejectionNote,

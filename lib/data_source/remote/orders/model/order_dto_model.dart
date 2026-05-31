@@ -34,6 +34,7 @@ class OrderDtoModel with _$OrderDtoModel {
     @JsonKey(name: 'delivery_to_agent') bool? deliveryToAgent,
     OrderAgentDtoModel? agent,
     List<PaymentDtoModel>? payments,
+    @JsonKey(name: 'remaining_time') RemainingTimeDtoModel? remainingTime,
   }) = _OrderDtoModel;
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDtoModelFromJson(json);
@@ -161,4 +162,16 @@ class OrderDocumentResponse with _$OrderDocumentResponse {
   }) = _OrderDocumentResponse;
 
   factory OrderDocumentResponse.fromJson(Map<String, dynamic> json) => _$OrderDocumentResponseFromJson(json);
+}
+
+@freezed
+class RemainingTimeDtoModel with _$RemainingTimeDtoModel {
+  const factory RemainingTimeDtoModel({
+    required int days,
+    required int hours,
+    required int minutes,
+    required int seconds,
+  }) = _RemainingTimeDtoModel;
+
+  factory RemainingTimeDtoModel.fromJson(Map<String, dynamic> json) => _$RemainingTimeDtoModelFromJson(json);
 }
