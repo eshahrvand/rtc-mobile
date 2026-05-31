@@ -176,7 +176,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     PreInvoiceCubit cubit,
   ) {
     return Container(
-      height: 90,
+      height: 95,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
@@ -219,7 +219,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 SizedBox(
-                  height: 45,
+                  height: 49,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -240,7 +240,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                                 ),
                                 SizedBox(width: 2),
                               ],
-                              if (product.discount != null)
+                              if (product.discount != "0%")
                                 RtcDiscountBadge(
                                   discount: product.discount!,
                                   padding: const EdgeInsets.symmetric(
