@@ -60,6 +60,16 @@ class CategoryChartDtoModel with _$CategoryChartDtoModel {
 }
 
 @freezed
+class OrderStatusDtoModel with _$OrderStatusDtoModel {
+  const factory OrderStatusDtoModel({
+    required String status,
+    required int count,
+  }) = _OrderStatusDtoModel;
+
+  factory OrderStatusDtoModel.fromJson(Map<String, dynamic> json) => _$OrderStatusDtoModelFromJson(json);
+}
+
+@freezed
 class SubPlanChartDtoModel with _$SubPlanChartDtoModel {
   const factory SubPlanChartDtoModel({
     @JsonKey(name: 'sub_plan_id') required String subPlanId,

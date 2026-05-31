@@ -29,6 +29,10 @@ class DashboardRepository {
     return await _dashboardService.getCategories();
   }
 
+  Future<List<OrderStatusDtoModel>> getOrderStatus() async {
+    return await _dashboardService.getOrderStatus();
+  }
+
   Future<List<SubPlanChartDtoModel>> getSubPlanChart() async {
     return await _dashboardService.getSubPlanChart();
   }

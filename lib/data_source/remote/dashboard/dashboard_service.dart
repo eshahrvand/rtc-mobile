@@ -25,6 +25,9 @@ abstract class DashboardService {
   @GET('dashboard/categories')
   Future<List<CategoryChartDtoModel>> getCategories();
 
+  @GET('dashboard/order-status')
+  Future<List<OrderStatusDtoModel>> getOrderStatus();
+
   @GET('dashboard/subplan-chart')
   Future<List<SubPlanChartDtoModel>> getSubPlanChart();
 }
