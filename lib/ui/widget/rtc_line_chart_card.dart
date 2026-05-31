@@ -68,7 +68,7 @@ class RtcLineChartCard extends StatelessWidget {
               aspectRatio: 1.8,
               child: LineChart(
                 LineChartData(
-                  minX: 1,
+                  minX: 0,
                   maxX: monthLength.toDouble(),
                   minY: 0,
                   gridData: FlGridData(
@@ -159,8 +159,8 @@ class RtcLineChartCard extends StatelessWidget {
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(show: false),
                       preventCurveOverShooting: false,
-                      preventCurveOvershootingThreshold: 0,
-                      curveSmoothness: 0.35,
+                      preventCurveOvershootingThreshold: 10,
+                      curveSmoothness: 0.1,
                     ),
                   ],
                 ),
