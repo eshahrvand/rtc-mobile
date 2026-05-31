@@ -111,17 +111,6 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
             children: [
               Expanded(
                 child: RtcButton(
-                  title: S.current.confirmAndSend,
-                  styleBtn: theme.labelLarge!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  onPressed: onConfirm,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: RtcButton(
                   title: S.current.cancel,
                   backgroundColor: Colors.white,
                   borderColor: AppColors.grayPalette.shade300,
@@ -130,6 +119,17 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: RtcButton(
+                  title: S.current.confirmAndSend,
+                  styleBtn: theme.labelLarge!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  onPressed: onConfirm,
                 ),
               ),
             ],
