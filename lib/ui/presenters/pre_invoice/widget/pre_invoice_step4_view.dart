@@ -215,7 +215,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                       File(path),
                       width: double.infinity,
                       height: double.infinity,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
                           const Center(
                             child: Icon(

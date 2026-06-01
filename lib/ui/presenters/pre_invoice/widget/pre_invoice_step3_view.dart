@@ -167,12 +167,12 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         ),
                       ],
                       if (state.customerInfo != null) ...[
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 12),
                         RtcDivider(
                           color: AppColors.grayPalette.shade300,
                           height: 1,
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 12),
                         RtcTextField(
                           labelText:
                               state.isExistingCustomer &&
@@ -297,7 +297,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             SizedBox(
                               width: 48,
                               child: Text(
-                                textAlign: TextAlign.left,
+                                textAlign: TextAlign.right,
                                 state.customerInfo!.isOrderSentToCustomerAddress
                                     ? S.current.active
                                     : S.current.inactive,
