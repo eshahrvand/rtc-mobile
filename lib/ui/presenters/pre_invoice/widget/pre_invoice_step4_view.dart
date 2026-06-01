@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
@@ -226,14 +227,30 @@ class PreInvoiceStep4View extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    bottom: 4,
-                    left: 4,
-                    child: GestureDetector(
-                      onTap: onRemove,
-                      child: RtcImage(
-                        image: "$baseImage/delete-image.svg",
-                        width: 20,
-                        height: 20,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                        child: GestureDetector(
+                          onTap: onRemove,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 4, bottom: 4),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: RtcImage(
+                                image: "$baseImage/delete_national_card.svg",
+                                width: 20,
+                                height: 20,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
