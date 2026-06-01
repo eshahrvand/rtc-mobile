@@ -96,7 +96,9 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         hintStyle: theme.bodyLarge!.copyWith(
                           color: AppColors.grayPalette.shade400,
                         ),
-                        isError: !state.isNationalIdValid,
+                        isError:
+                            !state.isNationalIdValid &&
+                            state.customerIdQuery.isNotEmpty,
                         suffix: _nationalIdController.text.isNotEmpty
                             ? GestureDetector(
                                 onTap: () {
@@ -146,11 +148,15 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         const SizedBox(height: 12),
                         RtcButton(
                           title: S.current.checkButton,
-                          isActive: state.isNationalIdValid,
+                          isActive:
+                              state.isNationalIdValid &&
+                              state.customerIdQuery.isNotEmpty,
                           isLoading: state.customerSearchLoading,
                           styleBtn: theme.titleSmall!.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: state.isNationalIdValid
+                            color:
+                                state.isNationalIdValid &&
+                                    state.customerIdQuery.isNotEmpty
                                 ? Colors.white
                                 : AppColors.grayPalette.shade300,
                           ),
@@ -168,7 +174,15 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         ),
                         const SizedBox(height: 18),
                         RtcTextField(
-                          labelText: S.current.nameLabelWithStar,
+                          labelText:
+                              state.isExistingCustomer &&
+                                  (state
+                                          .originalCustomerInfo
+                                          ?.lastName
+                                          .isNotEmpty ??
+                                      false)
+                              ? S.current.nameLabel
+                              : S.current.nameLabelWithStar,
                           labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
@@ -187,7 +201,15 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                         ),
                         SizedBox(height: 12),
                         RtcTextField(
-                          labelText: S.current.lastNameLabelWithStar,
+                          labelText:
+                              state.isExistingCustomer &&
+                                  (state
+                                          .originalCustomerInfo
+                                          ?.lastName
+                                          .isNotEmpty ??
+                                      false)
+                              ? S.current.lastNameLabel
+                              : S.current.lastNameLabelWithStar,
                           labelStyle: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade700,
