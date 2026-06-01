@@ -31,7 +31,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
                 spacing: 4,
                 children: [
                   Text(
-                    order.orderId,
+                    order.orderId.substring(0 , 8),
                     style: theme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.w500,
                       color: AppColors.grayPalette.shade900,
@@ -78,7 +78,7 @@ class RtcCustomerOrderItem extends StatelessWidget {
                 ),
               ),
 
-              RtcStatusBadge(status: order.status, isPrimary: true),
+              RtcStatusBadge(status: order.status, isPrimary: false),
             ],
           ),
         ],

@@ -61,8 +61,8 @@ class RtcStatusBadge extends StatelessWidget {
       bgColor = palette.shade500;
       textColor = Colors.white;
     } else {
-      bgColor = palette.shade700;
-      textColor = palette.shade50;
+      textColor = palette.shade700;
+      bgColor = palette.shade50;
     }
 
     return Container(

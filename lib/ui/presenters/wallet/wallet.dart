@@ -35,6 +35,7 @@ class _WalletView extends StatelessWidget {
         onBack: () => context.pop(),
         backIconPath: '$baseImage/angle-right.svg',
       ),
+
       body: BlocBuilder<WalletCubit, WalletState>(
         builder: (context, state) {
           if (state.status == WalletRequestStatus.loading) {
@@ -44,47 +45,56 @@ class _WalletView extends StatelessWidget {
 
           final summary = state.walletSummary!;
 
-          return Column(
-            children: [
-              _buildHeader(context, summary),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(24),
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Stack(
+              children: [
+                _buildHeader(context, summary),
+                Positioned(
+                  top: 160,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16, left: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                S.current.myPockets,
-                                style: theme.labelLarge!.copyWith(
-                                  color: AppColors.grayPalette.shade900,
-                                  fontWeight: FontWeight.w600,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16, left: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  S.current.myPockets,
+                                  style: theme.labelLarge!.copyWith(
+                                    color: AppColors.grayPalette.shade900,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                S.current.pocketsCount(summary.pockets.length),
-                                style: theme.bodyLarge!.copyWith(
-                                  color: AppColors.grayPalette.shade700,
+                                Text(
+                                  S.current.pocketsCount(
+                                    summary.pockets.length,
+                                  ),
+                                  style: theme.bodyLarge!.copyWith(
+                                    color: AppColors.grayPalette.shade700,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: ListView.separated(
+                          const SizedBox(height: 16),
+                          ListView.separated(
                             itemCount: summary.pockets.length,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 12),
@@ -104,13 +114,13 @@ class _WalletView extends StatelessWidget {
                               );
                             },
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -120,14 +130,14 @@ class _WalletView extends StatelessWidget {
   Widget _buildHeader(BuildContext context, dynamic summary) {
     var theme = Theme.of(context).textTheme;
     return Container(
+      height: 168,
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 25),
       decoration: BoxDecoration(
         boxShadow: AppColors.mediumShadow,
         gradient: const LinearGradient(
-          colors: [Color(0xFF194185), Color(0xFF1570EF)],
-          begin: Alignment(-0.9, 0.8), // Approx 15deg
-          end: Alignment(0.9, -0.8),
-          stops: [0.2961, 1.1713],
+          colors: [Color(0xFF1570EF), Color(0xFF194185)],
+          end: Alignment.bottomCenter,
+          begin: Alignment.topCenter,
         ),
       ),
       child: Column(
