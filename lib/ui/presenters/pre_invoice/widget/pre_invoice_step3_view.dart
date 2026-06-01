@@ -116,7 +116,9 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                                 ),
                               )
                             : null,
-                        helper: !state.isNationalIdValid
+                        helper:
+                            !state.isNationalIdValid &&
+                                state.customerIdQuery.isNotEmpty
                             ? Row(
                                 spacing: 8,
                                 children: [
@@ -172,6 +174,14 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             color: AppColors.grayPalette.shade700,
                           ),
                           controller: _firstNameController,
+                          readOnly:
+                              state.isExistingCustomer &&
+                              (state
+                                      .originalCustomerInfo
+                                      ?.firstName
+                                      .isNotEmpty ??
+                                  false),
+                          isSetReadOnlyColor: true,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('firstName', value),
                         ),
@@ -183,6 +193,14 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             color: AppColors.grayPalette.shade700,
                           ),
                           controller: _lastNameController,
+                          readOnly:
+                              state.isExistingCustomer &&
+                              (state
+                                      .originalCustomerInfo
+                                      ?.lastName
+                                      .isNotEmpty ??
+                                  false),
+                          isSetReadOnlyColor: true,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('lastName', value),
                         ),
