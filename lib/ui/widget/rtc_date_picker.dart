@@ -162,8 +162,8 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              color: AppColors.grayPalette.shade700,
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              color: AppColors.grayPalette.shade600,
             ),
           ),
           const SizedBox(height: 30),
@@ -207,9 +207,7 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
                                 ).textTheme.labelLarge!.copyWith(
                                   color: AppColors.grayPalette.shade800,
                                 )
-                              : Theme.of(
-                                  context,
-                                ).textTheme.labelLarge!.copyWith(
+                              : Theme.of(context).textTheme.bodyLarge!.copyWith(
                                   color: AppColors.grayPalette.shade400,
                                 ),
                         ),
@@ -257,21 +255,22 @@ showJalaliDatePickerSheet(
     builder: (context) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 height: 2,
-                width: 48,
+                width: 32,
                 color: AppColors.brandPalette.shade600,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
                     color: AppColors.grayPalette.shade800,
                   ),
                 ),

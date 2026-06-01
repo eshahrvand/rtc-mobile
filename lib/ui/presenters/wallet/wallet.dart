@@ -59,7 +59,7 @@ class _WalletView extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     decoration: const BoxDecoration(
-                      color: Colors.red,
+                      color: Colors.white,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16),
@@ -94,25 +94,28 @@ class _WalletView extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          ListView.separated(
-                            itemCount: summary.pockets.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final pocket = summary.pockets[index];
-                              return _PocketCard(
-                                pocket: pocket,
-                                onTap: () {
-                                  context.read<WalletCubit>().selectPocket(
-                                    pocket,
-                                  );
-                                  context.push(
-                                    AppRoutes.transactionList,
-                                    extra: context.read<WalletCubit>(),
-                                  );
-                                },
-                              );
-                            },
+                          Expanded(
+                            child: ListView.separated(
+                              padding: EdgeInsets.zero,
+                              itemCount: summary.pockets.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final pocket = summary.pockets[index];
+                                return _PocketCard(
+                                  pocket: pocket,
+                                  onTap: () {
+                                    context.read<WalletCubit>().selectPocket(
+                                      pocket,
+                                    );
+                                    context.push(
+                                      AppRoutes.transactionList,
+                                      extra: context.read<WalletCubit>(),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -130,7 +133,7 @@ class _WalletView extends StatelessWidget {
   Widget _buildHeader(BuildContext context, dynamic summary) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      height: 168,
+      height: 190,
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 25),
       decoration: BoxDecoration(
         boxShadow: AppColors.mediumShadow,
@@ -275,7 +278,7 @@ class _PocketCard extends StatelessWidget {
                   height: 44,
                   boxFit: BoxFit.fill,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     spacing: 2,
@@ -301,7 +304,7 @@ class _PocketCard extends StatelessWidget {
                             image: '$baseImage/angle-left.svg',
                             width: 20,
                             height: 20,
-                            color: AppColors.grayPalette.shade400,
+                            color: AppColors.grayPalette.shade700,
                           ),
                         ],
                       ),
@@ -310,7 +313,7 @@ class _PocketCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.only(right: 52),
               child: const RtcDivider(isDashed: false),
@@ -329,7 +332,7 @@ class _PocketCard extends StatelessWidget {
                   ),
                 ),
                 Row(
-                  spacing: 4,
+                  spacing: 1,
                   children: [
                     Text(
                       pocket.balance,
