@@ -29,7 +29,8 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+
+        boxShadow: AppColors.primaryShadow,
       ),
       child: Row(
         children: [
@@ -71,7 +72,11 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
             height: 104,
           ),
         ),
-        Positioned(right: 0, bottom: 0, child: _buildCounter()),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: product.isAvailable ? _buildCounter() : SizedBox(),
+        ),
       ],
     );
   }
@@ -81,7 +86,9 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
       product.isAvailable ? 'موجودی (${product.inventory})' : 'ناموجود',
       style: Theme.of(context).textTheme.labelSmall!.copyWith(
         fontWeight: FontWeight.w600,
-        color: AppColors.successPalette.shade600,
+        color: !product.isAvailable
+            ? AppColors.grayPalette.shade500
+            : AppColors.successPalette.shade600,
       ),
     );
   }
@@ -117,11 +124,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 2),
-            RtcImage(
-              image: "$baseImage/toman.svg",
-              width: 24,
-              height: 24,
-            ),
+            RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
           ],
         ),
       ],
@@ -133,6 +136,8 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
       return GestureDetector(
         onTap: product.isAvailable ? onAdd : null,
         child: Container(
+          width: 32,
+          height: 32,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -149,6 +154,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
     }
 
     return Container(
+      height: 32,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,

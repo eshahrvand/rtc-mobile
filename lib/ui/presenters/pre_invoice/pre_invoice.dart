@@ -78,7 +78,6 @@ class PreInvoiceView extends StatelessWidget {
           final cubit = context.read<PreInvoiceCubit>();
 
           return Scaffold(
-
             appBar: RtcAppBar(
               title: state.isEditMode
                   ? _getEditTitle(state.currentStep)
@@ -285,7 +284,9 @@ class PreInvoiceView extends StatelessWidget {
               child: RtcButton(
                 title: title,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: isActive ? Colors.white : AppColors.grayPalette.shade300,
+                  color: isActive
+                      ? Colors.white
+                      : AppColors.grayPalette.shade300,
                   fontWeight: FontWeight.w600,
                 ),
                 isActive: isActive,
@@ -298,6 +299,8 @@ class PreInvoiceView extends StatelessWidget {
               GestureDetector(
                 onTap: () => cubit.showCart(),
                 child: Container(
+                  height: 44,
+                  width: 44,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.brandPalette.shade50,
@@ -312,7 +315,6 @@ class PreInvoiceView extends StatelessWidget {
                     width: 24,
                     height: 24,
                     color: AppColors.brandPalette.shade600,
-                    boxFit: BoxFit.fill,
                   ),
                 ),
               ),
