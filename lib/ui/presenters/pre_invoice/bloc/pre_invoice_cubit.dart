@@ -247,7 +247,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       name: dto.name,
       imageUrl: dto.featuredImage?.file ?? '$baseImage/frame1.png',
       price: formatter.format(dto.planPrice ?? 0),
-      oldPrice: dto.basePrice != null ? formatter.format(dto.basePrice!) : null,
+      oldPrice: dto.oldPrice != null
+          ? formatter.format(dto.oldPrice!)
+          : dto.basePrice != null
+          ? formatter.format(dto.basePrice!)
+          : null,
       discount: dto.discountPct != null ? '${dto.discountPct}%' : null,
       inventory: dto.stockQty.toString(),
       isAvailable: dto.stockQty > 0,
@@ -388,17 +392,17 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     for (final item in state.cartItems) {
       totalQuantity += item.quantity;
-      final price = int.tryParse(item.price.replaceAll(',', '')) ?? 0;
-      final oldPrice = item.oldPrice != null
-          ? int.tryParse(item.oldPrice!.replaceAll(',', ''))
-          : null;
+      final currentPrice = int.tryParse(item.price.replaceAll(',', '')) ?? 0;
+      final basePriceStr = item.oldPrice ?? item.price;
+      final basePrice =
+          int.tryParse(basePriceStr.replaceAll(',', '')) ?? currentPrice;
 
-      if (oldPrice != null && oldPrice > price) {
-        totalAmount += oldPrice * item.quantity;
-        totalDiscounts += (oldPrice - price) * item.quantity;
-      } else {
-        totalAmount += price * item.quantity;
-      }
+      final itemDiscount = (basePrice > currentPrice)
+          ? (basePrice - currentPrice)
+          : 0;
+
+      totalAmount += basePrice * item.quantity;
+      totalDiscounts += itemDiscount * item.quantity;
     }
 
     final payableAmount = totalAmount - totalDiscounts;
@@ -424,7 +428,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void onCustomerIdChanged(String value) {
     bool isValid = isNationalIDValid(value);
-    emit(state.copyWith(customerIdQuery: value, isNationalIdValid: isValid));
+    emit(
+      state.copyWith(
+        customerIdQuery: value,
+        isNationalIdValid: isValid,
+        customerInfo: null,
+      ),
+    );
   }
 
   void searchCustomer() {

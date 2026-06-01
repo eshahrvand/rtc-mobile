@@ -2,8 +2,8 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
-import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
 import '../../../../data/models/pre_invoice_model.dart';
 import '../../../widget/rtc_text_field.dart';
 import '../../../widget/rtc_image.dart';
@@ -85,102 +85,79 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        spacing: 14,
-                        children: [
-                          Expanded(
-                            child: RtcTextField(
-                              controller: _nationalIdController,
-                              labelText: S.current.nationalCodeLabelWithStar,
-                              labelStyle: theme.bodyMedium!.copyWith(
-                                color: AppColors.grayPalette.shade700,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              hintText: S.current.nationalCodeHint,
-                              hintStyle: theme.bodyLarge!.copyWith(
-                                color: AppColors.grayPalette.shade400,
-                              ),
-                              isError: !state.isNationalIdValid,
-                              suffix: _nationalIdController.text.isNotEmpty
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        _nationalIdController.clear();
-                                        cubit.onCustomerIdChanged('');
-                                        setState(() {});
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 12.0,
-                                        ),
-                                        child: RtcImage(
-                                          image: '$baseImage/close.svg',
-                                          width: 20,
-                                          height: 20,
-                                          color: AppColors.grayPalette.shade600,
-                                          boxFit: BoxFit.fill,
-                                        ),
-                                      ),
-                                    )
-                                  : null,
-                              helper: !state.isNationalIdValid
-                                  ? Row(
-                                      spacing: 8,
-                                      children: [
-                                        RtcImage(
-                                          image: 'assets/images/alert.svg',
-                                          width: 14,
-                                          height: 14,
-                                          color:
-                                              AppColors.errorPalette.shade600,
-                                        ),
-                                        Text(
-                                          S.current.nationalIdWrong,
-                                          style: theme.bodySmall!.copyWith(
-                                            color:
-                                                AppColors.errorPalette.shade600,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : const SizedBox.shrink(),
-                              onChanged: (value) {
-                                cubit.onCustomerIdChanged(value);
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                          if (state.customerInfo == null ||
-                              state.customerIdQuery !=
-                                  state.customerInfo!.nationalId)
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(
-                                2,
-                                !state.isNationalIdValid ? 10 : 21,
-                                2,
-                                10,
-                              ),
-                              child: RtcTextButton(
-                                title: S.current.checkButton,
-                                isActive: state.isNationalIdValid,
-                                styleBtn: theme.labelLarge!.copyWith(
-                                  color: state.isNationalIdValid
-                                      ? AppColors.brandPalette.shade600
-                                      : AppColors.grayPalette.shade400,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                onPressed: () {
-                                  FocusScope.of(context).unfocus();
-                                  cubit.searchCustomer();
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                      if (state.customerSearchLoading)
-                        const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Center(child: CircularProgressIndicator()),
+                      RtcTextField(
+                        controller: _nationalIdController,
+                        labelText: S.current.nationalCodeLabelWithStar,
+                        labelStyle: theme.bodyMedium!.copyWith(
+                          color: AppColors.grayPalette.shade700,
+                          fontWeight: FontWeight.w500,
                         ),
+                        hintText: S.current.nationalCodeHint,
+                        hintStyle: theme.bodyLarge!.copyWith(
+                          color: AppColors.grayPalette.shade400,
+                        ),
+                        isError: !state.isNationalIdValid,
+                        suffix: _nationalIdController.text.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _nationalIdController.clear();
+                                  cubit.onCustomerIdChanged('');
+                                  setState(() {});
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: RtcImage(
+                                    image: '$baseImage/close.svg',
+                                    width: 20,
+                                    height: 20,
+                                    color: AppColors.grayPalette.shade600,
+                                    boxFit: BoxFit.fill,
+                                  ),
+                                ),
+                              )
+                            : null,
+                        helper: !state.isNationalIdValid
+                            ? Row(
+                                spacing: 8,
+                                children: [
+                                  RtcImage(
+                                    image: 'assets/images/alert.svg',
+                                    width: 14,
+                                    height: 14,
+                                    color: AppColors.errorPalette.shade600,
+                                  ),
+                                  Text(
+                                    S.current.nationalIdWrong,
+                                    style: theme.bodySmall!.copyWith(
+                                      color: AppColors.errorPalette.shade600,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                        onChanged: (value) {
+                          cubit.onCustomerIdChanged(value);
+                          setState(() {});
+                        },
+                      ),
+                      if (state.customerInfo == null) ...[
+                        const SizedBox(height: 12),
+                        RtcButton(
+                          title: S.current.checkButton,
+                          isActive: state.isNationalIdValid,
+                          isLoading: state.customerSearchLoading,
+                          styleBtn: theme.titleSmall!.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: state.isNationalIdValid
+                                ? Colors.white
+                                : AppColors.grayPalette.shade300,
+                          ),
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            cubit.searchCustomer();
+                          },
+                        ),
+                      ],
                       if (state.customerInfo != null) ...[
                         const SizedBox(height: 18),
                         RtcDivider(

@@ -260,6 +260,7 @@ class PreInvoiceView extends StatelessWidget {
           : S.current.nextStep;
       onPressed = () => cubit.goToStep(PreInvoiceStep.customerInfo);
     } else if (state.currentStep == PreInvoiceStep.customerInfo) {
+      if (state.customerInfo == null) return const SizedBox.shrink();
       isActive = state.customerInfo != null;
       isLoading = state.isSubmittingCustomerInfo;
       onPressed = () => cubit.goToStep(PreInvoiceStep.documents);

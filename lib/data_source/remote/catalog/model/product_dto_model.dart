@@ -27,6 +27,7 @@ class ProductDtoModel with _$ProductDtoModel {
     required CategorySummaryDtoModel category,
     @JsonKey(name: 'base_price') int? basePrice,
     @JsonKey(name: 'plan_price') int? planPrice,
+    @JsonKey(name: 'old_price') int? oldPrice,
     @JsonKey(name: 'discount_pct') int? discountPct,
     @JsonKey(name: 'stock_qty') required int stockQty,
     @JsonKey(name: 'is_active') required bool isActive,

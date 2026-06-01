@@ -68,106 +68,117 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
 
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                spacing: 8,
-                children: [
-                  Expanded(
-                    child: RtcTextField(
-                      controller: _searchController,
-                      hintText: S.current.searchHint,
-                      hintStyle: theme.bodyLarge!.copyWith(
-                        color: AppColors.grayPalette.shade400,
-                      ),
-                      onChanged: (value) {
-                        cubit.onSearchChanged(value);
-                        setState(() {});
-                      },
-                      prefix: RtcImage(
-                        image: "$baseImage/search.svg",
-                        boxFit: BoxFit.contain,
-                        width: 20,
-                        height: 20,
-                      ),
-                      suffix: _searchController.text.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                _searchController.clear();
-                                cubit.onSearchChanged('');
-                                setState(() {});
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 12),
-                                child: RtcImage(
-                                  image: "$baseImage/close.svg",
-                                  width: 20,
-                                  height: 20,
-                                  boxFit: BoxFit.fill,
-                                  color: AppColors.grayPalette.shade700,
+            Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: RtcTextField(
+                        controller: _searchController,
+                        hintText: S.current.searchHint,
+                        hintStyle: theme.bodyLarge!.copyWith(
+                          color: AppColors.grayPalette.shade400,
+                        ),
+                        onChanged: (value) {
+                          cubit.onSearchChanged(value);
+                          setState(() {});
+                        },
+                        prefix: RtcImage(
+                          image: "$baseImage/search.svg",
+                          boxFit: BoxFit.contain,
+                          width: 20,
+                          height: 20,
+                        ),
+                        suffix: _searchController.text.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _searchController.clear();
+                                  cubit.onSearchChanged('');
+                                  setState(() {});
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 12),
+                                  child: RtcImage(
+                                    image: "$baseImage/close.svg",
+                                    width: 20,
+                                    height: 20,
+                                    boxFit: BoxFit.fill,
+                                    color: AppColors.grayPalette.shade700,
+                                  ),
                                 ),
-                              ),
-                            )
-                          : null,
+                              )
+                            : null,
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.grayPalette.shade25,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.grayPalette.shade200),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.grayPalette.shade25,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.grayPalette.shade200,
+                        ),
+                      ),
+                      child: RtcImage(image: "$baseImage/sort.svg"),
                     ),
-                    child: RtcImage(image: "$baseImage/sort.svg"),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  SizedBox(
-                    height: 32,
-                    width: 140,
-                    child: RtcChipList(
-                      chips: [
-                        ProductChipModel(
-                          id: 1,
-                          label: 'دسته بندی',
-                          opensBottomSheet: true,
-                        ),
-                      ],
-                      isChipSelected: (index, chip) =>
-                          state.selectedCategoryId != null,
-                      onChipTap: (index, chip) =>
-                          _showCategoryFilter(context, cubit, state),
+            Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 32,
+                      width: 140,
+                      child: RtcChipList(
+                        chips: [
+                          ProductChipModel(
+                            id: 1,
+                            label: 'دسته بندی',
+                            opensBottomSheet: true,
+                          ),
+                        ],
+                        isChipSelected: (index, chip) =>
+                            state.selectedCategoryId != null,
+                        onChipTap: (index, chip) =>
+                            _showCategoryFilter(context, cubit, state),
+                      ),
                     ),
-                  ),
-                  const Spacer(),
+                    const Spacer(),
 
-                  GestureDetector(
-                    onTap: () => cubit.toggleShowAvailableOnly(),
-                    child: RtcImage(
-                      image: state.showAvailableOnly
-                          ? "$baseImage/toggle_active.svg"
-                          : "$baseImage/toggle_base.svg",
-                      width: 36,
-                      height: 20,
+                    GestureDetector(
+                      onTap: () => cubit.toggleShowAvailableOnly(),
+                      child: RtcImage(
+                        image: state.showAvailableOnly
+                            ? "$baseImage/toggle_active.svg"
+                            : "$baseImage/toggle_base.svg",
+                        width: 36,
+                        height: 20,
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(width: 8),
-                  Text(
-                    "نمایش کالاهای موجود",
-                    style: theme.bodyMedium!.copyWith(
-                      color: AppColors.grayPalette.shade600,
+                    const SizedBox(width: 8),
+                    Text(
+                      "نمایش کالاهای موجود",
+                      style: theme.bodyMedium!.copyWith(
+                        color: AppColors.grayPalette.shade600,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 16),
-                ],
+                    SizedBox(width: 16),
+                  ],
+                ),
               ),
             ),
             Padding(
