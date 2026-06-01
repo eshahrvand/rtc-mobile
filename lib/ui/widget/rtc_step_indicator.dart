@@ -43,7 +43,10 @@ class RtcStepIndicator extends StatelessWidget {
                     return index < totalSteps - 1
                         ? Expanded(
                             child: Row(
-                              children: [_buildStepCircle(index), _buildStepLine()],
+                              children: [
+                                _buildStepCircle(index),
+                                _buildStepLine(),
+                              ],
                             ),
                           )
                         : _buildStepCircle(index);
@@ -81,14 +84,14 @@ class RtcStepIndicator extends StatelessWidget {
           color: isActive || isCompleted
               ? AppColors.brandPalette.shade600
               : AppColors.grayPalette.shade300,
-          width: 2,
+          width: 1,
         ),
       ),
       child: Center(
         child: isActive
             ? Container(
-                width: 8,
-                height: 8,
+                width: 9.6,
+                height: 9.6,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
@@ -103,8 +106,8 @@ class RtcStepIndicator extends StatelessWidget {
                       boxFit: BoxFit.fill,
                     )
                   : Container(
-                      width: 8,
-                      height: 8,
+                      width: 9.6,
+                      height: 9.6,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.grayPalette.shade300,

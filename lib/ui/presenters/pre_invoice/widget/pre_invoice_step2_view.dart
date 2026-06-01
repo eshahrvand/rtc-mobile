@@ -15,10 +15,27 @@ import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'rtc_pre_invoice_product_item.dart';
 
-class PreInvoiceStep2View extends StatelessWidget {
+class PreInvoiceStep2View extends StatefulWidget {
   const PreInvoiceStep2View({super.key});
 
-  void _showCategoryFilter(BuildContext context, PreInvoiceCubit cubit, PreInvoiceState state) {
+  @override
+  State<PreInvoiceStep2View> createState() => _PreInvoiceStep2ViewState();
+}
+
+class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _showCategoryFilter(
+    BuildContext context,
+    PreInvoiceCubit cubit,
+    PreInvoiceState state,
+  ) {
     sl<ProductRepository>().getCategories().then((response) {
       final items = response.results
           .map((c) => FilterItem(id: c.id, title: c.name))
@@ -58,12 +75,40 @@ class PreInvoiceStep2View extends StatelessWidget {
                 children: [
                   Expanded(
                     child: RtcTextField(
+                      controller: _searchController,
                       hintText: S.current.searchHint,
                       hintStyle: theme.bodyLarge!.copyWith(
                         color: AppColors.grayPalette.shade400,
                       ),
-                      onChanged: (value) => cubit.onSearchChanged(value),
-                      prefix: RtcImage(image: "$baseImage/search.svg"),
+                      onChanged: (value) {
+                        cubit.onSearchChanged(value);
+                        setState(() {});
+                      },
+                      prefix: RtcImage(
+                        image: "$baseImage/search.svg",
+                        boxFit: BoxFit.contain,
+                        width: 20,
+                        height: 20,
+                      ),
+                      suffix: _searchController.text.isNotEmpty
+                          ? GestureDetector(
+                              onTap: () {
+                                _searchController.clear();
+                                cubit.onSearchChanged('');
+                                setState(() {});
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 12),
+                                child: RtcImage(
+                                  image: "$baseImage/close.svg",
+                                  width: 20,
+                                  height: 20,
+                                  boxFit: BoxFit.fill,
+                                  color: AppColors.grayPalette.shade700,
+                                ),
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                   Container(
@@ -85,7 +130,7 @@ class PreInvoiceStep2View extends StatelessWidget {
               child: Row(
                 children: [
                   SizedBox(
-                    height: 48,
+                    height: 32,
                     width: 140,
                     child: RtcChipList(
                       chips: [
@@ -95,8 +140,10 @@ class PreInvoiceStep2View extends StatelessWidget {
                           opensBottomSheet: true,
                         ),
                       ],
-                      isChipSelected: (index, chip) => state.selectedCategoryId != null,
-                      onChipTap: (index, chip) => _showCategoryFilter(context, cubit, state),
+                      isChipSelected: (index, chip) =>
+                          state.selectedCategoryId != null,
+                      onChipTap: (index, chip) =>
+                          _showCategoryFilter(context, cubit, state),
                     ),
                   ),
                   const Spacer(),
@@ -105,7 +152,7 @@ class PreInvoiceStep2View extends StatelessWidget {
                     onTap: () => cubit.toggleShowAvailableOnly(),
                     child: RtcImage(
                       image: state.showAvailableOnly
-                          ? "$baseImage/toggle_base.svg"
+                          ? "$baseImage/toggle_active.svg"
                           : "$baseImage/toggle_base.svg",
                       width: 36,
                       height: 20,
@@ -128,19 +175,30 @@ class PreInvoiceStep2View extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    '${state.filteredProducts.length} ${S.current.productsFound}',
-                    style: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade900,
-                    ),
-                  ),
+                  state.filteredProducts.isEmpty
+                      ? SizedBox.shrink()
+                      : Text(
+                          '${state.filteredProducts.length} ${S.current.productsFound}',
+                          style: theme.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.grayPalette.shade900,
+                          ),
+                        ),
                 ],
               ),
             ),
             Expanded(
               child: state.status == PreInvoiceRequestStatus.loading
                   ? const Center(child: CircularProgressIndicator())
+                  : state.filteredProducts.isEmpty
+                  ? Center(
+                      child: Text(
+                        S.current.noItemsFound,
+                        style: theme.bodyLarge?.copyWith(
+                          color: AppColors.grayPalette.shade600,
+                        ),
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: state.filteredProducts.length,
                       itemBuilder: (context, index) {

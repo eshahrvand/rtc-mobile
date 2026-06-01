@@ -152,7 +152,6 @@ class RtcLineChartCard extends StatelessWidget {
                           dotData: const FlDotData(show: false),
                           belowBarData: BarAreaData(show: false),
                           preventCurveOverShooting: true,
-                          curveSmoothness: 0.35,
                         ),
                         LineChartBarData(
                           spots: line2Data,
@@ -162,9 +161,7 @@ class RtcLineChartCard extends StatelessWidget {
                           isStrokeCapRound: true,
                           dotData: const FlDotData(show: false),
                           belowBarData: BarAreaData(show: false),
-                          preventCurveOverShooting: false,
-                          preventCurveOvershootingThreshold: 10,
-                          curveSmoothness: 0.1,
+                          preventCurveOverShooting: true,
                         ),
                       ],
                       lineTouchData: LineTouchData(

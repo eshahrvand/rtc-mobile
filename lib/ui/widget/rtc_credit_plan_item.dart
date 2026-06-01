@@ -19,86 +19,96 @@ class RtcCreditPlanItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
+    var theme = Theme
+        .of(context)
+        .textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.brandPalette.shade600
-                : Colors.transparent,
-            width: isSelected ? 2 : 0,
-          ),
-          boxShadow: AppColors.primaryShadow,
+          margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isSelected
+              ? AppColors.brandPalette.shade600
+              : Colors.transparent,
+          width: isSelected ? 2 : 0,
         ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        plan.providerName,
-                        style: theme.bodyMedium!.copyWith(
-                          color: AppColors.grayPalette.shade900,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        plan.planName,
-                        style: theme.labelLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.grayPalette.shade900,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                RtcImage(
-                  image: plan.logo,
-                  width: 44,
-                  height: 44,
-                  boxFit: BoxFit.fill,
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            Row(
-              spacing: 10,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  S.current.preInvoiceValidityDuration,
-                  style: theme.bodyMedium!.copyWith(
-                    color: AppColors.grayPalette.shade900,
-                  ),
-                ),
-                Expanded(
-                  child: RtcDivider(
-                    height: 0.5,
-                    color: AppColors.grayPalette.shade200,
-                  ),
-                ),
-                Text(
-                  plan.validityDuration,
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade700,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        boxShadow: AppColors.primaryShadow,
       ),
-    );
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      plan.providerName,
+                      style: theme.bodyMedium!.copyWith(
+                        color: AppColors.grayPalette.shade900,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      plan.planName,
+                      style: theme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grayPalette.shade900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              RtcImage(
+                image: plan.logo,
+                width: 44,
+                height: 44,
+                boxFit: BoxFit.fill,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                S.current.preInvoiceValidityDuration,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: RtcDivider(
+                  height: 0.5,
+                  color: AppColors.grayPalette.shade200,
+                ),
+              ),
+              SizedBox(width: 10),
+              Text(
+                plan.validityDuration,
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(width: 4),
+              Text(
+                S.current.day,
+                style: theme.bodySmall!.copyWith(
+                  color: AppColors.grayPalette.shade700,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),);
   }
 }

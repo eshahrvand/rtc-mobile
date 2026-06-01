@@ -40,8 +40,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               id: dto.id,
               logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
               providerName: dto.creditPlan.name,
-              planName: 'طرح ${dto.repaymentDurationMonths} ماهه',
-              validityDuration: '۴۸ ساعت',
+              planName: dto.name,
+              validityDuration: dto.creditPlan.validity_window_days.toString(),
             );
           }).toList();
 
@@ -140,7 +140,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final original = state.originalCustomerInfo;
 
     // Check if data has actually changed
-    final hasChanged = original == null ||
+    final hasChanged =
+        original == null ||
         info.firstName != original.firstName ||
         info.lastName != original.lastName ||
         info.nationalId != original.nationalId ||

@@ -34,6 +34,7 @@ class CreditPlanSummaryDtoModel with _$CreditPlanSummaryDtoModel {
   const factory CreditPlanSummaryDtoModel({
     required String id,
     required String name,
+     int? validity_window_days,
     ImageDtoModel? image,
   }) = _CreditPlanSummaryDtoModel;
 
