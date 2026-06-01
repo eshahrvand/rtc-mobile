@@ -384,8 +384,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void _updateSummary() {
     int totalAmount = 0;
     int totalDiscounts = 0;
+    int totalQuantity = 0;
 
     for (final item in state.cartItems) {
+      totalQuantity += item.quantity;
       final price = int.tryParse(item.price.replaceAll(',', '')) ?? 0;
       final oldPrice = item.oldPrice != null
           ? int.tryParse(item.oldPrice!.replaceAll(',', ''))
@@ -407,6 +409,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         totalAmount: formatter.format(totalAmount),
         totalDiscounts: formatter.format(totalDiscounts),
         payableAmount: formatter.format(payableAmount),
+        totalQuantity: totalQuantity,
       ),
     );
   }

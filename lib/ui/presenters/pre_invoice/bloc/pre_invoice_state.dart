@@ -49,6 +49,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default('0') String totalAmount,
     @Default('0') String totalDiscounts,
     @Default('0') String payableAmount,
+    @Default(0) int totalQuantity,
 
     // Step 3 — Customer Info
     @Default('') String customerIdQuery,

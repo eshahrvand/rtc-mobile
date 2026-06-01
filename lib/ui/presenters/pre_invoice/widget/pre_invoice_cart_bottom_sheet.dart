@@ -40,8 +40,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                //TODO: calculate quantity
-                _buildHeader(state.cartItems.length, context),
+                _buildHeader(state.totalQuantity, context),
                 const SizedBox(height: 14),
                 Flexible(
                   child: ListView.separated(
