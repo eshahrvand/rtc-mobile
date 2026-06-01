@@ -10,7 +10,7 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
   final bool isMultiSelection;
 
   MediaPickerCubit({this.isMultiSelection = false})
-      : super(MediaPickerState(isMultiSelection: isMultiSelection));
+    : super(MediaPickerState(isMultiSelection: isMultiSelection));
 
   final ImagePicker _picker = ImagePicker();
   final Map<String, Uint8List?> _thumbCache = {};
@@ -27,12 +27,14 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
   }
 
   Future<void> loadInitialGallery() async {
-    emit(state.copyWith(
-      isLoadingGallery: true,
-      currentPage: 0,
-      loadedAssetIds: [],
-      hasMore: true,
-    ));
+    emit(
+      state.copyWith(
+        isLoadingGallery: true,
+        currentPage: 0,
+        loadedAssetIds: [],
+        hasMore: true,
+      ),
+    );
 
     try {
       // COMMENT: Explicitly requesting permission using PhotoManager.
@@ -40,13 +42,16 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       print(">> [MEDIA PICKER] Requesting permissions...");
       final PermissionState ps = await PhotoManager.requestPermissionExtend();
       print(">> [MEDIA PICKER] Permission State: $ps");
-      
+
       if (!ps.isAuth && ps != PermissionState.limited) {
         print(">> [MEDIA PICKER] Permission denied");
-        emit(state.copyWith(
-          error: 'دسترسی به گالری تایید نشد. لطفا دسترسی را در تنظیمات فعال کنید.',
-          isLoadingGallery: false,
-        ));
+        emit(
+          state.copyWith(
+            error:
+                'دسترسی به گالری تایید نشد. لطفا دسترسی را در تنظیمات فعال کنید.',
+            isLoadingGallery: false,
+          ),
+        );
         return;
       }
 
@@ -71,18 +76,22 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       );
       print(">> [MEDIA PICKER] Assets loaded: ${newAssets.length}");
 
-      emit(state.copyWith(
-        loadedAssetIds: newAssets.map((e) => e.id).toList(),
-        isLoadingGallery: false,
-        currentPage: 1,
-        hasMore: newAssets.length == state.pageSize,
-      ));
+      emit(
+        state.copyWith(
+          loadedAssetIds: newAssets.map((e) => e.id).toList(),
+          isLoadingGallery: false,
+          currentPage: 1,
+          hasMore: newAssets.length == state.pageSize,
+        ),
+      );
     } catch (e) {
       print(">> [MEDIA PICKER] ERROR: $e");
-      emit(state.copyWith(
-        error: 'خطا در بارگذاری گالری: $e',
-        isLoadingGallery: false,
-      ));
+      emit(
+        state.copyWith(
+          error: 'خطا در بارگذاری گالری: $e',
+          isLoadingGallery: false,
+        ),
+      );
     }
   }
 
@@ -110,42 +119,54 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       final updated = List<String>.from(state.loadedAssetIds)
         ..addAll(newAssets.map((e) => e.id));
 
-      emit(state.copyWith(
-        loadedAssetIds: updated,
-        currentPage: page + 1,
-        hasMore: newAssets.length == state.pageSize,
-        isLoadingMore: false,
-      ));
+      emit(
+        state.copyWith(
+          loadedAssetIds: updated,
+          currentPage: page + 1,
+          hasMore: newAssets.length == state.pageSize,
+          isLoadingMore: false,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(isLoadingMore: false, error: 'خطا در صفحه بندی: $e'));
     }
   }
 
-  Future<void> addMediaFromAsset(AssetEntity asset) async {
+  Future<MediaItem?> getMediaFromAsset(AssetEntity asset) async {
     try {
       final file = await asset.file;
-      if (file == null) return;
+      if (file == null) return null;
 
       Uint8List? thumb = await getThumb(asset);
 
-      final newMedia = MediaItem(
+      return MediaItem(
         file: file,
         type: MediaType.image,
         thumbnail: thumb,
         assetId: asset.id,
       );
-
-      final List<MediaItem> updatedList = state.isMultiSelection
-          ? (List<MediaItem>.from(state.selectedMedia)..add(newMedia))
-          : [newMedia];
-
-      emit(state.copyWith(selectedMedia: updatedList));
-      
-      if (!state.isMultiSelection) {
-        confirmSelection(); // Auto-confirm for single selection
-      }
     } catch (e) {
       emit(state.copyWith(error: 'خطا در انتخاب فایل: $e'));
+      return null;
+    }
+  }
+
+  void addEditedMedia(MediaItem newMedia) {
+    final List<MediaItem> updatedList = state.isMultiSelection
+        ? (List<MediaItem>.from(state.selectedMedia)..add(newMedia))
+        : [newMedia];
+
+    emit(state.copyWith(selectedMedia: updatedList));
+
+    if (!state.isMultiSelection) {
+      confirmSelection(); // Auto-confirm for single selection
+    }
+  }
+
+  Future<void> addMediaFromAsset(AssetEntity asset) async {
+    final media = await getMediaFromAsset(asset);
+    if (media != null) {
+      addEditedMedia(media);
     }
   }
 
@@ -155,13 +176,13 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
     emit(state.copyWith(selectedMedia: updated));
   }
 
-  Future<void> pickFromCamera() async {
+  Future<MediaItem?> captureFromCamera() async {
     emit(state.copyWith(isOpeningCamera: true));
     try {
       final result = await _picker.pickImage(source: ImageSource.camera);
       if (result == null) {
         emit(state.copyWith(isOpeningCamera: false));
-        return;
+        return null;
       }
 
       final file = File(result.path);
@@ -171,23 +192,23 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
         thumbnail: await file.readAsBytes(),
       );
 
-      final List<MediaItem> updatedList = state.isMultiSelection
-          ? (List<MediaItem>.from(state.selectedMedia)..add(newMedia))
-          : [newMedia];
-
-      emit(state.copyWith(
-        selectedMedia: updatedList,
-        isOpeningCamera: false,
-      ));
-
-      if (!state.isMultiSelection) {
-        confirmSelection();
-      }
+      emit(state.copyWith(isOpeningCamera: false));
+      return newMedia;
     } catch (e) {
-      emit(state.copyWith(
-        error: 'خطا در باز کردن دوربین: $e',
-        isOpeningCamera: false,
-      ));
+      emit(
+        state.copyWith(
+          error: 'خطا در باز کردن دوربین: $e',
+          isOpeningCamera: false,
+        ),
+      );
+      return null;
+    }
+  }
+
+  Future<void> pickFromCamera() async {
+    final media = await captureFromCamera();
+    if (media != null) {
+      addEditedMedia(media);
     }
   }
 

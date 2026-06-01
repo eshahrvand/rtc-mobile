@@ -36,7 +36,7 @@ class MediaEditScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),

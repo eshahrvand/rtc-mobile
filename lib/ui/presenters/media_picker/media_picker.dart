@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,19 +12,25 @@ import 'bloc/media_picker_cubit.dart';
 import 'bloc/media_picker_state.dart';
 import 'bloc/model/media_item.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
+import 'widget/media_edit_screen.dart';
+import 'package:rtc_mobile/ui/presenters/media_picker/widget/rtc_camera_screen.dart';
 
 class MediaPickerBottomSheet extends StatefulWidget {
   final bool isMultiSelection;
 
   const MediaPickerBottomSheet({super.key, this.isMultiSelection = false});
 
-  static Future<List<MediaItem>?> show(BuildContext context, {bool isMultiSelection = false}) {
+  static Future<List<MediaItem>?> show(
+    BuildContext context, {
+    bool isMultiSelection = false,
+  }) {
     return showModalBottomSheet<List<MediaItem>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider(
-        create: (context) => MediaPickerCubit(isMultiSelection: isMultiSelection),
+        create: (context) =>
+            MediaPickerCubit(isMultiSelection: isMultiSelection),
         child: MediaPickerBottomSheet(isMultiSelection: isMultiSelection),
       ),
     );
@@ -97,14 +104,14 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         children: [
           Container(
-            width: 40,
-            height: 4,
+            width: 32,
+            height: 2,
             decoration: BoxDecoration(
-              color: AppColors.grayPalette.shade300,
+              color: AppColors.brandPalette.shade600,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -114,20 +121,20 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
               Expanded(
                 child: Text(
                   S.current.uploadDocuments,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.grayPalette.shade900,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.grayPalette.shade900,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
                 child: RtcImage(
-                  // TODO: Ensure close.svg exists
                   image: "$baseImage/close.svg",
                   width: 24,
                   height: 24,
                   color: AppColors.grayPalette.shade700,
+                  boxFit: BoxFit.fill,
                 ),
               ),
             ],
@@ -161,7 +168,9 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
             future: AssetEntity.fromId(assetId),
             builder: (context, snapshot) {
               final asset = snapshot.data;
-              if (asset == null) return Container(color: AppColors.grayPalette.shade100);
+              if (asset == null) {
+                return Container(color: AppColors.grayPalette.shade100);
+              }
               return _buildAssetItem(context, asset, state);
             },
           ),
@@ -172,22 +181,50 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
 
   Widget _buildCameraItem(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.read<MediaPickerCubit>().pickFromCamera(),
+      onTap: () async {
+        final cubit = context.read<MediaPickerCubit>();
+        final File? croppedFile = await RtcCameraScreen.open(context);
+        if (croppedFile != null && context.mounted) {
+          final media = MediaItem(
+            file: croppedFile,
+            type: MediaType.image,
+            thumbnail: await croppedFile.readAsBytes(),
+          );
+          cubit.addEditedMedia(media);
+        }
+      },
       child: Container(
         color: AppColors.grayPalette.shade100,
-        child: Icon(Icons.camera_alt, size: 32, color: AppColors.grayPalette.shade600),
+        child: Icon(
+          Icons.camera_alt,
+          size: 32,
+          color: AppColors.grayPalette.shade600,
+        ),
       ),
     );
   }
 
-  Widget _buildAssetItem(BuildContext context, AssetEntity asset, MediaPickerState state) {
+  Widget _buildAssetItem(
+    BuildContext context,
+    AssetEntity asset,
+    MediaPickerState state,
+  ) {
     final isSelected = state.selectedMedia.any((m) => m.assetId == asset.id);
 
     return Stack(
       fit: StackFit.expand,
       children: [
         GestureDetector(
-          onTap: () => context.read<MediaPickerCubit>().addMediaFromAsset(asset),
+          onTap: () async {
+            final cubit = context.read<MediaPickerCubit>();
+            final media = await cubit.getMediaFromAsset(asset);
+            if (media != null && context.mounted) {
+              final edited = await MediaEditScreen.crop(context, media);
+              if (edited != null) {
+                cubit.addEditedMedia(edited);
+              }
+            }
+          },
           child: FutureBuilder<Uint8List?>(
             future: context.read<MediaPickerCubit>().getThumb(asset),
             builder: (context, snapshot) {
@@ -203,18 +240,27 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
             right: 8,
             top: 8,
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
+                final cubit = context.read<MediaPickerCubit>();
                 if (isSelected) {
-                  context.read<MediaPickerCubit>().removeMediaByAssetId(asset.id);
+                  cubit.removeMediaByAssetId(asset.id);
                 } else {
-                  context.read<MediaPickerCubit>().addMediaFromAsset(asset);
+                  final media = await cubit.getMediaFromAsset(asset);
+                  if (media != null && context.mounted) {
+                    final edited = await MediaEditScreen.crop(context, media);
+                    if (edited != null) {
+                      cubit.addEditedMedia(edited);
+                    }
+                  }
                 }
               },
               child: Container(
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.brandPalette.shade600 : Colors.black26,
+                  color: isSelected
+                      ? AppColors.brandPalette.shade600
+                      : Colors.black26,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 1.5),
                 ),
@@ -245,11 +291,14 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
           ),
           const SizedBox(width: 16),
           ElevatedButton(
-            onPressed: () => context.read<MediaPickerCubit>().confirmSelection(),
+            onPressed: () =>
+                context.read<MediaPickerCubit>().confirmSelection(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.brandPalette.shade600,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: Text(S.current.confirm),
           ),
