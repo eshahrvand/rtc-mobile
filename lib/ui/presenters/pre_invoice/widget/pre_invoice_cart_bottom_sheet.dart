@@ -60,6 +60,8 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                 RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
                 const SizedBox(height: 10),
                 _buildSummary(state, context),
+
+                const SizedBox(height: 32),
               ],
             ),
           ),

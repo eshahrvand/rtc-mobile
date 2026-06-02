@@ -78,7 +78,7 @@ void showLogOutBottomSheet({required BuildContext context}) {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
                 Row(
                   children: [
                     Expanded(
