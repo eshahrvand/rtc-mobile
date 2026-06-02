@@ -13,6 +13,7 @@ import 'order_clearance_amount_sheet.dart';
 import 'order_clearance_operation_widget.dart';
 import 'order_clearance_otp_sheet.dart';
 import 'order_operation_item_widget.dart';
+import 'order_settlement_operations_widget.dart';
 
 class OrderTabFinancial extends StatefulWidget {
   final OrderDetailModel order;
@@ -66,16 +67,16 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
         final isPreInvoice = widget.order.status == 'پیش فاکتور';
         final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
         final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
-        final isClearanceInProgress =
-            state.clearanceStep == ClearanceStep.amountEntered ||
-            state.clearanceStep == ClearanceStep.documentsPending;
+        
+        final showSettlement = isWaitingSettlement || 
+            state.clearanceStep == ClearanceStep.success || 
+            (state.clearanceStep != ClearanceStep.initial && state.isOutOfTolerance);
 
         return Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
-                  spacing: 8,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -112,42 +113,59 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                             widget.order.status == 'تایید شده' ||
                             widget.order.status == 'در انتظار تسویه' ||
                             widget.order.status == 'رد شده'))
-                      OrderClearanceOperationWidget(
-                        amount: state.clearanceAmount.isEmpty
-                            ? widget.order.financialSummary.finalAmount
-                            : state.clearanceAmount,
-                        orderAmount:
-                            state.orderAmount ??
-                            widget.order.financialSummary.finalAmount,
-                        excessAmount: state.excessAmount,
-                        walletName: state.walletName,
-                        isOutOfTolerance: state.isOutOfTolerance,
-                        isOnline: state.gatewayType == GatewayType.online,
-                        onAction: () {
-                          if (state.gatewayType == GatewayType.online) {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (_) => OrderClearanceOtpSheet(
-                                phoneNumber: widget.order.customer.phone,
-                                onConfirm: () {
-                                  Navigator.pop(context);
-                                  cubit.confirmClearanceOtp();
-                                },
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: OrderClearanceOperationWidget(
+                          amount: state.clearanceAmount.isEmpty
+                              ? widget.order.financialSummary.finalAmount
+                              : state.clearanceAmount,
+                          orderAmount:
+                              state.orderAmount ??
+                              widget.order.financialSummary.finalAmount,
+                          excessAmount: state.excessAmount,
+                          walletName: state.walletName,
+                          isOutOfTolerance: state.isOutOfTolerance,
+                          isOnline: state.gatewayType == GatewayType.online,
+                          onAction: () {
+                            if (state.gatewayType == GatewayType.online) {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (_) => OrderClearanceOtpSheet(
+                                  phoneNumber: widget.order.customer.phone,
+                                  onConfirm: () {
+                                    Navigator.pop(context);
+                                    cubit.confirmClearanceOtp();
+                                  },
+                                ),
+                              );
+                            } else {
+                              cubit.pickClearanceDocument(context);
+                            }
+                          },
+                          onEdit: state.clearanceAmount.isNotEmpty &&
+                                  widget.order.status == 'پیش فاکتور'
+                              ? () {
+                                  cubit.resetClearance();
+                                  _showAmountSheet(context, cubit);
+                                }
+                              : null,
+                        ),
+                      ),
+
+                    if (showSettlement)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: OrderSettlementOperationsWidget(
+                          op: state.settlementOperation ??
+                              const OrderOperationModel(
+                                step: 2,
+                                title: 'عملیات تسویه',
+                                status: '',
+                                isCompleted: false,
                               ),
-                            );
-                          } else {
-                            cubit.pickClearanceDocument(context);
-                          }
-                        },
-                        onEdit: state.clearanceAmount.isNotEmpty &&
-                                widget.order.status == 'پیش فاکتور'
-                            ? () {
-                                cubit.resetClearance();
-                                _showAmountSheet(context, cubit);
-                              }
-                            : null,
+                        ),
                       ),
 
                     if (widget.order.operations.isNotEmpty)

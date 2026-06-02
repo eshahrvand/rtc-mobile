@@ -57,6 +57,7 @@ class OrdersState with _$OrdersState {
 
     // Settlement Flow
     @Default(SettlementStep.initial) SettlementStep settlementStep,
+    OrderOperationModel? settlementOperation,
     String? settlementMethod,
     String? settlementRedirectUrl,
     double? settlementReservedAmount,

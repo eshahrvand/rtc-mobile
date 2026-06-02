@@ -176,7 +176,7 @@ class OrderOperationModel {
   final String status;
   final bool isCompleted;
 
-  OrderOperationModel({
+  const OrderOperationModel({
     required this.step,
     required this.title,
     required this.status,

@@ -169,6 +169,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               status: OrdersRequestStatus.success,
               selectedOrder: detail,
               disburseOperation: _createDisburseOp(detail),
+              settlementOperation: _createSettlementOp(detail),
               selectedTabIndex: 0,
             ),
           );
@@ -202,6 +203,28 @@ class OrdersCubit extends Cubit<OrdersState> {
       return OrderOperationModel(
         step: 1,
         title: 'عملیات تخلیه',
+        status: isDone ? 'انجام شده' : '',
+        isCompleted: isDone,
+      );
+    }
+    return null;
+  }
+
+  OrderOperationModel? _createSettlementOp(OrderDetailModel detail) {
+    final isDone = detail.status == 'تایید شده' ||
+        detail.status == 'در انتظار تایید' ||
+        state.settlementStep == SettlementStep.success;
+
+    final statusesToShowSettlement = [
+      'در انتظار تسویه',
+      'در انتظار تایید',
+      'تایید شده',
+    ];
+
+    if (statusesToShowSettlement.contains(detail.status)) {
+      return OrderOperationModel(
+        step: 2,
+        title: 'عملیات تسویه',
         status: isDone ? 'انجام شده' : '',
         isCompleted: isDone,
       );
