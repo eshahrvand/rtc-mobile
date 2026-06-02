@@ -269,8 +269,9 @@ class PreInvoiceStep5View extends StatelessWidget {
                               ),
                               RtcImage(
                                 image: "$baseImage/toman.svg",
-                                width: 24,
-                                height: 24,
+                                width: 18,
+                                height: 18,
+                                boxFit: BoxFit.fill,
                               ),
                             ],
                           ),

@@ -258,8 +258,18 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       height: safeHeight,
     );
 
+    // Downscale if the cropped image is still too large
+    if (cropped.width > 2000 || cropped.height > 2000) {
+      cropped = img.copyResize(
+        cropped,
+        width: cropped.width > cropped.height ? 2000 : null,
+        height: cropped.height >= cropped.width ? 2000 : null,
+        interpolation: img.Interpolation.linear,
+      );
+    }
+
     final resultFile = File(tempPath);
-    await resultFile.writeAsBytes(img.encodeJpg(cropped, quality: 70));
+    await resultFile.writeAsBytes(img.encodeJpg(cropped, quality: 40));
 
     return tempPath;
   } catch (e) {

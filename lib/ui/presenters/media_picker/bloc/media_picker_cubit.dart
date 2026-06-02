@@ -181,7 +181,9 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
     try {
       final result = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 50,
+        imageQuality: 80,
+        maxWidth: 2000,
+        maxHeight: 2000,
       );
       if (result == null) {
         emit(state.copyWith(isOpeningCamera: false));
