@@ -26,7 +26,7 @@ class PreInvoiceSectionWidget extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Row(
               spacing: 4,
               children: [
@@ -46,7 +46,7 @@ class PreInvoiceSectionWidget extends StatelessWidget {
           if (showDivider)
             Padding(
               padding: const EdgeInsets.only(
-                top: 8,
+                top: 0,
                 bottom: 8,
                 right: 16,
                 left: 16,
