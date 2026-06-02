@@ -74,7 +74,12 @@ class OrderTabDetails extends StatelessWidget {
                 ),
                 child: Column(
                   children: order.documents
-                      .map((d) => OrderDetailsDocumentItem(doc: d))
+                      .map(
+                        (d) => Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 16),
+                          child: OrderDetailsDocumentItem(doc: d),
+                        ),
+                      )
                       .toList(),
                 ),
               ),
