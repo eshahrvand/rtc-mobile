@@ -231,7 +231,8 @@ class PreInvoiceStep5View extends StatelessWidget {
                       Column(
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               if (product.oldPrice != null) ...[
                                 const SizedBox(width: 8),
@@ -243,8 +244,8 @@ class PreInvoiceStep5View extends StatelessWidget {
                                     color: AppColors.grayPalette.shade400,
                                   ),
                                 ),
-                                SizedBox(width: 2),
                               ],
+                              const Spacer(),
                               if (product.discount != "0%")
                                 RtcDiscountBadge(
                                   discount: product.discount!,
@@ -267,6 +268,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                                   color: AppColors.grayPalette.shade900,
                                 ),
                               ),
+                              const Spacer(),
                               RtcImage(
                                 image: "$baseImage/toman.svg",
                                 width: 18,
