@@ -259,7 +259,7 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
     );
 
     final resultFile = File(tempPath);
-    await resultFile.writeAsBytes(img.encodeJpg(cropped, quality: 85));
+    await resultFile.writeAsBytes(img.encodeJpg(cropped, quality: 70));
 
     return tempPath;
   } catch (e) {

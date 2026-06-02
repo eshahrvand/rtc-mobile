@@ -31,14 +31,17 @@ class PreInvoiceStep5View extends StatelessWidget {
                 child: Column(
                   spacing: 8,
                   children: [
-                    PreInvoiceSectionWidget(
-                      title: S.current.creditPlanTitle,
-                      icon: RtcImage(
-                        image: '$baseImage/referee-card.svg',
-                        width: 20,
-                        height: 20,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: PreInvoiceSectionWidget(
+                        title: S.current.creditPlanTitle,
+                        icon: RtcImage(
+                          image: '$baseImage/referee-card.svg',
+                          width: 20,
+                          height: 20,
+                        ),
+                        child: _buildCreditPlanInfo(state, theme),
                       ),
-                      child: _buildCreditPlanInfo(state, theme),
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.productsTitle,
@@ -429,7 +432,10 @@ class PreInvoiceStep5View extends StatelessWidget {
   }
 
   Widget _buildFinancialSummary(PreInvoiceState state, TextTheme theme) {
-    int totalItems = state.cartItems.fold(0, (sum, item) => sum + item.quantity);
+    int totalItems = state.cartItems.fold(
+      0,
+      (sum, item) => sum + item.quantity,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -500,11 +506,7 @@ class PreInvoiceStep5View extends StatelessWidget {
               ),
               if (isPrice) ...[
                 SizedBox(width: 4),
-                RtcImage(
-                  image: "$baseImage/toman.svg",
-                  width: 24,
-                  height: 24,
-                ),
+                RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
               ],
             ],
           ),

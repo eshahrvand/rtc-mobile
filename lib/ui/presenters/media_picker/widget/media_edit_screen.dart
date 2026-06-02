@@ -12,7 +12,7 @@ class MediaEditScreen extends StatelessWidget {
   static Future<MediaItem?> crop(BuildContext context, MediaItem item) async {
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: item.file.path,
-      compressQuality: 95,
+      compressQuality: 70,
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'ویرایش تصویر',
