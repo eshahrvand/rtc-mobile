@@ -44,8 +44,8 @@ class _SettlementMethodBottomSheetState
 
   final List<FilterItem> _methods = [
     FilterItem(id: 'wallet', title: S.current.walletSettlement),
-    const FilterItem(id: 'online', title: 'درگاه پرداخت آنلاین'),
-    const FilterItem(id: 'cash', title: 'تسویه نقدی (لینک پرداخت)'),
+    const FilterItem(id: 'ipg', title: 'درگاه پرداخت آنلاین'),
+    const FilterItem(id: 'link', title: 'تسویه نقدی (لینک پرداخت)'),
     const FilterItem(id: 'offline', title: 'ثبت فیش واریزی'),
   ];
 

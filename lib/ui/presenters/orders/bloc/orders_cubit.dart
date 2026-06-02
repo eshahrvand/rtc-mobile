@@ -452,8 +452,21 @@ class OrdersCubit extends Cubit<OrdersState> {
     if (state.selectedOrder == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
+    // Map UI method IDs to Backend expected choices
+    String apiMethod = method;
+    if (method == 'online') apiMethod = 'ipg';
+    if (method == 'cash') apiMethod = 'link';
+
+    // Calculate difference amount if not provided
+    double? finalAmount = amount;
+    if (finalAmount == null && state.selectedOrder != null) {
+      final orderTotal = double.tryParse(state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', '')) ?? 0;
+      final cleared = double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
+      finalAmount = (orderTotal - cleared).abs();
+    }
+
     _ordersRepo
-        .settleInitiate(state.selectedOrder!.id, method, amount: amount)
+        .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
         .then((response) {
           final type = response['type'];
           emit(

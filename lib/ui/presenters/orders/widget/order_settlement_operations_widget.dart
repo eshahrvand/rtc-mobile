@@ -232,9 +232,9 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
     switch (method) {
       case 'wallet':
         return S.current.walletSettlement;
-      case 'online':
+      case 'ipg':
         return 'درگاه پرداخت آنلاین';
-      case 'cash':
+      case 'link':
         return 'تسویه نقدی (لینک پرداخت)';
       case 'offline':
         return 'ثبت فیش واریزی';
