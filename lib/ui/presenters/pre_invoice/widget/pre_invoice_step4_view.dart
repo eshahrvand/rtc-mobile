@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
+import 'package:rtc_mobile/core/utils/file_utils.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'pre_invoice_document_item.dart';
@@ -85,8 +86,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                       return PreInvoiceDocumentItem(
                         title: S.current.otherDocumentsLabel(index + 1),
                         fileName: path.split('/').last,
-                        fileSize: '۱۶ MB',
-                        // Mock size as in screenshot
+                        fileSize: FileUtils.getFileSizeString(path),
                         onDelete: () => cubit.removeOptionalDoc(index),
                         onView: () {
                           Navigator.push(

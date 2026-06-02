@@ -11,6 +11,7 @@ import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import '../../../../data/models/pre_invoice_model.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
+import 'package:rtc_mobile/core/utils/file_utils.dart';
 import 'pre_invoice_document_item.dart';
 import 'pre_invoice_section_widget.dart';
 
@@ -376,7 +377,7 @@ class PreInvoiceStep5View extends StatelessWidget {
           if (state.mandatoryDocPath != null)
             _buildDocItem(
               S.current.nationalCardFront,
-              '۱۶ MB',
+              FileUtils.getFileSizeString(state.mandatoryDocPath!),
               state.mandatoryDocPath!.split('/').last,
               state.mandatoryDocPath!,
               context,
@@ -384,7 +385,7 @@ class PreInvoiceStep5View extends StatelessWidget {
           ...state.optionalDocPaths.asMap().entries.map((entry) {
             return _buildDocItem(
               S.current.otherDocumentsLabel(entry.key + 1),
-              '۱۶ MB',
+              FileUtils.getFileSizeString(entry.value),
               entry.value.split('/').last,
               entry.value,
               context,
