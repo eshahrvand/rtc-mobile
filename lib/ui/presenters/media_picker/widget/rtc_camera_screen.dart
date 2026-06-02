@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as img;
@@ -44,8 +44,9 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
 
     _controller = CameraController(
       backCamera,
-      ResolutionPreset.max,
+      ResolutionPreset.high,
       enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     try {
@@ -69,8 +70,9 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
   Future<void> _takePicture() async {
     if (_controller == null ||
         !_controller!.value.isInitialized ||
-        _isCapturing)
+        _isCapturing) {
       return;
+    }
 
     setState(() {
       _isCapturing = true;
@@ -80,12 +82,24 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
       final screenSize = MediaQuery.of(context).size;
       final XFile photo = await _controller!.takePicture();
       final bytes = await photo.readAsBytes();
+      final directory = await getTemporaryDirectory();
+      final tempPath =
+          '${directory.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      // Auto-crop logic
-      final File croppedFile = await _autoCrop(bytes, screenSize);
+      // Offload image processing to a background isolate to keep UI responsive
+      final String? resultPath = await compute(_processImage, {
+        'bytes': bytes,
+        'screenWidth': screenSize.width,
+        'screenHeight': screenSize.height,
+        'tempPath': tempPath,
+      });
 
-      if (mounted) {
-        Navigator.of(context).pop(croppedFile);
+      if (mounted && resultPath != null) {
+        Navigator.of(context).pop(File(resultPath));
+      } else if (mounted) {
+        setState(() {
+          _isCapturing = false;
+        });
       }
     } catch (e) {
       debugPrint('Error taking picture: $e');
@@ -95,72 +109,6 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
         });
       }
     }
-  }
-
-  Future<File> _autoCrop(Uint8List bytes, Size screenSize) async {
-    img.Image? image = img.decodeImage(bytes);
-    if (image == null) throw Exception('Could not decode image');
-
-    // Handle orientation. XFile.readAsBytes() usually gives us the image
-    // in its native sensor orientation (often landscape for back cameras).
-    // We want to match what the user sees on screen.
-    // Most mobile portrait screens will have height > width.
-    if (screenSize.height > screenSize.width && image.width > image.height) {
-      image = img.copyRotate(image, angle: 90);
-    }
-
-    // Fixed aspect ratio for ID card (ISO 7810 ID-1)
-    const double idAspectRatio = 1.58;
-
-    // Calculate the scale to match the 'cover' behavior of the preview
-    // Screen dimensions vs Image dimensions
-    final double scale =
-        (screenSize.width / image.width > screenSize.height / image.height)
-        ? screenSize.width / image.width
-        : screenSize.height / image.height;
-
-    final double visibleWidth = screenSize.width / scale;
-    final double visibleHeight = screenSize.height / scale;
-
-    final double offsetX = (image.width - visibleWidth) / 2;
-    final double offsetY = (image.height - visibleHeight) / 2;
-
-    // Overlay dimensions in screen (logical) pixels
-    final double rectWidth =
-        screenSize.width - (26 * 2); // padding: right: 26, left: 26
-    final double rectHeight = 206; // height: 206
-    final double rectLeft = 26;
-    final double rectTop =
-        (screenSize.height - rectHeight) /
-        2; // Center vertically by default in Stack
-
-    // Map screen rect to image pixels
-    final int pixelX = (offsetX + (rectLeft / scale)).toInt();
-    final int pixelY = (offsetY + (rectTop / scale)).toInt();
-    final int pixelWidth = (rectWidth / scale).toInt();
-    final int pixelHeight = (rectHeight / scale).toInt();
-
-    // Ensure we don't crop outside image bounds
-    final int safeX = pixelX.clamp(0, image.width - 1);
-    final int safeY = pixelY.clamp(0, image.height - 1);
-    final int safeWidth = pixelWidth.clamp(1, image.width - safeX);
-    final int safeHeight = pixelHeight.clamp(1, image.height - safeY);
-
-    img.Image cropped = img.copyCrop(
-      image,
-      x: safeX,
-      y: safeY,
-      width: safeWidth,
-      height: safeHeight,
-    );
-
-    final directory = await getTemporaryDirectory();
-    final path =
-        '${directory.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final resultFile = File(path);
-    await resultFile.writeAsBytes(img.encodeJpg(cropped));
-
-    return resultFile;
   }
 
   @override
@@ -212,7 +160,8 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                 color: Colors.white,
                 width: 24,
                 height: 24,
-              boxFit: BoxFit.fill),
+                boxFit: BoxFit.fill,
+              ),
             ),
           ),
 
@@ -251,5 +200,70 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Top-level function for background image processing
+Future<String?> _processImage(Map<String, dynamic> params) async {
+  try {
+    final Uint8List bytes = params['bytes'];
+    final double screenWidth = params['screenWidth'];
+    final double screenHeight = params['screenHeight'];
+    final String tempPath = params['tempPath'];
+
+    img.Image? image = img.decodeImage(bytes);
+    if (image == null) return null;
+
+    // Handle orientation.
+    // If screen is portrait and image is landscape, rotate it.
+    if (screenHeight > screenWidth && image.width > image.height) {
+      image = img.copyRotate(image, angle: 90);
+    }
+
+    // Calculate the scale to match the 'cover' behavior of the preview
+    final double scale =
+        (screenWidth / image.width > screenHeight / image.height)
+        ? screenWidth / image.width
+        : screenHeight / image.height;
+
+    final double visibleWidth = screenWidth / scale;
+    final double visibleHeight = screenHeight / scale;
+
+    final double offsetX = (image.width - visibleWidth) / 2;
+    final double offsetY = (image.height - visibleHeight) / 2;
+
+    // Overlay dimensions in screen (logical) pixels (MUST MATCH UI)
+    final double rectWidth = screenWidth - (26 * 2);
+    final double rectHeight = 206;
+    final double rectLeft = 26;
+    final double rectTop = (screenHeight - rectHeight) / 2;
+
+    // Map screen rect to image pixels
+    final int pixelX = (offsetX + (rectLeft / scale)).toInt();
+    final int pixelY = (offsetY + (rectTop / scale)).toInt();
+    final int pixelWidth = (rectWidth / scale).toInt();
+    final int pixelHeight = (rectHeight / scale).toInt();
+
+    // Ensure we don't crop outside image bounds
+    final int safeX = pixelX.clamp(0, image.width - 1);
+    final int safeY = pixelY.clamp(0, image.height - 1);
+    final int safeWidth = pixelWidth.clamp(1, image.width - safeX);
+    final int safeHeight = pixelHeight.clamp(1, image.height - safeY);
+
+    img.Image cropped = img.copyCrop(
+      image,
+      x: safeX,
+      y: safeY,
+      width: safeWidth,
+      height: safeHeight,
+    );
+
+    final resultFile = File(tempPath);
+    await resultFile.writeAsBytes(img.encodeJpg(cropped, quality: 85));
+
+    return tempPath;
+  } catch (e) {
+    debugPrint('Error in _processImage: $e');
+    return null;
   }
 }
