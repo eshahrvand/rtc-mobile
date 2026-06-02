@@ -258,7 +258,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         ) ??
         0;
 
-    // TODO: Get tolerance from config/API
+    // Keep tolerance check (20%)
     const tolerancePercent = 0.2;
     final minAllowed = orderAmount * (1 - tolerancePercent);
     final maxAllowed = orderAmount * (1 + tolerancePercent);
@@ -280,9 +280,6 @@ class OrdersCubit extends Cubit<OrdersState> {
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
-          // Determine gateway type from response or hardcode for now
-          // Based on user request, if it's "otp" or "online", we show OTP sheet
-          // For now, let's assume if response has something specific, it's online
           final isOnline =
               response != null &&
               (response is Map) &&
@@ -298,22 +295,10 @@ class OrdersCubit extends Cubit<OrdersState> {
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-              excessAmount: amount > orderAmount
-                  ? (amount - orderAmount).toStringAsFixed(0)
-                  : null,
-              walletName: 'آپ - ۱۲ ماهه',
-              // TODO: From API
+              // If amount < orderAmount, it will lead to awaiting_settlement path in flow
               isOutOfTolerance: false,
             ),
           );
-          // Refresh disburse operation in state
-          if (state.selectedOrder != null) {
-            emit(
-              state.copyWith(
-                disburseOperation: _createDisburseOp(state.selectedOrder!),
-              ),
-            );
-          }
         })
         .catchError((e) {
           emit(
@@ -434,6 +419,84 @@ class OrdersCubit extends Cubit<OrdersState> {
       state.copyWith(
         uploadedClearanceDocPath: null,
         uploadedClearanceDocId: null,
+      ),
+    );
+  }
+
+  // --- Settlement Flow Methods ---
+
+  void initiateSettlement(String method, {double? amount}) {
+    if (state.selectedOrder == null) return;
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    _ordersRepo
+        .settleInitiate(state.selectedOrder!.id, method, amount: amount)
+        .then((response) {
+          final type = response['type'];
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              settlementStep: SettlementStep.methodSelected,
+              settlementMethod: method,
+              settlementRedirectUrl: type == 'redirect' ? response['redirect_url'] : null,
+              settlementReservedAmount: type == 'wallet' ? response['reserved_amount']?.toDouble() : null,
+              settlementBankAccount: type == 'offline' ? response['bank_account'] : null,
+              settlementBankName: type == 'offline' ? response['bank_name'] : null,
+              settlementAccountHolder: type == 'offline' ? response['account_holder'] : null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: 'خطا در شروع عملیات تسویه: ${e.toString()}',
+            ),
+          );
+        });
+  }
+
+  void confirmSettlement({String? trackingCode}) {
+    if (state.selectedOrder == null || state.settlementMethod == null) return;
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    _ordersRepo
+        .settle(
+          state.selectedOrder!.id,
+          state.settlementMethod!,
+          trackingCode: trackingCode,
+        )
+        .then((_) {
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.success,
+              settlementStep: SettlementStep.success,
+            ),
+          );
+          // Refresh order detail to show updated status
+          fetchOrderDetail(state.selectedOrder!.id);
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: 'خطا در تایید تسویه: ${e.toString()}',
+            ),
+          );
+        });
+  }
+
+  void resetSettlement() {
+    emit(
+      state.copyWith(
+        settlementStep: SettlementStep.initial,
+        settlementMethod: null,
+        settlementRedirectUrl: null,
+        settlementReservedAmount: null,
+        settlementBankAccount: null,
+        settlementBankName: null,
+        settlementAccountHolder: null,
+        settlementTrackingCode: null,
       ),
     );
   }

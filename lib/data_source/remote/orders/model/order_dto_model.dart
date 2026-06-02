@@ -35,9 +35,38 @@ class OrderDtoModel with _$OrderDtoModel {
     OrderAgentDtoModel? agent,
     List<PaymentDtoModel>? payments,
     @JsonKey(name: 'remaining_time') RemainingTimeDtoModel? remainingTime,
+    @JsonKey(name: 'disbursement_records') List<DisbursementRecordDtoModel>? disbursementRecords,
+    @JsonKey(name: 'settlement_records') List<SettlementRecordDtoModel>? settlementRecords,
   }) = _OrderDtoModel;
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) => _$OrderDtoModelFromJson(json);
+}
+
+@freezed
+class DisbursementRecordDtoModel with _$DisbursementRecordDtoModel {
+  const factory DisbursementRecordDtoModel({
+    required String gateway,
+    required double amount,
+    required String reference,
+    required String status,
+    @JsonKey(name: 'created_at') required String createdAt,
+  }) = _DisbursementRecordDtoModel;
+
+  factory DisbursementRecordDtoModel.fromJson(Map<String, dynamic> json) => _$DisbursementRecordDtoModelFromJson(json);
+}
+
+@freezed
+class SettlementRecordDtoModel with _$SettlementRecordDtoModel {
+  const factory SettlementRecordDtoModel({
+    required String id,
+    required double amount,
+    @JsonKey(name: 'payment_type') required String paymentType,
+    required String status,
+    @JsonKey(name: 'created_at') required String createdAt,
+    @JsonKey(name: 'tracking_code') String? trackingCode,
+  }) = _SettlementRecordDtoModel;
+
+  factory SettlementRecordDtoModel.fromJson(Map<String, dynamic> json) => _$SettlementRecordDtoModelFromJson(json);
 }
 
 @freezed

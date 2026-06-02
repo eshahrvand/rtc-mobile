@@ -34,6 +34,18 @@ class OrdersRepository {
     return _service.disburse(orderId, {});
   }
 
+  Future<dynamic> settleInitiate(String id, String method, {double? amount}) {
+    final body = {'method': method};
+    if (amount != null) body['amount'] = amount.toString();
+    return _service.settleInitiate(id, body);
+  }
+
+  Future<dynamic> settle(String id, String method, {String? trackingCode}) {
+    final body = {'method': method};
+    if (trackingCode != null) body['tracking_code'] = trackingCode;
+    return _service.settle(id, body);
+  }
+
   Future<List<OrderSummaryModel>> getOrders({
     List<String>? status,
     String? subPlanId,
@@ -183,6 +195,25 @@ class OrdersRepository {
         }).toList(),
         operations: [],
         history: [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)],
+        disbursementRecords: (dto.disbursementRecords ?? []).map((r) {
+          return DisbursementRecordModel(
+            gateway: r.gateway,
+            amount: _formatCurrency(r.amount),
+            reference: r.reference,
+            status: r.status,
+            createdAt: r.createdAt,
+          );
+        }).toList(),
+        settlementRecords: (dto.settlementRecords ?? []).map((s) {
+          return SettlementRecordModel(
+            id: s.id,
+            amount: _formatCurrency(s.amount),
+            paymentType: s.paymentType,
+            status: s.status,
+            createdAt: s.createdAt,
+            trackingCode: s.trackingCode,
+          );
+        }).toList(),
       );
     });
   }

@@ -54,6 +54,16 @@ class OrdersState with _$OrdersState {
     String? uploadedClearanceDocId,
     String? orderAmount,
     @Default(false) bool isOutOfTolerance,
+
+    // Settlement Flow
+    @Default(SettlementStep.initial) SettlementStep settlementStep,
+    String? settlementMethod,
+    String? settlementRedirectUrl,
+    double? settlementReservedAmount,
+    String? settlementBankAccount,
+    String? settlementBankName,
+    String? settlementAccountHolder,
+    String? settlementTrackingCode,
   }) = _OrdersState;
 }
 
@@ -62,5 +72,12 @@ enum ClearanceStep {
   amountEntered,
   otpPending,
   documentsPending,
+  success,
+}
+
+enum SettlementStep {
+  initial,
+  methodSelected,
+  awaitingConfirmation,
   success,
 }

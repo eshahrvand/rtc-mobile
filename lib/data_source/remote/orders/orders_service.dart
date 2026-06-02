@@ -45,4 +45,16 @@ abstract class OrdersService {
     @Path('id') String orderId,
     @Body() Map<String, dynamic> body,
   );
+
+  @POST('orders/orders/{id}/settle-initiate')
+  Future<dynamic> settleInitiate(
+    @Path('id') String id,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @POST('orders/orders/{id}/settle')
+  Future<dynamic> settle(
+    @Path('id') String id,
+    @Body() Map<String, dynamic> body,
+  );
 }

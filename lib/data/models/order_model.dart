@@ -38,6 +38,8 @@ class OrderDetailModel {
   final List<OrderPaymentModel> payments;
   final String? rejectionReason;
   final bool isSettled;
+  final List<DisbursementRecordModel> disbursementRecords;
+  final List<SettlementRecordModel> settlementRecords;
 
   OrderDetailModel({
     required this.id,
@@ -53,6 +55,42 @@ class OrderDetailModel {
     required this.payments,
     this.rejectionReason,
     this.isSettled = false,
+    this.disbursementRecords = const [],
+    this.settlementRecords = const [],
+  });
+}
+
+class DisbursementRecordModel {
+  final String gateway;
+  final String amount;
+  final String reference;
+  final String status;
+  final String createdAt;
+
+  DisbursementRecordModel({
+    required this.gateway,
+    required this.amount,
+    required this.reference,
+    required this.status,
+    required this.createdAt,
+  });
+}
+
+class SettlementRecordModel {
+  final String id;
+  final String amount;
+  final String paymentType;
+  final String status;
+  final String createdAt;
+  final String? trackingCode;
+
+  SettlementRecordModel({
+    required this.id,
+    required this.amount,
+    required this.paymentType,
+    required this.status,
+    required this.createdAt,
+    this.trackingCode,
   });
 }
 
