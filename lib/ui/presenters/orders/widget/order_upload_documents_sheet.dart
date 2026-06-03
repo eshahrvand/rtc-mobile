@@ -131,10 +131,12 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
             ),
           ),
           if (widget.showTrackingField) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             RtcTextField(
               controller: _trackingController,
-              labelText: 'شماره پیگیری پرداخت',
+              hintStyle: theme.bodyLarge!.copyWith(
+                color: AppColors.grayPalette.shade400,
+              ),
               hintText: 'کد پیگیری را وارد کنید',
               keyboardType: TextInputType.number,
               onChanged: (val) => widget.onTrackingCodeChanged?.call(val),

@@ -208,7 +208,7 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
               ),
               if (!isPartial)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 12, 16.0, 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -339,6 +339,7 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+              SizedBox(height: 32),
             ],
           ),
         );
