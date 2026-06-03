@@ -34,6 +34,14 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
             ProductBadgeModel(label: 'SKU', value: dto.sku),
           ]);
 
+          final List<String> imageUrls = [];
+          if (dto.featuredImage != null) {
+            imageUrls.add(dto.featuredImage!.file);
+          }
+          if (dto.images != null && dto.images!.isNotEmpty) {
+            imageUrls.addAll(dto.images!.map((i) => i.image.file));
+          }
+
           final model = ProductDetailModel(
             id: dto.id,
             name: dto.name,
@@ -42,9 +50,7 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
                 : dto.basePrice?.toString() ?? '۰',
             oldPrice: subPlanId != null ? dto.basePrice?.toString() ?? '' : '',
             discountPercent: dto.discountPct?.toString() ?? '۰',
-            imageUrls: dto.images?.isNotEmpty == true
-                ? dto.images!.map((i) => i.image.file).toList()
-                : [dto.featuredImage?.file ?? ''],
+            imageUrls: imageUrls.isNotEmpty ? imageUrls : [''],
             badges: badges,
             specs: [
               if (dto.technicalDetail != null)
