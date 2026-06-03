@@ -151,7 +151,7 @@ class DashboardCubit extends Cubit<DashboardState> {
                         color = AppColors.grayPalette.shade400;
                       } else if (s.status == 'awaiting_settlement') {
                         label = S.current.statusWaitingSettlement;
-                        color = AppColors.grayPalette.shade700;
+                        color = AppColors.blueGrayPalette.shade400;
                       }
 
                       return PieChartItemModel(

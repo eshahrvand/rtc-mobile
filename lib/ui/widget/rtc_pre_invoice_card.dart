@@ -18,9 +18,17 @@ class RtcPreInvoiceCard extends StatelessWidget {
         height: 56,
 
         decoration: BoxDecoration(
-          color: AppColors.grayPalette.shade900,
           borderRadius: BorderRadius.circular(8),
           boxShadow: AppColors.primaryShadow,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.grayPalette.shade900,
+              AppColors.grayPalette.shade600,
+            ],
+            stops: const [0.0, 1.0],
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),

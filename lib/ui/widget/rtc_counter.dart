@@ -72,7 +72,7 @@ class RtcCounter extends StatelessWidget {
             child: RtcImage(
               image: quantity == 1
                   ? "$baseImage/delete.svg"
-                  : "$baseImage/remove.svg",
+                  : "$baseImage/mines.svg",
               width: 16,
               height: 16,
               color: quantity == 1 ? AppColors.errorPalette.shade600 : null,

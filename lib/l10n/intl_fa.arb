@@ -96,6 +96,7 @@
   "planNameLabel": "نام طرح",
   "priceIncreaseLabel": "افزایش قیمت",
   "validityPeriodLabel": "مدت اعتبار",
+  "returnPeriod": "مدت بازپرداخت",
   "nameLabel": "نام",
   "nameLabelWithStar": "نام *",
   "phoneNumberLabel": "شماره موبایل",

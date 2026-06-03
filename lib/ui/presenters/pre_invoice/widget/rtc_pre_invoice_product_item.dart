@@ -34,7 +34,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildImage(),
+          _buildImage(context),
           const SizedBox(width: 30),
           Expanded(
             child: Column(
@@ -61,7 +61,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
     );
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(BuildContext context) {
     return Stack(
       children: [
         SizedBox(
@@ -75,7 +75,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
         Positioned(
           right: 0,
           bottom: 0,
-          child: product.isAvailable ? _buildCounter() : SizedBox(),
+          child: product.isAvailable ? _buildCounter(context) : SizedBox(),
         ),
       ],
     );
@@ -131,7 +131,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
     );
   }
 
-  Widget _buildCounter() {
+  Widget _buildCounter(BuildContext context) {
     if (quantity == 0) {
       return GestureDetector(
         onTap: product.isAvailable ? onAdd : null,
@@ -155,7 +155,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
 
     return Container(
       height: 32,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: AppColors.grayPalette.shade200),
@@ -174,7 +174,10 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
           const SizedBox(width: 14),
           Text(
             '$quantity',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              color: Colors.black,
+              fontWeight: FontWeight.w600
+            )
           ),
           const SizedBox(width: 14),
           GestureDetector(
@@ -182,7 +185,7 @@ class RtcPreInvoiceProductItem extends StatelessWidget {
             child: RtcImage(
               image: quantity == 1
                   ? "$baseImage/delete.svg"
-                  : "$baseImage/remove.svg",
+                  : "$baseImage/mines.svg",
               width: 16,
               height: 16,
             ),

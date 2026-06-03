@@ -61,9 +61,13 @@ class RtcProductItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'موجودی (${product.inventory})',
+                        product.inventory == "0"
+                            ? "ناموجود"
+                            : 'موجودی (${product.inventory})',
                         style: theme.labelSmall!.copyWith(
-                          color: AppColors.successPalette.shade600,
+                          color: product.inventory == "0"
+                              ? AppColors.grayPalette.shade500
+                              : AppColors.successPalette.shade600,
                         ),
                       ),
                       const SizedBox(height: 12),

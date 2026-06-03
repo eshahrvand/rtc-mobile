@@ -166,7 +166,7 @@ class OrdersRepository {
           provider: dto.subPlan.creditPlan?.name ?? '',
           planName: dto.subPlan.name,
           priceIncrease: '', // Need clarification on where this comes from
-          validityPeriod: '${dto.subPlan.repaymentDurationMonths} ماهه',
+          validityPeriod: '${dto.subPlan.repaymentDurationMonths} ماه',
         ),
         products: (dto.lines ?? []).map((line) {
           return OrderProductModel(

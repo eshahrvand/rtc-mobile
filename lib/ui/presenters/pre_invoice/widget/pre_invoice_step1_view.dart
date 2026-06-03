@@ -15,17 +15,22 @@ class PreInvoiceStep1View extends StatelessWidget {
 
         return state.status == PreInvoiceRequestStatus.loading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: state.creditPlans.length,
-                itemBuilder: (context, index) {
-                  final plan = state.creditPlans[index];
-                  return RtcCreditPlanItem(
-                    plan: plan,
-                    isSelected: state.selectedCreditPlanId == plan.id,
-                    onTap: () => cubit.onCreditPlanSelected(plan.id),
-                  );
-                },
-              );
+            : SizedBox(
+              child: ListView.builder(
+                  itemCount: state.creditPlans.length,
+                  itemBuilder: (context, index) {
+                    final plan = state.creditPlans[index];
+                    return Padding(
+                      padding:  EdgeInsets.only( bottom: index == state.creditPlans.length -1 ? 20 : 0),
+                      child: RtcCreditPlanItem(
+                        plan: plan,
+                        isSelected: state.selectedCreditPlanId == plan.id,
+                        onTap: () => cubit.onCreditPlanSelected(plan.id),
+                      ),
+                    );
+                  },
+                ),
+            );
       },
     );
   }

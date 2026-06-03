@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'rtc_image.dart';
+import 'rtc_image_preview.dart';
 
 class RtcProductImageGallery extends StatelessWidget {
   final List<String> imageUrls;
@@ -25,11 +26,14 @@ class RtcProductImageGallery extends StatelessWidget {
             itemCount: imageUrls.length,
             onPageChanged: onImageChanged,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: RtcImage(
-                  image: imageUrls[index],
-                  boxFit: BoxFit.contain,
+              return GestureDetector(
+                onTap: () => RtcImagePreview.show(context, imageUrls, index),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: RtcImage(
+                    image: imageUrls[index],
+                    boxFit: BoxFit.contain,
+                  ),
                 ),
               );
             },

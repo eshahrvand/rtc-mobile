@@ -217,6 +217,7 @@
   "product": "",
   "year": "",
   "startDate": "",
+  "returnPeriod": "",
   "endDate": "",
   "selectStartDate": "",
   "selectDate": "",

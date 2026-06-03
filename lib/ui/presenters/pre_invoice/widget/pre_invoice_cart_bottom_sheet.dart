@@ -256,6 +256,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: color ?? AppColors.grayPalette.shade700,
                 fontWeight: color != null ? FontWeight.bold : FontWeight.w500,
+                fontSize: 14
               ),
             ),
             const SizedBox(width: 4),
