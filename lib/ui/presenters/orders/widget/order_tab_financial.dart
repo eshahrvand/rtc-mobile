@@ -121,9 +121,14 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         child: OrderClearanceOperationWidget(
                           amount: () {
                             // 1. Try to find a successful record from server
-                            final successRecords = widget.order.disbursementRecords.where(
-                              (r) => r.status == 'موفق' || r.status == 'success',
-                            );
+                            final successRecords = widget
+                                .order
+                                .disbursementRecords
+                                .where(
+                                  (r) =>
+                                      r.status == 'موفق' ||
+                                      r.status == 'success',
+                                );
 
                             if (successRecords.isNotEmpty) {
                               return successRecords.first.amount;

@@ -278,7 +278,8 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                         isBold: true,
                       ),
                       const SizedBox(height: 12),
-                      if (state.settlementMethod == 'wallet_debit')
+                      if (state.settlementMethod == 'wallet_debit' &&
+                          state.isWalletBalanceSufficient)
                         Container(
                           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                           decoration: BoxDecoration(
@@ -300,10 +301,48 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  S.current.walletBalanceSufficient,
+                                  state.walletName != null
+                                      ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت ما به تفاوت مبلغ کافیست'
+                                      : S.current.walletBalanceSufficient,
                                   textAlign: TextAlign.right,
                                   style: theme.bodyMedium!.copyWith(
                                     color: AppColors.successPalette.shade600,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (state.settlementMethod == 'wallet_debit' &&
+                          !state.isWalletBalanceSufficient)
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.errorPalette.shade25,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.errorPalette.shade100,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            spacing: 10,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: AppColors.errorPalette.shade600,
+                                size: 16,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  state.walletName != null
+                                      ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت این مبلغ کافی نمی‌باشد'
+                                      : 'موجودی کیف پول شما کافی نمی‌باشد',
+                                  textAlign: TextAlign.right,
+                                  style: theme.bodyMedium!.copyWith(
+                                    color: AppColors.errorPalette.shade600,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -317,11 +356,16 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                           const Spacer(),
                           RtcButton(
                             title: _getButtonTitle(state.settlementMethod),
-                            isActive:
-                                !isPartial && state.settlementMethod != null,
+                            isActive: !isPartial &&
+                                state.settlementMethod != null &&
+                                (state.settlementMethod != 'wallet_debit' ||
+                                    state.isWalletBalanceSufficient),
                             styleBtn: theme.labelLarge!.copyWith(
-                              color:
-                                  (!isPartial && state.settlementMethod != null)
+                              color: (!isPartial &&
+                                      state.settlementMethod != null &&
+                                      (state.settlementMethod !=
+                                              'wallet_debit' ||
+                                          state.isWalletBalanceSufficient))
                                   ? Colors.white
                                   : AppColors.grayPalette.shade300,
                               fontWeight: FontWeight.w600,

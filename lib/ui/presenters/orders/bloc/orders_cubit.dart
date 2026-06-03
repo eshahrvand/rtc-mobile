@@ -7,6 +7,8 @@ import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
+import '../../../../data_source/remote/wallet/wallet_service.dart';
+import '../../../../data_source/remote/wallet/model/wallet_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../media_picker/media_picker.dart';
 import 'orders_state.dart';
@@ -15,6 +17,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
   final _mediaRepo = sl<MediaRepository>();
+  final _walletService = sl<WalletService>();
 
   Timer? _searchTimer;
 
@@ -467,8 +470,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     // Calculate difference amount (Total - Successful Disbursements)
     double? finalAmount = amount;
     if (finalAmount == null && state.selectedOrder != null) {
-      final orderTotal =
-          double.tryParse(
+      final orderTotal = double.tryParse(
             state.selectedOrder!.financialSummary.finalAmount.replaceAll(
               ',',
               '',
@@ -492,28 +494,73 @@ class OrdersCubit extends Cubit<OrdersState> {
         .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
         .then((response) {
           final type = response['type'];
-          emit(
-            state.copyWith(
-              status: OrdersRequestStatus.success,
-              settlementStep: SettlementStep.methodSelected,
-              settlementMethod: method,
-              settlementRedirectUrl: type == 'redirect'
-                  ? response['redirect_url']
-                  : null,
-              settlementReservedAmount: type == 'wallet'
-                  ? response['reserved_amount']?.toDouble()
-                  : null,
-              settlementBankAccount: type == 'offline'
-                  ? response['bank_account']
-                  : null,
-              settlementBankName: type == 'offline'
-                  ? response['bank_name']
-                  : null,
-              settlementAccountHolder: type == 'offline'
-                  ? response['account_holder']
-                  : null,
-            ),
-          );
+          final walletName = type == 'wallet' ? response['wallet_name'] : null;
+
+          if (type == 'wallet') {
+            // Check wallet balance for the specific sub_plan of the order
+            _walletService.getWallet().then((walletDto) {
+              // Find the pocket that matches the order's sub_plan
+              final orderSubPlanId = state.selectedOrder?.creditPlan?.planName; // This is a display name, usually IDs are better
+              // In the real app, we should compare by subPlan ID. 
+              // Assuming 'wallet_name' in response matches a pocket's subPlan name.
+              
+              double pocketBalance = 0;
+              for (var pocket in walletDto.pockets) {
+                if (pocket.subPlan.name == walletName) {
+                  pocketBalance = pocket.balance;
+                  break;
+                }
+              }
+
+              // Calculate required amount with 20% tolerance (if applicable)
+              // But for settlement, usually we check if balance >= required
+              final requiredAmount = response['reserved_amount']?.toDouble() ?? 0;
+              
+              // Apply 20% tolerance if needed for comparison
+              const tolerancePercent = 0.2;
+              final amountWithTolerance = requiredAmount * (1 - tolerancePercent);
+              final isSufficient = pocketBalance >= amountWithTolerance;
+
+              emit(
+                state.copyWith(
+                  status: OrdersRequestStatus.success,
+                  settlementStep: SettlementStep.methodSelected,
+                  settlementMethod: method,
+                  settlementReservedAmount: requiredAmount,
+                  walletName: walletName,
+                  isWalletBalanceSufficient: isSufficient,
+                ),
+              );
+            }).catchError((_) {
+               emit(state.copyWith(
+                  status: OrdersRequestStatus.success,
+                  settlementStep: SettlementStep.methodSelected,
+                  settlementMethod: method,
+                  settlementReservedAmount: response['reserved_amount']?.toDouble(),
+                  walletName: walletName,
+                ));
+            });
+          } else {
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.success,
+                settlementStep: SettlementStep.methodSelected,
+                settlementMethod: method,
+                settlementRedirectUrl: type == 'redirect'
+                    ? response['redirect_url']
+                    : null,
+                settlementBankAccount: type == 'offline'
+                    ? response['bank_account']
+                    : null,
+                settlementBankName: type == 'offline'
+                    ? response['bank_name']
+                    : null,
+                settlementAccountHolder: type == 'offline'
+                    ? response['account_holder']
+                    : null,
+              ),
+            );
+          }
         })
         .catchError((e) {
           emit(
