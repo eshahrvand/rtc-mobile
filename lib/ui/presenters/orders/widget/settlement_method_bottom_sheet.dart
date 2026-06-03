@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../config/config.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
@@ -43,10 +44,10 @@ class _SettlementMethodBottomSheetState
   String? _selectedId;
 
   final List<FilterItem> _methods = [
-    FilterItem(id: 'wallet', title: S.current.walletSettlement),
+    FilterItem(id: 'wallet_debit', title: S.current.walletSettlement),
     const FilterItem(id: 'ipg', title: 'درگاه پرداخت آنلاین'),
-    const FilterItem(id: 'link', title: 'تسویه نقدی (لینک پرداخت)'),
-    const FilterItem(id: 'offline', title: 'ثبت فیش واریزی'),
+    const FilterItem(id: 'link', title: 'ارسال لینک پرداخت به مشتری'),
+    const FilterItem(id: 'card_to_card', title: 'ثبت فیش واریزی'),
   ];
 
   @override
@@ -83,12 +84,12 @@ class _SettlementMethodBottomSheetState
 
   Widget _buildDragHandle() {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 8),
       child: Container(
         width: 32,
         height: 2,
         decoration: BoxDecoration(
-          color: AppColors.grayPalette.shade300,
+          color: AppColors.brandPalette.shade600,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -103,14 +104,20 @@ class _SettlementMethodBottomSheetState
           Text(
             S.current.settlementMethod,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.grayPalette.shade900,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: AppColors.grayPalette.shade900,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const Spacer(),
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.close, color: AppColors.grayPalette.shade600),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: RtcImage(
+              image: "$baseImage/close.svg",
+              width: 20,
+              height: 20,
+              color: AppColors.grayPalette.shade700,
+              boxFit: BoxFit.fill,
+            ),
           ),
         ],
       ),
@@ -129,7 +136,7 @@ class _SettlementMethodBottomSheetState
           title: item.title,
           isSelected: isSelected,
           onTap: () => setState(() => _selectedId = item.id),
-          showDivider: index != _methods.length - 1,
+          showDivider: false,
         );
       },
     );
@@ -149,9 +156,9 @@ class _SettlementMethodBottomSheetState
         },
         isActive: _selectedId != null,
         styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

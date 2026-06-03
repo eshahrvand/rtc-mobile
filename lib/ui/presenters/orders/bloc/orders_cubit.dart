@@ -211,7 +211,8 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   OrderOperationModel? _createSettlementOp(OrderDetailModel detail) {
-    final isDone = detail.status == 'تایید شده' ||
+    final isDone =
+        detail.status == 'تایید شده' ||
         detail.status == 'در انتظار تایید' ||
         state.settlementStep == SettlementStep.success;
 
@@ -456,13 +457,31 @@ class OrdersCubit extends Cubit<OrdersState> {
     String apiMethod = method;
     if (method == 'online') apiMethod = 'ipg';
     if (method == 'cash') apiMethod = 'link';
+    if (method == 'wallet') apiMethod = 'wallet_debit';
+    if (method == 'offline') apiMethod = 'card_to_card';
 
-    // Calculate difference amount if not provided
+    // Calculate difference amount (Total - Successful Disbursements)
     double? finalAmount = amount;
     if (finalAmount == null && state.selectedOrder != null) {
-      final orderTotal = double.tryParse(state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', '')) ?? 0;
-      final cleared = double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
-      finalAmount = (orderTotal - cleared).abs();
+      final orderTotal =
+          double.tryParse(
+            state.selectedOrder!.financialSummary.finalAmount.replaceAll(
+              ',',
+              '',
+            ),
+          ) ??
+          0;
+
+      double totalCleared = 0;
+      for (var record in state.selectedOrder!.disbursementRecords) {
+        if (record.status == 'موفق' || record.status == 'success') {
+          totalCleared +=
+              double.tryParse(record.amount.replaceAll(',', '')) ?? 0;
+        }
+      }
+
+      finalAmount = (orderTotal - totalCleared);
+      if (finalAmount < 0) finalAmount = 0;
     }
 
     _ordersRepo
@@ -474,11 +493,21 @@ class OrdersCubit extends Cubit<OrdersState> {
               status: OrdersRequestStatus.success,
               settlementStep: SettlementStep.methodSelected,
               settlementMethod: method,
-              settlementRedirectUrl: type == 'redirect' ? response['redirect_url'] : null,
-              settlementReservedAmount: type == 'wallet' ? response['reserved_amount']?.toDouble() : null,
-              settlementBankAccount: type == 'offline' ? response['bank_account'] : null,
-              settlementBankName: type == 'offline' ? response['bank_name'] : null,
-              settlementAccountHolder: type == 'offline' ? response['account_holder'] : null,
+              settlementRedirectUrl: type == 'redirect'
+                  ? response['redirect_url']
+                  : null,
+              settlementReservedAmount: type == 'wallet'
+                  ? response['reserved_amount']?.toDouble()
+                  : null,
+              settlementBankAccount: type == 'offline'
+                  ? response['bank_account']
+                  : null,
+              settlementBankName: type == 'offline'
+                  ? response['bank_name']
+                  : null,
+              settlementAccountHolder: type == 'offline'
+                  ? response['account_holder']
+                  : null,
             ),
           );
         })
@@ -492,34 +521,60 @@ class OrdersCubit extends Cubit<OrdersState> {
         });
   }
 
-  void confirmSettlement({String? trackingCode}) {
+  void confirmSettlement({String? trackingCode, String? imagePath}) {
     if (state.selectedOrder == null || state.settlementMethod == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    _ordersRepo
-        .settle(
-          state.selectedOrder!.id,
-          state.settlementMethod!,
-          trackingCode: trackingCode,
-        )
-        .then((_) {
-          emit(
-            state.copyWith(
-              status: OrdersRequestStatus.success,
-              settlementStep: SettlementStep.success,
-            ),
-          );
-          // Refresh order detail to show updated status
-          fetchOrderDetail(state.selectedOrder!.id);
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: OrdersRequestStatus.error,
-              errorMessage: 'خطا در تایید تسویه: ${e.toString()}',
-            ),
-          );
-        });
+    Future<void> performSettle() {
+      return _ordersRepo
+          .settle(
+            state.selectedOrder!.id,
+            state.settlementMethod!,
+            trackingCode: trackingCode,
+          )
+          .then((_) {
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.success,
+                settlementStep: SettlementStep.success,
+              ),
+            );
+            fetchOrderDetail(state.selectedOrder!.id);
+          });
+    }
+
+    // If card_to_card, we might need to upload image first
+    if (state.settlementMethod == 'card_to_card' && imagePath != null) {
+      _mediaRepo
+          .uploadOrderDocument(File(imagePath))
+          .then((media) {
+            return _ordersRepo.addOrderDocument(
+              state.selectedOrder!.id,
+              OrderDocumentRequest(
+                documentType: 'deposit_receipt',
+                fileId: media.id,
+              ),
+            );
+          })
+          .then((_) => performSettle())
+          .catchError((e) {
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.error,
+                errorMessage: 'خطا در بارگذاری فیش: ${e.toString()}',
+              ),
+            );
+          });
+    } else {
+      performSettle().catchError((e) {
+        emit(
+          state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: 'خطا در تایید تسویه: ${e.toString()}',
+          ),
+        );
+      });
+    }
   }
 
   void resetSettlement() {

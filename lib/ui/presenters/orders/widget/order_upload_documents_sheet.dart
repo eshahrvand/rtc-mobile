@@ -7,25 +7,44 @@ import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_text_field.dart';
 import 'order_details_document_item.dart';
 
-class OrderUploadDocumentsSheet extends StatelessWidget {
+class OrderUploadDocumentsSheet extends StatefulWidget {
   final String filePath;
   final VoidCallback onConfirm;
   final VoidCallback onDelete;
+  final bool showTrackingField;
+  final Function(String)? onTrackingCodeChanged;
 
   const OrderUploadDocumentsSheet({
     super.key,
     required this.filePath,
     required this.onConfirm,
     required this.onDelete,
+    this.showTrackingField = false,
+    this.onTrackingCodeChanged,
   });
+
+  @override
+  State<OrderUploadDocumentsSheet> createState() =>
+      _OrderUploadDocumentsSheetState();
+}
+
+class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
+  final _trackingController = TextEditingController();
+
+  @override
+  void dispose() {
+    _trackingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    final file = File(filePath);
-    final fileName = filePath.split('/').last;
+    final file = File(widget.filePath);
+    final fileName = widget.filePath.split('/').last;
     final sizeInBytes = file.existsSync() ? file.lengthSync() : 0;
     String sizeStr;
     if (sizeInBytes < 1024) {
@@ -100,17 +119,27 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
             isLocalFile: true,
             onDelete: () {
               Navigator.pop(context);
-              onDelete();
+              widget.onDelete();
             },
             doc: OrderDocumentModel(
               title: S.current.paymentDocuments,
               fileName: fileName,
               fileSize: sizeStr,
-              url: filePath,
+              url: widget.filePath,
               // Locally for preview
               iconPath: '$baseImage/featured-icon.svg',
             ),
           ),
+          if (widget.showTrackingField) ...[
+            const SizedBox(height: 24),
+            RtcTextField(
+              controller: _trackingController,
+              labelText: 'شماره پیگیری پرداخت',
+              hintText: 'کد پیگیری را وارد کنید',
+              keyboardType: TextInputType.number,
+              onChanged: (val) => widget.onTrackingCodeChanged?.call(val),
+            ),
+          ],
           const SizedBox(height: 32),
 
           // Action Buttons
@@ -136,7 +165,7 @@ class OrderUploadDocumentsSheet extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
-                  onPressed: onConfirm,
+                  onPressed: widget.onConfirm,
                 ),
               ),
             ],
