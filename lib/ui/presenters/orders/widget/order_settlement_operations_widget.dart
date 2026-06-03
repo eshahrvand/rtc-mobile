@@ -151,16 +151,8 @@ class _OrderSettlementOperationsWidgetState
         // Get successful settlement amount if completed
         String settledAmountStr = '۰';
         if (state.isSettlementCompleted && state.selectedOrder != null) {
-          final successRecords = state.selectedOrder!.settlementRecords.where(
-            (r) => r.status == 'موفق' || r.status == 'success',
-          );
-
-          if (successRecords.isNotEmpty) {
-            settledAmountStr = successRecords.first.amount;
-          } else {
-            // Fallback to diffValue if no success record found but marked completed
-            settledAmountStr = differenceAmount;
-          }
+          // Calculate from total balance and successful disburse records as requested
+          settledAmountStr = differenceAmount;
         }
 
         return Container(
@@ -281,7 +273,7 @@ class _OrderSettlementOperationsWidgetState
                           child: Row(
                             children: [
                               Text(
-                                S.current.payableAmount,
+                                "مبلغ تسویه",
                                 style: theme.bodyMedium!.copyWith(
                                   color: AppColors.grayPalette.shade700,
                                 ),
