@@ -20,7 +20,7 @@ class RtcProductImageGallery extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: 300,
+          height: 270,
           child: PageView.builder(
             itemCount: imageUrls.length,
             onPageChanged: onImageChanged,
@@ -35,7 +35,7 @@ class RtcProductImageGallery extends StatelessWidget {
             },
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         AnimatedSmoothIndicator(
           activeIndex: selectedIndex,
           count: imageUrls.length,

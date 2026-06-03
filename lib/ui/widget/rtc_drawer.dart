@@ -41,7 +41,10 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.myCustomers,
                       iconPath: '$baseImage/family.svg',
-                      onTap: () => context.push(AppRoutes.customers),
+                      onTap: () {
+                        scaffoldKey.currentState?.closeDrawer();
+                        context.push(AppRoutes.customers);
+                      },
                     ),
                     RtcDivider(
                       height: 0.5,
@@ -50,7 +53,10 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.releaseFactor,
                       iconPath: '$baseImage/invoice.svg',
-                      onTap: () => context.push(AppRoutes.preInvoice),
+                      onTap: () {
+                        scaffoldKey.currentState?.closeDrawer();
+                        context.push(AppRoutes.preInvoice);
+                      },
                     ),
                     RtcDivider(
                       height: 0.5,
@@ -59,7 +65,10 @@ class RtcDrawer extends StatelessWidget {
                     _DrawerMenuItem(
                       title: S.current.wallet,
                       iconPath: '$baseImage/wallet_drawer.svg',
-                      onTap: () => context.push(AppRoutes.wallet),
+                      onTap: () {
+                        scaffoldKey.currentState?.closeDrawer();
+                        context.push(AppRoutes.wallet);
+                      },
                     ),
                   ],
                 ),
@@ -114,6 +123,7 @@ class RtcDrawer extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      scaffoldKey.currentState?.closeDrawer();
                       context.push(AppRoutes.profile, extra: profile);
                     },
                     child: RtcImage(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -30,12 +31,9 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProductDetailCubit()
-        ..init(
-          productId,
-          subPlanId: subPlanId,
-          subPlanName: subPlanName,
-        ),
+      create: (context) =>
+          ProductDetailCubit()
+            ..init(productId, subPlanId: subPlanId, subPlanName: subPlanName),
       child: ProductDetailView(showPrice: showPrice),
     );
   }
@@ -65,6 +63,7 @@ class ProductDetailView extends StatelessWidget {
         ),
       ],
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: RtcAppBar(
           title: S.current.productDetail,
           onBack: () => context.pop(),
@@ -84,7 +83,7 @@ class ProductDetailView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
+
                   RtcProductImageGallery(
                     imageUrls: product.imageUrls,
                     selectedIndex: state.selectedImageIndex,
@@ -241,20 +240,28 @@ class _SpecsSection extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '• ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
                   Expanded(
-                    child: Row(
-                      spacing: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(spec.key),
-                        Text(
-                          spec.value,
-                          style: theme.bodyLarge!.copyWith(
-                            color: AppColors.grayPalette.shade700,
+                        if (spec.key.isNotEmpty && spec.key != 'مشخصات فنی')
+                          Text(
+                            '${spec.key}: ',
+                            style: theme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                        MarkdownBody(
+                          data: spec.value,
+                          styleSheet:
+                              MarkdownStyleSheet.fromTheme(
+                                Theme.of(context),
+                              ).copyWith(
+                                p: theme.bodyLarge!.copyWith(
+                                  color: AppColors.grayPalette.shade700,
+
+                                ),
+                              ),
                         ),
                       ],
                     ),
@@ -300,11 +307,14 @@ class _DescriptionSection extends StatelessWidget {
             ],
           ),
 
-          Text(
-            description,
-            style: theme.bodyLarge!.copyWith(
-              color: AppColors.grayPalette.shade700,
-            ),
+          MarkdownBody(
+            data: description,
+            styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                .copyWith(
+                  p: theme.bodyLarge!.copyWith(
+                    color: AppColors.grayPalette.shade700,
+                  ),
+                ),
           ),
         ],
       ),
