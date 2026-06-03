@@ -59,6 +59,11 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       final albums = await PhotoManager.getAssetPathList(
         onlyAll: true,
         type: RequestType.image, // Strictly image
+        filterOption: FilterOptionGroup(
+          orders: [
+            const OrderOption(type: OrderOptionType.createDate, asc: false),
+          ],
+        ),
       );
       print(">> [MEDIA PICKER] Albums found: ${albums.length}");
 
@@ -103,6 +108,11 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       final albums = await PhotoManager.getAssetPathList(
         onlyAll: true,
         type: RequestType.image,
+        filterOption: FilterOptionGroup(
+          orders: [
+            const OrderOption(type: OrderOptionType.createDate, asc: false),
+          ],
+        ),
       );
       if (albums.isEmpty) {
         emit(state.copyWith(isLoadingMore: false));

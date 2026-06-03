@@ -72,7 +72,7 @@ class OrdersRepository {
             final dateTime = DateTime.parse(dto.createdAt);
             final jalali = Jalali.fromDateTime(dateTime);
             final dateStr =
-                '${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')} | ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+                '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} | ${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
 
             return OrderSummaryModel(
               id: dto.id,
@@ -109,10 +109,7 @@ class OrdersRepository {
 
   Future<OrderDetailModel> getOrderDetails(String id) {
     return _service.getOrderById(id).then((dto) {
-      final dateTime = DateTime.parse(dto.createdAt);
-      final jalali = Jalali.fromDateTime(dateTime);
-      final dateStr =
-          '${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')} - ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+      final dateStr = _formatJalaliDateTime(dto.createdAt);
 
       final statusStr = _mapStatus(dto.status);
 
@@ -126,6 +123,36 @@ class OrdersRepository {
         } else if (rt.minutes > 0) {
           remainingTimeStr = '${rt.minutes} دقیقه';
         }
+      }
+
+      final history = [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)];
+
+      // Add clearance date if successful record exists
+      final successDisburse = (dto.disbursementRecords ?? []).firstWhere(
+        (r) => r.status == 'success' || r.status == 'موفق',
+        orElse: () => const DisbursementRecordDtoModel(amount: 0),
+      );
+      if (successDisburse.createdAt != null) {
+        history.add(
+          OrderHistoryModel(
+            label: 'تاریخ تخلیه:',
+            value: _formatJalaliDateTime(successDisburse.createdAt!),
+          ),
+        );
+      }
+
+      // Add settlement date if successful record exists
+      final successSettle = (dto.settlementRecords ?? []).firstWhere(
+        (s) => s.status == 'success' || s.status == 'موفق',
+        orElse: () => const SettlementRecordDtoModel(amount: 0),
+      );
+      if (successSettle.createdAt != null) {
+        history.add(
+          OrderHistoryModel(
+            label: 'تاریخ تسویه:',
+            value: _formatJalaliDateTime(successSettle.createdAt!),
+          ),
+        );
       }
 
       return OrderDetailModel(
@@ -197,7 +224,7 @@ class OrdersRepository {
           );
         }).toList(),
         operations: [],
-        history: [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)],
+        history: history,
         disbursementRecords: (dto.disbursementRecords ?? []).map((r) {
           return DisbursementRecordModel(
             gateway: r.gateway ?? '',
@@ -219,6 +246,13 @@ class OrdersRepository {
         }).toList(),
       );
     });
+  }
+
+  String _formatJalaliDateTime(String dateStr) {
+    final dateTime = DateTime.tryParse(dateStr);
+    if (dateTime == null) return dateStr;
+    final jalali = Jalali.fromDateTime(dateTime);
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} - ${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
   }
 
   String _mapDocType(String type) {

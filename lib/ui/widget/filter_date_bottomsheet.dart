@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import '../presenters/products/widget/filter_option_item.dart';
@@ -178,11 +179,12 @@ class _FilterDateBottomSheetState extends State<FilterDateBottomSheet> {
                 _selectedOptionId = null;
               });
               widget.onClear();
+              context.pop();
             },
             styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: _hasFilter
                   ? AppColors.errorPalette.shade600
-                  : AppColors.grayPalette.shade800,
+                  : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w500,
             ),
           ),

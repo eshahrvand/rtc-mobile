@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
@@ -160,11 +161,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           const Spacer(),
           RtcTextButton(
             title: S.current.clearFilter,
-            onPressed: _onClear,
+            onPressed:(){
+              _onClear();
+              context.pop();
+            } ,
             styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: _hasSelection 
                   ? AppColors.errorPalette.shade600 
-                  : AppColors.grayPalette.shade800,
+                  : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w500,
             ),
           ),
