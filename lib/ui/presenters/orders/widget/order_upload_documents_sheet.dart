@@ -33,9 +33,23 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
 
 class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
   final _trackingController = TextEditingController();
+  bool _isTrackingCodeNotEmpty = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _trackingController.addListener(_onTrackingChanged);
+  }
+
+  void _onTrackingChanged() {
+    setState(() {
+      _isTrackingCodeNotEmpty = _trackingController.text.trim().isNotEmpty;
+    });
+  }
 
   @override
   void dispose() {
+    _trackingController.removeListener(_onTrackingChanged);
     _trackingController.dispose();
     super.dispose();
   }
@@ -163,6 +177,8 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
               Expanded(
                 child: RtcButton(
                   title: S.current.confirmAndSend,
+                  isActive:
+                      widget.showTrackingField ? _isTrackingCodeNotEmpty : true,
                   styleBtn: theme.labelLarge!.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

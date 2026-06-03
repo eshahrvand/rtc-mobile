@@ -119,9 +119,24 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: OrderClearanceOperationWidget(
-                          amount: state.clearanceAmount.isEmpty
-                              ? widget.order.financialSummary.finalAmount
-                              : state.clearanceAmount,
+                          amount: () {
+                            // 1. Try to find a successful record from server
+                            final successRecords = widget.order.disbursementRecords.where(
+                              (r) => r.status == 'موفق' || r.status == 'success',
+                            );
+
+                            if (successRecords.isNotEmpty) {
+                              return successRecords.first.amount;
+                            }
+
+                            // 2. Fallback to state (active operation)
+                            if (state.clearanceAmount.isNotEmpty) {
+                              return state.clearanceAmount;
+                            }
+
+                            // 3. Fallback to final amount
+                            return widget.order.financialSummary.finalAmount;
+                          }(),
                           orderAmount:
                               state.orderAmount ??
                               widget.order.financialSummary.finalAmount,

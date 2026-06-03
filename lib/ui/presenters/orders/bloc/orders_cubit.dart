@@ -170,7 +170,6 @@ class OrdersCubit extends Cubit<OrdersState> {
               selectedOrder: detail,
               disburseOperation: _createDisburseOp(detail),
               settlementOperation: _createSettlementOp(detail),
-              selectedTabIndex: 0,
             ),
           );
         })

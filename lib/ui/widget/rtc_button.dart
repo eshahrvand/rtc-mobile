@@ -115,126 +115,111 @@ class _RtcButtonState extends State<RtcButton> {
     final List<BoxShadow> shadows = widget.borderColor != null
         ? AppColors.mediumShadow
         : (active
-              ? AppColors.primaryShadow
-              : [
-                  const BoxShadow(
-                    color: Color(0x0D0A0D12),
-                    offset: Offset(0, 1),
-                    blurRadius: 2,
-                    spreadRadius: 0,
-                  ),
-                ]);
+            ? AppColors.primaryShadow
+            : [
+                const BoxShadow(
+                  color: Color(0x0D0A0D12),
+                  offset: Offset(0, 1),
+                  blurRadius: 2,
+                  spreadRadius: 0,
+                ),
+              ]);
 
     final Color bgColor = active
         ? (widget.backgroundColor ?? AppColors.brandPalette.shade600)
         : AppColors.grayPalette.shade100;
 
+    final double btnWidth = widget.width ?? (active ? 375 : 355);
+    final double btnHeight = _getButtonHeight();
+
     return Padding(
       padding: widget.padding ?? EdgeInsets.zero,
       child: Container(
-        width: widget.width ?? (active ? 375 : 355),
-        height: _getButtonHeight(),
+        width: btnWidth,
+        height: btnHeight,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(8),
           boxShadow: shadows,
-          // Border is removed by default as per Figma spec, but kept if explicitly provided.
+          // Border is handled strictly by the container to avoid overlapping with shadow
           border: widget.borderColor != null
               ? Border.all(color: widget.borderColor!, width: 1)
               : null,
         ),
         child: ElevatedButton(
-          onPressed: () {
-            if (active && !isLoading!) {
-              widget.onPressed!();
-            }
-          },
+          onPressed: (active && !isLoading!)
+              ? () {
+                  widget.onPressed!();
+                }
+              : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: active
-                ? (widget.backgroundColor ?? AppColors.brandPalette.shade600)
-                : AppColors.grayPalette.shade200,
-
+            backgroundColor: Colors.transparent,
             foregroundColor: active
                 ? AppColors.brandPalette.shade600
                 : AppColors.grayPalette.shade400,
-
+            disabledBackgroundColor: Colors.transparent,
+            disabledForegroundColor: AppColors.grayPalette.shade400,
             shadowColor: Colors.transparent,
             elevation: 0,
-
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
-              side: BorderSide(
-                color: active
-                    ? widget.borderColor ?? AppColors.brandPalette.shade600
-                    : AppColors.grayPalette.shade200,
-                width: 1,
-              ),
+              side: BorderSide.none, // Disable button border to use container's
             ),
-
-            fixedSize: Size(
-              widget.width ?? double.infinity,
-              widget.height ?? 48,
-            ),
+            fixedSize: Size(btnWidth, btnHeight),
           ),
-
           child: isLoading!
               ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                    color: active
-                        ? Colors.white
-                        : AppColors.grayPalette.shade400,
+                    color: active ? Colors.white : AppColors.grayPalette.shade400,
                     strokeWidth: 2.5,
                   ),
                 )
               : isLoadingBtm!
-              ? SizedBox(
-                  height: 18,
-                  width: 20,
-                  child: LoadingIndicator(
-                    indicatorType: Indicator.ballPulseSync,
-                    colors: [
-                      active
-                          ? AppColors.brandPalette.shade600
-                          : AppColors.grayPalette.shade400,
-                    ],
-                    strokeWidth: 4.0,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (widget.leftIcon != null)
-                      RtcImage(
-                        image: widget.leftIcon ?? "",
-                        color:
-                            widget.leftIconColor ??
-                            (active
-                                ? AppColors.brandPalette.shade600
-                                : AppColors.grayPalette.shade400),
+                  ? SizedBox(
+                      height: 18,
+                      width: 20,
+                      child: LoadingIndicator(
+                        indicatorType: Indicator.ballPulseSync,
+                        colors: [
+                          active
+                              ? AppColors.brandPalette.shade600
+                              : AppColors.grayPalette.shade400,
+                        ],
+                        strokeWidth: 4.0,
                       ),
-                    if (widget.leftIcon != null)
-                      SizedBox(width: active ? 10 : 8),
-                    Text(
-                      widget.title ?? "",
-                      style: widget.styleBtn ?? _getTextStyle(context),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (widget.leftIcon != null)
+                          RtcImage(
+                            image: widget.leftIcon ?? "",
+                            color: widget.leftIconColor ??
+                                (active
+                                    ? AppColors.brandPalette.shade600
+                                    : AppColors.grayPalette.shade400),
+                          ),
+                        if (widget.leftIcon != null)
+                          SizedBox(width: active ? 10 : 8),
+                        Text(
+                          widget.title ?? "",
+                          style: widget.styleBtn ?? _getTextStyle(context),
+                        ),
+                        if (widget.rightIcon != null)
+                          SizedBox(width: active ? 10 : 8),
+                        if (widget.rightIcon != null)
+                          RtcImage(
+                            image: widget.rightIcon ?? "",
+                            color: widget.rightIconColor ??
+                                (active
+                                    ? AppColors.brandPalette.shade600
+                                    : AppColors.grayPalette.shade400),
+                          ),
+                      ],
                     ),
-                    if (widget.rightIcon != null)
-                      SizedBox(width: active ? 10 : 8),
-                    if (widget.rightIcon != null)
-                      RtcImage(
-                        image: widget.rightIcon ?? "",
-                        color:
-                            widget.rightIconColor ??
-                            (active
-                                ? AppColors.brandPalette.shade600
-                                : AppColors.grayPalette.shade400),
-                      ),
-                  ],
-                ),
         ),
       ),
     );

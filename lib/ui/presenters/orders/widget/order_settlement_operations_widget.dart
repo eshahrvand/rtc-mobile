@@ -320,7 +320,10 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                             isActive:
                                 !isPartial && state.settlementMethod != null,
                             styleBtn: theme.labelLarge!.copyWith(
-                              color: Colors.white,
+                              color:
+                                  (!isPartial && state.settlementMethod != null)
+                                  ? Colors.white
+                                  : AppColors.grayPalette.shade300,
                               fontWeight: FontWeight.w600,
                             ),
                             width:
