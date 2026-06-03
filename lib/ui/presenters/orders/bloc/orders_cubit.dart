@@ -310,6 +310,10 @@ class OrdersCubit extends Cubit<OrdersState> {
               (response['gateway_type'] == 'online' ||
                   response['type'] == 'online');
 
+          final diff = amount - orderAmount;
+          final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
+          final wallet = (response is Map) ? response['wallet_name'] : null;
+
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
@@ -319,7 +323,8 @@ class OrdersCubit extends Cubit<OrdersState> {
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-              // If amount < orderAmount, it will lead to awaiting_settlement path in flow
+              excessAmount: excess,
+              walletName: wallet,
               isOutOfTolerance: false,
             ),
           );

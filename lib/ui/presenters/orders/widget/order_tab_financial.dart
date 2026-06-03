@@ -67,10 +67,13 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
         final isPreInvoice = widget.order.status == 'پیش فاکتور';
         final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
         final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
-        
-        final showSettlement = isWaitingSettlement || 
-            state.clearanceStep == ClearanceStep.success || 
-            (state.clearanceStep != ClearanceStep.initial && state.isOutOfTolerance);
+
+        final showSettlement =
+            isWaitingSettlement ||
+            state.clearanceStep == ClearanceStep.success ||
+            state.clearanceAmount.isNotEmpty ||
+            (state.clearanceStep != ClearanceStep.initial &&
+                state.isOutOfTolerance);
 
         return Column(
           children: [
@@ -144,7 +147,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                               cubit.pickClearanceDocument(context);
                             }
                           },
-                          onEdit: state.clearanceAmount.isNotEmpty &&
+                          onEdit:
+                              state.clearanceAmount.isNotEmpty &&
                                   widget.order.status == 'پیش فاکتور'
                               ? () {
                                   cubit.resetClearance();
@@ -158,7 +162,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: OrderSettlementOperationsWidget(
-                          op: state.settlementOperation ??
+                          op:
+                              state.settlementOperation ??
                               const OrderOperationModel(
                                 step: 2,
                                 title: 'عملیات تسویه',
@@ -332,11 +337,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                   color: AppColors.grayPalette.shade900,
                 ),
               ),
-              RtcImage(
-                image: "$baseImage/toman.svg",
-                width: 24,
-                height: 24,
-              ),
+              RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
             ],
           ),
         ],

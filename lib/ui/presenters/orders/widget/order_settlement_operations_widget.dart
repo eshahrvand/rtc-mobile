@@ -162,19 +162,32 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
 
                     isPartial
                         ? Container(
-                            width: 139,
                             height: 22,
                             padding: const EdgeInsets.symmetric(
                               vertical: 2,
                               horizontal: 8,
                             ),
-                            color: AppColors.warningPalette.shade100,
-                            child: Text(
-                              'در انتظار تکمیل عملیات تخلیه',
-                              style: theme.bodyMedium!.copyWith(
-                                color: AppColors.grayPalette.shade900,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            decoration: BoxDecoration(
+                              color: AppColors.warningPalette.shade100,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              spacing: 4,
+                              children: [
+                                RtcImage(
+                                  image: "$baseImage/waiting.svg",
+                                  width: 12,
+                                  height: 12,
+                                  color: AppColors.grayPalette.shade900,
+                                ),
+                                Text(
+                                  'در انتظار تکمیل تخلیه',
+                                  style: theme.bodyMedium!.copyWith(
+                                    color: AppColors.grayPalette.shade900,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           )
                         : RtcImage(
@@ -193,138 +206,139 @@ class OrderSettlementOperationsWidget extends StatelessWidget {
                   color: AppColors.grayPalette.shade300,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      S.current.settlementMethod,
-                      style: theme.bodyMedium!.copyWith(
-                        color: AppColors.grayPalette.shade500,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () => _showMethodSelector(context, cubit),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.grayPalette.shade300,
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              _getMethodTitle(state.settlementMethod),
-                              style: theme.bodyLarge!.copyWith(
-                                color: AppColors.grayPalette.shade900,
-                              ),
-                            ),
-                            const Spacer(),
-                            RtcImage(
-                              image: "$baseImage/angle-down_tab.svg",
-                              width: 24,
-                              height: 24,
-                            ),
-                          ],
+              if (!isPartial)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        S.current.settlementMethod,
+                        style: theme.bodyMedium!.copyWith(
+                          color: AppColors.grayPalette.shade500,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildAmountRow(
-                      theme,
-                      S.current.differenceAmount,
-                      differenceAmount,
-                      AppColors.grayPalette.shade900,
-                      false,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildAmountRow(
-                      theme,
-                      'جمع تخفیف نقدی',
-                      cashDiscount,
-                      AppColors.grayPalette.shade900,
-                      false,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildAmountRow(
-                      theme,
-                      S.current.payableAmount,
-                      payableAmount,
-                      AppColors.warningPalette.shade600,
-                      true,
-                      isBold: true,
-                    ),
-                    const SizedBox(height: 12),
-                    if (state.settlementMethod == 'wallet')
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                        decoration: BoxDecoration(
-                          color: AppColors.successPalette.shade25,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: AppColors.successPalette.shade100,
-                            width: 1,
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () => _showMethodSelector(context, cubit),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
                           ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          spacing: 10,
-                          children: [
-                            RtcImage(
-                              image: "$baseImage/tick_circle.svg",
-                              width: 16,
-                              height: 16,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.grayPalette.shade300,
+                              width: 1,
                             ),
-                            Expanded(
-                              child: Text(
-                                S.current.walletBalanceSufficient,
-                                textAlign: TextAlign.right,
-                                style: theme.bodyMedium!.copyWith(
-                                  color: AppColors.successPalette.shade600,
-                                  fontWeight: FontWeight.w500,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                _getMethodTitle(state.settlementMethod),
+                                style: theme.bodyLarge!.copyWith(
+                                  color: AppColors.grayPalette.shade900,
                                 ),
                               ),
-                            ),
-                          ],
+                              const Spacer(),
+                              RtcImage(
+                                image: "$baseImage/angle-down_tab.svg",
+                                width: 24,
+                                height: 24,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Spacer(),
-                        RtcButton(
-                          title: _getButtonTitle(state.settlementMethod),
-                          isActive:
-                              !isPartial && state.settlementMethod != null,
-                          styleBtn: theme.labelLarge!.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                      const SizedBox(height: 12),
+                      _buildAmountRow(
+                        theme,
+                        S.current.differenceAmount,
+                        differenceAmount,
+                        AppColors.grayPalette.shade900,
+                        false,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildAmountRow(
+                        theme,
+                        'جمع تخفیف نقدی',
+                        cashDiscount,
+                        AppColors.grayPalette.shade900,
+                        false,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildAmountRow(
+                        theme,
+                        S.current.payableAmount,
+                        payableAmount,
+                        AppColors.warningPalette.shade600,
+                        true,
+                        isBold: true,
+                      ),
+                      const SizedBox(height: 12),
+                      if (state.settlementMethod == 'wallet_debit')
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.successPalette.shade25,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.successPalette.shade100,
+                              width: 1,
+                            ),
                           ),
-                          width:
-                              state.settlementMethod == 'ipg' ||
-                                  state.settlementMethod == 'link'
-                              ? 240
-                              : 160,
-                          onPressed: () => _handleSettlement(
-                            context,
-                            cubit,
-                            state.settlementMethod,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            spacing: 10,
+                            children: [
+                              RtcImage(
+                                image: "$baseImage/tick_circle.svg",
+                                width: 16,
+                                height: 16,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  S.current.walletBalanceSufficient,
+                                  textAlign: TextAlign.right,
+                                  style: theme.bodyMedium!.copyWith(
+                                    color: AppColors.successPalette.shade600,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          RtcButton(
+                            title: _getButtonTitle(state.settlementMethod),
+                            isActive:
+                                !isPartial && state.settlementMethod != null,
+                            styleBtn: theme.labelLarge!.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            width:
+                                state.settlementMethod == 'ipg' ||
+                                    state.settlementMethod == 'link'
+                                ? 240
+                                : 160,
+                            onPressed: () => _handleSettlement(
+                              context,
+                              cubit,
+                              state.settlementMethod,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         );
