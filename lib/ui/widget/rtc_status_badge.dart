@@ -47,6 +47,9 @@ class RtcStatusBadge extends StatelessWidget {
     } else if (status == 'بارگزاری شده' || status == S.current.uploaded) {
       palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
+    } else if (status == 'انجام شده' || status == "انجام شده") {
+      palette = AppColors.successPalette;
+      iconPath = '$baseImage/check_badge.svg';
     } else if (status == 'رد شده' || status == S.current.statusRejected) {
       palette = AppColors.errorPalette;
       iconPath = '$baseImage/close_badge.svg';

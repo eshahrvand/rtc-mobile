@@ -41,8 +41,10 @@ class OrdersRepository {
   }
 
   Future<dynamic> settle(String id, String method, {String? trackingCode}) {
-    final body = {'method': method};
-    if (trackingCode != null) body['tracking_code'] = trackingCode;
+    final body = {
+      'method': method,
+      if (trackingCode != null) 'payload': {'tracking_code': trackingCode},
+    };
     return _service.settle(id, body);
   }
 
@@ -180,14 +182,15 @@ class OrdersRepository {
           finalAmount: _formatCurrency(dto.total),
         ),
         payments: (dto.payments ?? []).map((p) {
-          final pDateTime = DateTime.parse(p.createdAt);
+          final pDateTime =
+              DateTime.tryParse(p.createdAt ?? '') ?? DateTime.now();
           final pJalali = Jalali.fromDateTime(pDateTime);
           final pDateStr =
               '${pJalali.year}/${pJalali.month.toString().padLeft(2, '0')}/${pJalali.day.toString().padLeft(2, '0')}';
 
           return OrderPaymentModel(
             amount: _formatCurrency(p.amount),
-            type: p.paymentType,
+            type: p.paymentType ?? '',
             date: pDateStr,
             trackingCode: p.trackingCode,
             status: p.status,
@@ -197,21 +200,21 @@ class OrdersRepository {
         history: [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)],
         disbursementRecords: (dto.disbursementRecords ?? []).map((r) {
           return DisbursementRecordModel(
-            gateway: r.gateway,
+            gateway: r.gateway ?? '',
             amount: _formatCurrency(r.amount),
-            reference: r.reference,
-            status: r.status,
-            createdAt: r.createdAt,
+            reference: r.reference ?? '',
+            status: r.status ?? '',
+            createdAt: r.createdAt ?? '',
           );
         }).toList(),
         settlementRecords: (dto.settlementRecords ?? []).map((s) {
           return SettlementRecordModel(
-            id: s.id,
+            id: s.id ?? '',
             amount: _formatCurrency(s.amount),
-            paymentType: s.paymentType,
-            status: s.status,
-            createdAt: s.createdAt,
-            trackingCode: s.trackingCode,
+            paymentType: s.paymentType ?? s.gateway ?? '',
+            status: s.status ?? '',
+            createdAt: s.createdAt ?? '',
+            trackingCode: s.trackingCode ?? s.reference,
           );
         }).toList(),
       );

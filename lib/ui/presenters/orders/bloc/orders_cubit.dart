@@ -167,12 +167,17 @@ class OrdersCubit extends Cubit<OrdersState> {
     _ordersRepo
         .getOrderDetails(orderId)
         .then((detail) {
+          final isSettled = detail.settlementRecords.any(
+            (r) => r.status == 'موفق' || r.status == 'success',
+          );
+
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
               selectedOrder: detail,
               disburseOperation: _createDisburseOp(detail),
               settlementOperation: _createSettlementOp(detail),
+              isSettlementCompleted: isSettled,
             ),
           );
         })

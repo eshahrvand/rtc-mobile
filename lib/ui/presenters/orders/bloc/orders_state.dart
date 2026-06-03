@@ -66,6 +66,7 @@ class OrdersState with _$OrdersState {
     String? settlementAccountHolder,
     String? settlementTrackingCode,
     @Default(true) bool isWalletBalanceSufficient,
+    @Default(false) bool isSettlementCompleted,
   }) = _OrdersState;
 }
 

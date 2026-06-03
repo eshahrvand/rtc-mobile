@@ -70,6 +70,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
         final showSettlement =
             isWaitingSettlement ||
+            widget.order.settlementRecords.isNotEmpty ||
             state.clearanceStep == ClearanceStep.success ||
             state.clearanceAmount.isNotEmpty ||
             (state.clearanceStep != ClearanceStep.initial &&
