@@ -21,6 +21,7 @@ class OrderTabHistory extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 2),
             if (historyLength > 2) ...[
               ...order.history
                   .take(splitIndex)
@@ -65,7 +66,7 @@ class OrderTabHistory extends StatelessWidget {
 
   Widget _buildHistoryRow(String label, String value, TextTheme theme) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 12),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -79,7 +80,7 @@ class OrderTabHistory extends StatelessWidget {
             value,
             style: theme.labelLarge!.copyWith(
               color: AppColors.grayPalette.shade900,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],

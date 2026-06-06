@@ -69,126 +69,131 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
       sizeStr = 'MB ${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)}';
     }
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Drag handle
-          Center(
-            child: Container(
-              width: 33,
-              height: 2,
-              decoration: BoxDecoration(color: AppColors.brandPalette.shade600),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 33,
+                height: 2,
+                decoration: BoxDecoration(color: AppColors.brandPalette.shade600),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-          // Header
-          Row(
-            children: [
-              Text(
-                S.current.clearanceDocumentsTitle,
-                style: theme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
+            // Header
+            Row(
+              children: [
+                Text(
+                  S.current.clearanceDocumentsTitle,
+                  style: theme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.grayPalette.shade900,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: RtcImage(
+                    image: "$baseImage/close.svg",
+                    width: 20,
+                    height: 20,
+                    color: AppColors.grayPalette.shade700,
+                    boxFit: BoxFit.fill,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 24),
+
+            // Instruction Text
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                S.current.documentConfirmationUpload,
+                style: theme.bodyLarge!.copyWith(
                   color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: RtcImage(
-                  image: "$baseImage/close.svg",
-                  width: 20,
-                  height: 20,
-                  color: AppColors.grayPalette.shade700,
-                  boxFit: BoxFit.fill,
+            ),
+            const SizedBox(height: 12),
+
+            // File Card
+            OrderDetailsDocumentItem(
+              isLocalFile: true,
+              onDelete: () {
+                Navigator.pop(context);
+                widget.onDelete();
+              },
+              doc: OrderDocumentModel(
+                title: S.current.paymentDocuments,
+                fileName: fileName,
+                fileSize: sizeStr,
+                url: widget.filePath,
+                // Locally for preview
+                iconPath: '$baseImage/featured-icon.svg',
+              ),
+            ),
+            if (widget.showTrackingField) ...[
+              const SizedBox(height: 12),
+              RtcTextField(
+                controller: _trackingController,
+                hintStyle: theme.bodyLarge!.copyWith(
+                  color: AppColors.grayPalette.shade400,
                 ),
+                hintText: 'کد پیگیری را وارد کنید',
+                keyboardType: TextInputType.number,
+                onChanged: (val) => widget.onTrackingCodeChanged?.call(val),
               ),
             ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1),
-          const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
-          // Instruction Text
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              S.current.documentConfirmationUpload,
-              style: theme.bodyLarge!.copyWith(
-                color: AppColors.grayPalette.shade900,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // File Card
-          OrderDetailsDocumentItem(
-            isLocalFile: true,
-            onDelete: () {
-              Navigator.pop(context);
-              widget.onDelete();
-            },
-            doc: OrderDocumentModel(
-              title: S.current.paymentDocuments,
-              fileName: fileName,
-              fileSize: sizeStr,
-              url: widget.filePath,
-              // Locally for preview
-              iconPath: '$baseImage/featured-icon.svg',
-            ),
-          ),
-          if (widget.showTrackingField) ...[
-            const SizedBox(height: 12),
-            RtcTextField(
-              controller: _trackingController,
-              hintStyle: theme.bodyLarge!.copyWith(
-                color: AppColors.grayPalette.shade400,
-              ),
-              hintText: 'کد پیگیری را وارد کنید',
-              keyboardType: TextInputType.number,
-              onChanged: (val) => widget.onTrackingCodeChanged?.call(val),
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: RtcButton(
+                    title: S.current.cancel,
+                    backgroundColor: Colors.white,
+                    borderColor: AppColors.grayPalette.shade300,
+                    styleBtn: theme.labelLarge!.copyWith(
+                      color: AppColors.grayPalette.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: RtcButton(
+                    title: S.current.confirmAndSend,
+                    isActive:
+                        widget.showTrackingField ? _isTrackingCodeNotEmpty : true,
+                    styleBtn: theme.labelLarge!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    onPressed: widget.onConfirm,
+                  ),
+                ),
+              ],
             ),
           ],
-          const SizedBox(height: 32),
-
-          // Action Buttons
-          Row(
-            children: [
-              Expanded(
-                child: RtcButton(
-                  title: S.current.cancel,
-                  backgroundColor: Colors.white,
-                  borderColor: AppColors.grayPalette.shade300,
-                  styleBtn: theme.labelLarge!.copyWith(
-                    color: AppColors.grayPalette.shade700,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: RtcButton(
-                  title: S.current.confirmAndSend,
-                  isActive:
-                      widget.showTrackingField ? _isTrackingCodeNotEmpty : true,
-                  styleBtn: theme.labelLarge!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  onPressed: widget.onConfirm,
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

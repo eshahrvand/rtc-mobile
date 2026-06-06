@@ -371,30 +371,56 @@ class _OrderSettlementOperationsWidgetState
                           ),
                           const SizedBox(height: 12),
                         ],
-                        _buildAmountRow(
-                          theme,
-                          S.current.differenceAmount,
-                          differenceAmount,
-                          AppColors.grayPalette.shade900,
-                          false,
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: AppColors.grayPalette.shade25,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildAmountRow(
+                                theme,
+                                S.current.differenceAmount,
+                                differenceAmount,
+                                isPartial
+                                    ? AppColors.warningPalette.shade600
+                                    : AppColors.grayPalette.shade900,
+                                isPartial,
+                              ),
+                              if (!isPartial) ...[
+                                const SizedBox(height: 8),
+                                RtcDivider(
+                                  height: 1,
+                                  color: AppColors.grayPalette.shade200,
+                                ),
+                                const SizedBox(height: 8),
+                                _buildAmountRow(
+                                  theme,
+                                  'جمع تخفیف نقدی',
+                                  cashDiscount,
+                                  AppColors.grayPalette.shade900,
+                                  false,
+                                ),
+                                const SizedBox(height: 8),
+                                RtcDivider(
+                                  height: 1,
+                                  color: AppColors.grayPalette.shade200,
+                                ),
+                                const SizedBox(height: 8),
+                                _buildAmountRow(
+                                  theme,
+                                  S.current.payableAmount,
+                                  payableAmount,
+                                  AppColors.warningPalette.shade600,
+                                  true,
+                                  isBold: true,
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        _buildAmountRow(
-                          theme,
-                          'جمع تخفیف نقدی',
-                          cashDiscount,
-                          AppColors.grayPalette.shade900,
-                          false,
-                        ),
-                        const SizedBox(height: 8),
-                        _buildAmountRow(
-                          theme,
-                          S.current.payableAmount,
-                          payableAmount,
-                          AppColors.warningPalette.shade600,
-                          true,
-                          isBold: true,
-                        ),
+
                         if (!isPartial) ...[
                           const SizedBox(height: 12),
                           if (state.settlementMethod == 'wallet_debit' &&
@@ -569,8 +595,9 @@ class _OrderSettlementOperationsWidgetState
               image: warningItem
                   ? "$baseImage/toman_warning.svg"
                   : "$baseImage/toman.svg",
-              width: 24,
-              height: 24,
+              width: 16,
+              height: 16,
+              boxFit: BoxFit.fill,
             ),
           ],
         ),
