@@ -156,7 +156,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     );
   }
 
-  /// Maps order statuses to localized pie chart items with semantic colors.
+  /// Maps order statuses to localized pie chart items with semantic colors and specific sorting.
   List<PieChartItemModel> _mapOrderStatusChart(List<OrderStatusDtoModel> list) {
     if (list.isEmpty) {
       return [
@@ -168,7 +168,25 @@ class DashboardCubit extends Cubit<DashboardState> {
       ];
     }
 
-    return list.map((s) {
+    // ─── Custom Sorting Logic ───
+    // Desired Order: Approved -> Under Review -> Awaiting Settlement -> Pre-Invoice -> Rejected -> Expired
+    final orderWeights = {
+      OrderStatus.approved: 1,
+      OrderStatus.underReview: 2,
+      OrderStatus.awaitingSettlement: 3,
+      OrderStatus.preInvoice: 4,
+      OrderStatus.rejected: 5,
+      OrderStatus.expired: 6,
+    };
+
+    final sortedList = List<OrderStatusDtoModel>.from(list);
+    sortedList.sort((a, b) {
+      final weightA = orderWeights[a.orderStatus] ?? 99;
+      final weightB = orderWeights[b.orderStatus] ?? 99;
+      return weightA.compareTo(weightB);
+    });
+
+    return sortedList.map((s) {
       String label = s.status;
       Color color = AppColors.grayPalette.shade400;
 

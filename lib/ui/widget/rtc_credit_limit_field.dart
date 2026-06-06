@@ -44,13 +44,9 @@ class RtcCreditLimitField extends StatelessWidget {
         Container(
           height: 44,
           decoration: BoxDecoration(
-            color: Colors.white, // TODO: replace with theme color
+            color: AppColors.grayPalette.shade50,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: AppColors.grayPalette.shade200,
-              // TODO: replace with theme color
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
             boxShadow: AppColors.fieldShadow,
           ),
           child: Row(

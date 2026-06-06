@@ -52,8 +52,10 @@ class ProfileScreen extends StatelessWidget {
                       labelStyle: theme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w500,
                         color: AppColors.grayPalette.shade700,
+
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.mobile ?? '',
                       ),
@@ -65,6 +67,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.nationalCode ?? '',
                       ),
@@ -76,6 +79,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.email ?? '',
                       ),
@@ -87,6 +91,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.agentCode ?? '',
                       ),
@@ -98,6 +103,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.insuranceId ?? '',
                       ),
@@ -113,6 +119,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.province?.name ?? "",
                       ),
@@ -124,6 +131,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text: userProfile?.city?.name ?? '',
                       ),
@@ -135,6 +143,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       maxLines: 3,
                       controller: TextEditingController(
                         text: userProfile?.address ?? '',
@@ -167,6 +176,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ],
                       ),
+
                     ),
                     RtcDivider(
                       color: AppColors.grayPalette.shade200,
@@ -179,6 +189,7 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.grayPalette.shade700,
                       ),
                       readOnly: true,
+                      isSetReadOnlyColor :true,
                       controller: TextEditingController(
                         text:
                             userProfile != null && userProfile!.manager != null
