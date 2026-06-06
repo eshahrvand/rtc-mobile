@@ -206,7 +206,7 @@ class ProfileScreen extends StatelessWidget {
       children: [
         // Background Doodle
         Container(
-          height: 180,
+          height: 140,
           width: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -218,11 +218,11 @@ class ProfileScreen extends StatelessWidget {
         ),
         // Profile Info
         Positioned(
-          bottom: -60,
+          bottom: -75,
           right: 16,
           child: Row(
             spacing: 12,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 decoration: BoxDecoration(
@@ -250,6 +250,7 @@ class ProfileScreen extends StatelessWidget {
                 spacing: 2,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 20,),
                   Text(
                     userProfile != null
                         ? '${userProfile!.firstName} ${userProfile!.lastName}'

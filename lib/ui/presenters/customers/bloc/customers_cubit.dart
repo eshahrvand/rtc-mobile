@@ -25,6 +25,7 @@ class CustomersCubit extends Cubit<CustomersState> {
 
   /// Fetches the initial list of customers, optionally filtered by the current search query.
   void init() {
+    print('>> CUSTOMERS: init() called');
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
     _customersRepo
@@ -32,7 +33,9 @@ class CustomersCubit extends Cubit<CustomersState> {
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
         )
         .then((response) {
+          print('>> CUSTOMERS: API success. count: ${response.count}, results: ${response.results.length}');
           final customers = response.results.map(_mapToCustomerItem).toList();
+          print('>> CUSTOMERS: Mapped to ${customers.length} items');
 
           emit(
             state.copyWith(
@@ -42,7 +45,10 @@ class CustomersCubit extends Cubit<CustomersState> {
             ),
           );
         })
-        .catchError(_handleError);
+        .catchError((e) {
+          print('>> CUSTOMERS: API error: $e');
+          _handleError(e);
+        });
   }
 
   /// Handles search query changes with a 1-second debounce to avoid excessive API calls.
@@ -120,7 +126,7 @@ class CustomersCubit extends Cubit<CustomersState> {
       id: dto.id,
       name: '${dto.firstName} ${dto.lastName}',
       phoneNumber: dto.mobile,
-      city: dto.city,
+      city: "",
     );
   }
 

@@ -262,27 +262,39 @@ class OrdersCubit extends Cubit<OrdersState> {
   // ─── Clearance Flow ───────────────────────────────────────────────
 
   void initiateClearance(String amountStr) {
-    if (state.selectedOrder == null) return;
+    print("tlorance>>:: initiateClearance CALLED with input: '$amountStr'");
+    
+    if (state.selectedOrder == null) {
+      print("tlorance>>:: ERROR: selectedOrder is NULL");
+      return;
+    }
+    
     if (state.tolerance == null) {
+      print("tlorance>>:: ERROR: tolerance is NULL in state");
       _handleError('تنظیمات تولرانس بارگذاری نشده است');
       return;
     }
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    final amount = double.tryParse(amountStr.replaceAll(',', '')) ?? 0;
-    final orderAmountVal =
-        double.tryParse(
-          state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
-        ) ??
-        0;
+    final rawAmountStr = amountStr.replaceAll(',', '');
+    final amount = double.tryParse(rawAmountStr) ?? 0;
+    
+    final rawOrderAmountStr = state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', '');
+    final orderAmountVal = double.tryParse(rawOrderAmountStr) ?? 0;
 
-    // Use dynamic tolerance from profile
-    final tolerancePercent = state.tolerance!;
-    print("tlorance>>:: used in initiateClearance: $tolerancePercent");
+    print("tlorance>>:: Parsed Input Amount: $amount (from '$rawAmountStr')");
+    print("tlorance>>:: Parsed Order Amount: $orderAmountVal (from '$rawOrderAmountStr')");
+
+    // ─── Range Calculation (Before API Call) ───
+    // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
+    final tolerancePercent = state.tolerance! / 100;
     final minAllowed = orderAmountVal * (1 - tolerancePercent);
     final maxAllowed = orderAmountVal * (1 + tolerancePercent);
 
+    print("tlorance>>:: Tolerance Percent: $tolerancePercent");
+    print("tlorance>>:: Allowed Range: [$minAllowed to $maxAllowed]");
+
     if (amount < minAllowed || amount > maxAllowed) {
+      print("tlorance>>:: RESULT: OUT OF RANGE (TOO LOW or TOO HIGH)");
       emit(
         state.copyWith(
           status: OrdersRequestStatus.success,
@@ -296,9 +308,14 @@ class OrdersCubit extends Cubit<OrdersState> {
       return;
     }
 
+    // ─── If in range, proceed with loading and API ───
+    print("tlorance>>:: RESULT: WITHIN RANGE. Proceeding to API...");
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
+          print("tlorance>>:: API SUCCESS: disburseInitiate responded");
           final isOnline =
               response != null &&
               (response is Map) &&
@@ -655,7 +672,8 @@ class OrdersCubit extends Cubit<OrdersState> {
       }
     }
     // Use dynamic tolerance from profile
-    final tolerancePercent = state.tolerance!;
+    // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
+    final tolerancePercent = state.tolerance! / 100;
     print("tlorance>>:: used in _checkWalletBalance: $tolerancePercent");
     final amountWithTolerance = requiredAmount * (1 - tolerancePercent);
     return pocketBalance >= amountWithTolerance;

@@ -77,6 +77,43 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
               .replaceAll(',', ''),
         ) ?? 0;
 
+        // 1. Try to find a successful record from server
+        final successRecords = widget.order.disbursementRecords.where(
+          (r) => r.status == 'موفق' || r.status == 'success',
+        );
+
+        final String clearanceAmount = () {
+          if (successRecords.isNotEmpty) {
+            return successRecords.first.amount;
+          }
+          if (state.clearanceAmount.isNotEmpty) {
+            return state.clearanceAmount;
+          }
+          return widget.order.financialSummary.finalAmount;
+        }();
+
+        final String? excessAmount = () {
+          if (successRecords.isNotEmpty) {
+            final disbursedVal =
+                double.tryParse(
+                  successRecords.first.amount.replaceAll(',', ''),
+                ) ??
+                0;
+            final orderVal =
+                double.tryParse(
+                  widget.order.financialSummary.finalAmount.replaceAll(',', ''),
+                ) ??
+                0;
+            if (disbursedVal > orderVal) {
+              return (disbursedVal - orderVal).toStringAsFixed(0);
+            }
+            return null;
+          }
+          return state.excessAmount;
+        }();
+
+        final String? walletName = state.walletName ?? widget.order.creditPlan?.planName;
+
         // Hide settlement if the entered clearance amount already covers the total
         final isOverDischarge =
             state.clearanceAmount.isNotEmpty &&
@@ -139,34 +176,12 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: OrderClearanceOperationWidget(
-                          amount: () {
-                            // 1. Try to find a successful record from server
-                            final successRecords = widget
-                                .order
-                                .disbursementRecords
-                                .where(
-                                  (r) =>
-                                      r.status == 'موفق' ||
-                                      r.status == 'success',
-                                );
-
-                            if (successRecords.isNotEmpty) {
-                              return successRecords.first.amount;
-                            }
-
-                            // 2. Fallback to state (active operation)
-                            if (state.clearanceAmount.isNotEmpty) {
-                              return state.clearanceAmount;
-                            }
-
-                            // 3. Fallback to final amount
-                            return widget.order.financialSummary.finalAmount;
-                          }(),
+                          amount: clearanceAmount,
                           orderAmount:
                               state.orderAmount ??
                               widget.order.financialSummary.finalAmount,
-                          excessAmount: state.excessAmount,
-                          walletName: state.walletName,
+                          excessAmount: excessAmount,
+                          walletName: walletName,
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
                           onAction: () {
