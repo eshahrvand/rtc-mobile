@@ -69,51 +69,53 @@ class ProductDetailView extends StatelessWidget {
           onBack: () => context.pop(),
           backIconPath: "$baseImage/angle-right.svg",
         ),
-        body: BlocBuilder<ProductDetailCubit, ProductDetailState>(
-          builder: (context, state) {
-            if (state.status == ProductDetailRequestStatus.loading ||
-                state.product == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final product = state.product!;
-            final cubit = context.read<ProductDetailCubit>();
-
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  RtcProductImageGallery(
-                    imageUrls: product.imageUrls,
-                    selectedIndex: state.selectedImageIndex,
-                    onImageChanged: (index) => cubit.onImageSelected(index),
-                  ),
-                  const SizedBox(height: 26),
-                  if (showPrice) _PriceBlock(product: product),
-                  if (!showPrice)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        product.name,
-                        style: theme.titleSmall!.copyWith(
-                          color: AppColors.grayPalette.shade20,
-                          fontWeight: FontWeight.w600,
+        body: SafeArea(
+          child: BlocBuilder<ProductDetailCubit, ProductDetailState>(
+            builder: (context, state) {
+              if (state.status == ProductDetailRequestStatus.loading ||
+                  state.product == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
+          
+              final product = state.product!;
+              final cubit = context.read<ProductDetailCubit>();
+          
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+          
+                    RtcProductImageGallery(
+                      imageUrls: product.imageUrls,
+                      selectedIndex: state.selectedImageIndex,
+                      onImageChanged: (index) => cubit.onImageSelected(index),
+                    ),
+                    const SizedBox(height: 26),
+                    if (showPrice) _PriceBlock(product: product),
+                    if (!showPrice)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          product.name,
+                          style: theme.titleSmall!.copyWith(
+                            color: AppColors.grayPalette.shade20,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                  const SizedBox(height: 12),
-                  RtcProductBadgeList(badges: product.badges),
-                  const SizedBox(height: 28),
-
-                  _SpecsSection(specs: product.specs),
-
-                  _DescriptionSection(description: product.description),
-                  const SizedBox(height: 32),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: 12),
+                    RtcProductBadgeList(badges: product.badges),
+                    const SizedBox(height: 28),
+          
+                    _SpecsSection(specs: product.specs),
+          
+                    _DescriptionSection(description: product.description),
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

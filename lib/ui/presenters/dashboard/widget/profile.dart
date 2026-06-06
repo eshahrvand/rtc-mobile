@@ -5,6 +5,7 @@ import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_credit_limit_field.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_field.dart';
 import '../../../../generated/l10n.dart';
@@ -20,6 +21,7 @@ class ProfileScreen extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: RtcAppBar(
         title: S.current.profile,
         onBack: () {
@@ -31,146 +33,165 @@ class ProfileScreen extends StatelessWidget {
         },
         backIconPath: "$baseImage/angle-right.svg",
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            SizedBox(height: 64),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Column(
-                spacing: 12,
-                children: [
-                  RtcTextField(
-                    labelText: S.current.phoneNumber,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              SizedBox(height: 64),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 24,
+                ),
+                child: Column(
+                  spacing: 12,
+                  children: [
+                    RtcTextField(
+                      labelText: S.current.phoneNumber,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.mobile ?? '',
+                      ),
                     ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.mobile ?? '',
+                    RtcTextField(
+                      labelText: S.current.nationalId,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.nationalCode ?? '',
+                      ),
                     ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.nationalId,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
+                    RtcTextField(
+                      labelText: S.current.email,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.email ?? '',
+                      ),
                     ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.nationalCode ?? '',
+                    RtcTextField(
+                      labelText: S.current.agencyCode,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.agentCode ?? '',
+                      ),
                     ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.email,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
+                    RtcTextField(
+                      labelText: S.current.workshopCode,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.insuranceId ?? '',
+                      ),
                     ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.email ?? '',
+                    RtcDivider(
+                      color: AppColors.grayPalette.shade200,
+                      height: 1,
                     ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.agencyCode,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
+                    RtcTextField(
+                      labelText: S.current.province,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.province?.name ?? "",
+                      ),
                     ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.agentCode ?? '',
+                    RtcTextField(
+                      labelText: S.current.city,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text: userProfile?.city?.name ?? '',
+                      ),
                     ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.workshopCode,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
+                    RtcTextField(
+                      labelText: S.current.address,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      maxLines: 3,
+                      controller: TextEditingController(
+                        text: userProfile?.address ?? '',
+                      ),
                     ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.insuranceId ?? '',
+                    RtcDivider(
+                      color: AppColors.grayPalette.shade200,
+                      height: 1,
                     ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.province,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
-                    ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.province?.name ?? "",
-                    ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.city,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
-                    ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile?.city?.name ?? '',
-                    ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.address,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
-                    ),
-                    readOnly: true,
-                    maxLines: 3,
-                    controller: TextEditingController(
-                      text: userProfile?.address ?? '',
-                    ),
-                  ),
-                  RtcCreditLimitField(
-                    labelText: S.current.creditLimit,
-                    value: userProfile?.creditLimit?.toStringAsFixed(0) ?? '۰',
-                    helper: Row(
-                      spacing: 8,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        RtcImage(
-                          image: "$baseImage/alert.svg",
-                          width: 14,
-                          height: 14,
-                          color: AppColors.grayPalette.shade600,
-                        ),
-
-                        Text(
-                          S.current.creditLimitHelper,
-                          style: theme.bodyMedium!.copyWith(
+                    RtcCreditLimitField(
+                      labelText: S.current.creditLimit,
+                      value:
+                          userProfile?.creditLimit?.toStringAsFixed(0) ?? '۰',
+                      helper: Row(
+                        spacing: 8,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          RtcImage(
+                            image: "$baseImage/alert.svg",
+                            width: 14,
+                            height: 14,
                             color: AppColors.grayPalette.shade600,
                           ),
-                        ),
-                      ],
+
+                          Text(
+                            S.current.creditLimitHelper,
+                            style: theme.bodyMedium!.copyWith(
+                              color: AppColors.grayPalette.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  RtcTextField(
-                    labelText: S.current.regionalManager,
-                    labelStyle: theme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade700,
+                    RtcDivider(
+                      color: AppColors.grayPalette.shade200,
+                      height: 1,
                     ),
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: userProfile != null && userProfile!.manager != null
-                          ? '${userProfile!.manager?.firstName} ${userProfile!.manager?.lastName}'
-                          : '',
+                    RtcTextField(
+                      labelText: S.current.regionalManager,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      controller: TextEditingController(
+                        text:
+                            userProfile != null && userProfile!.manager != null
+                            ? '${userProfile!.manager?.firstName} ${userProfile!.manager?.lastName}'
+                            : '',
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-          ],
+              SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -227,7 +248,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               Column(
                 spacing: 2,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     userProfile != null
@@ -239,7 +260,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    userProfile?.role ?? '',
+                    userProfile?.role != "agent" ? 'نماینده' : 'نماینده ',
+
                     style: theme.bodyLarge!.copyWith(
                       color: AppColors.grayPalette.shade600,
                     ),

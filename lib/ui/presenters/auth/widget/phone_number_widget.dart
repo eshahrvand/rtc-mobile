@@ -60,6 +60,7 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
             ),
             const SizedBox(height: 32),
             RtcTextField(
+              autoFocus: true,
               controller: _controller,
               hintText: S.current.phoneNumberHint,
               hintStyle: theme.bodyLarge!.copyWith(
@@ -75,6 +76,26 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                 height: 20,
               ),
               maxLength: 11,
+
+              helper: !state.isPhoneValid && state.phoneNumber.length > 0
+                  ? Row(
+                      spacing: 8,
+                      children: [
+                        RtcImage(
+                          image: 'assets/images/alert.svg',
+                          width: 14,
+                          height: 14,
+                          color: AppColors.errorPalette.shade600,
+                        ),
+                        Text(
+                          S.current.nationalIdWrong,
+                          style: theme.bodySmall!.copyWith(
+                            color: AppColors.errorPalette.shade600,
+                          ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
             ),
             const Spacer(),
             Padding(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rtc_mobile/config/config.dart';
+import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../theme/colors.dart';
 
 class RtcCreditLimitField extends StatelessWidget {
@@ -80,12 +82,11 @@ class RtcCreditLimitField extends StatelessWidget {
                   ),
                 ),
                 alignment: Alignment.center,
-                child: Text(
-                  'تومان',
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: Colors.white, // TODO: replace with theme color
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: RtcImage(
+                  image: "$baseImage/toman_white.svg",
+                  width: 20,
+                  height: 20,
+                  boxFit: BoxFit.fill,
                 ),
               ),
             ],

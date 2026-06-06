@@ -26,7 +26,7 @@ import '../../../../data/models/order_model.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit({int initialIndex = 0})
-      : super(DashboardState(selectedNavIndex: initialIndex));
+    : super(DashboardState(selectedNavIndex: initialIndex));
 
   final _dashboardRepo = sl<DashboardRepository>();
   final _ordersRepo = sl<OrdersRepository>();
@@ -37,13 +37,16 @@ class DashboardCubit extends Cubit<DashboardState> {
   void init() {
     emit(state.copyWith(status: DashboardRequestStatus.loading));
 
-    _dashboardRepo.getMyProfile().then((profile) {
-      emit(state.copyWith(userProfile: profile));
-      _loadDashboardData();
-    }).catchError((Object e) {
-      _loadDashboardData();
-      _handleError(e);
-    });
+    _dashboardRepo
+        .getMyProfile()
+        .then((profile) {
+          emit(state.copyWith(userProfile: profile));
+          _loadDashboardData();
+        })
+        .catchError((Object e) {
+          _loadDashboardData();
+          _handleError(e);
+        });
   }
 
   /// Updates the selected navigation index.
@@ -56,33 +59,37 @@ class DashboardCubit extends Cubit<DashboardState> {
   /// Fetches all dashboard components in parallel and updates the state.
   void _loadDashboardData() {
     Future.wait([
-      _dashboardRepo.getSummary(),
-      _dashboardRepo.getDailyChart(),
-      _dashboardRepo.getCategories(),
-      _dashboardRepo.getSubPlanChart(),
-      _ordersRepo.getOrders(page: 1, pageSize: 5),
-      _dashboardRepo.getOrderStatus(),
-    ]).then((results) {
-      final summary = results[0] as DashboardSummaryDtoModel;
-      final dailyChart = results[1] as List<DailyChartDtoModel>;
-      final categories = results[2] as List<CategoryChartDtoModel>;
-      final subplans = results[3] as List<SubPlanChartDtoModel>;
-      final orders = results[4] as List<OrderSummaryModel>;
-      final orderStatuses = results[5] as List<OrderStatusDtoModel>;
+          _dashboardRepo.getSummary(),
+          _dashboardRepo.getDailyChart(),
+          _dashboardRepo.getCategories(),
+          _dashboardRepo.getSubPlanChart(),
+          _ordersRepo.getOrders(page: 1, pageSize: 5),
+          _dashboardRepo.getOrderStatus(),
+        ])
+        .then((results) {
+          final summary = results[0] as DashboardSummaryDtoModel;
+          final dailyChart = results[1] as List<DailyChartDtoModel>;
+          final categories = results[2] as List<CategoryChartDtoModel>;
+          final subplans = results[3] as List<SubPlanChartDtoModel>;
+          final orders = results[4] as List<OrderSummaryModel>;
+          final orderStatuses = results[5] as List<OrderStatusDtoModel>;
 
-      emit(state.copyWith(
-        status: DashboardRequestStatus.success,
-        quickAccessItems: _mapQuickAccessItems(summary),
-        lineChartData: [_mapLineChartData(dailyChart)],
-        pieChart1Title: S.current.orderStatusChartTitle,
-        pieChart1Data: _mapOrderStatusChart(orderStatuses),
-        pieChart2Title: S.current.salesByCategoryChartTitle,
-        pieChart2Data: _mapCategoryChart(categories),
-        barChartTitle: S.current.plansSalesChartTitle,
-        barChartData: _mapSubPlanChart(subplans),
-        recentOrders: orders,
-      ));
-    }).catchError(_handleError);
+          emit(
+            state.copyWith(
+              status: DashboardRequestStatus.success,
+              quickAccessItems: _mapQuickAccessItems(summary),
+              lineChartData: [_mapLineChartData(dailyChart)],
+              pieChart1Title: S.current.orderStatusChartTitle,
+              pieChart1Data: _mapOrderStatusChart(orderStatuses),
+              pieChart2Title: S.current.salesByCategoryChartTitle,
+              pieChart2Data: _mapCategoryChart(categories),
+              barChartTitle: S.current.plansSalesChartTitle,
+              barChartData: _mapSubPlanChart(subplans),
+              recentOrders: orders,
+            ),
+          );
+        })
+        .catchError(_handleError);
   }
 
   // ─── Mapping Helpers ───────────────────────────────────────────────
@@ -101,7 +108,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         title: S.current.approvedOrders,
         value: s.orderCount.toString(),
         currency: "",
-        iconPath: 'assets/images/trend-up.svg',
+        iconPath: 'assets/images/document-list-check.svg',
         percentage: '${s.orderCountDelta}%',
       ),
       QuickAccessItemModel(
@@ -114,7 +121,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         title: S.current.cashCommission,
         value: s.activeOrders.toString(),
         currency: "assets/images/toman.svg",
-        iconPath: 'assets/images/document-list-check.svg',
+        iconPath: 'assets/images/trend-up.svg',
       ),
     ];
   }
@@ -136,8 +143,9 @@ class DashboardCubit extends Cubit<DashboardState> {
         }
       });
 
-      final amount =
-          dailyData.isNotEmpty ? dailyData.first.totalSalesAmount : 0.0;
+      final amount = dailyData.isNotEmpty
+          ? dailyData.first.totalSalesAmount
+          : 0.0;
       currentMonthSpots.add(FlSpot(i.toDouble(), amount));
     }
 
@@ -219,18 +227,17 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
 
     return list.map((s) {
-      return BarChartItemModel(
-        label: s.planName,
-        value: s.totalSalesAmount,
-      );
+      return BarChartItemModel(label: s.planName, value: s.totalSalesAmount);
     }).toList();
   }
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
-    emit(state.copyWith(
-      status: DashboardRequestStatus.error,
-      errorMessage: e.toString(),
-    ));
+    emit(
+      state.copyWith(
+        status: DashboardRequestStatus.error,
+        errorMessage: e.toString(),
+      ),
+    );
   }
 }
