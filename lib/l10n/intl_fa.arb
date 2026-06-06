@@ -211,6 +211,7 @@
   "orderStatusChartTitle": "وضعیت سفارش‌ها",
   "salesByCategoryChartTitle": "تعداد فروش بر اساس دسته‌بندی کالا",
   "plansSalesChartTitle": "جمع فروش طرح‌ها در ماه جاری",
+  "successSubmitPreInvoice": "ثبت پیش فاکتور با موفقیت انجام شد",
   "select": "انتخاب",
   "fromDate": "از تاریخ",
   "toDate": "تا تاریخ",

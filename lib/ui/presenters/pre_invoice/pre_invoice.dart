@@ -53,7 +53,7 @@ class PreInvoiceView extends StatelessWidget {
               rtcSnackBar(
                 context: context,
                 type: SnackBarType.success,
-                message: "با موفقیت ثبت شد",
+                message: S.current.successSubmitPreInvoice,
               );
             }
             if (state.status == PreInvoiceRequestStatus.submitted) {
@@ -77,64 +77,80 @@ class PreInvoiceView extends StatelessWidget {
         builder: (context, state) {
           final cubit = context.read<PreInvoiceCubit>();
 
-          return Scaffold(
-            appBar: RtcAppBar(
-              title: state.isEditMode
-                  ? _getEditTitle(state.currentStep)
-                  : S.current.releaseFactor,
-              onBack: () {
-                if (state.isEditMode) {
-                  cubit.exitEditMode();
-                } else if (state.currentStep == PreInvoiceStep.creditPlan) {
-                  context.pop();
-                } else {
-                  final prevStep =
-                      PreInvoiceStep.values[state.currentStep.index - 1];
-                  cubit.goToStep(prevStep);
-                }
-              },
-              hideBackIcon:
-                  (state.currentStep == PreInvoiceStep.creditPlan ||
-                  state.isEditMode),
-              backIconPath:
-                  (state.currentStep == PreInvoiceStep.creditPlan ||
-                      state.isEditMode)
-                  ? ""
-                  : '$baseImage/angle-right.svg',
-              actions: [
-                if (!state.isEditMode)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: GestureDetector(
-                      onTap: () => context.pop(),
-                      child: RtcImage(
-                        image: '$baseImage/close_appbar.svg',
-                        width: 24,
-                        height: 24,
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+
+              if (state.isEditMode) {
+                cubit.exitEditMode();
+              } else if (state.currentStep == PreInvoiceStep.creditPlan) {
+                context.pop();
+              } else {
+                final prevStep =
+                    PreInvoiceStep.values[state.currentStep.index - 1];
+                cubit.goToStep(prevStep);
+              }
+            },
+            child: Scaffold(
+              appBar: RtcAppBar(
+                title: state.isEditMode
+                    ? _getEditTitle(state.currentStep)
+                    : S.current.releaseFactor,
+                onBack: () {
+                  if (state.isEditMode) {
+                    cubit.exitEditMode();
+                  } else if (state.currentStep == PreInvoiceStep.creditPlan) {
+                    context.pop();
+                  } else {
+                    final prevStep =
+                        PreInvoiceStep.values[state.currentStep.index - 1];
+                    cubit.goToStep(prevStep);
+                  }
+                },
+                hideBackIcon:
+                    (state.currentStep == PreInvoiceStep.creditPlan ||
+                    state.isEditMode),
+                backIconPath:
+                    (state.currentStep == PreInvoiceStep.creditPlan ||
+                        state.isEditMode)
+                    ? ""
+                    : '$baseImage/angle-right.svg',
+                actions: [
+                  if (!state.isEditMode)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: GestureDetector(
+                        onTap: () => context.pop(),
+                        child: RtcImage(
+                          image: '$baseImage/close_appbar.svg',
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     ),
-                  ),
-              ],
-              showShadow: false,
-            ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  if (!state.isEditMode)
-                    RtcStepIndicator(
-                      totalSteps: 5,
-                      currentStepIndex: state.currentStep.index,
-                      stepLabels: [
-                        S.current.selectCreditPlan,
-                        S.current.selectProducts,
-                        S.current.customerInfo,
-                        S.current.uploadDocuments,
-                        S.current.reviewAndSubmit,
-                      ],
-                    ),
-                  Expanded(child: _buildStepView(state.currentStep)),
-                  _buildBottomButtons(context, state, cubit),
                 ],
+                showShadow: false,
+              ),
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    if (!state.isEditMode)
+                      RtcStepIndicator(
+                        totalSteps: 5,
+                        currentStepIndex: state.currentStep.index,
+                        stepLabels: [
+                          S.current.selectCreditPlan,
+                          S.current.selectProducts,
+                          S.current.customerInfo,
+                          S.current.uploadDocuments,
+                          S.current.reviewAndSubmit,
+                        ],
+                      ),
+                    Expanded(child: _buildStepView(state.currentStep)),
+                    _buildBottomButtons(context, state, cubit),
+                  ],
+                ),
               ),
             ),
           );

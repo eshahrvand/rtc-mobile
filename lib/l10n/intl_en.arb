@@ -208,6 +208,7 @@
   "orderStatusChartTitle": "",
   "salesByCategoryChartTitle": "",
   "plansSalesChartTitle": "",
+  "successSubmitPreInvoice": "",
   "select": "",
   "fromDate": "",
   "toDate": "",

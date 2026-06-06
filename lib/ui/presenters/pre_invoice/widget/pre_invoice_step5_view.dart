@@ -420,7 +420,7 @@ class PreInvoiceStep5View extends StatelessWidget {
             S.current.payableAmount,
             state.payableAmount,
             theme,
-            isBold: true,
+            isFinalPrice: true,
             isPrice: true,
             valueColor: AppColors.brandPalette.shade600,
           ),
@@ -434,7 +434,7 @@ class PreInvoiceStep5View extends StatelessWidget {
     String value,
     TextTheme theme, {
     Color? valueColor,
-    bool isBold = false,
+    bool isFinalPrice = false,
     bool isPrice = false,
   }) {
     return Padding(
@@ -462,7 +462,14 @@ class PreInvoiceStep5View extends StatelessWidget {
               ),
               if (isPrice) ...[
                 SizedBox(width: 4),
-                RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
+                RtcImage(
+                  image: isFinalPrice
+                      ? "$baseImage/toman_blue.svg"
+                      : "$baseImage/toman.svg",
+                  width: 16,
+                  height: 16,
+                  boxFit: BoxFit.fill,
+                ),
               ],
             ],
           ),
