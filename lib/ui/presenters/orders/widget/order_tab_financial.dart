@@ -93,6 +93,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           color: AppColors.grayPalette.shade700,
                         ),
                         isExpanded: state.isFinancialSummaryExpanded,
+                        alwaysShowChild: true,
                         onToggle: () => cubit.toggleFinancialSummary(),
                         showDivider: true,
                         headerSpacing: 8,
@@ -106,6 +107,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           widget.order.financialSummary,
                           widget.order.isSettled,
                           isWaitingSettlement,
+                          state.isFinancialSummaryExpanded,
                           context,
                         ),
                       ),
@@ -227,19 +229,21 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
     FinancialSummaryModel summary,
     bool isSettled,
     bool isWaitingSettlement,
+    bool isExpanded,
     BuildContext context,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         children: [
-          _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
-
-          _buildInfoRow(
-            context,
-            S.current.totalDiscounts,
-            summary.totalDiscount,
-          ),
+          if (isExpanded) ...[
+            _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
+            _buildInfoRow(
+              context,
+              S.current.totalDiscounts,
+              summary.totalDiscount,
+            ),
+          ],
           _buildInfoRow(
             context,
             S.current.finalFactorAmount,

@@ -10,6 +10,7 @@ class RtcCollapsibleSection extends StatelessWidget {
   final Widget child;
   final Widget? trailing;
   final bool showDivider;
+  final bool alwaysShowChild;
   final EdgeInsets? padding;
   final double? headerSpacing;
 
@@ -22,6 +23,7 @@ class RtcCollapsibleSection extends StatelessWidget {
     required this.child,
     this.trailing,
     this.showDivider = true,
+    this.alwaysShowChild = false,
     this.padding,
     this.headerSpacing,
   });
@@ -36,7 +38,9 @@ class RtcCollapsibleSection extends StatelessWidget {
           InkWell(
             onTap: onToggle,
             child: Padding(
-              padding: padding ?? const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              padding:
+                  padding ??
+                  EdgeInsets.fromLTRB(16, 12, 16, isExpanded ? 0 : 12),
               child: Row(
                 spacing: headerSpacing ?? 4,
                 children: [
@@ -54,7 +58,7 @@ class RtcCollapsibleSection extends StatelessWidget {
               ),
             ),
           ),
-          if (showDivider && isExpanded)
+          if (showDivider && (isExpanded || alwaysShowChild))
             Padding(
               padding: const EdgeInsets.only(
                 top: 12,
@@ -67,7 +71,7 @@ class RtcCollapsibleSection extends StatelessWidget {
                 height: 0.5,
               ),
             ),
-          if (isExpanded) child,
+          if (isExpanded || alwaysShowChild) child,
         ],
       ),
     );

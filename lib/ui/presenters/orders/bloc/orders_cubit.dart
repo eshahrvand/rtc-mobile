@@ -74,9 +74,13 @@ class OrdersCubit extends Cubit<OrdersState> {
         (r) => r.status == 'موفق' || r.status == 'success',
       );
 
+      // If status is "Pre-Invoice", default to Financial Tab (index 1)
+      final initialTab = detail.status == 'پیش فاکتور' ? 1 : 0;
+
       emit(state.copyWith(
         status: OrdersRequestStatus.success,
         selectedOrder: detail,
+        selectedTabIndex: initialTab,
         disburseOperation: _createDisburseOp(detail),
         settlementOperation: _createSettlementOp(detail),
         isSettlementCompleted: isSettled,

@@ -91,13 +91,30 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             listenWhen: (prev, curr) =>
                 prev.selectedTabIndex != curr.selectedTabIndex,
             listener: (context, state) {
-              if (_pageController.hasClients &&
-                  _pageController.page?.toInt() != state.selectedTabIndex) {
-                _pageController.animateToPage(
-                  state.selectedTabIndex,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
+              void syncPage() {
+                if (_pageController.hasClients &&
+                    _pageController.page?.toInt() != state.selectedTabIndex) {
+                  // If it's the first transition to a non-zero tab, jump instantly
+                  if (state.selectedTabIndex != 0 &&
+                      (_pageController.positions.isEmpty ||
+                          _pageController.page?.toInt() == 0)) {
+                    _pageController.jumpToPage(state.selectedTabIndex);
+                  } else {
+                    _pageController.animateToPage(
+                      state.selectedTabIndex,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                }
+              }
+
+              if (_pageController.hasClients) {
+                syncPage();
+              } else {
+                // If the builder is still showing the loader, wait for the next frame
+                // when PageView is actually in the widget tree.
+                WidgetsBinding.instance.addPostFrameCallback((_) => syncPage());
               }
             },
           ),
