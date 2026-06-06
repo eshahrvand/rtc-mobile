@@ -119,7 +119,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              S.current.uploadClearanceInstruction,
+              S.current.documentConfirmationUpload,
               style: theme.bodyLarge!.copyWith(
                 color: AppColors.grayPalette.shade900,
                 fontWeight: FontWeight.w500,

@@ -223,6 +223,7 @@
   "selectStartDate": "",
   "phoneNumberWrong": "",
   "selectDate": "",
+  "documentConfirmationUpload": "",
   "clearanceOperation": "Clearance Operation",
   "excessAmountOutOfTolerance": "Excess amount is out of allowed tolerance.",
   "excessAmountAddedToWallet": "Excess amount will be added to \"{walletName}\" pocket.",

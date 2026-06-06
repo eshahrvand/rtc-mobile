@@ -169,8 +169,11 @@ class _OrderSettlementOperationsWidgetState
           decoration: BoxDecoration(
             color: Colors.white,
             border: showBorder
-                ?  Border(
-                    right: BorderSide(color: AppColors.brandPalette.shade600, width: 4),
+                ? Border(
+                    right: BorderSide(
+                      color: AppColors.brandPalette.shade600,
+                      width: 4,
+                    ),
                   )
                 : null,
           ),

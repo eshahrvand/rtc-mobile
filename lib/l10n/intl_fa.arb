@@ -225,6 +225,7 @@
   "selectDate": "تاریخ مورد نظر را انتخاب کنید",
   "clearanceOperation": "عملیات تخلیه",
   "excessAmountOutOfTolerance": "مبلغ مازاد خارج از تولرانس مجاز است.",
+  "documentConfirmationUpload": "در صورت تایید مدارک بارگزاری شده جهت تکمیل فرآیند دکمه تایید و ارسال را بزنید .",
   "excessAmountAddedToWallet": "مبلغ مازاد به جیب \"{walletName}\" اضافه خواهد شد.",
   "@excessAmountAddedToWallet": {
     "placeholders": {
