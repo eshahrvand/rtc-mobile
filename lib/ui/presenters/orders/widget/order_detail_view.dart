@@ -151,39 +151,41 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ],
               ),
 
-              body: Column(
-                children: [
-                  Container(
-                    color: Colors.white,
-                    child: Column(
-                      children: [
-                        _buildValidityHeader(context, order),
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          _buildValidityHeader(context, order),
 
-                        RtcTabBar(
-                          tabs: const [
-                            'جزییات سفارش',
-                            'اطلاعات مالی',
-                            'تاریخچه',
-                          ],
-                          selectedIndex: state.selectedTabIndex,
-                          onTabChanged: (index) => cubit.onTabChanged(index),
-                        ),
-                      ],
+                          RtcTabBar(
+                            tabs: const [
+                              'جزییات سفارش',
+                              'اطلاعات مالی',
+                              'تاریخچه',
+                            ],
+                            selectedIndex: state.selectedTabIndex,
+                            onTabChanged: (index) => cubit.onTabChanged(index),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
 
-                  Expanded(
-                    child: PageView(
-                      controller: _pageController,
-                      onPageChanged: (index) => cubit.onTabChanged(index),
-                      children: [
-                        OrderTabDetails(order: order),
-                        OrderTabFinancial(order: order),
-                        OrderTabHistory(order: order),
-                      ],
+                    Expanded(
+                      child: PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) => cubit.onTabChanged(index),
+                        children: [
+                          OrderTabDetails(order: order),
+                          OrderTabFinancial(order: order),
+                          OrderTabHistory(order: order),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

@@ -45,84 +45,91 @@ class _WalletView extends StatelessWidget {
 
           final summary = state.walletSummary!;
 
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Stack(
-              children: [
-                _buildHeader(context, summary),
-                Positioned(
-                  top: 160,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
+          return SafeArea(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Stack(
+                children: [
+                  _buildHeader(context, summary),
+                  Positioned(
+                    top: 160,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 16, left: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  S.current.myPockets,
-                                  style: theme.labelLarge!.copyWith(
-                                    color: AppColors.grayPalette.shade900,
-                                    fontWeight: FontWeight.w600,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                right: 16,
+                                left: 16,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    S.current.myPockets,
+                                    style: theme.labelLarge!.copyWith(
+                                      color: AppColors.grayPalette.shade900,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  S.current.pocketsCount(
-                                    summary.pockets.length,
+                                  Text(
+                                    S.current.pocketsCount(
+                                      summary.pockets.length,
+                                    ),
+                                    style: theme.bodyLarge!.copyWith(
+                                      color: AppColors.grayPalette.shade700,
+                                    ),
                                   ),
-                                  style: theme.bodyLarge!.copyWith(
-                                    color: AppColors.grayPalette.shade700,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Expanded(
-                            child: ListView.separated(
-                              padding: EdgeInsets.zero,
-                              itemCount: summary.pockets.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final pocket = summary.pockets[index];
-                                return _PocketCard(
-                                  pocket: pocket,
-                                  onTap: () {
-                                    context.read<WalletCubit>().selectPocket(
-                                      pocket,
-                                    );
-                                    context.push(
-                                      AppRoutes.transactionList,
-                                      extra: context.read<WalletCubit>(),
-                                    );
-                                  },
-                                );
-                              },
+                            const SizedBox(height: 16),
+                            Expanded(
+                              child: ListView.separated(
+                                padding: EdgeInsets.zero,
+                                itemCount: summary.pockets.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final pocket = summary.pockets[index];
+                                  return _PocketCard(
+                                    pocket: pocket,
+                                    onTap: () {
+                                      context.read<WalletCubit>().selectPocket(
+                                        pocket,
+                                      );
+                                      context.push(
+                                        AppRoutes.transactionList,
+                                        extra: context.read<WalletCubit>(),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 32),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

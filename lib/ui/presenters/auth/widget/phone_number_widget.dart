@@ -88,7 +88,7 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                           color: AppColors.errorPalette.shade600,
                         ),
                         Text(
-                          S.current.nationalIdWrong,
+                          S.current.phoneNumberWrong,
                           style: theme.bodySmall!.copyWith(
                             color: AppColors.errorPalette.shade600,
                           ),

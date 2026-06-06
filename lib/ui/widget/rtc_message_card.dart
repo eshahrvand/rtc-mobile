@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -24,16 +25,24 @@ class RtcMessageCard extends StatelessWidget {
           border: Border.all(color: AppColors.warningPalette.shade100),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10 , 12 , 10 , 12),
+          padding: const EdgeInsets.fromLTRB(10, 12, 10, 12),
           child: Row(
             spacing: 10,
             children: [
-              RtcImage(image: iconPath, width: 16, height: 16),
+              RtcImage(
+                image: "$baseImage/alert.svg",
+
+                // iconPath,
+                width: 16,
+                height: 16,
+              ),
 
               Expanded(
                 child: Text(
-                  message,
-                  style: theme.bodyMedium!.copyWith(color: AppColors.warningPalette.shade600
+                  "با فروش ۲۰,۰۰۰,۰۰۰ تومان دیگر پورسانت شما به ۸٪ نقدی و یا ۱۱٪ کالایی افزایش می‌یابد.",
+                  // message,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.warningPalette.shade600,
                   ),
                 ),
               ),

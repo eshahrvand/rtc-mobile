@@ -77,13 +77,15 @@ class _OrdersViewState extends State<OrdersView> {
                 height: 20,
               ),
             ),
-            body: Column(
-              children: [
-                const SizedBox(height: 16),
-                _buildBadgeList(context, state),
-                const SizedBox(height: 8),
-                const Expanded(child: OrdersListWidget()),
-              ],
+            body: SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _buildBadgeList(context, state),
+                  const SizedBox(height: 8),
+                  const Expanded(child: OrdersListWidget()),
+                ],
+              ),
             ),
           );
         },

@@ -21,37 +21,39 @@ class OrdersBody extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
 
-        return Column(
-          children: [
-            const SizedBox(height: 16),
-            _buildBadgeList(context, state),
-            const SizedBox(height: 8),
-            Expanded(
-              child:
-                  state.status == OrdersRequestStatus.loading &&
-                      state.filteredOrders.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: state.filteredOrders.length,
-                      itemBuilder: (context, index) {
-                        final OrderSummaryModel order =
-                            state.filteredOrders[index];
-                        return RtcOrderItem(
-                          order: order,
-                          onTap: () {
-                            context
-                                .push(AppRoutes.orderDetail, extra: order.id)
-                                .then((_) {
-                              if (context.mounted) {
-                                context.read<OrdersCubit>().fetchOrders();
-                              }
-                            });
-                          },
-                        );
-                      },
-                    ),
-            ),
-          ],
+        return SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              SafeArea(child: _buildBadgeList(context, state)),
+              const SizedBox(height: 8),
+              Expanded(
+                child:
+                    state.status == OrdersRequestStatus.loading &&
+                        state.filteredOrders.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: state.filteredOrders.length,
+                        itemBuilder: (context, index) {
+                          final OrderSummaryModel order =
+                              state.filteredOrders[index];
+                          return RtcOrderItem(
+                            order: order,
+                            onTap: () {
+                              context
+                                  .push(AppRoutes.orderDetail, extra: order.id)
+                                  .then((_) {
+                                if (context.mounted) {
+                                  context.read<OrdersCubit>().fetchOrders();
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         );
       },
     );
