@@ -163,8 +163,17 @@ class _OrderSettlementOperationsWidgetState
           settledAmountStr = differenceAmount;
         }
 
+        final showBorder = !isPartial && !state.isSettlementCompleted;
+
         return Container(
-          color: Colors.white,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: showBorder
+                ?  Border(
+                    right: BorderSide(color: AppColors.brandPalette.shade600, width: 4),
+                  )
+                : null,
+          ),
           child: Column(
             children: [
               InkWell(

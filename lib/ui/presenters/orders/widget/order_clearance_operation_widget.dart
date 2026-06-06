@@ -45,7 +45,17 @@ class _OrderClearanceOperationWidgetState
     final bool isCompleted = widget.onEdit == null && !widget.isOutOfTolerance;
 
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: !isCompleted
+            ? Border(
+                right: BorderSide(
+                  color: AppColors.brandPalette.shade600,
+                  width: 4,
+                ),
+              )
+            : null,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -325,7 +335,10 @@ class _OrderClearanceOperationWidgetState
 
                   if (!widget.isOutOfTolerance && widget.onEdit != null) ...[
                     const SizedBox(height: 16),
-                    RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
+                    RtcDivider(
+                      color: AppColors.grayPalette.shade300,
+                      height: 1,
+                    ),
                     const SizedBox(height: 16),
 
                     // Instruction Text
