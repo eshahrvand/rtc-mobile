@@ -54,6 +54,7 @@ class OrdersState with _$OrdersState {
     String? uploadedClearanceDocId,
     String? orderAmount,
     @Default(false) bool isOutOfTolerance,
+    double? tolerance,
 
     // Settlement Flow
     @Default(SettlementStep.initial) SettlementStep settlementStep,

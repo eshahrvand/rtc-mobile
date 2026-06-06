@@ -17,8 +17,8 @@ class WalletRepository {
           remainingCredit: _formatCurrency(dto.remainingCredit),
           pockets: dto.pockets.map((p) => PocketModel(
             id: p.id,
-            bankName: p.subPlan.name,
-            planName: 'طرح ${p.subPlan.repaymentDurationMonths} ماهه',
+            bankName: p.subPlan.creditPlan?.name ?? 'نامشخص',
+            planName: p.subPlan.name,
             balance: _formatCurrency(p.balance),
             logoPath: p.subPlan.creditPlan?.image?.file ?? 'assets/images/wallet.svg',
           )).toList(),
