@@ -56,7 +56,10 @@ class PreInvoiceSectionWidget extends StatelessWidget {
                 height: 0.5,
               ),
             ),
-          child,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: child,
+          ),
         ],
       ),
     );

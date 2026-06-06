@@ -117,23 +117,25 @@ class PreInvoiceView extends StatelessWidget {
               ],
               showShadow: false,
             ),
-            body: Column(
-              children: [
-                if (!state.isEditMode)
-                  RtcStepIndicator(
-                    totalSteps: 5,
-                    currentStepIndex: state.currentStep.index,
-                    stepLabels: [
-                      S.current.selectCreditPlan,
-                      S.current.selectProducts,
-                      S.current.customerInfo,
-                      S.current.uploadDocuments,
-                      S.current.reviewAndSubmit,
-                    ],
-                  ),
-                Expanded(child: _buildStepView(state.currentStep)),
-                _buildBottomButtons(context, state, cubit),
-              ],
+            body: SafeArea(
+              child: Column(
+                children: [
+                  if (!state.isEditMode)
+                    RtcStepIndicator(
+                      totalSteps: 5,
+                      currentStepIndex: state.currentStep.index,
+                      stepLabels: [
+                        S.current.selectCreditPlan,
+                        S.current.selectProducts,
+                        S.current.customerInfo,
+                        S.current.uploadDocuments,
+                        S.current.reviewAndSubmit,
+                      ],
+                    ),
+                  Expanded(child: _buildStepView(state.currentStep)),
+                  _buildBottomButtons(context, state, cubit),
+                ],
+              ),
             ),
           );
         },
@@ -286,7 +288,9 @@ class PreInvoiceView extends StatelessWidget {
                 child: RtcButton(
                   title: title,
                   styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: isActive ? Colors.white : AppColors.grayPalette.shade300,
+                    color: isActive
+                        ? Colors.white
+                        : AppColors.grayPalette.shade300,
                     fontWeight: FontWeight.w600,
                   ),
                   isActive: isActive,

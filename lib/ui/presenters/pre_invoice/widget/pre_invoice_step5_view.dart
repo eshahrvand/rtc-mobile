@@ -7,6 +7,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
 import '../../../widget/rtc_image.dart';
+import '../../../widget/rtc_counter_widget.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import '../../../../data/models/pre_invoice_model.dart';
@@ -159,12 +160,6 @@ class PreInvoiceStep5View extends StatelessWidget {
           _buildInfoRow(S.current.providerLabel, plan.providerName, theme),
           _buildInfoRow(S.current.planNameLabel, plan.planName, theme),
           _buildInfoRow(
-            S.current.priceIncreaseLabel,
-            '۱۵٪',
-            theme,
-            valueColor: AppColors.brandPalette.shade700,
-          ),
-          _buildInfoRow(
             S.current.validityPeriodLabel,
             plan.validityDuration,
             theme,
@@ -278,60 +273,19 @@ class PreInvoiceStep5View extends StatelessWidget {
                         ],
                       ),
 
-                      _buildCounter(
-                        item.quantity,
-                        () => cubit.increaseQuantity(item.productId),
-                        () => cubit.removeFromCart(item.productId),
+                      RtcCounterWidget(
+                        quantity: item.quantity,
+                        onAdd: () => cubit.increaseQuantity(item.productId),
+                        onRemove: () => cubit.removeFromCart(item.productId),
+                        isAvailable: true,
+                        isCardStyle: false,
+                        colorDeleteIcon: true,
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCounter(
-    int quantity,
-    VoidCallback onAdd,
-    VoidCallback onRemove,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: AppColors.grayPalette.shade200),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: onAdd,
-            child: RtcImage(
-              image: "$baseImage/add-basket.svg",
-              width: 16,
-              height: 16,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Text(
-            '$quantity',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(width: 14),
-          GestureDetector(
-            onTap: onRemove,
-            child: RtcImage(
-              image: quantity == 1
-                  ? "$baseImage/delete.svg"
-                  : "$baseImage/mines.svg",
-              width: 16,
-              height: 16,
-              color: quantity == 1 ? AppColors.errorPalette.shade600 : null,
             ),
           ),
         ],

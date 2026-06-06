@@ -7,7 +7,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../widget/rtc_discount_badge.dart';
 import '../../../widget/rtc_image.dart';
-import '../../../widget/rtc_counter.dart';
+import '../../../widget/rtc_counter_widget.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 
@@ -196,11 +196,14 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
 
         Align(
           alignment: Alignment.centerRight,
-          child: RtcCounter(
+          child: RtcCounterWidget(
             quantity: item.quantity,
             onAdd: () => cubit.increaseQuantity(item.productId),
             onRemove: () => cubit.removeFromCart(item.productId),
-            isCardItem: true,
+            isAvailable: true,
+            isCardStyle: true,
+            colorDeleteIcon: true,
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ],
