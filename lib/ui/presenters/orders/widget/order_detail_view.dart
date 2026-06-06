@@ -50,120 +50,128 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
       },
       child: MultiBlocListener(
-      listeners: [
-        BlocListener<OrdersCubit, OrdersState>(
-          listenWhen: (prev, curr) => prev.status != curr.status,
-          listener: (context, state) {
-            if (state.status == OrdersRequestStatus.error) {
-              rtcSnackBar(
-                context: context,
-                type: SnackBarType.error,
-                message: state.errorMessage,
+        listeners: [
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) => prev.status != curr.status,
+            listener: (context, state) {
+              if (state.status == OrdersRequestStatus.error) {
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.error,
+                  message: state.errorMessage,
+                );
+              }
+            },
+          ),
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) =>
+                prev.uploadedClearanceDocPath != curr.uploadedClearanceDocPath,
+            listener: (context, state) {
+              if (state.uploadedClearanceDocPath != null &&
+                  state.clearanceStep == ClearanceStep.documentsPending) {
+                _showUploadConfirmation(
+                  context,
+                  context.read<OrdersCubit>(),
+                  state.uploadedClearanceDocPath!,
+                );
+              }
+            },
+          ),
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) =>
+                prev.clearanceStep != curr.clearanceStep,
+            listener: (context, state) {
+              if (state.clearanceStep == ClearanceStep.success) {
+                _showSuccessReceipt(context, state);
+              }
+            },
+          ),
+          // Listener to sync PageView when state.selectedTabIndex changes
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) =>
+                prev.selectedTabIndex != curr.selectedTabIndex,
+            listener: (context, state) {
+              if (_pageController.hasClients &&
+                  _pageController.page?.toInt() != state.selectedTabIndex) {
+                _pageController.animateToPage(
+                  state.selectedTabIndex,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<OrdersCubit, OrdersState>(
+          builder: (context, state) {
+            if (state.selectedOrder == null) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
               );
             }
-          },
-        ),
-        BlocListener<OrdersCubit, OrdersState>(
-          listenWhen: (prev, curr) =>
-              prev.uploadedClearanceDocPath != curr.uploadedClearanceDocPath,
-          listener: (context, state) {
-            if (state.uploadedClearanceDocPath != null &&
-                state.clearanceStep == ClearanceStep.documentsPending) {
-              _showUploadConfirmation(
-                context,
-                context.read<OrdersCubit>(),
-                state.uploadedClearanceDocPath!,
-              );
-            }
-          },
-        ),
-        BlocListener<OrdersCubit, OrdersState>(
-          listenWhen: (prev, curr) => prev.clearanceStep != curr.clearanceStep,
-          listener: (context, state) {
-            if (state.clearanceStep == ClearanceStep.success) {
-              _showSuccessReceipt(context, state);
-            }
-          },
-        ),
-        // Listener to sync PageView when state.selectedTabIndex changes
-        BlocListener<OrdersCubit, OrdersState>(
-          listenWhen: (prev, curr) => prev.selectedTabIndex != curr.selectedTabIndex,
-          listener: (context, state) {
-            if (_pageController.hasClients &&
-                _pageController.page?.toInt() != state.selectedTabIndex) {
-              _pageController.animateToPage(
-                state.selectedTabIndex,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            }
-          },
-        ),
-      ],
-      child: BlocBuilder<OrdersCubit, OrdersState>(
-        builder: (context, state) {
-          if (state.selectedOrder == null) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
+
+            final order = state.selectedOrder!;
+            final cubit = context.read<OrdersCubit>();
+
+            return Scaffold(
+              appBar: RtcAppBar(
+                onBack: () {
+                  final timestamp = DateTime.now().millisecondsSinceEpoch;
+                  context.go(
+                    '${AppRoutes.dashboard}?index=2&refresh=$timestamp',
+                  );
+                },
+                backIconPath: '$baseImage/angle-right.svg',
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: RtcImage(
+                      image: '$baseImage/print.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
+                ],
+              ),
+
+              body: Column(
+                children: [
+                  Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        _buildValidityHeader(context, order),
+
+                        RtcTabBar(
+                          tabs: const [
+                            'جزییات سفارش',
+                            'اطلاعات مالی',
+                            'تاریخچه',
+                          ],
+                          selectedIndex: state.selectedTabIndex,
+                          onTabChanged: (index) => cubit.onTabChanged(index),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) => cubit.onTabChanged(index),
+                      children: [
+                        OrderTabDetails(order: order),
+                        OrderTabFinancial(order: order),
+                        OrderTabHistory(order: order),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
-          }
-
-          final order = state.selectedOrder!;
-          final cubit = context.read<OrdersCubit>();
-
-          return Scaffold(
-            appBar: RtcAppBar(
-              onBack: () {
-                final timestamp = DateTime.now().millisecondsSinceEpoch;
-                context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
-              },
-              backIconPath: '$baseImage/angle-right.svg',
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: RtcImage(
-                    image: '$baseImage/print.svg',
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
-              ],
-            ),
-
-            body: Column(
-              children: [
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      _buildValidityHeader(context, order),
-
-                      RtcTabBar(
-                        tabs: const ['جزییات سفارش', 'اطلاعات مالی', 'تاریخچه'],
-                        selectedIndex: state.selectedTabIndex,
-                        onTabChanged: (index) => cubit.onTabChanged(index),
-                      ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    onPageChanged: (index) => cubit.onTabChanged(index),
-                    children: [
-                      OrderTabDetails(order: order),
-                      OrderTabFinancial(order: order),
-                      OrderTabHistory(order: order),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
-    ),
     );
   }
 
@@ -260,11 +268,13 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   'زمان باقی‌مانده: ',
                   style: theme.bodySmall!.copyWith(
                     color: AppColors.grayPalette.shade600,
+                    fontSize: 12,
                   ),
                 ),
                 Text(
                   order.remainingTime,
                   style: theme.bodySmall!.copyWith(
+                    fontSize: 12,
                     color: AppColors.errorPalette.shade500,
                   ),
                 ),

@@ -234,6 +234,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
       child: Column(
         children: [
           _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
+
           _buildInfoRow(
             context,
             S.current.totalDiscounts,
@@ -356,9 +357,16 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                 value,
                 style: theme.bodyMedium!.copyWith(
                   color: AppColors.grayPalette.shade900,
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
+                  fontSize: isBold ? 14 : 12,
                 ),
               ),
-              RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
+              RtcImage(
+                image: "$baseImage/toman.svg",
+                width: 18,
+                height: 18,
+                boxFit: BoxFit.fill,
+              ),
             ],
           ),
         ],

@@ -36,7 +36,7 @@ class RtcCollapsibleSection extends StatelessWidget {
           InkWell(
             onTap: onToggle,
             child: Padding(
-              padding: padding ?? const EdgeInsets.fromLTRB(16 , 12, 16 , 0),
+              padding: padding ?? const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Row(
                 spacing: headerSpacing ?? 4,
                 children: [
@@ -54,7 +54,7 @@ class RtcCollapsibleSection extends StatelessWidget {
               ),
             ),
           ),
-          if (showDivider)
+          if (showDivider && isExpanded)
             Padding(
               padding: const EdgeInsets.only(
                 top: 12,
