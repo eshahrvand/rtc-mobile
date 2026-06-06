@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import '../../core/enums/order_status.dart';
 import '../../config/config.dart';
 import '../../generated/l10n.dart';
 import 'rtc_image.dart';
@@ -27,19 +28,18 @@ class RtcStatusBadge extends StatelessWidget {
     String? iconPath;
     MaterialColor palette;
 
-    if (status == 'پیش فاکتور' || status == S.current.preInvoice) {
+    final orderStatus = OrderStatus.fromString(status);
+
+    if (orderStatus == OrderStatus.preInvoice) {
       palette = AppColors.blueGrayPalette;
       iconPath = '$baseImage/document-list-badge.svg';
-    } else if (status == 'در انتظار تسویه' ||
-        status == S.current.statusWaitingSettlement) {
+    } else if (orderStatus == OrderStatus.awaitingSettlement) {
       palette = AppColors.indigoPalette;
       iconPath = '$baseImage/dollar_badge.svg';
-    } else if (status == 'در انتظار تایید' ||
-        status == S.current.statusPending) {
+    } else if (orderStatus == OrderStatus.underReview) {
       palette = AppColors.warningPalette;
       iconPath = '$baseImage/waiting_badge.svg';
-    } else if (status == 'تایید شده' ||
-        status == S.current.statusApproved ||
+    } else if (orderStatus == OrderStatus.approved ||
         status == 'انجام شده' ||
         status == S.current.statusDone) {
       palette = AppColors.successPalette;
@@ -50,10 +50,10 @@ class RtcStatusBadge extends StatelessWidget {
     } else if (status == 'انجام شده' || status == "انجام شده") {
       palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
-    } else if (status == 'رد شده' || status == S.current.statusRejected) {
+    } else if (orderStatus == OrderStatus.rejected) {
       palette = AppColors.errorPalette;
       iconPath = '$baseImage/close_badge.svg';
-    } else if (status == 'منقضی شده' || status == S.current.statusExpired) {
+    } else if (orderStatus == OrderStatus.expired) {
       palette = AppColors.grayPalette;
       iconPath = '$baseImage/calendar_badge.svg';
     } else {
@@ -90,7 +90,9 @@ class RtcStatusBadge extends StatelessWidget {
               ),
             ],
             Text(
-              status,
+              orderStatus != OrderStatus.unknown
+                  ? orderStatus.toDisplayString()
+                  : status,
               style: TextStyle(
                 fontSize: fontSize,
                 fontWeight: FontWeight.bold,

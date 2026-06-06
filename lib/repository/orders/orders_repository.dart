@@ -5,6 +5,8 @@ import '../../data/models/order_model.dart';
 import '../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../data_source/remote/orders/orders_service.dart';
 
+import '../../core/enums/order_status.dart';
+
 class OrdersRepository {
   final OrdersService _service;
 
@@ -81,7 +83,7 @@ class OrdersRepository {
               customerName:
                   '${dto.customer.firstName} ${dto.customer.lastName}',
               itemCount: '${dto.lines?.length ?? 0} کالا',
-              status: _mapStatus(dto.status),
+              status: dto.status,
               dateTime: dateStr,
               amount: _formatCurrency(dto.total),
             );
@@ -101,7 +103,7 @@ class OrdersRepository {
           orderId: dto.id,
           amount: _formatCurrency(dto.total),
           date: dateStr,
-          status: _mapStatus(dto.status),
+          status: dto.status,
         );
       }).toList();
     });
@@ -110,8 +112,6 @@ class OrdersRepository {
   Future<OrderDetailModel> getOrderDetails(String id) {
     return _service.getOrderById(id).then((dto) {
       final dateStr = _formatJalaliDateTime(dto.createdAt);
-
-      final statusStr = _mapStatus(dto.status);
 
       String remainingTimeStr = '';
       if (dto.remainingTime != null) {
@@ -157,10 +157,11 @@ class OrdersRepository {
 
       return OrderDetailModel(
         id: dto.id,
-        status: statusStr,
+        status: dto.status,
         remainingTime: remainingTimeStr,
         // Need API support or calculation if available
-        isSettled: dto.status == 'approved' || dto.status == 'rejected',
+        isSettled: OrderStatus.fromString(dto.status) == OrderStatus.approved ||
+            OrderStatus.fromString(dto.status) == OrderStatus.rejected,
         rejectionReason: dto.rejectionNote,
         creditPlan: CreditPlanModel(
           provider: dto.subPlan.creditPlan?.name ?? '',
@@ -270,24 +271,5 @@ class OrdersRepository {
   String _formatCurrency(double value) {
     final formatter = NumberFormat('#,###', 'en_US');
     return formatter.format(value.abs().toInt());
-  }
-
-  String _mapStatus(String status) {
-    switch (status) {
-      case 'pre_invoice':
-        return 'پیش فاکتور';
-      case 'approved':
-        return 'تایید شده';
-      case 'rejected':
-        return 'رد شده';
-      case 'under_review':
-        return 'در انتظار تایید';
-      case 'awaiting_settlement':
-        return 'در انتظار تسویه';
-      case 'expired':
-        return 'منقضی شده';
-      default:
-        return status;
-    }
   }
 }

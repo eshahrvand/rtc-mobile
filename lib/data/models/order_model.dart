@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/enums/order_status.dart';
 
 class OrderSummaryModel {
   final String id;
@@ -10,6 +11,8 @@ class OrderSummaryModel {
   final String amount;
   final Color? statusColor;
   final Color? statusBgColor;
+
+  OrderStatus get orderStatus => OrderStatus.fromString(status);
 
   OrderSummaryModel({
     required this.id,
@@ -29,6 +32,8 @@ class OrderDetailModel {
   final String status;
   final String remainingTime;
   final CreditPlanModel? creditPlan;
+
+  OrderStatus get orderStatus => OrderStatus.fromString(status);
   final List<OrderProductModel> products;
   final OrderCustomerModel customer;
   final List<OrderDocumentModel> documents;

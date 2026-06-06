@@ -1,3 +1,5 @@
+import '../../core/enums/order_status.dart';
+
 class CustomerItemModel {
   final String id;
   final String name;
@@ -38,6 +40,8 @@ class CustomerOrderItemModel {
   final String date;
   final String status;
   final String? statusIcon; // SVG path if needed
+
+  OrderStatus get orderStatus => OrderStatus.fromString(status);
 
   CustomerOrderItemModel({
     required this.orderId,

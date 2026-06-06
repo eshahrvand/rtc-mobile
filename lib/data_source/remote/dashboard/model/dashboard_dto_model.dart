@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../core/enums/order_status.dart';
 
 part 'dashboard_dto_model.freezed.dart';
 part 'dashboard_dto_model.g.dart';
@@ -61,10 +62,13 @@ class CategoryChartDtoModel with _$CategoryChartDtoModel {
 
 @freezed
 class OrderStatusDtoModel with _$OrderStatusDtoModel {
+  const OrderStatusDtoModel._();
   const factory OrderStatusDtoModel({
     required String status,
     required int count,
   }) = _OrderStatusDtoModel;
+
+  OrderStatus get orderStatus => OrderStatus.fromString(status);
 
   factory OrderStatusDtoModel.fromJson(Map<String, dynamic> json) => _$OrderStatusDtoModelFromJson(json);
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
+import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_collapsible_section.dart';
@@ -64,8 +65,9 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
-        final isPreInvoice = widget.order.status == 'پیش فاکتور';
-        final isWaitingSettlement = widget.order.status == 'در انتظار تسویه';
+        final isPreInvoice = widget.order.orderStatus == OrderStatus.preInvoice;
+        final isWaitingSettlement =
+            widget.order.orderStatus == OrderStatus.awaitingSettlement;
         final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
 
         final showSettlement =
@@ -115,10 +117,12 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
                     if (state.disburseOperation != null &&
                         (state.clearanceAmount.isNotEmpty ||
-                            widget.order.status == 'در انتظار تایید' ||
-                            widget.order.status == 'تایید شده' ||
-                            widget.order.status == 'در انتظار تسویه' ||
-                            widget.order.status == 'رد شده'))
+                            widget.order.orderStatus ==
+                                OrderStatus.underReview ||
+                            widget.order.orderStatus == OrderStatus.approved ||
+                            widget.order.orderStatus ==
+                                OrderStatus.awaitingSettlement ||
+                            widget.order.orderStatus == OrderStatus.rejected))
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: OrderClearanceOperationWidget(
@@ -172,8 +176,9 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           },
                           onEdit:
                               state.clearanceAmount.isNotEmpty &&
-                                  widget.order.status == 'پیش فاکتور'
-                              ? () {
+                                      widget.order.orderStatus ==
+                                          OrderStatus.preInvoice
+                                  ? () {
                                   cubit.resetClearance();
                                   _showAmountSheet(context, cubit);
                                 }

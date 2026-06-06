@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
@@ -75,7 +76,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       );
 
       // If status is "Pre-Invoice", default to Financial Tab (index 1)
-      final initialTab = detail.status == 'پیش فاکتور' ? 1 : 0;
+      final initialTab = detail.orderStatus == OrderStatus.preInvoice ? 1 : 0;
 
       emit(state.copyWith(
         status: OrdersRequestStatus.success,
@@ -395,20 +396,20 @@ class OrdersCubit extends Cubit<OrdersState> {
   // ─── Operation Model Creators ──────────────────────────────────────
 
   OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
-    final isDone = detail.status == 'در انتظار تسویه' ||
-        detail.status == 'تایید شده' ||
-        detail.status == 'در انتظار تایید' ||
+    final isDone = detail.orderStatus == OrderStatus.awaitingSettlement ||
+        detail.orderStatus == OrderStatus.approved ||
+        detail.orderStatus == OrderStatus.underReview ||
         state.clearanceStep == ClearanceStep.success;
 
     final statusesToShow = [
-      'پیش فاکتور',
-      'در انتظار تایید',
-      'تایید شده',
-      'رد شده',
-      'در انتظار تسویه',
+      OrderStatus.preInvoice,
+      OrderStatus.underReview,
+      OrderStatus.approved,
+      OrderStatus.rejected,
+      OrderStatus.awaitingSettlement,
     ];
 
-    if (statusesToShow.contains(detail.status)) {
+    if (statusesToShow.contains(detail.orderStatus)) {
       return OrderOperationModel(
         step: 1,
         title: 'عملیات تخلیه',
@@ -420,17 +421,17 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   OrderOperationModel? _createSettlementOp(OrderDetailModel detail) {
-    final isDone = detail.status == 'تایید شده' ||
-        detail.status == 'در انتظار تایید' ||
+    final isDone = detail.orderStatus == OrderStatus.approved ||
+        detail.orderStatus == OrderStatus.underReview ||
         state.settlementStep == SettlementStep.success;
 
     final statusesToShow = [
-      'در انتظار تسویه',
-      'در انتظار تایید',
-      'تایید شده',
+      OrderStatus.awaitingSettlement,
+      OrderStatus.underReview,
+      OrderStatus.approved,
     ];
 
-    if (statusesToShow.contains(detail.status)) {
+    if (statusesToShow.contains(detail.orderStatus)) {
       return OrderOperationModel(
         step: 2,
         title: 'عملیات تسویه',

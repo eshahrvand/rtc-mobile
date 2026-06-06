@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/ui/presenters/products/widget/filter_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
+import '../../../../core/enums/order_status.dart';
 import '../../../router/app_route.dart';
 import '../../../widget/rtc_chip_list.dart';
 import 'rtc_order_item.dart';
@@ -104,11 +105,26 @@ class OrdersBody extends StatelessWidget {
   ) {
     debugPrint('>> OrdersBody: _showStatusFilter called');
     final statusItems = [
-      const FilterItem(id: 'pre_invoice', title: 'پیش فاکتور'),
-      const FilterItem(id: 'under_review', title: 'در انتظار تایید'),
-      const FilterItem(id: 'approved', title: 'تایید شده'),
-      const FilterItem(id: 'rejected', title: 'رد شده'),
-      const FilterItem(id: 'awaiting_settlement', title: 'در انتظار تسویه'),
+      FilterItem(
+        id: 'pre_invoice',
+        title: OrderStatus.preInvoice.toDisplayString(),
+      ),
+      FilterItem(
+        id: 'under_review',
+        title: OrderStatus.underReview.toDisplayString(),
+      ),
+      FilterItem(
+        id: 'approved',
+        title: OrderStatus.approved.toDisplayString(),
+      ),
+      FilterItem(
+        id: 'rejected',
+        title: OrderStatus.rejected.toDisplayString(),
+      ),
+      FilterItem(
+        id: 'awaiting_settlement',
+        title: OrderStatus.awaitingSettlement.toDisplayString(),
+      ),
     ];
 
     FilterBottomSheet.show(

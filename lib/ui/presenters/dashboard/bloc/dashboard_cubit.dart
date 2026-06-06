@@ -7,6 +7,7 @@ import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/pie_chart_item_model.dart';
 import '../../../../data/models/quick_access_item_model.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
+import '../../../../core/enums/order_status.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
@@ -171,22 +172,24 @@ class DashboardCubit extends Cubit<DashboardState> {
       String label = s.status;
       Color color = AppColors.grayPalette.shade400;
 
-      if (s.status == 'approved') {
+      final orderStatus = s.orderStatus;
+
+      if (orderStatus == OrderStatus.approved) {
         label = S.current.statusApproved;
         color = AppColors.successPalette.shade400;
-      } else if (s.status == 'reject' || s.status == 'rejected') {
+      } else if (orderStatus == OrderStatus.rejected) {
         label = S.current.statusRejected;
         color = AppColors.errorPalette.shade400;
-      } else if (s.status == 'under_review') {
+      } else if (orderStatus == OrderStatus.underReview) {
         label = S.current.statusPending;
         color = AppColors.warningPalette.shade400;
-      } else if (s.status == 'pre_invoice') {
+      } else if (orderStatus == OrderStatus.preInvoice) {
         label = S.current.preInvoice;
         color = AppColors.brandPalette.shade400;
-      } else if (s.status == 'expired') {
+      } else if (orderStatus == OrderStatus.expired) {
         label = S.current.statusExpired;
         color = AppColors.grayPalette.shade400;
-      } else if (s.status == 'awaiting_settlement') {
+      } else if (orderStatus == OrderStatus.awaitingSettlement) {
         label = S.current.statusWaitingSettlement;
         color = AppColors.blueGrayPalette.shade400;
       }
