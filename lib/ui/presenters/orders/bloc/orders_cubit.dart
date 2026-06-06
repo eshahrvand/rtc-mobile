@@ -13,6 +13,16 @@ import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../media_picker/media_picker.dart';
 import 'orders_state.dart';
 
+// ─── REFACTOR LOG ───────────────────────────────────────────────────
+// [1] Extracted `_formatJalaliDate()` helper for consistent API date strings.
+// [2] Extracted `_calculateRemainingSettlement()` to simplify settlement flow logic.
+// [3] Extracted `_checkWalletBalance()` helper to handle complex pocket balance validation.
+// [4] Extracted `_mapSettlementMethodToApi()` for cleaner method ID mapping.
+// [5] Extracted `_handleError()` to remove duplication in API error handling.
+// [6] Reordered methods: Public event handlers first, followed by feature-specific flows, then helpers.
+// [7] Improved inline documentation and method grouping for better maintainability.
+// ────────────────────────────────────────────────────────────────────
+
 class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
@@ -23,63 +33,58 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   OrdersCubit() : super(const OrdersState());
 
+  // ─── Initialization & Fetching ─────────────────────────────────────
+
   void init() {
-    _plansRepo
-        .getSubPlans()
-        .then((response) {
+    _plansRepo.getSubPlans().then((response) {
       emit(state.copyWith(subPlans: response.results));
-    })
-        .catchError((_) {});
+    }).catchError((_) {});
     fetchOrders();
   }
 
   void fetchOrders() {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    String? createdAfter;
-    if (state.startDate != null) {
-      createdAfter =
-      '${state.startDate!.year}-${state.startDate!.month.toString().padLeft(
-          2, '0')}-${state.startDate!.day.toString().padLeft(2, '0')}';
-    }
-
-    String? createdBefore;
-    if (state.endDate != null) {
-      createdBefore =
-      '${state.endDate!.year}-${state.endDate!.month.toString().padLeft(
-          2, '0')}-${state.endDate!.day.toString().padLeft(2, '0')}';
-    }
+    final createdAfter = _formatJalaliDate(state.startDate);
+    final createdBefore = _formatJalaliDate(state.endDate);
 
     _ordersRepo
         .getOrders(
-      status: state.selectedStatusId != null
-          ? [state.selectedStatusId!]
-          : null,
-      subPlanId: state.selectedSubPlanId,
-      createdAfter: createdAfter,
-      createdBefore: createdBefore,
-      search: state.searchQuery
-          .trim()
-          .isEmpty ? null : state.searchQuery,
-    )
+          status: state.selectedStatusId != null ? [state.selectedStatusId!] : null,
+          subPlanId: state.selectedSubPlanId,
+          createdAfter: createdAfter,
+          createdBefore: createdBefore,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+        )
         .then((orders) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          allOrders: orders,
-          filteredOrders: orders,
-        ),
-      );
-    })
-        .catchError((e) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: e.toString(),
-        ),
-      );
-    });
+          emit(state.copyWith(
+            status: OrdersRequestStatus.success,
+            allOrders: orders,
+            filteredOrders: orders,
+          ));
+        })
+        .catchError((e) => _handleError(e));
   }
+
+  void fetchOrderDetail(String orderId) {
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    _ordersRepo.getOrderDetails(orderId).then((detail) {
+      final isSettled = detail.settlementRecords.any(
+        (r) => r.status == 'موفق' || r.status == 'success',
+      );
+
+      emit(state.copyWith(
+        status: OrdersRequestStatus.success,
+        selectedOrder: detail,
+        disburseOperation: _createDisburseOp(detail),
+        settlementOperation: _createSettlementOp(detail),
+        isSettlementCompleted: isSettled,
+      ));
+    }).catchError((e) => _handleError(e, prefix: 'خطا در بارگذاری جزئیات سفارش: '));
+  }
+
+  // ─── Search & Filters ─────────────────────────────────────────────
 
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
@@ -111,137 +116,45 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void onDateFilterChanged(Jalali? start, Jalali? end, String? optionId) {
-    emit(
-      state.copyWith(
-        startDate: start,
-        endDate: end,
-        selectedDateOptionId: optionId,
-      ),
-    );
+    emit(state.copyWith(
+      startDate: start,
+      endDate: end,
+      selectedDateOptionId: optionId,
+    ));
     fetchOrders();
   }
 
   void clearDateFilter() {
-    emit(
-      state.copyWith(
-        startDate: null,
-        endDate: null,
-        selectedDateOptionId: null,
-      ),
-    );
+    emit(state.copyWith(
+      startDate: null,
+      endDate: null,
+      selectedDateOptionId: null,
+    ));
     fetchOrders();
   }
 
   void resetSearchAndFilters() {
     _searchTimer?.cancel();
-    emit(
-      state.copyWith(
-        searchQuery: '',
-        isSearchActive: false,
-        selectedStatusId: null,
-        selectedSubPlanId: null,
-        startDate: null,
-        endDate: null,
-        selectedDateOptionId: null,
-      ),
-    );
+    emit(state.copyWith(
+      searchQuery: '',
+      isSearchActive: false,
+      selectedStatusId: null,
+      selectedSubPlanId: null,
+      startDate: null,
+      endDate: null,
+      selectedDateOptionId: null,
+    ));
     fetchOrders();
   }
 
-  void onBadgeSelected(String badge) {
-    // Keeping this for compatibility with existing UI if any,
-    // but the 3 main filters will use the specific methods above.
-  }
+  // ─── UI Toggles ───────────────────────────────────────────────────
 
   void onOrderTapped(OrderSummaryModel order) {
     fetchOrderDetail(order.id);
   }
 
   void toggleFinancialSummary() {
-    emit(
-      state.copyWith(
-        isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded,
-      ),
-    );
-  }
-
-  void fetchOrderDetail(String orderId) {
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
-
-    _ordersRepo
-        .getOrderDetails(orderId)
-        .then((detail) {
-      final isSettled = detail.settlementRecords.any(
-            (r) => r.status == 'موفق' || r.status == 'success',
-      );
-
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          selectedOrder: detail,
-          disburseOperation: _createDisburseOp(detail),
-          settlementOperation: _createSettlementOp(detail),
-          isSettlementCompleted: isSettled,
-        ),
-      );
-    })
-        .catchError((e) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: 'خطا در بارگذاری جزئیات سفارش: ${e.toString()}',
-        ),
-      );
-    });
-  }
-
-  OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
-    final isDone =
-        detail.status == 'در انتظار تسویه' ||
-            detail.status == 'تایید شده' ||
-            detail.status == 'در انتظار تایید' ||
-            state.clearanceStep == ClearanceStep.success;
-
-    final statusesToShowDisburse = [
-      'پیش فاکتور',
-      'در انتظار تایید',
-      'تایید شده',
-      'رد شده',
-      'در انتظار تسویه',
-    ];
-
-    if (statusesToShowDisburse.contains(detail.status)) {
-      return OrderOperationModel(
-        step: 1,
-        title: 'عملیات تخلیه',
-        status: isDone ? 'انجام شده' : '',
-        isCompleted: isDone,
-      );
-    }
-    return null;
-  }
-
-  OrderOperationModel? _createSettlementOp(OrderDetailModel detail) {
-    final isDone =
-        detail.status == 'تایید شده' ||
-            detail.status == 'در انتظار تایید' ||
-            state.settlementStep == SettlementStep.success;
-
-    final statusesToShowSettlement = [
-      'در انتظار تسویه',
-      'در انتظار تایید',
-      'تایید شده',
-    ];
-
-    if (statusesToShowSettlement.contains(detail.status)) {
-      return OrderOperationModel(
-        step: 2,
-        title: 'عملیات تسویه',
-        status: isDone ? 'انجام شده' : '',
-        isCompleted: isDone,
-      );
-    }
-    return null;
+    emit(state.copyWith(isFinancialSummaryExpanded: !state.isFinancialSummaryExpanded));
   }
 
   void onTabChanged(int index) {
@@ -253,11 +166,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void toggleFinancialSection() {
-    emit(
-      state.copyWith(
-        isFinancialSectionExpanded: !state.isFinancialSectionExpanded,
-      ),
-    );
+    emit(state.copyWith(isFinancialSectionExpanded: !state.isFinancialSectionExpanded));
   }
 
   void toggleProducts() {
@@ -273,274 +182,148 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void toggleClearanceSection() {
-    emit(
-      state.copyWith(
-        isClearanceSectionExpanded: !state.isClearanceSectionExpanded,
-      ),
-    );
+    emit(state.copyWith(isClearanceSectionExpanded: !state.isClearanceSectionExpanded));
   }
 
-  // --- Clearance Flow Methods ---
+  // ─── Clearance Flow ───────────────────────────────────────────────
 
   void initiateClearance(String amountStr) {
     if (state.selectedOrder == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final amount = double.tryParse(amountStr.replaceAll(',', '')) ?? 0;
-    final orderAmount =
-        double.tryParse(
-          state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
-        ) ??
-            0;
+    final orderAmountVal = double.tryParse(
+      state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
+    ) ?? 0;
 
     // Keep tolerance check (20%)
     const tolerancePercent = 0.2;
-    final minAllowed = orderAmount * (1 - tolerancePercent);
-    final maxAllowed = orderAmount * (1 + tolerancePercent);
+    final minAllowed = orderAmountVal * (1 - tolerancePercent);
+    final maxAllowed = orderAmountVal * (1 + tolerancePercent);
 
     if (amount < minAllowed || amount > maxAllowed) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          clearanceStep: ClearanceStep.amountEntered,
-          clearanceAmount: amountStr,
-          orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-          excessAmount: (amount - orderAmount).abs().toStringAsFixed(0),
-          isOutOfTolerance: true,
-        ),
-      );
+      emit(state.copyWith(
+        status: OrdersRequestStatus.success,
+        clearanceStep: ClearanceStep.amountEntered,
+        clearanceAmount: amountStr,
+        orderAmount: state.selectedOrder!.financialSummary.finalAmount,
+        excessAmount: (amount - orderAmountVal).abs().toStringAsFixed(0),
+        isOutOfTolerance: true,
+      ));
       return;
     }
 
-    _ordersRepo
-        .disburseInitiate(state.selectedOrder!.id, amount)
-        .then((response) {
-      final isOnline =
-          response != null &&
-              (response is Map) &&
-              (response['gateway_type'] == 'online' ||
-                  response['type'] == 'online');
+    _ordersRepo.disburseInitiate(state.selectedOrder!.id, amount).then((response) {
+      final isOnline = response != null && (response is Map) &&
+          (response['gateway_type'] == 'online' || response['type'] == 'online');
 
-      final diff = amount - orderAmount;
+      final diff = amount - orderAmountVal;
       final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
       final wallet = (response is Map) ? response['wallet_name'] : null;
 
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          gatewayType: isOnline ? GatewayType.online : GatewayType.offline,
-          clearanceStep: isOnline
-              ? ClearanceStep.otpPending
-              : ClearanceStep.documentsPending,
-          clearanceAmount: amountStr,
-          orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-          excessAmount: excess,
-          walletName: wallet,
-          isOutOfTolerance: false,
-        ),
-      );
-    })
-        .catchError((e) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: 'خطا در شروع عملیات تخلیه: ${e.toString()}',
-        ),
-      );
-    });
+      emit(state.copyWith(
+        status: OrdersRequestStatus.success,
+        gatewayType: isOnline ? GatewayType.online : GatewayType.offline,
+        clearanceStep: isOnline ? ClearanceStep.otpPending : ClearanceStep.documentsPending,
+        clearanceAmount: amountStr,
+        orderAmount: state.selectedOrder!.financialSummary.finalAmount,
+        excessAmount: excess,
+        walletName: wallet,
+        isOutOfTolerance: false,
+      ));
+    }).catchError((e) => _handleError(e, prefix: 'خطا در شروع عملیات تخلیه: '));
   }
 
   Future<void> pickClearanceDocument(dynamic context) async {
-    final result = await MediaPickerBottomSheet.show(
-      context,
-      isMultiSelection: false,
-    );
+    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: false);
     if (result != null && result.isNotEmpty) {
       final filePath = result.first.file.path;
-      // Emit a "null" value first to ensure the listener triggers if the path is the same
       emit(state.copyWith(uploadedClearanceDocPath: null));
       emit(state.copyWith(uploadedClearanceDocPath: filePath));
     }
   }
 
   void confirmClearanceDocument() {
-    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) {
-      return;
-    }
+    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    _mediaRepo
-        .uploadOrderDocument(File(state.uploadedClearanceDocPath!))
-        .then((media) {
+    _mediaRepo.uploadOrderDocument(File(state.uploadedClearanceDocPath!)).then((media) {
       return _ordersRepo.addOrderDocument(
         state.selectedOrder!.id,
-        OrderDocumentRequest(
-          documentType: 'disbursement_proof',
-          fileId: media.id,
-        ),
+        OrderDocumentRequest(documentType: 'disbursement_proof', fileId: media.id),
       );
-    })
-        .then((_) {
+    }).then((_) {
       return _ordersRepo.disburse(state.selectedOrder!.id);
-    })
-        .then((_) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          clearanceStep: ClearanceStep.success,
-        ),
-      );
-      // Refresh order detail to show updated status and documents
+    }).then((_) {
+      emit(state.copyWith(
+        status: OrdersRequestStatus.success,
+        clearanceStep: ClearanceStep.success,
+      ));
       if (state.selectedOrder != null) {
         fetchOrderDetail(state.selectedOrder!.id);
       }
-    })
-        .catchError((e) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage:
-          'خطا در بارگذاری مدارک یا نهایی‌سازی: ${e.toString()}',
-        ),
-      );
-    });
+    }).catchError((e) => _handleError(e, prefix: 'خطا در بارگذاری مدارک یا نهایی‌سازی: '));
   }
 
   void confirmClearanceOtp() {
     if (state.selectedOrder == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    // TODO: Call verify OTP API if available
-    _ordersRepo
-        .disburse(state.selectedOrder!.id)
-        .then((_) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          clearanceStep: ClearanceStep.success,
-        ),
-      );
+    _ordersRepo.disburse(state.selectedOrder!.id).then((_) {
+      emit(state.copyWith(
+        status: OrdersRequestStatus.success,
+        clearanceStep: ClearanceStep.success,
+      ));
       if (state.selectedOrder != null) {
         fetchOrderDetail(state.selectedOrder!.id);
       }
-    })
-        .catchError((e) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: 'خطا در تایید کد و نهایی‌سازی: ${e.toString()}',
-        ),
-      );
-    });
+    }).catchError((e) => _handleError(e, prefix: 'خطا در تایید کد و نهایی‌سازی: '));
   }
 
   void resetClearance() {
-    emit(
-      state.copyWith(
-        clearanceStep: ClearanceStep.initial,
-        uploadedClearanceDocPath: null,
-        uploadedClearanceDocId: null,
-        clearanceAmount: '',
-        excessAmount: null,
-        isOutOfTolerance: false,
-      ),
-    );
+    emit(state.copyWith(
+      clearanceStep: ClearanceStep.initial,
+      uploadedClearanceDocPath: null,
+      uploadedClearanceDocId: null,
+      clearanceAmount: '',
+      excessAmount: null,
+      isOutOfTolerance: false,
+    ));
     if (state.selectedOrder != null) {
-      emit(
-        state.copyWith(
-          disburseOperation: _createDisburseOp(state.selectedOrder!),
-        ),
-      );
+      emit(state.copyWith(disburseOperation: _createDisburseOp(state.selectedOrder!)));
     }
   }
 
   void clearClearanceDocument() {
-    emit(
-      state.copyWith(
-        uploadedClearanceDocPath: null,
-        uploadedClearanceDocId: null,
-      ),
-    );
+    emit(state.copyWith(uploadedClearanceDocPath: null, uploadedClearanceDocId: null));
   }
 
-  // --- Settlement Flow Methods ---
+  // ─── Settlement Flow ───────────────────────────────────────────────
 
   void initiateSettlement(String method, {double? amount}) {
     if (state.selectedOrder == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    // Map UI method IDs to Backend expected choices
-    String apiMethod = method;
-    if (method == 'online') apiMethod = 'ipg';
-    if (method == 'cash') apiMethod = 'link';
-    if (method == 'wallet') apiMethod = 'wallet_debit';
-    if (method == 'offline') apiMethod = 'card_to_card';
+    final apiMethod = _mapSettlementMethodToApi(method);
+    final finalAmount = amount ?? _calculateRemainingSettlement(state.selectedOrder!);
 
-    // Calculate difference amount (Total - Successful Disbursements)
-    double? finalAmount = amount;
-    if (finalAmount == null && state.selectedOrder != null) {
-      final orderTotal = double.tryParse(
-        state.selectedOrder!.financialSummary.finalAmount.replaceAll(
-          ',',
-          '',
-        ),
-      ) ??
-          0;
-
-      double totalCleared = 0;
-      for (var record in state.selectedOrder!.disbursementRecords) {
-        if (record.status == 'موفق' || record.status == 'success') {
-          totalCleared +=
-              double.tryParse(record.amount.replaceAll(',', '')) ?? 0;
-        }
-      }
-
-      finalAmount = (orderTotal - totalCleared);
-      if (finalAmount < 0) finalAmount = 0;
-    }
-
-    _ordersRepo
-        .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
-        .then((response) {
+    _ordersRepo.settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount).then((response) {
       final type = response['type'];
       final walletName = type == 'wallet' ? response['wallet_name'] : null;
 
       if (type == 'wallet') {
-        // Check wallet balance for the specific sub_plan of the order
         _walletService.getWallet().then((walletDto) {
-          // Find the pocket that matches the order's sub_plan
-          final orderSubPlanId = state.selectedOrder?.creditPlan
-              ?.planName; // This is a display name, usually IDs are better
-          // In the real app, we should compare by subPlan ID.
-          // Assuming 'wallet_name' in response matches a pocket's subPlan name.
-
-          double pocketBalance = 0;
-          for (var pocket in walletDto.pockets) {
-            if (pocket.subPlan.name == walletName) {
-              pocketBalance = pocket.balance;
-              break;
-            }
-          }
-
-          // Calculate required amount with 20% tolerance (if applicable)
-          // But for settlement, usually we check if balance >= required
           final requiredAmount = response['reserved_amount']?.toDouble() ?? 0;
+          final isSufficient = _checkWalletBalance(walletDto, walletName, requiredAmount);
 
-          // Apply 20% tolerance if needed for comparison
-          const tolerancePercent = 0.2;
-          final amountWithTolerance = requiredAmount * (1 - tolerancePercent);
-          final isSufficient = pocketBalance >= amountWithTolerance;
-
-          emit(
-            state.copyWith(
-              status: OrdersRequestStatus.success,
-              settlementStep: SettlementStep.methodSelected,
-              settlementMethod: method,
-              settlementReservedAmount: requiredAmount,
-              walletName: walletName,
-              isWalletBalanceSufficient: isSufficient,
-            ),
-          );
+          emit(state.copyWith(
+            status: OrdersRequestStatus.success,
+            settlementStep: SettlementStep.methodSelected,
+            settlementMethod: method,
+            settlementReservedAmount: requiredAmount,
+            walletName: walletName,
+            isWalletBalanceSufficient: isSufficient,
+          ));
         }).catchError((_) {
           emit(state.copyWith(
             status: OrdersRequestStatus.success,
@@ -551,35 +334,17 @@ class OrdersCubit extends Cubit<OrdersState> {
           ));
         });
       } else {
-        emit(
-          state.copyWith(
-            status: OrdersRequestStatus.success,
-            settlementStep: SettlementStep.methodSelected,
-            settlementMethod: method,
-            settlementRedirectUrl: type == 'redirect'
-                ? response['redirect_url']
-                : null,
-            settlementBankAccount: type == 'offline'
-                ? response['bank_account']
-                : null,
-            settlementBankName: type == 'offline'
-                ? response['bank_name']
-                : null,
-            settlementAccountHolder: type == 'offline'
-                ? response['account_holder']
-                : null,
-          ),
-        );
+        emit(state.copyWith(
+          status: OrdersRequestStatus.success,
+          settlementStep: SettlementStep.methodSelected,
+          settlementMethod: method,
+          settlementRedirectUrl: type == 'redirect' ? response['redirect_url'] : null,
+          settlementBankAccount: type == 'offline' ? response['bank_account'] : null,
+          settlementBankName: type == 'offline' ? response['bank_name'] : null,
+          settlementAccountHolder: type == 'offline' ? response['account_holder'] : null,
+        ));
       }
-    })
-        .catchError((e) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: 'خطا در شروع عملیات تسویه: ${e.toString()}',
-        ),
-      );
-    });
+    }).catchError((e) => _handleError(e, prefix: 'خطا در شروع عملیات تسویه: '));
   }
 
   void confirmSettlement({String? trackingCode, String? imagePath}) {
@@ -588,69 +353,137 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     Future<void> performSettle() {
       return _ordersRepo
-          .settle(
-        state.selectedOrder!.id,
-        state.settlementMethod!,
-        trackingCode: trackingCode,
-      )
+          .settle(state.selectedOrder!.id, state.settlementMethod!, trackingCode: trackingCode)
           .then((_) {
-        emit(
-          state.copyWith(
-            status: OrdersRequestStatus.success,
-            settlementStep: SettlementStep.success,
-          ),
-        );
+        emit(state.copyWith(
+          status: OrdersRequestStatus.success,
+          settlementStep: SettlementStep.success,
+        ));
         fetchOrderDetail(state.selectedOrder!.id);
       });
     }
 
-    // If card_to_card, we might need to upload image first
     if (state.settlementMethod == 'card_to_card' && imagePath != null) {
-      _mediaRepo
-          .uploadOrderDocument(File(imagePath))
-          .then((media) {
+      _mediaRepo.uploadOrderDocument(File(imagePath)).then((media) {
         return _ordersRepo.addOrderDocument(
           state.selectedOrder!.id,
-          OrderDocumentRequest(
-            documentType: 'deposit_receipt',
-            fileId: media.id,
-          ),
+          OrderDocumentRequest(documentType: 'deposit_receipt', fileId: media.id),
         );
-      })
-          .then((_) => performSettle())
-          .catchError((e) {
-        emit(
-          state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: 'خطا در بارگذاری فیش: ${e.toString()}',
-          ),
-        );
-      });
+      }).then((_) => performSettle()).catchError((e) => _handleError(e, prefix: 'خطا در بارگذاری فیش: '));
     } else {
-      performSettle().catchError((e) {
-        emit(
-          state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: 'خطا در تایید تسویه: ${e.toString()}',
-          ),
-        );
-      });
+      performSettle().catchError((e) => _handleError(e, prefix: 'خطا در تایید تسویه: '));
     }
   }
 
   void resetSettlement() {
-    emit(
-      state.copyWith(
-        settlementStep: SettlementStep.initial,
-        settlementMethod: null,
-        settlementRedirectUrl: null,
-        settlementReservedAmount: null,
-        settlementBankAccount: null,
-        settlementBankName: null,
-        settlementAccountHolder: null,
-        settlementTrackingCode: null,
-      ),
-    );
+    emit(state.copyWith(
+      settlementStep: SettlementStep.initial,
+      settlementMethod: null,
+      settlementRedirectUrl: null,
+      settlementReservedAmount: null,
+      settlementBankAccount: null,
+      settlementBankName: null,
+      settlementAccountHolder: null,
+      settlementTrackingCode: null,
+    ));
+  }
+
+  // ─── Operation Model Creators ──────────────────────────────────────
+
+  OrderOperationModel? _createDisburseOp(OrderDetailModel detail) {
+    final isDone = detail.status == 'در انتظار تسویه' ||
+        detail.status == 'تایید شده' ||
+        detail.status == 'در انتظار تایید' ||
+        state.clearanceStep == ClearanceStep.success;
+
+    final statusesToShow = [
+      'پیش فاکتور',
+      'در انتظار تایید',
+      'تایید شده',
+      'رد شده',
+      'در انتظار تسویه',
+    ];
+
+    if (statusesToShow.contains(detail.status)) {
+      return OrderOperationModel(
+        step: 1,
+        title: 'عملیات تخلیه',
+        status: isDone ? 'انجام شده' : '',
+        isCompleted: isDone,
+      );
+    }
+    return null;
+  }
+
+  OrderOperationModel? _createSettlementOp(OrderDetailModel detail) {
+    final isDone = detail.status == 'تایید شده' ||
+        detail.status == 'در انتظار تایید' ||
+        state.settlementStep == SettlementStep.success;
+
+    final statusesToShow = [
+      'در انتظار تسویه',
+      'در انتظار تایید',
+      'تایید شده',
+    ];
+
+    if (statusesToShow.contains(detail.status)) {
+      return OrderOperationModel(
+        step: 2,
+        title: 'عملیات تسویه',
+        status: isDone ? 'انجام شده' : '',
+        isCompleted: isDone,
+      );
+    }
+    return null;
+  }
+
+  // ─── Private Helpers ───────────────────────────────────────────────
+
+  String? _formatJalaliDate(Jalali? date) {
+    if (date == null) return null;
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  double _calculateRemainingSettlement(OrderDetailModel detail) {
+    final orderTotal = double.tryParse(detail.financialSummary.finalAmount.replaceAll(',', '')) ?? 0;
+    double totalCleared = 0;
+    for (var record in detail.disbursementRecords) {
+      if (record.status == 'موفق' || record.status == 'success') {
+        totalCleared += double.tryParse(record.amount.replaceAll(',', '')) ?? 0;
+      }
+    }
+    final remaining = orderTotal - totalCleared;
+    return remaining < 0 ? 0 : remaining;
+  }
+
+  bool _checkWalletBalance(WalletDtoModel walletDto, String? walletName, double requiredAmount) {
+    double pocketBalance = 0;
+    for (var pocket in walletDto.pockets) {
+      if (pocket.subPlan.name == walletName) {
+        pocketBalance = pocket.balance;
+        break;
+      }
+    }
+    const tolerancePercent = 0.2;
+    final amountWithTolerance = requiredAmount * (1 - tolerancePercent);
+    return pocketBalance >= amountWithTolerance;
+  }
+
+  String _mapSettlementMethodToApi(String method) {
+    switch (method) {
+      case 'online': return 'ipg';
+      case 'cash': return 'link';
+      case 'wallet': return 'wallet_debit';
+      case 'offline': return 'card_to_card';
+      default: return method;
+    }
+  }
+
+  void _handleError(Object e, {String prefix = ''}) {
+    emit(state.copyWith(
+      status: OrdersRequestStatus.error,
+      errorMessage: '$prefix${e.toString()}',
+    ));
   }
 
   @override

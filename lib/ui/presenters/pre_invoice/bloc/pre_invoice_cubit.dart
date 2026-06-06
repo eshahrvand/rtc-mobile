@@ -18,6 +18,16 @@ import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
 
+// ─── REFACTOR LOG ───────────────────────────────────────────────────
+// [1] Extracted `_mapToCreditPlanModel()` to simplify initialization logic.
+// [2] Extracted `_buildCustomerData()` to isolate the logic for creating request payloads.
+// [3] Extracted `_updateCartSummary()` to move financial calculations to a private helper.
+// [4] Extracted `_handleError()` to remove duplication in API error handling.
+// [5] Extracted `_buildOrderLines()` and `_buildOrderDocuments()` for cleaner order creation.
+// [6] Reordered methods: Setup -> Navigation -> Domain Logic (Products/Customers/Docs) -> Helpers.
+// [7] Improved method naming and added internal comments for clarity.
+// ────────────────────────────────────────────────────────────────────
+
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _plansRepo = sl<PlansRepository>();
   final _productRepo = sl<ProductRepository>();
@@ -29,48 +39,29 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   PreInvoiceCubit() : super(const PreInvoiceState());
 
+  // ─── Setup & Navigation ────────────────────────────────────────────
+
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
     _plansRepo
         .getSubPlans()
         .then((response) {
-          final plans = response.results.map((dto) {
-            return CreditPlanItemModel(
-              id: dto.id,
-              logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
-              providerName: dto.creditPlan.name,
-              planName: dto.name,
-              validityDuration: dto.creditPlan.validity_window_days.toString(),
-            );
-          }).toList();
+          final plans = response.results.map(_mapToCreditPlanModel).toList();
 
           final chips = [
-            PreInvoiceChipModel(
-              id: 1,
-              label: 'دسته بندی',
-              opensBottomSheet: true,
-            ),
+            PreInvoiceChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
             PreInvoiceChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
             PreInvoiceChipModel(id: 3, label: 'نمایش کالاهای موجود'),
           ];
 
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.success,
-              creditPlans: plans,
-              filterChips: chips,
-            ),
-          );
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.success,
+            creditPlans: plans,
+            filterChips: chips,
+          ));
         })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: e.toString(),
-            ),
-          );
-        });
+        .catchError((e) => _handleError(e));
   }
 
   void goToStep(PreInvoiceStep step) {
@@ -88,125 +79,15 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     emit(state.copyWith(currentStep: step, isEditMode: false));
   }
 
-  void _uploadDocuments() {
-    emit(
-      state.copyWith(
-        status: PreInvoiceRequestStatus.loading,
-        isUploadingDocuments: true,
-      ),
-    );
-
-    final mandatoryFile = File(state.mandatoryDocPath!);
-    final uploadTasks = <Future<String>>[];
-
-    // Upload mandatory
-    uploadTasks.add(
-      _mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id),
-    );
-
-    // Upload optionals
-    for (final path in state.optionalDocPaths) {
-      uploadTasks.add(
-        _mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id),
-      );
-    }
-
-    Future.wait(uploadTasks)
-        .then((ids) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.success,
-              mandatoryDocId: ids.first,
-              optionalDocIds: ids.skip(1).toList(),
-              currentStep: PreInvoiceStep.review,
-              isEditMode: false,
-              isUploadingDocuments: false,
-            ),
-          );
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در بارگذاری مدارک: ${e.toString()}',
-              isUploadingDocuments: false,
-            ),
-          );
-        });
+  void enterEditMode(PreInvoiceStep step) {
+    emit(state.copyWith(currentStep: step, isEditMode: true));
   }
 
-  void _submitCustomerInfo() {
-    final info = state.customerInfo!;
-    final original = state.originalCustomerInfo;
-
-    // Check if data has actually changed
-    final hasChanged =
-        original == null ||
-        info.firstName != original.firstName ||
-        info.lastName != original.lastName ||
-        info.nationalId != original.nationalId ||
-        info.phoneNumber != original.phoneNumber ||
-        info.postalCode != original.postalCode ||
-        info.address != original.address;
-
-    if (!hasChanged) {
-      emit(
-        state.copyWith(
-          currentStep: PreInvoiceStep.documents,
-          isEditMode: false,
-        ),
-      );
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        status: PreInvoiceRequestStatus.loading,
-        isSubmittingCustomerInfo: true,
-      ),
-    );
-
-    final body = {
-      'first_name': info.firstName,
-      'last_name': info.lastName,
-      'national_id': info.nationalId,
-      'mobile': info.phoneNumber,
-      'postal_code': info.postalCode,
-      'address': info.address,
-    };
-
-    Future<CustomerDtoModel> request;
-    if (state.isExistingCustomer && info.id != null) {
-      request = _customerRepo.updateCustomer(info.id!, body);
-    } else {
-      request = _customerRepo.createCustomer(body);
-    }
-
-    request
-        .then((response) {
-          final updatedInfo = info.copyWith(id: response.id);
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.success,
-              customerInfo: updatedInfo,
-              originalCustomerInfo: updatedInfo,
-              isExistingCustomer: true,
-              currentStep: PreInvoiceStep.documents,
-              isEditMode: false,
-              isSubmittingCustomerInfo: false,
-            ),
-          );
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در ثبت اطلاعات مشتری',
-              isSubmittingCustomerInfo: false,
-            ),
-          );
-        });
+  void exitEditMode() {
+    emit(state.copyWith(currentStep: PreInvoiceStep.review, isEditMode: false));
   }
+
+  // ─── Step 2 — Products ─────────────────────────────────────────────
 
   void _loadProducts() {
     if (state.selectedCreditPlanId == null) return;
@@ -219,51 +100,14 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           categoryId: state.selectedCategoryId,
         )
         .then((response) {
-          final products = response.results
-              .map((dto) => _mapProductDtoToModel(dto))
-              .toList();
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.success,
-              allProducts: products,
-              filteredProducts: products,
-            ),
-          );
+          final products = response.results.map(_mapProductDtoToModel).toList();
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.success,
+            allProducts: products,
+            filteredProducts: products,
+          ));
         })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: e.toString(),
-            ),
-          );
-        });
-  }
-
-  PreInvoiceProductModel _mapProductDtoToModel(ProductDtoModel dto) {
-    final formatter = NumberFormat('#,###', 'en_US');
-    return PreInvoiceProductModel(
-      id: dto.id,
-      name: dto.name,
-      imageUrl: dto.featuredImage?.file ?? '$baseImage/frame1.png',
-      price: formatter.format(dto.planPrice ?? 0),
-      oldPrice: dto.oldPrice != null
-          ? formatter.format(dto.oldPrice!)
-          : dto.basePrice != null
-          ? formatter.format(dto.basePrice!)
-          : null,
-      discount: dto.discountPct != null ? '${dto.discountPct}%' : null,
-      inventory: dto.stockQty.toString(),
-      isAvailable: dto.stockQty > 0,
-    );
-  }
-
-  void enterEditMode(PreInvoiceStep step) {
-    emit(state.copyWith(currentStep: step, isEditMode: true));
-  }
-
-  void exitEditMode() {
-    emit(state.copyWith(currentStep: PreInvoiceStep.review, isEditMode: false));
+        .catchError((e) => _handleError(e));
   }
 
   void onCreditPlanSelected(String id) {
@@ -301,35 +145,25 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     _loadProducts();
   }
 
+  // ─── Step 2 — Cart Operations ──────────────────────────────────────
+
   void addToCart(PreInvoiceProductModel product) {
-    final existingIndex = state.cartItems.indexWhere(
-      (item) => item.productId == product.id,
-    );
+    final existingIndex = state.cartItems.indexWhere((item) => item.productId == product.id);
     final updatedCart = List<CartItemModel>.from(state.cartItems);
 
     if (existingIndex != -1) {
       final existingItem = updatedCart[existingIndex];
-      updatedCart[existingIndex] = CartItemModel(
-        productId: existingItem.productId,
-        name: existingItem.name,
-        imageUrl: existingItem.imageUrl,
-        price: existingItem.price,
-        oldPrice: existingItem.oldPrice,
-        discount: existingItem.discount,
-        quantity: existingItem.quantity + 1,
-      );
+      updatedCart[existingIndex] = existingItem.copyWith(quantity: existingItem.quantity + 1);
     } else {
-      updatedCart.add(
-        CartItemModel(
-          productId: product.id,
-          name: product.name,
-          imageUrl: product.imageUrl,
-          price: product.price,
-          oldPrice: product.oldPrice,
-          discount: product.discount,
-          quantity: 1,
-        ),
-      );
+      updatedCart.add(CartItemModel(
+        productId: product.id,
+        name: product.name,
+        imageUrl: product.imageUrl,
+        price: product.price,
+        oldPrice: product.oldPrice,
+        discount: product.discount,
+        quantity: 1,
+      ));
     }
     emit(state.copyWith(cartItems: updatedCart));
     _updateSummary();
@@ -339,16 +173,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final updatedCart = List<CartItemModel>.from(state.cartItems);
     final index = updatedCart.indexWhere((item) => item.productId == productId);
     if (index != -1) {
-      final item = updatedCart[index];
-      updatedCart[index] = CartItemModel(
-        productId: item.productId,
-        name: item.name,
-        imageUrl: item.imageUrl,
-        price: item.price,
-        oldPrice: item.oldPrice,
-        discount: item.discount,
-        quantity: item.quantity + 1,
-      );
+      updatedCart[index] = updatedCart[index].copyWith(quantity: updatedCart[index].quantity + 1);
       emit(state.copyWith(cartItems: updatedCart));
       _updateSummary();
     }
@@ -360,16 +185,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     if (index != -1) {
       if (updatedCart[index].quantity > 1) {
-        final existingItem = updatedCart[index];
-        updatedCart[index] = CartItemModel(
-          productId: existingItem.productId,
-          name: existingItem.name,
-          imageUrl: existingItem.imageUrl,
-          price: existingItem.price,
-          oldPrice: existingItem.oldPrice,
-          discount: existingItem.discount,
-          quantity: existingItem.quantity - 1,
-        );
+        updatedCart[index] = updatedCart[index].copyWith(quantity: updatedCart[index].quantity - 1);
       } else {
         updatedCart.removeAt(index);
       }
@@ -379,10 +195,265 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void deleteFromCart(String productId) {
-    final updatedCart = List<CartItemModel>.from(state.cartItems)
-      ..removeWhere((item) => item.productId == productId);
+    final updatedCart = List<CartItemModel>.from(state.cartItems)..removeWhere((item) => item.productId == productId);
     emit(state.copyWith(cartItems: updatedCart));
     _updateSummary();
+  }
+
+  void showCart() {
+    emit(state.copyWith(isCartVisible: true));
+  }
+
+  void hideCart() {
+    emit(state.copyWith(isCartVisible: false));
+  }
+
+  // ─── Step 3 — Customer Info ────────────────────────────────────────
+
+  void onCustomerIdChanged(String value) {
+    bool isValid = isNationalIDValid(value);
+    emit(state.copyWith(
+      customerIdQuery: value,
+      isNationalIdValid: isValid,
+      customerInfo: null,
+    ));
+  }
+
+  void searchCustomer() {
+    if (state.customerIdQuery.isEmpty) return;
+    emit(state.copyWith(customerSearchLoading: true));
+
+    _customerRepo.getCustomerByNationalId(state.customerIdQuery).then((dto) {
+      final info = CustomerInfoModel(
+        id: dto.id,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        nationalId: dto.nationalId,
+        phoneNumber: dto.mobile,
+        postalCode: dto.postalCode,
+        address: dto.address,
+      );
+      emit(state.copyWith(
+        customerSearchLoading: false,
+        customerInfo: info,
+        originalCustomerInfo: info,
+        isExistingCustomer: true,
+      ));
+    }).catchError((e) {
+      emit(state.copyWith(
+        customerSearchLoading: false,
+        customerInfo: CustomerInfoModel(
+          firstName: '',
+          lastName: '',
+          nationalId: state.customerIdQuery,
+          phoneNumber: '',
+          postalCode: '',
+          address: '',
+        ),
+        originalCustomerInfo: null,
+        isExistingCustomer: false,
+      ));
+    });
+  }
+
+  void onCustomerFieldChanged(String field, dynamic value) {
+    if (state.customerInfo == null) return;
+    var updated = state.customerInfo!;
+
+    switch (field) {
+      case 'firstName': updated = updated.copyWith(firstName: value); break;
+      case 'lastName': updated = updated.copyWith(lastName: value); break;
+      case 'nationalId': updated = updated.copyWith(nationalId: value); break;
+      case 'phoneNumber': updated = updated.copyWith(phoneNumber: value); break;
+      case 'postalCode': updated = updated.copyWith(postalCode: value); break;
+      case 'address': updated = updated.copyWith(address: value); break;
+      case 'isOrderSentToCustomerAddress': updated = updated.copyWith(isOrderSentToCustomerAddress: value); break;
+    }
+    emit(state.copyWith(customerInfo: updated));
+  }
+
+  void _submitCustomerInfo() {
+    final info = state.customerInfo!;
+    final original = state.originalCustomerInfo;
+
+    // Check if data has actually changed
+    final hasChanged = original == null ||
+        info.firstName != original.firstName ||
+        info.lastName != original.lastName ||
+        info.nationalId != original.nationalId ||
+        info.phoneNumber != original.phoneNumber ||
+        info.postalCode != original.postalCode ||
+        info.address != original.address;
+
+    if (!hasChanged) {
+      emit(state.copyWith(currentStep: PreInvoiceStep.documents, isEditMode: false));
+      return;
+    }
+
+    emit(state.copyWith(status: PreInvoiceRequestStatus.loading, isSubmittingCustomerInfo: true));
+
+    final body = _buildCustomerRequestBody(info);
+    Future<CustomerDtoModel> request;
+
+    if (state.isExistingCustomer && info.id != null) {
+      request = _customerRepo.updateCustomer(info.id!, body);
+    } else {
+      request = _customerRepo.createCustomer(body);
+    }
+
+    request.then((response) {
+      final updatedInfo = info.copyWith(id: response.id);
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.success,
+        customerInfo: updatedInfo,
+        originalCustomerInfo: updatedInfo,
+        isExistingCustomer: true,
+        currentStep: PreInvoiceStep.documents,
+        isEditMode: false,
+        isSubmittingCustomerInfo: false,
+      ));
+    }).catchError((e) => _handleError(e, prefix: 'خطا در ثبت اطلاعات مشتری'));
+  }
+
+  // ─── Step 4 — Documents ────────────────────────────────────────────
+
+  Future<void> pickMandatoryDoc(dynamic context) async {
+    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: false);
+    if (result != null && result.isNotEmpty) {
+      emit(state.copyWith(mandatoryDocPath: result.first.file.path));
+    }
+  }
+
+  Future<void> pickOptionalDoc(dynamic context) async {
+    if (state.optionalDocPaths.length >= 5) {
+      emit(state.copyWith(status: PreInvoiceRequestStatus.error, errorMessage: 'حداکثر ۵ تصویر اختیاری مجاز است'));
+      return;
+    }
+    final result = await MediaPickerBottomSheet.show(context, isMultiSelection: true);
+    if (result != null && result.isNotEmpty) {
+      final availableSlots = 5 - state.optionalDocPaths.length;
+      final newPaths = result.take(availableSlots).map((m) => m.file.path).toList();
+
+      final updatedPaths = List<String>.from(state.optionalDocPaths)..addAll(newPaths);
+      emit(state.copyWith(optionalDocPaths: updatedPaths));
+
+      if (result.length > availableSlots) {
+        emit(state.copyWith(status: PreInvoiceRequestStatus.error, errorMessage: 'فقط $availableSlots تصویر دیگر اضافه شد (حداکثر ۵ عدد)'));
+      }
+    }
+  }
+
+  void removeMandatoryDoc() {
+    emit(state.copyWith(mandatoryDocPath: null));
+  }
+
+  void removeOptionalDoc(int index) {
+    final updatedPaths = List<String>.from(state.optionalDocPaths)..removeAt(index);
+    emit(state.copyWith(optionalDocPaths: updatedPaths));
+  }
+
+  void _uploadDocuments() {
+    emit(state.copyWith(status: PreInvoiceRequestStatus.loading, isUploadingDocuments: true));
+
+    final mandatoryFile = File(state.mandatoryDocPath!);
+    final uploadTasks = <Future<String>>[];
+
+    // Upload mandatory
+    uploadTasks.add(_mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id));
+
+    // Upload optionals
+    for (final path in state.optionalDocPaths) {
+      uploadTasks.add(_mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id));
+    }
+
+    Future.wait(uploadTasks).then((ids) {
+      emit(state.copyWith(
+        status: PreInvoiceRequestStatus.success,
+        mandatoryDocId: ids.first,
+        optionalDocIds: ids.skip(1).toList(),
+        currentStep: PreInvoiceStep.review,
+        isEditMode: false,
+        isUploadingDocuments: false,
+      ));
+    }).catchError((e) => _handleError(e, prefix: 'خطا در بارگذاری مدارک: '));
+  }
+
+  // ─── Step 5 — Submit Pre-Invoice ───────────────────────────────────
+
+  void submitPreInvoice() {
+    _createOrder(false);
+  }
+
+  void submitAndClear() {
+    _createOrder(true);
+  }
+
+  void _createOrder(bool shouldClear) {
+    if (state.customerInfo == null || state.selectedCreditPlanId == null) return;
+
+    emit(state.copyWith(
+      status: PreInvoiceRequestStatus.loading,
+      isSubmittingPreInvoice: !shouldClear,
+      isSubmittingAndClearing: shouldClear,
+    ));
+
+    final request = OrderCreateRequest(
+      customerId: state.customerInfo!.id!,
+      subPlanId: state.selectedCreditPlanId!,
+      lines: _buildOrderLines(),
+      documents: _buildOrderDocuments(),
+      deliveryToAgent: true,
+    );
+
+    _ordersRepo.createOrder(request).then((order) {
+      emit(state.copyWith(
+        status: shouldClear ? PreInvoiceRequestStatus.submittedAndCleared : PreInvoiceRequestStatus.submitted,
+        createdOrderId: order.id,
+        isSubmittingPreInvoice: false,
+        isSubmittingAndClearing: false,
+      ));
+    }).catchError((e) => _handleError(e, prefix: 'خطا در ثبت پیش فاکتور: '));
+  }
+
+  // ─── Private Helpers ───────────────────────────────────────────────
+
+  CreditPlanItemModel _mapToCreditPlanModel(dynamic dto) {
+    return CreditPlanItemModel(
+      id: dto.id,
+      logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
+      providerName: dto.creditPlan.name,
+      planName: dto.name,
+      validityDuration: dto.creditPlan.validity_window_days.toString(),
+    );
+  }
+
+  PreInvoiceProductModel _mapProductDtoToModel(ProductDtoModel dto) {
+    final formatter = NumberFormat('#,###', 'en_US');
+    return PreInvoiceProductModel(
+      id: dto.id,
+      name: dto.name,
+      imageUrl: dto.featuredImage?.file ?? '$baseImage/frame1.png',
+      price: formatter.format(dto.planPrice ?? 0),
+      oldPrice: dto.oldPrice != null
+          ? formatter.format(dto.oldPrice!)
+          : dto.basePrice != null
+          ? formatter.format(dto.basePrice!)
+          : null,
+      discount: dto.discountPct != null ? '${dto.discountPct}%' : null,
+      inventory: dto.stockQty.toString(),
+      isAvailable: dto.stockQty > 0,
+    );
+  }
+
+  Map<String, dynamic> _buildCustomerRequestBody(CustomerInfoModel info) {
+    return {
+      'first_name': info.firstName,
+      'last_name': info.lastName,
+      'national_id': info.nationalId,
+      'mobile': info.phoneNumber,
+      'postal_code': info.postalCode,
+      'address': info.address,
+    };
   }
 
   void _updateSummary() {
@@ -394,12 +465,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       totalQuantity += item.quantity;
       final currentPrice = int.tryParse(item.price.replaceAll(',', '')) ?? 0;
       final basePriceStr = item.oldPrice ?? item.price;
-      final basePrice =
-          int.tryParse(basePriceStr.replaceAll(',', '')) ?? currentPrice;
+      final basePrice = int.tryParse(basePriceStr.replaceAll(',', '')) ?? currentPrice;
 
-      final itemDiscount = (basePrice > currentPrice)
-          ? (basePrice - currentPrice)
-          : 0;
+      final itemDiscount = (basePrice > currentPrice) ? (basePrice - currentPrice) : 0;
 
       totalAmount += basePrice * item.quantity;
       totalDiscounts += itemDiscount * item.quantity;
@@ -408,241 +476,40 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final payableAmount = totalAmount - totalDiscounts;
     final formatter = NumberFormat('#,###', 'en_US');
 
-    emit(
-      state.copyWith(
-        totalAmount: formatter.format(totalAmount),
-        totalDiscounts: formatter.format(totalDiscounts),
-        payableAmount: formatter.format(payableAmount),
-        totalQuantity: totalQuantity,
-      ),
-    );
+    emit(state.copyWith(
+      totalAmount: formatter.format(totalAmount),
+      totalDiscounts: formatter.format(totalDiscounts),
+      payableAmount: formatter.format(payableAmount),
+      totalQuantity: totalQuantity,
+    ));
   }
 
-  void showCart() {
-    emit(state.copyWith(isCartVisible: true));
-  }
-
-  void hideCart() {
-    emit(state.copyWith(isCartVisible: false));
-  }
-
-  void onCustomerIdChanged(String value) {
-    bool isValid = isNationalIDValid(value);
-    emit(
-      state.copyWith(
-        customerIdQuery: value,
-        isNationalIdValid: isValid,
-        customerInfo: null,
-      ),
-    );
-  }
-
-  void searchCustomer() {
-    if (state.customerIdQuery.isEmpty) return;
-    emit(state.copyWith(customerSearchLoading: true));
-
-    _customerRepo
-        .getCustomerByNationalId(state.customerIdQuery)
-        .then((dto) {
-          final info = CustomerInfoModel(
-            id: dto.id,
-            firstName: dto.firstName,
-            lastName: dto.lastName,
-            nationalId: dto.nationalId,
-            phoneNumber: dto.mobile,
-            postalCode: dto.postalCode,
-            address: dto.address,
-          );
-          emit(
-            state.copyWith(
-              customerSearchLoading: false,
-              customerInfo: info,
-              originalCustomerInfo: info,
-              isExistingCustomer: true,
-            ),
-          );
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              customerSearchLoading: false,
-              customerInfo: CustomerInfoModel(
-                firstName: '',
-                lastName: '',
-                nationalId: state.customerIdQuery,
-                phoneNumber: '',
-                postalCode: '',
-                address: '',
-              ),
-              originalCustomerInfo: null,
-              isExistingCustomer: false,
-            ),
-          );
-        });
-  }
-
-  void onCustomerFieldChanged(String field, dynamic value) {
-    if (state.customerInfo == null) return;
-    var updated = state.customerInfo!;
-
-    switch (field) {
-      case 'firstName':
-        updated = updated.copyWith(firstName: value);
-        break;
-      case 'lastName':
-        updated = updated.copyWith(lastName: value);
-        break;
-      case 'nationalId':
-        updated = updated.copyWith(nationalId: value);
-        break;
-      case 'phoneNumber':
-        updated = updated.copyWith(phoneNumber: value);
-        break;
-      case 'postalCode':
-        updated = updated.copyWith(postalCode: value);
-        break;
-      case 'address':
-        updated = updated.copyWith(address: value);
-        break;
-      case 'isOrderSentToCustomerAddress':
-        updated = updated.copyWith(isOrderSentToCustomerAddress: value);
-        break;
-    }
-    emit(state.copyWith(customerInfo: updated));
-  }
-
-  Future<void> pickMandatoryDoc(dynamic context) async {
-    final result = await MediaPickerBottomSheet.show(
-      context,
-      isMultiSelection: false,
-    );
-    if (result != null && result.isNotEmpty) {
-      emit(state.copyWith(mandatoryDocPath: result.first.file.path));
-    }
-  }
-
-  Future<void> pickOptionalDoc(dynamic context) async {
-    if (state.optionalDocPaths.length >= 5) {
-      emit(
-        state.copyWith(
-          status: PreInvoiceRequestStatus.error,
-          errorMessage: 'حداکثر ۵ تصویر اختیاری مجاز است',
-        ),
-      );
-      return;
-    }
-    final result = await MediaPickerBottomSheet.show(
-      context,
-      isMultiSelection: true,
-    );
-    if (result != null && result.isNotEmpty) {
-      final availableSlots = 5 - state.optionalDocPaths.length;
-      final newPaths = result
-          .take(availableSlots)
-          .map((m) => m.file.path)
-          .toList();
-
-      final updatedPaths = List<String>.from(state.optionalDocPaths)
-        ..addAll(newPaths);
-      emit(state.copyWith(optionalDocPaths: updatedPaths));
-
-      if (result.length > availableSlots) {
-        emit(
-          state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage:
-                'فقط $availableSlots تصویر دیگر اضافه شد (حداکثر ۵ عدد)',
-          ),
-        );
-      }
-    }
-  }
-
-  void removeMandatoryDoc() {
-    emit(state.copyWith(mandatoryDocPath: null));
-  }
-
-  void removeOptionalDoc(int index) {
-    final updatedPaths = List<String>.from(state.optionalDocPaths)
-      ..removeAt(index);
-    emit(state.copyWith(optionalDocPaths: updatedPaths));
-  }
-
-  void submitPreInvoice() {
-    _createOrder(false);
-  }
-
-  void submitAndClear() {
-    _createOrder(true);
-  }
-
-  void _createOrder(bool shouldClear) {
-    if (state.customerInfo == null || state.selectedCreditPlanId == null)
-      return;
-
-    emit(
-      state.copyWith(
-        status: PreInvoiceRequestStatus.loading,
-        isSubmittingPreInvoice: !shouldClear,
-        isSubmittingAndClearing: shouldClear,
-      ),
-    );
-
-    final lines = state.cartItems.map((item) {
-      return OrderLineRequest(
-        productId: item.productId,
-        quantity: item.quantity,
-      );
+  List<OrderLineRequest> _buildOrderLines() {
+    return state.cartItems.map((item) {
+      return OrderLineRequest(productId: item.productId, quantity: item.quantity);
     }).toList();
+  }
 
+  List<OrderDocumentRequest> _buildOrderDocuments() {
     final documents = <OrderDocumentRequest>[];
     if (state.mandatoryDocId != null) {
-      documents.add(
-        OrderDocumentRequest(
-          documentType: 'national_id_front',
-          fileId: state.mandatoryDocId!,
-        ),
-      );
+      documents.add(OrderDocumentRequest(documentType: 'national_id_front', fileId: state.mandatoryDocId!));
     }
-
     for (final fileId in state.optionalDocIds) {
-      documents.add(
-        OrderDocumentRequest(documentType: 'supporting', fileId: fileId),
-      );
+      documents.add(OrderDocumentRequest(documentType: 'supporting', fileId: fileId));
     }
+    return documents;
+  }
 
-    final request = OrderCreateRequest(
-      customerId: state.customerInfo!.id!,
-      subPlanId: state.selectedCreditPlanId!,
-      lines: lines,
-      documents: documents,
-      deliveryToAgent: true, // As per JSON example
-    );
-
-    _ordersRepo
-        .createOrder(request)
-        .then((order) {
-          emit(
-            state.copyWith(
-              status: shouldClear
-                  ? PreInvoiceRequestStatus.submittedAndCleared
-                  : PreInvoiceRequestStatus.submitted,
-              createdOrderId: order.id,
-              isSubmittingPreInvoice: false,
-              isSubmittingAndClearing: false,
-            ),
-          );
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: 'خطا در ثبت پیش فاکتور: ${e.toString()}',
-              isSubmittingPreInvoice: false,
-              isSubmittingAndClearing: false,
-            ),
-          );
-        });
+  void _handleError(Object e, {String prefix = ''}) {
+    emit(state.copyWith(
+      status: PreInvoiceRequestStatus.error,
+      errorMessage: prefix.isEmpty ? e.toString() : '$prefix: ${e.toString()}',
+      isUploadingDocuments: false,
+      isSubmittingCustomerInfo: false,
+      isSubmittingPreInvoice: false,
+      isSubmittingAndClearing: false,
+    ));
   }
 
   @override

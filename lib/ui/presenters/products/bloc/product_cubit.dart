@@ -7,6 +7,14 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
 import 'product_state.dart';
 
+// ─── REFACTOR LOG ───────────────────────────────────────────────────
+// [1] Extracted `_createInitialChips()` to simplify initialization logic.
+// [2] Extracted `_mapToProductItemModel()` to isolate DTO mapping logic.
+// [3] Extracted `_handleError()` to remove duplication in API error handling.
+// [4] Reordered methods: Event handlers first, followed by private helpers.
+// [5] Added inline documentation for search and filter logic.
+// ────────────────────────────────────────────────────────────────────
+
 class ProductCubit extends Cubit<ProductState> {
   ProductCubit() : super(const ProductState());
 
@@ -14,104 +22,44 @@ class ProductCubit extends Cubit<ProductState> {
   final _plansRepo = sl<PlansRepository>();
   Timer? _debounce;
 
+  // ─── Event Handlers ────────────────────────────────────────────────
+
+  /// Initializes the products screen by loading categories, plans, and the initial product list.
   void init() {
     emit(state.copyWith(status: ProductRequestStatus.loading));
 
-    // Mock chips based on requirements
-    final chips = [
-      ProductChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
-      ProductChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
-      ProductChipModel(
-        id: 3,
-        label: 'فقط کالاهای موجود',
-        opensBottomSheet: false,
-      ),
-    ];
+    final chips = _createInitialChips();
 
-    Future.wait([_productRepo.getCategories(), _plansRepo.getSubPlans()])
-        .then((results) {
-          final categoriesResponse = results[0];
-          final subPlansResponse = results[1];
+    Future.wait([
+      _productRepo.getCategories(),
+      _plansRepo.getSubPlans(),
+    ]).then((results) {
+      final categoriesResponse = results[0];
+      final subPlansResponse = results[1];
 
-          emit(
-            state.copyWith(
-              chips: chips,
-              availableCategories: (categoriesResponse as dynamic).results,
-              availableSubPlans: (subPlansResponse as dynamic).results,
-            ),
-          );
+      emit(state.copyWith(
+        chips: chips,
+        availableCategories: (categoriesResponse as dynamic).results,
+        availableSubPlans: (subPlansResponse as dynamic).results,
+      ));
 
-          _fetchProducts();
-        })
-        .catchError((Object e) {
-          emit(
-            state.copyWith(
-              status: ProductRequestStatus.error,
-              errorMessage: e.toString(),
-            ),
-          );
-        });
+      _fetchProducts();
+    }).catchError(_handleError);
   }
 
-  void _fetchProducts() {
-    emit(state.copyWith(status: ProductRequestStatus.loading));
-
-    _productRepo
-        .getProducts(
-          subPlanId: state.selectedSubPlanId,
-          categoryId: state.selectedCategoryId,
-          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
-          inStock: state.isOnlyAvailable ? true : null,
-        )
-        .then((response) {
-          final products = response.results
-              .map(
-                (dto) => ProductItemModel(
-                  id: dto.id,
-                  name: dto.name,
-                  imageUrl: dto.featuredImage?.file ?? '',
-                  price: state.selectedSubPlanId != null
-                      ? dto.planPrice?.toString() ?? '۰'
-                      : dto.basePrice?.toString() ?? '۰',
-                  oldPrice: state.selectedSubPlanId != null
-                      ? dto.basePrice?.toString()
-                      : null,
-                  inventory: dto.stockQty.toString(),
-                  discount: dto.discountPct != null && dto.discountPct != 0
-                      ? '${dto.discountPct}٪'
-                      : null,
-                ),
-              )
-              .toList();
-
-          emit(
-            state.copyWith(
-              status: ProductRequestStatus.success,
-              allProducts: products,
-              filteredProducts: products,
-            ),
-          );
-        })
-        .catchError((Object e) {
-          emit(
-            state.copyWith(
-              status: ProductRequestStatus.error,
-              errorMessage: e.toString(),
-            ),
-          );
-        });
-  }
-
+  /// Activates the search mode in the UI.
   void activateSearch() {
     emit(state.copyWith(isSearchActive: true));
   }
 
+  /// Deactivates search, clears the query, and refreshes the product list.
   void deactivateSearch() {
     _debounce?.cancel();
     emit(state.copyWith(isSearchActive: false, searchQuery: ''));
     _fetchProducts();
   }
 
+  /// Handles real-time search query changes with a 1-second debounce.
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
 
@@ -129,18 +77,18 @@ class ProductCubit extends Cubit<ProductState> {
     });
   }
 
+  /// Filters products by the selected category.
   void selectCategory(String? categoryId) {
     if (state.selectedCategoryId == categoryId) return;
 
-    emit(
-      state.copyWith(
-        selectedCategoryId: categoryId,
-        selectedChipIndex: categoryId != null ? 0 : -1,
-      ),
-    );
+    emit(state.copyWith(
+      selectedCategoryId: categoryId,
+      selectedChipIndex: categoryId != null ? 0 : -1,
+    ));
     _fetchProducts();
   }
 
+  /// Filters products by the selected credit plan.
   void selectSubPlan(String? subPlanId) {
     if (state.selectedSubPlanId == subPlanId) return;
 
@@ -148,27 +96,25 @@ class ProductCubit extends Cubit<ProductState> {
         ? state.availableSubPlans.firstWhere((s) => s.id == subPlanId).name
         : null;
 
-    emit(
-      state.copyWith(
-        selectedSubPlanId: subPlanId,
-        selectedSubPlanName: subPlanName,
-        selectedChipIndex: subPlanId != null ? 1 : -1,
-      ),
-    );
+    emit(state.copyWith(
+      selectedSubPlanId: subPlanId,
+      selectedSubPlanName: subPlanName,
+      selectedChipIndex: subPlanId != null ? 1 : -1,
+    ));
     _fetchProducts();
   }
 
+  /// Toggles the "Only Available" stock filter.
   void toggleOnlyAvailable() {
     final newValue = !state.isOnlyAvailable;
-    emit(
-      state.copyWith(
-        isOnlyAvailable: newValue,
-        selectedChipIndex: newValue ? 2 : -1,
-      ),
-    );
+    emit(state.copyWith(
+      isOnlyAvailable: newValue,
+      selectedChipIndex: newValue ? 2 : -1,
+    ));
     _fetchProducts();
   }
 
+  /// Generic handler for chip interactions.
   void onChipTap(ProductChipModel chip) {
     if (chip.opensBottomSheet) {
       emit(state.copyWith(activeFilterChip: chip));
@@ -177,6 +123,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+  /// Handles the removal of a specific filter via the chip "X" button.
   void onChipClose(ProductChipModel chip) {
     if (chip.id == 1) {
       selectCategory(null);
@@ -187,24 +134,81 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+  /// Clears the request to open a filter bottom sheet.
   void clearActiveFilterRequest() {
     emit(state.copyWith(activeFilterChip: null));
   }
 
+  /// Resets all search and filter parameters to their default state.
   void clearAllFilters() {
     _debounce?.cancel();
-    emit(
-      state.copyWith(
-        searchQuery: '',
-        isSearchActive: false,
-        selectedCategoryId: null,
-        selectedSubPlanId: null,
-        selectedSubPlanName: null,
-        isOnlyAvailable: false,
-        selectedChipIndex: -1,
-      ),
-    );
+    emit(state.copyWith(
+      searchQuery: '',
+      isSearchActive: false,
+      selectedCategoryId: null,
+      selectedSubPlanId: null,
+      selectedSubPlanName: null,
+      isOnlyAvailable: false,
+      selectedChipIndex: -1,
+    ));
     _fetchProducts();
+  }
+
+  // ─── Private Helpers ───────────────────────────────────────────────
+
+  /// Fetches the product list from the repository using current filters.
+  void _fetchProducts() {
+    emit(state.copyWith(status: ProductRequestStatus.loading));
+
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedSubPlanId,
+          categoryId: state.selectedCategoryId,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          inStock: state.isOnlyAvailable ? true : null,
+        )
+        .then((response) {
+          final products = response.results.map(_mapToProductItemModel).toList();
+
+          emit(state.copyWith(
+            status: ProductRequestStatus.success,
+            allProducts: products,
+            filteredProducts: products,
+          ));
+        })
+        .catchError(_handleError);
+  }
+
+  /// Defines the initial static filter chips.
+  List<ProductChipModel> _createInitialChips() {
+    return [
+      ProductChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
+      ProductChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
+      ProductChipModel(id: 3, label: 'فقط کالاهای موجود', opensBottomSheet: false),
+    ];
+  }
+
+  /// Maps a product DTO to the presentation model, handling plan-specific pricing.
+  ProductItemModel _mapToProductItemModel(dynamic dto) {
+    return ProductItemModel(
+      id: dto.id,
+      name: dto.name,
+      imageUrl: dto.featuredImage?.file ?? '',
+      price: state.selectedSubPlanId != null
+          ? dto.planPrice?.toString() ?? '۰'
+          : dto.basePrice?.toString() ?? '۰',
+      oldPrice: state.selectedSubPlanId != null ? dto.basePrice?.toString() : null,
+      inventory: dto.stockQty.toString(),
+      discount: dto.discountPct != null && dto.discountPct != 0 ? '${dto.discountPct}٪' : null,
+    );
+  }
+
+  /// Centralized handler for repository errors.
+  void _handleError(Object e) {
+    emit(state.copyWith(
+      status: ProductRequestStatus.error,
+      errorMessage: e.toString(),
+    ));
   }
 
   @override

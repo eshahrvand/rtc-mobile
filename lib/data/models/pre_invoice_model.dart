@@ -54,6 +54,26 @@ class CartItemModel {
     this.discount,
     required this.quantity,
   });
+
+  CartItemModel copyWith({
+    String? productId,
+    String? name,
+    String? imageUrl,
+    String? price,
+    String? oldPrice,
+    String? discount,
+    int? quantity,
+  }) {
+    return CartItemModel(
+      productId: productId ?? this.productId,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      price: price ?? this.price,
+      oldPrice: oldPrice ?? this.oldPrice,
+      discount: discount ?? this.discount,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 }
 
 class CustomerInfoModel {
