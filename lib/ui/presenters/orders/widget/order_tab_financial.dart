@@ -70,13 +70,26 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
             widget.order.orderStatus == OrderStatus.awaitingSettlement;
         final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
 
+        final clearanceAmountVal =
+            double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
+        final orderAmountVal = double.tryParse(
+          (state.orderAmount ?? widget.order.financialSummary.finalAmount)
+              .replaceAll(',', ''),
+        ) ?? 0;
+
+        // Hide settlement if the entered clearance amount already covers the total
+        final isOverDischarge =
+            state.clearanceAmount.isNotEmpty &&
+            clearanceAmountVal >= orderAmountVal;
+
         final showSettlement =
-            isWaitingSettlement ||
-            widget.order.settlementRecords.isNotEmpty ||
-            state.clearanceStep == ClearanceStep.success ||
-            state.clearanceAmount.isNotEmpty ||
-            (state.clearanceStep != ClearanceStep.initial &&
-                state.isOutOfTolerance);
+            !isOverDischarge &&
+            (isWaitingSettlement ||
+                widget.order.settlementRecords.isNotEmpty ||
+                state.clearanceStep == ClearanceStep.success ||
+                state.clearanceAmount.isNotEmpty ||
+                (state.clearanceStep != ClearanceStep.initial &&
+                    state.isOutOfTolerance));
 
         return Column(
           children: [

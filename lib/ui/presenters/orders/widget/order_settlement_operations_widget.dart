@@ -120,6 +120,14 @@ class _OrderSettlementOperationsWidgetState
           }
 
           diffValue = (orderTotal - totalCleared);
+
+          // Subtract the pending clearance amount if we're in the middle of a discharge
+          if (isPartial) {
+            final pendingAmount =
+                double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
+            diffValue -= pendingAmount;
+          }
+
           if (diffValue < 0) diffValue = 0;
 
           differenceAmount = _formatAmount(diffValue);
@@ -302,53 +310,55 @@ class _OrderSettlementOperationsWidgetState
                       ],
                     ),
                   )
-                else if (!isPartial)
+                else
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 12, 16.0, 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          S.current.settlementMethod,
-                          style: theme.bodyMedium!.copyWith(
-                            color: AppColors.grayPalette.shade500,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () => _showMethodSelector(context, cubit),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 12,
+                        if (!isPartial) ...[
+                          Text(
+                            S.current.settlementMethod,
+                            style: theme.bodyMedium!.copyWith(
+                              color: AppColors.grayPalette.shade500,
+                              fontWeight: FontWeight.w500,
                             ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.grayPalette.shade300,
-                                width: 1,
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () => _showMethodSelector(context, cubit),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
                               ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  _getMethodTitle(state.settlementMethod),
-                                  style: theme.bodyLarge!.copyWith(
-                                    color: AppColors.grayPalette.shade900,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: AppColors.grayPalette.shade300,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    _getMethodTitle(state.settlementMethod),
+                                    style: theme.bodyLarge!.copyWith(
+                                      color: AppColors.grayPalette.shade900,
+                                    ),
                                   ),
-                                ),
-                                const Spacer(),
-                                RtcImage(
-                                  image: "$baseImage/angle-down_tab.svg",
-                                  width: 24,
-                                  height: 24,
-                                ),
-                              ],
+                                  const Spacer(),
+                                  RtcImage(
+                                    image: "$baseImage/angle-down_tab.svg",
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
+                        ],
                         _buildAmountRow(
                           theme,
                           S.current.differenceAmount,
@@ -373,114 +383,127 @@ class _OrderSettlementOperationsWidgetState
                           true,
                           isBold: true,
                         ),
-                        const SizedBox(height: 12),
-                        if (state.settlementMethod == 'wallet_debit' &&
-                            state.isWalletBalanceSufficient)
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                            decoration: BoxDecoration(
-                              color: AppColors.successPalette.shade25,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: AppColors.successPalette.shade100,
-                                width: 1,
+                        if (!isPartial) ...[
+                          const SizedBox(height: 12),
+                          if (state.settlementMethod == 'wallet_debit' &&
+                              state.isWalletBalanceSufficient)
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(
+                                14,
+                                12,
+                                14,
+                                12,
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              spacing: 10,
-                              children: [
-                                RtcImage(
-                                  image: "$baseImage/tick_circle.svg",
-                                  width: 16,
-                                  height: 16,
+                              decoration: BoxDecoration(
+                                color: AppColors.successPalette.shade25,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.successPalette.shade100,
+                                  width: 1,
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    state.walletName != null
-                                        ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت ما به تفاوت مبلغ کافیست'
-                                        : S.current.walletBalanceSufficient,
-                                    textAlign: TextAlign.right,
-                                    style: theme.bodyMedium!.copyWith(
-                                      color: AppColors.successPalette.shade600,
-                                      fontWeight: FontWeight.w500,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                spacing: 10,
+                                children: [
+                                  RtcImage(
+                                    image: "$baseImage/tick_circle.svg",
+                                    width: 16,
+                                    height: 16,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      state.walletName != null
+                                          ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت ما به تفاوت مبلغ کافیست'
+                                          : S.current.walletBalanceSufficient,
+                                      textAlign: TextAlign.right,
+                                      style: theme.bodyMedium!.copyWith(
+                                        color:
+                                            AppColors.successPalette.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (state.settlementMethod == 'wallet_debit' &&
-                            !state.isWalletBalanceSufficient)
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                            decoration: BoxDecoration(
-                              color: AppColors.errorPalette.shade25,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: AppColors.errorPalette.shade100,
-                                width: 1,
+                                ],
                               ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              spacing: 10,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  color: AppColors.errorPalette.shade600,
-                                  size: 16,
+                          if (state.settlementMethod == 'wallet_debit' &&
+                              !state.isWalletBalanceSufficient)
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(
+                                14,
+                                12,
+                                14,
+                                12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.errorPalette.shade25,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.errorPalette.shade100,
+                                  width: 1,
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    state.walletName != null
-                                        ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت این مبلغ کافی نمی‌باشد'
-                                        : 'موجودی کیف پول شما کافی نمی‌باشد',
-                                    textAlign: TextAlign.right,
-                                    style: theme.bodyMedium!.copyWith(
-                                      color: AppColors.errorPalette.shade600,
-                                      fontWeight: FontWeight.w500,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                spacing: 10,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    color: AppColors.errorPalette.shade600,
+                                    size: 16,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      state.walletName != null
+                                          ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت این مبلغ کافی نمی‌باشد'
+                                          : 'موجودی کیف پول شما کافی نمی‌باشد',
+                                      textAlign: TextAlign.right,
+                                      style: theme.bodyMedium!.copyWith(
+                                        color: AppColors.errorPalette.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Spacer(),
+                              RtcButton(
+                                title: _getButtonTitle(state.settlementMethod),
+                                isActive:
+                                    !isPartial &&
+                                    state.settlementMethod != null &&
+                                    (state.settlementMethod != 'wallet_debit' ||
+                                        state.isWalletBalanceSufficient),
+                                styleBtn: theme.labelLarge!.copyWith(
+                                  color:
+                                      (!isPartial &&
+                                          state.settlementMethod != null &&
+                                          (state.settlementMethod !=
+                                                  'wallet_debit' ||
+                                              state.isWalletBalanceSufficient))
+                                      ? Colors.white
+                                      : AppColors.grayPalette.shade300,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ],
-                            ),
+                                width:
+                                    state.settlementMethod == 'ipg' ||
+                                        state.settlementMethod == 'link'
+                                    ? 240
+                                    : 160,
+                                onPressed: () => _handleSettlement(
+                                  context,
+                                  cubit,
+                                  state.settlementMethod,
+                                ),
+                              ),
+                            ],
                           ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Spacer(),
-                            RtcButton(
-                              title: _getButtonTitle(state.settlementMethod),
-                              isActive:
-                                  !isPartial &&
-                                  state.settlementMethod != null &&
-                                  (state.settlementMethod != 'wallet_debit' ||
-                                      state.isWalletBalanceSufficient),
-                              styleBtn: theme.labelLarge!.copyWith(
-                                color:
-                                    (!isPartial &&
-                                        state.settlementMethod != null &&
-                                        (state.settlementMethod !=
-                                                'wallet_debit' ||
-                                            state.isWalletBalanceSufficient))
-                                    ? Colors.white
-                                    : AppColors.grayPalette.shade300,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              width:
-                                  state.settlementMethod == 'ipg' ||
-                                      state.settlementMethod == 'link'
-                                  ? 240
-                                  : 160,
-                              onPressed: () => _handleSettlement(
-                                context,
-                                cubit,
-                                state.settlementMethod,
-                              ),
-                            ),
-                          ],
-                        ),
+                        ],
                       ],
                     ),
                   ),
