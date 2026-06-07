@@ -121,12 +121,13 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
         final showSettlement =
             !isOverDischarge &&
+            !state.isOutOfTolerance && // Hide if out of tolerance
             (isWaitingSettlement ||
                 widget.order.settlementRecords.isNotEmpty ||
                 state.clearanceStep == ClearanceStep.success ||
-                state.clearanceAmount.isNotEmpty ||
-                (state.clearanceStep != ClearanceStep.initial &&
-                    state.isOutOfTolerance));
+                state.clearanceAmount.isNotEmpty);
+
+        final showSteps = showSettlement;
 
         return Column(
           children: [
@@ -184,6 +185,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           walletName: walletName,
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
+                          showStep: showSteps,
                           onAction: () {
                             if (state.gatewayType == GatewayType.online) {
                               showModalBottomSheet(
@@ -216,8 +218,9 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
                     if (showSettlement)
                       Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.only(top: 8 , bottom: 32),
                         child: OrderSettlementOperationsWidget(
+                          showStep: showSteps,
                           op:
                               state.settlementOperation ??
                               const OrderOperationModel(

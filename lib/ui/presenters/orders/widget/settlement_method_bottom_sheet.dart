@@ -74,7 +74,7 @@ class _SettlementMethodBottomSheetState
             _buildHeader(context),
             const SizedBox(height: 16),
             _buildItemsList(),
-            const SizedBox(height: 32),
+
             _buildActions(context, bottomPadding),
           ],
         ),
@@ -156,7 +156,7 @@ class _SettlementMethodBottomSheetState
         },
         isActive: _selectedId != null,
         styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: Colors.white,
+          color: AppColors.grayPalette.shade300,
           fontWeight: FontWeight.w600,
         ),
       ),

@@ -17,6 +17,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
   final VoidCallback? onEdit;
   final bool isOnline;
   final bool isOutOfTolerance;
+  final bool showStep;
 
   const OrderClearanceOperationWidget({
     super.key,
@@ -28,6 +29,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
     this.onEdit,
     this.isOnline = false,
     this.isOutOfTolerance = false,
+    this.showStep = false,
   });
 
   @override
@@ -71,7 +73,7 @@ class _OrderClearanceOperationWidgetState
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Row(
                 children: [
-                  if (isCompleted) ...[
+                  if (widget.showStep || isCompleted) ...[
                     Container(
                       width: 20,
                       height: 20,

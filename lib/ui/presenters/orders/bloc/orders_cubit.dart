@@ -350,6 +350,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     final result = await MediaPickerBottomSheet.show(
       context,
       isMultiSelection: false,
+      showCameraOverlay: false,
     );
     if (result != null && result.isNotEmpty) {
       final filePath = result.first.file.path;

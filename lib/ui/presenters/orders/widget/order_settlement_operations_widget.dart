@@ -16,8 +16,13 @@ import '../../media_picker/media_picker.dart';
 
 class OrderSettlementOperationsWidget extends StatefulWidget {
   final OrderOperationModel op;
+  final bool showStep;
 
-  const OrderSettlementOperationsWidget({super.key, required this.op});
+  const OrderSettlementOperationsWidget({
+    super.key,
+    required this.op,
+    this.showStep = false,
+  });
 
   @override
   State<OrderSettlementOperationsWidget> createState() =>
@@ -191,24 +196,26 @@ class _OrderSettlementOperationsWidgetState
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: AppColors.grayPalette.shade900,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${widget.op.step}',
-                            style: theme.labelLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                      if (widget.showStep || state.isSettlementCompleted) ...[
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: AppColors.grayPalette.shade900,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${widget.op.step}',
+                              style: theme.labelLarge!.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
+                        const SizedBox(width: 8),
+                      ],
                       Text(
                         widget.op.title,
                         style: theme.labelLarge!.copyWith(
@@ -545,7 +552,7 @@ class _OrderSettlementOperationsWidgetState
                       ],
                     ),
                   ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 4),
               ],
             ],
           ),
@@ -614,7 +621,7 @@ class _OrderSettlementOperationsWidgetState
       case 'link':
         return 'ارسال لیتک پرداخت به مشتری';
       case 'card_to_card':
-        return 'ثبت فیش واریزی';
+        return 'بارگزاری فیش واریزی';
       default:
         return 'انتخاب روش تسویه';
     }
@@ -629,7 +636,7 @@ class _OrderSettlementOperationsWidgetState
       case 'link':
         return 'ارسال لینک پرداخت';
       case 'card_to_card':
-        return 'آپلود فیش واریزی';
+        return 'بارگزاری فیش واریزی';
       default:
         return 'تایید و پرداخت';
     }

@@ -91,7 +91,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       if (_selectedId == id) {
         _selectedId = null; // Unselect if already selected
       } else {
-        _selectedId = id; // Select new item (replaces previous in single selection)
+        _selectedId =
+            id; // Select new item (replaces previous in single selection)
       }
     });
   }
@@ -161,13 +162,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           const Spacer(),
           RtcTextButton(
             title: S.current.clearFilter,
-            onPressed:(){
+            onPressed: () {
               _onClear();
               context.pop();
-            } ,
+            },
             styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: _hasSelection 
-                  ? AppColors.errorPalette.shade600 
+              color: _hasSelection
+                  ? AppColors.errorPalette.shade600
                   : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w500,
             ),
@@ -218,7 +219,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     final buttonWidth = (screenWidth - 52) / 2;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 16),
       child: Row(
         spacing: 12,
         children: [
@@ -232,7 +233,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               color: AppColors.grayPalette.shade700,
               fontWeight: FontWeight.w600,
             ),
-
           ),
           RtcButton(
             title: S.current.applyFilter,
@@ -240,7 +240,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             onPressed: _onApply,
             isActive: _hasSelection,
             styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Colors.white,
+              color: AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -154,6 +154,8 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                             state.selectedCategoryId != null,
                         onChipTap: (index, chip) =>
                             _showCategoryFilter(context, cubit, state),
+                        onChipClose: (index, chip) =>
+                            cubit.onCategorySelected(null),
                       ),
                     ),
                     const Spacer(),
