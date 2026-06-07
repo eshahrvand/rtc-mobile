@@ -46,7 +46,7 @@ class _WalletView extends StatelessWidget {
           final summary = state.walletSummary!;
 
           return SafeArea(
-            child: Container(
+            child: SizedBox(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               child: Column(
@@ -98,7 +98,7 @@ class _WalletView extends StatelessWidget {
                               const SizedBox(height: 16),
                               Expanded(
                                 child: ListView.separated(
-                                  padding: const EdgeInsets.only(bottom: 32),
+
                                   itemCount: summary.pockets.length,
                                   separatorBuilder: (context, index) =>
                                       const SizedBox(height: 12),
@@ -119,6 +119,7 @@ class _WalletView extends StatelessWidget {
                                   },
                                 ),
                               ),
+
                             ],
                           ),
                         ),
@@ -261,101 +262,105 @@ class _PocketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    return InkWell(
-      onTap: onTap,
+    return Padding(
+      padding: const EdgeInsets.only(right: 1 , left: 1 , top: 1),
+      child: GestureDetector(
+        onTap: onTap,
 
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: AppColors.primaryShadow,
-        ),
-        height: 110,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                RtcImage(
-                  image: pocket.logoPath,
-                  width: 44,
-                  height: 44,
-                  boxFit: BoxFit.fill,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    spacing: 2,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: AppColors.primaryShadow,
+          ),
+          height: 110,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  RtcImage(
+                    image: pocket.logoPath,
+                    width: 44,
+                    height: 44,
+                    boxFit: BoxFit.fill,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      spacing: 2,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pocket.bankName,
+                          style: theme.bodyMedium!.copyWith(
+                            color: AppColors.grayPalette.shade900,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              pocket.planName,
+                              style: theme.labelLarge!.copyWith(
+                                color: AppColors.grayPalette.shade900,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            RtcImage(
+                              image: '$baseImage/angle-left.svg',
+                              width: 20,
+                              height: 20,
+                              color: AppColors.grayPalette.shade700,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(right: 52),
+                child: const RtcDivider(isDashed: false),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 52),
+                    child: Text(
+                      S.current.balance,
+                      style: theme.bodyMedium!.copyWith(
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    spacing: 1,
                     children: [
                       Text(
-                        pocket.bankName,
-                        style: theme.bodyMedium!.copyWith(
+                        pocket.balance,
+                        style: theme.labelMedium!.copyWith(
                           color: AppColors.grayPalette.shade900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            pocket.planName,
-                            style: theme.labelLarge!.copyWith(
-                              color: AppColors.grayPalette.shade900,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          RtcImage(
-                            image: '$baseImage/angle-left.svg',
-                            width: 20,
-                            height: 20,
-                            color: AppColors.grayPalette.shade700,
-                          ),
-                        ],
+                      RtcImage(
+                        image: "$baseImage/toman.svg",
+                        width: 16,
+                        height: 16,
+                        boxFit: BoxFit.fill,
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.only(right: 52),
-              child: const RtcDivider(isDashed: false),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 52),
-                  child: Text(
-                    S.current.balance,
-                    style: theme.bodyMedium!.copyWith(
-                      color: AppColors.grayPalette.shade700,
-                    ),
-                  ),
-                ),
-                Row(
-                  spacing: 1,
-                  children: [
-                    Text(
-                      pocket.balance,
-                      style: theme.labelMedium!.copyWith(
-                        color: AppColors.grayPalette.shade900,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    RtcImage(
-                      image: "$baseImage/toman.svg",
-                      width: 16,
-                      height: 16,
-                      boxFit: BoxFit.fill,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

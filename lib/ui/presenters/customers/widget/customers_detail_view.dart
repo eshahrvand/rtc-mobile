@@ -98,7 +98,7 @@ class _CustomerInfoTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildField(S.current.customerName, customer.name, context),
+          _buildField(S.current.customerName, customer.name, context ),
           _buildField(S.current.nationalId, customer.nationalCode, context),
           _buildField(S.current.phoneNumber, customer.phoneNumber, context),
           _buildField(S.current.postalCode, customer.postalCode, context),
@@ -113,6 +113,7 @@ class _CustomerInfoTab extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 24),
       child: RtcTextField(
         readOnly: true,
+        isSetReadOnlyColor: true,
         labelText: label,
         labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
           fontWeight: FontWeight.w500,
