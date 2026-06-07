@@ -9,12 +9,13 @@ import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
 class RtcCameraScreen extends StatefulWidget {
-  const RtcCameraScreen({super.key});
+  final bool showOverlay;
+  const RtcCameraScreen({super.key, this.showOverlay = true});
 
-  static Future<File?> open(BuildContext context) async {
+  static Future<File?> open(BuildContext context, {bool showOverlay = true}) async {
     return await Navigator.of(
       context,
-    ).push<File>(MaterialPageRoute(builder: (_) => const RtcCameraScreen()));
+    ).push<File>(MaterialPageRoute(builder: (_) => RtcCameraScreen(showOverlay: showOverlay)));
   }
 
   @override
@@ -122,82 +123,86 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // Camera Preview
-          Positioned.fill(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                width: _controller!.value.previewSize?.height ?? 1,
-                height: _controller!.value.previewSize?.width ?? 1,
-                child: CameraPreview(_controller!),
-              ),
-            ),
-          ),
-
-          // Overlay
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 26, left: 26),
-              child: RtcImage(
-                image: 'assets/images/subtract.svg',
-                boxFit: BoxFit.fill,
-                height: 206,
-                width: double.infinity,
-              ),
-            ),
-          ),
-
-          // Top Controls
-          Positioned(
-            top: 20,
-            left: 16,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: RtcImage(
-                image: "$baseImage/close.svg",
-                color: Colors.white,
-                width: 24,
-                height: 24,
-                boxFit: BoxFit.fill,
-              ),
-            ),
-          ),
-
-          // Bottom Controls
-          Positioned(
-            bottom: 40,
-            left: 20,
-            right: 20,
-            child: RtcButton(
-              title: 'گرفتن عکس',
-              isLoading: _isCapturing,
-              onPressed: _takePicture,
-              width: double.infinity,
-              styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ),
-
-          // Instruction Text
-          Positioned(
-            top: 130,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Text(
-                "تصویر روی کارت ملی خود را با کارت زیر مطابقت دهید",
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Camera Preview
+            Positioned.fill(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _controller!.value.previewSize?.height ?? 1,
+                  height: _controller!.value.previewSize?.width ?? 1,
+                  child: CameraPreview(_controller!),
                 ),
               ),
             ),
-          ),
-        ],
+        
+            // Overlay
+            if (widget.showOverlay)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 26, left: 26),
+                  child: RtcImage(
+                    image: 'assets/images/subtract.svg',
+                    boxFit: BoxFit.fill,
+                    height: 206,
+                    width: double.infinity,
+                  ),
+                ),
+              ),
+        
+            // Top Controls
+            Positioned(
+              top: 10,
+              left: 16,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: RtcImage(
+                  image: "$baseImage/close.svg",
+                  color: Colors.white,
+                  width: 24,
+                  height: 24,
+                  boxFit: BoxFit.fill,
+                ),
+              ),
+            ),
+        
+            // Bottom Controls
+            Positioned(
+              bottom: 16,
+              left: 20,
+              right: 20,
+              child: RtcButton(
+                title: 'گرفتن عکس',
+                isLoading: _isCapturing,
+                onPressed: _takePicture,
+                width: double.infinity,
+                styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+        
+            // Instruction Text
+            if (widget.showOverlay)
+              Positioned(
+                top: 120,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Text(
+                    "تصویر روی کارت ملی خود را با کارت زیر مطابقت دهید",
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

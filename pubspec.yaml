@@ -58,7 +58,7 @@ dependencies:
   image: ^4.3.0
   dio: ^5.9.2
   get_it: ^9.2.1
-  image_cropper: ^9.1.0
+  image_cropper: ^12.2.1
   path_provider: ^2.1.2
   photo_manager: ^3.7.1
   custom_refresh_indicator: ^4.0.1

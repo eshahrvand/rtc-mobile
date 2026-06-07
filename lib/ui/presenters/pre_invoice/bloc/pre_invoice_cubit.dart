@@ -389,6 +389,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final result = await MediaPickerBottomSheet.show(
       context,
       isMultiSelection: false,
+      showCameraOverlay: true,
     );
     if (result != null && result.isNotEmpty) {
       emit(state.copyWith(mandatoryDocPath: result.first.file.path));
@@ -408,6 +409,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final result = await MediaPickerBottomSheet.show(
       context,
       isMultiSelection: true,
+      showCameraOverlay: false,
     );
     if (result != null && result.isNotEmpty) {
       final availableSlots = 5 - state.optionalDocPaths.length;

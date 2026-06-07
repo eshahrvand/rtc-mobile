@@ -263,7 +263,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('address', value),
                         ),
-                        SizedBox(height: 12),
+                        SizedBox(height: 24),
                         Row(
                           spacing: 8,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -308,6 +308,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             ),
                           ],
                         ),
+                        SizedBox(height: 12),
                       ],
                     ],
                   ),

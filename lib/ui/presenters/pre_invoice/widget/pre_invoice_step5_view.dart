@@ -310,7 +310,6 @@ class PreInvoiceStep5View extends StatelessWidget {
           _buildInfoRow(S.current.postalCodeLabel, info.postalCode, theme),
           RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           _buildInfoRow(S.current.addressLabel, '', theme),
-          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           Text(
             info.address,
 

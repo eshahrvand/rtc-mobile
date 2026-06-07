@@ -17,12 +17,18 @@ import 'package:rtc_mobile/ui/presenters/media_picker/widget/rtc_camera_screen.d
 
 class MediaPickerBottomSheet extends StatefulWidget {
   final bool isMultiSelection;
+  final bool showCameraOverlay;
 
-  const MediaPickerBottomSheet({super.key, this.isMultiSelection = false});
+  const MediaPickerBottomSheet({
+    super.key,
+    this.isMultiSelection = false,
+    this.showCameraOverlay = true,
+  });
 
   static Future<List<MediaItem>?> show(
     BuildContext context, {
     bool isMultiSelection = false,
+    bool showCameraOverlay = true,
   }) {
     return showModalBottomSheet<List<MediaItem>>(
       context: context,
@@ -31,7 +37,10 @@ class MediaPickerBottomSheet extends StatefulWidget {
       builder: (context) => BlocProvider(
         create: (context) =>
             MediaPickerCubit(isMultiSelection: isMultiSelection),
-        child: MediaPickerBottomSheet(isMultiSelection: isMultiSelection),
+        child: MediaPickerBottomSheet(
+          isMultiSelection: isMultiSelection,
+          showCameraOverlay: showCameraOverlay,
+        ),
       ),
     );
   }
@@ -183,7 +192,10 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
     return GestureDetector(
       onTap: () async {
         final cubit = context.read<MediaPickerCubit>();
-        final File? croppedFile = await RtcCameraScreen.open(context);
+        final File? croppedFile = await RtcCameraScreen.open(
+          context,
+          showOverlay: widget.showCameraOverlay,
+        );
         if (croppedFile != null && context.mounted) {
           final media = MediaItem(
             file: croppedFile,

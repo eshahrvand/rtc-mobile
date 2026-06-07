@@ -42,9 +42,21 @@ class MediaEditScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Center(
-        child: InteractiveViewer(
-          child: Image.file(mediaItem.file, fit: BoxFit.contain),
+      extendBody: false,
+      extendBodyBehindAppBar: false,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SizedBox(
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height,
+              child: InteractiveViewer(
+                child: Center(
+                  child: Image.file(mediaItem.file, fit: BoxFit.contain),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
