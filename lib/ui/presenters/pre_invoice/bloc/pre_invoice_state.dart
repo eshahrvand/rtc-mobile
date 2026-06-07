@@ -44,6 +44,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default([]) List<CartItemModel> cartItems,
     @Default(false) bool isCartVisible,
     String? selectedCategoryId,
+    String? selectedSortOrder,
 
     // Summary
     @Default('0') String totalAmount,

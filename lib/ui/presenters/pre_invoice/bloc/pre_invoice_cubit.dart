@@ -105,6 +105,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           categoryId: state.selectedCategoryId,
           inStock: state.showAvailableOnly ? true : null,
+          ordering: state.selectedSortOrder,
         )
         .then((response) {
           final products = response.results.map(_mapProductDtoToModel).toList();
@@ -145,6 +146,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void onCategorySelected(String? categoryId) {
     emit(state.copyWith(selectedCategoryId: categoryId));
+    _loadProducts();
+  }
+
+  void onSortSelected(String? ordering) {
+    emit(state.copyWith(selectedSortOrder: ordering));
     _loadProducts();
   }
 

@@ -17,6 +17,7 @@ class ProductRepository {
     String? search,
     int? page,
     bool? inStock,
+    String? ordering,
   }) async {
     if (subPlanId != null) {
       return await _catalogService.getPlanProducts(
@@ -24,6 +25,7 @@ class ProductRepository {
         search: search,
         page: page,
         inStock: inStock,
+        ordering: ordering,
       );
     } else {
       return await _catalogService.getProducts(
@@ -31,6 +33,7 @@ class ProductRepository {
         search: search,
         page: page,
         inStock: inStock,
+        ordering: ordering,
       );
     }
   }

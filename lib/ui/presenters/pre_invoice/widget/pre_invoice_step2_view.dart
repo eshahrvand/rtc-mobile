@@ -59,6 +59,33 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     });
   }
 
+  void _showSortFilter(
+    BuildContext context,
+    PreInvoiceCubit cubit,
+    PreInvoiceState state,
+  ) {
+    final items = [
+      FilterItem(id: '-price', title: S.current.cheapest),
+      FilterItem(id: 'price', title: S.current.mostExpensive),
+      FilterItem(id: 'date', title: S.current.newest),
+      FilterItem(id: '-date', title: S.current.oldest),
+    ];
+
+    FilterBottomSheet.show(
+      context,
+      title: S.current.sortTitle,
+      subtitle: S.current.sortSubtitle,
+      items: items,
+      initialSelectedId: state.selectedSortOrder,
+      onApply: (selected) {
+        cubit.onSortSelected(selected?.id);
+      },
+      onClear: () {
+        cubit.onSortSelected(null);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
@@ -116,18 +143,30 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                             : null,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.grayPalette.shade25,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.grayPalette.shade200,
+                    GestureDetector(
+                      onTap: () => _showSortFilter(context, cubit, state),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: state.selectedSortOrder != null
+                              ? AppColors.brandPalette.shade50
+                              : AppColors.grayPalette.shade25,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: state.selectedSortOrder != null
+                                ? AppColors.brandPalette.shade200
+                                : AppColors.grayPalette.shade200,
+                          ),
+                        ),
+                        child: RtcImage(
+                          image: "$baseImage/sort.svg",
+                          color: state.selectedSortOrder != null
+                              ? AppColors.brandPalette.shade600
+                              : AppColors.grayPalette.shade700,
                         ),
                       ),
-                      child: RtcImage(image: "$baseImage/sort.svg"),
                     ),
                   ],
                 ),

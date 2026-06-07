@@ -234,5 +234,11 @@
       }
     }
   },
-  "noItemsFound": "No items found"
+  "noItemsFound": "No items found",
+  "cheapest": "",
+  "mostExpensive": "",
+  "newest": "",
+  "oldest": "",
+  "sortTitle": "",
+  "sortSubtitle": ""
 }
