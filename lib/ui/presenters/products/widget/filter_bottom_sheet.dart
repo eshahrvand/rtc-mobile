@@ -201,6 +201,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildItemsList() {
     return ListView.builder(
       shrinkWrap: true,
+      padding: EdgeInsets.zero, // Add the 32px padding here
       itemCount: widget.items.length,
       itemBuilder: (_, index) {
         final item = widget.items[index];
@@ -221,7 +222,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     final buttonWidth = (screenWidth - 52) / 2;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 16),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
       child: Row(
         spacing: 12,
         children: [
