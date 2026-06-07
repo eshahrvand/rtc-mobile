@@ -267,7 +267,7 @@ class _OrderClearanceOperationWidgetState
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 4),
 
                   // Status Message Box
                   if (widget.isOutOfTolerance)

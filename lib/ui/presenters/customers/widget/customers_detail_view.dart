@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:go_router/go_router.dart';
+import '../../../router/app_route.dart';
 import '../../../widget/rtc_customer_order_item.dart';
 import '../../../widget/rtc_tab_bar.dart';
 import '../../../widget/rtc_text_field.dart';
@@ -137,7 +139,13 @@ class _CustomerOrdersTab extends StatelessWidget {
       child: ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {
-          return RtcCustomerOrderItem(order: orders[index]);
+          final order = orders[index];
+          return RtcCustomerOrderItem(
+            order: order,
+            onTap: () {
+              context.push(AppRoutes.orderDetail, extra: order.orderId);
+            },
+          );
         },
       ),
     );
