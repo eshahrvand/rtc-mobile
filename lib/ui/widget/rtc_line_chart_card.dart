@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../generated/l10n.dart';
@@ -170,9 +171,10 @@ class RtcLineChartCard extends StatelessWidget {
                               AppColors.brandPalette.shade600,
                           tooltipRoundedRadius: 8,
                           getTooltipItems: (touchedSpots) {
+                            final formatter = NumberFormat('#,###');
                             return touchedSpots.map((spot) {
                               return LineTooltipItem(
-                                spot.y.toStringAsFixed(0),
+                                formatter.format(spot.y.toInt()),
                                 theme.bodySmall!.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,

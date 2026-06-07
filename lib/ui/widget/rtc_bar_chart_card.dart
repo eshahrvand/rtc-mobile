@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../data/models/bar_chart_item_model.dart';
 import '../theme/colors.dart';
 
@@ -54,8 +55,9 @@ class RtcBarChartCard extends StatelessWidget {
                             AppColors.brandPalette.shade600,
                         tooltipRoundedRadius: 8,
                         getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          final formatter = NumberFormat('#,###');
                           return BarTooltipItem(
-                            rod.toY.toStringAsFixed(0),
+                            formatter.format(rod.toY.toInt()),
                             theme.bodySmall!.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,

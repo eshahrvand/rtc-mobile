@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../data/models/pie_chart_item_model.dart';
 import '../theme/colors.dart';
 
@@ -134,7 +135,7 @@ class _RtcPieChartCardState extends State<RtcPieChartCard> {
           ),
           const Spacer(),
           Text(
-            item.value.toInt().toString(),
+            NumberFormat('#,###').format(item.value.toInt()),
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.grayPalette.shade900,
             ),
