@@ -30,6 +30,7 @@ class _WalletView extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Scaffold(
+      backgroundColor: AppColors.grayPalette.shade25,
       appBar: RtcAppBar(
         title: S.current.wallet,
         onBack: () => context.pop(),
@@ -57,8 +58,8 @@ class _WalletView extends StatelessWidget {
                       offset: const Offset(0, -30),
                       child: Container(
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
+                        decoration: BoxDecoration(
+                          color: AppColors.grayPalette.shade25,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(16),
                             topRight: Radius.circular(16),
@@ -98,7 +99,6 @@ class _WalletView extends StatelessWidget {
                               const SizedBox(height: 16),
                               Expanded(
                                 child: ListView.separated(
-
                                   itemCount: summary.pockets.length,
                                   separatorBuilder: (context, index) =>
                                       const SizedBox(height: 12),
@@ -107,9 +107,9 @@ class _WalletView extends StatelessWidget {
                                     return _PocketCard(
                                       pocket: pocket,
                                       onTap: () {
-                                        context.read<WalletCubit>().selectPocket(
-                                          pocket,
-                                        );
+                                        context
+                                            .read<WalletCubit>()
+                                            .selectPocket(pocket);
                                         context.push(
                                           AppRoutes.transactionList,
                                           extra: context.read<WalletCubit>(),
@@ -119,7 +119,6 @@ class _WalletView extends StatelessWidget {
                                   },
                                 ),
                               ),
-
                             ],
                           ),
                         ),
@@ -263,14 +262,13 @@ class _PocketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(right: 1 , left: 1 , top: 1),
+      padding: const EdgeInsets.only(right: 1, left: 1, top: 1),
       child: GestureDetector(
         onTap: onTap,
 
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
             boxShadow: AppColors.primaryShadow,

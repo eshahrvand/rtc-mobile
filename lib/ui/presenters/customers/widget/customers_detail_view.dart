@@ -102,13 +102,25 @@ class _CustomerInfoTab extends StatelessWidget {
           _buildField(S.current.nationalId, customer.nationalCode, context),
           _buildField(S.current.phoneNumber, customer.phoneNumber, context),
           _buildField(S.current.postalCode, customer.postalCode, context),
-          _buildField(S.current.address, customer.address, context),
+          _buildField(
+            S.current.address,
+            customer.address,
+            context,
+            minLines: 1,
+            maxLines: 4,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildField(String label, String value, BuildContext context) {
+  Widget _buildField(
+    String label,
+    String value,
+    BuildContext context, {
+    int? minLines,
+    int? maxLines,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: RtcTextField(
@@ -119,6 +131,8 @@ class _CustomerInfoTab extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: AppColors.grayPalette.shade700,
         ),
+        minLines: minLines,
+        maxLines: maxLines,
         controller: TextEditingController(text: value),
         textStyle: Theme.of(
           context,
