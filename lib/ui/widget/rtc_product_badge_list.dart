@@ -12,9 +12,9 @@ class RtcProductBadgeList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (badges.isEmpty) return const SizedBox.shrink();
 
-    // Separate "Availability" (موجودی) from others if present
+    // Separate "Availability" (موجودی or ناموجود) from others if present
     final availabilityBadge = badges.firstWhere(
-      (b) => b.label.contains('موجودی'),
+      (b) => b.label.contains('موجودی') || b.label == 'ناموجود',
       orElse: () => badges.first,
     );
 
@@ -68,8 +68,15 @@ class _BadgeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final bool isOutOfStock = badge.label == 'ناموجود';
+    final bool isSku = badge.label == 'SKU';
+
     Color bgColor = AppColors.grayPalette.shade900;
-    if (isGreen) bgColor = AppColors.successPalette.shade500;
+    if (isOutOfStock) {
+      bgColor = AppColors.grayPalette.shade500;
+    } else if (isGreen) {
+      bgColor = AppColors.successPalette.shade500;
+    }
     if (color != null) bgColor = color!;
 
     return Container(
@@ -78,28 +85,35 @@ class _BadgeItem extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (badge.iconPath != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: RtcImage(
-                image: badge.iconPath!,
-                width: 14,
-                height: 14,
-                color: Colors.white,
+      child: Directionality(
+        textDirection: isSku ? TextDirection.ltr : TextDirection.rtl,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (badge.iconPath != null)
+              Padding(
+                padding: EdgeInsets.only(
+                  left: isSku ? 0 : 8,
+                  right: isSku ? 8 : 0,
+                ),
+                child: RtcImage(
+                  image: badge.iconPath!,
+                  width: 14,
+                  height: 14,
+                  color: Colors.white,
+                ),
               ),
+            Text(
+              isOutOfStock ? badge.label : '${badge.label}: ',
+              style: theme.bodyMedium!.copyWith(color: Colors.white),
             ),
-          Text(
-            '${badge.label}: ',
-            style: theme.bodyMedium!.copyWith(color: Colors.white),
-          ),
-          Text(
-            badge.value,
-            style: theme.bodyMedium!.copyWith(color: Colors.white),
-          ),
-        ],
+            if (!isOutOfStock)
+              Text(
+                badge.value,
+                style: theme.bodyMedium!.copyWith(color: Colors.white),
+              ),
+          ],
+        ),
       ),
     );
   }

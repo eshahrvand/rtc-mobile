@@ -82,7 +82,9 @@ class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
                     autoFocus: true,
                     hintText: widget.searchHint,
                     labelText: widget.searchLabel,
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
+                    hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: AppColors.grayPalette.shade400,
+                    ),
                     onChanged: (value) {
                       widget.onSearchChanged(value);
                       setState(() {}); // Show/hide clear icon

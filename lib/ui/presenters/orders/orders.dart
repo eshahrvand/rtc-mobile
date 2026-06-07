@@ -80,9 +80,8 @@ class _OrdersViewState extends State<OrdersView> {
             body: SafeArea(
               child: Column(
                 children: [
-                  const SizedBox(height: 16),
                   _buildBadgeList(context, state),
-                  const SizedBox(height: 8),
+
                   const Expanded(child: OrdersListWidget()),
                 ],
               ),
@@ -106,11 +105,14 @@ class _OrdersViewState extends State<OrdersView> {
       isChipSelected: (index, chip) {
         if (chip.id == 1) return state.selectedStatusId != null;
         if (chip.id == 2) return state.selectedSubPlanId != null;
-        if (chip.id == 3) return state.startDate != null || state.endDate != null;
+        if (chip.id == 3)
+          return state.startDate != null || state.endDate != null;
         return false;
       },
       onChipTap: (index, chip) {
-        debugPrint('>> OrdersScreen: Chip tapped: ${chip.label} (ID: ${chip.id})');
+        debugPrint(
+          '>> OrdersScreen: Chip tapped: ${chip.label} (ID: ${chip.id})',
+        );
         if (chip.id == 1) {
           debugPrint('>> OrdersScreen: Opening Status Filter');
           _showStatusFilter(context, cubit, state);
@@ -149,14 +151,8 @@ class _OrdersViewState extends State<OrdersView> {
         id: 'under_review',
         title: OrderStatus.underReview.toDisplayString(),
       ),
-      FilterItem(
-        id: 'approved',
-        title: OrderStatus.approved.toDisplayString(),
-      ),
-      FilterItem(
-        id: 'rejected',
-        title: OrderStatus.rejected.toDisplayString(),
-      ),
+      FilterItem(id: 'approved', title: OrderStatus.approved.toDisplayString()),
+      FilterItem(id: 'rejected', title: OrderStatus.rejected.toDisplayString()),
       FilterItem(
         id: 'awaiting_settlement',
         title: OrderStatus.awaitingSettlement.toDisplayString(),

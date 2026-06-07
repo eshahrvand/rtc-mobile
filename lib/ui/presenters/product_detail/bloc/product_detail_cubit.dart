@@ -28,8 +28,15 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
             );
           }
 
+          if (dto.stockQty > 0) {
+            badges.add(
+              ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
+            );
+          } else {
+            badges.add(ProductBadgeModel(label: 'ناموجود', value: ''));
+          }
+
           badges.addAll([
-            ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
             ProductBadgeModel(label: 'دسته بندی', value: dto.category.name),
             ProductBadgeModel(label: 'SKU', value: dto.sku),
           ]);
@@ -49,7 +56,9 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
                 ? dto.planPrice?.toString() ?? '۰'
                 : dto.basePrice?.toString() ?? '۰',
             oldPrice: subPlanId != null ? dto.basePrice?.toString() ?? '' : '',
-            discountPercent: dto.discountPct?.toString() ?? '۰',
+            discountPercent: dto.discountPct != null && dto.discountPct != 0
+                ? '${dto.discountPct}%'
+                : '۰',
             imageUrls: imageUrls.isNotEmpty ? imageUrls : [''],
             badges: badges,
             specs: [

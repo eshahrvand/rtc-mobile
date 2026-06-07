@@ -60,63 +60,72 @@ class RtcProductItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        product.inventory == "0"
-                            ? "ناموجود"
-                            : 'موجودی (${product.inventory})',
-                        style: theme.labelSmall!.copyWith(
-                          color: product.inventory == "0"
-                              ? AppColors.grayPalette.shade500
-                              : AppColors.successPalette.shade600,
+                      SizedBox(
+                        height: 16,
+                        child: Text(
+                          product.inventory == "0"
+                              ? "ناموجود"
+                              : 'موجودی (${product.inventory})',
+                          style: theme.labelSmall!.copyWith(
+                            color: product.inventory == "0"
+                                ? AppColors.grayPalette.shade500
+                                : AppColors.successPalette.shade600,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (product.discount != null &&
-                              showPrice &&
-                              product.discount != '۰٪' &&
-                              product.discount != '0٪')
-                            RtcDiscountBadge(discount: product.discount!),
-                          const Spacer(),
-                          if (showPrice)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (product.oldPrice != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 18),
-                                    child: Text(
-                                      product.oldPrice!,
-                                      style: theme.bodyMedium!.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.grayPalette.shade500,
-                                        decoration: TextDecoration.lineThrough,
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        height: 44,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            if (product.discount != null &&
+                                showPrice &&
+                                product.discount != '۰٪' &&
+                                product.discount != '0٪')
+                              RtcDiscountBadge(discount: product.discount!),
+                            const Spacer(),
+                            if (showPrice)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  if (product.oldPrice != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 18),
+                                      child: Text(
+                                        product.oldPrice!,
+                                        style: theme.bodyMedium!.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.grayPalette.shade500,
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                Row(
-                                  spacing: 2,
-                                  children: [
-                                    Text(
-                                      product.price,
-                                      style: theme.labelLarge!.copyWith(
-                                        color: AppColors.grayPalette.shade900,
-                                        fontWeight: FontWeight.w600,
+                                  Row(
+                                    spacing: 2,
+                                    children: [
+                                      Text(
+                                        product.price,
+                                        style: theme.labelLarge!.copyWith(
+                                          color: AppColors.grayPalette.shade900,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
 
-                                    RtcImage(
-                                      image: "assets/images/toman.svg",
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                        ],
+                                      RtcImage(
+                                        image: "assets/images/toman.svg",
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

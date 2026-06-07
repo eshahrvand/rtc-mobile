@@ -8,6 +8,7 @@ class ProductDetailModel {
   final List<ProductBadgeModel> badges;
   final List<ProductSpecModel> specs;
   final String description;
+  final bool isAvailable;
 
   ProductDetailModel({
     required this.id,
@@ -19,6 +20,7 @@ class ProductDetailModel {
     required this.badges,
     required this.specs,
     required this.description,
+    this.isAvailable = true,
   });
 }
 

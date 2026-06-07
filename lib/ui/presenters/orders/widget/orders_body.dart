@@ -24,9 +24,9 @@ class OrdersBody extends StatelessWidget {
         return SafeArea(
           child: Column(
             children: [
-              const SizedBox(height: 16),
+
               SafeArea(child: _buildBadgeList(context, state)),
-              const SizedBox(height: 8),
+
               Expanded(
                 child:
                     state.status == OrdersRequestStatus.loading &&

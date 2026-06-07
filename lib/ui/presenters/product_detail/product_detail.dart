@@ -76,15 +76,14 @@ class ProductDetailView extends StatelessWidget {
                   state.product == null) {
                 return const Center(child: CircularProgressIndicator());
               }
-          
+
               final product = state.product!;
               final cubit = context.read<ProductDetailCubit>();
-          
+
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-          
                     RtcProductImageGallery(
                       imageUrls: product.imageUrls,
                       selectedIndex: state.selectedImageIndex,
@@ -106,9 +105,9 @@ class ProductDetailView extends StatelessWidget {
                     const SizedBox(height: 12),
                     RtcProductBadgeList(badges: product.badges),
                     const SizedBox(height: 28),
-          
+
                     _SpecsSection(specs: product.specs),
-          
+
                     _DescriptionSection(description: product.description),
                     const SizedBox(height: 32),
                   ],
@@ -142,10 +141,30 @@ class _PriceBlock extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (product.discountPercent != null &&
+              if (!product.isAvailable)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.grayPalette.shade500,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Text(
+                    'ناموجود',
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              if (product.isAvailable &&
+                  product.discountPercent != null &&
                   product.discountPercent != '۰' &&
                   product.discountPercent != '0')
                 Container(
@@ -166,38 +185,41 @@ class _PriceBlock extends StatelessWidget {
                   ),
                 ),
               const Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (product.oldPrice != null)
-                    Text(
-                      product.oldPrice!,
-                      style: theme.bodyLarge!.copyWith(
-                        color: AppColors.grayPalette.shade500,
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
-
-                  if (product.oldPrice != null) SizedBox(height: 10),
-                  Row(
-                    children: [
+              if (product.isAvailable)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (product.oldPrice != null &&
+                        product.oldPrice!.isNotEmpty)
                       Text(
-                        product.price,
-                        style: theme.labelLarge!.copyWith(
-                          color: AppColors.brandPalette.shade600,
-                          fontWeight: FontWeight.bold,
+                        product.oldPrice!,
+                        style: theme.bodyLarge!.copyWith(
+                          color: AppColors.grayPalette.shade500,
+                          decoration: TextDecoration.lineThrough,
                         ),
                       ),
-                      const SizedBox(width: 2),
-                      RtcImage(
-                        image: "$baseImage/toman.svg",
-                        width: 24,
-                        height: 24,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    if (product.oldPrice != null &&
+                        product.oldPrice!.isNotEmpty)
+                      const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text(
+                          product.price,
+                          style: theme.labelLarge!.copyWith(
+                            color: AppColors.brandPalette.shade600,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        RtcImage(
+                          image: "$baseImage/toman.svg",
+                          width: 24,
+                          height: 24,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
             ],
           ),
         ],
@@ -261,7 +283,6 @@ class _SpecsSection extends StatelessWidget {
                               ).copyWith(
                                 p: theme.bodyLarge!.copyWith(
                                   color: AppColors.grayPalette.shade700,
-
                                 ),
                               ),
                         ),
