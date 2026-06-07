@@ -176,9 +176,8 @@ class PreInvoiceStep5View extends StatelessWidget {
     PreInvoiceCubit cubit,
   ) {
     return Container(
-      height: 95,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
+      constraints: const BoxConstraints(minHeight: 95),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
       child: Row(
         children: [
