@@ -206,8 +206,10 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           },
                           onEdit:
                               state.clearanceAmount.isNotEmpty &&
-                                      widget.order.orderStatus ==
-                                          OrderStatus.preInvoice
+                                      (widget.order.orderStatus ==
+                                              OrderStatus.preInvoice ||
+                                          widget.order.orderStatus ==
+                                              OrderStatus.awaitingSettlement)
                                   ? () {
                                   cubit.resetClearance();
                                   _showAmountSheet(context, cubit);

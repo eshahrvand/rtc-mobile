@@ -119,8 +119,9 @@ class OrdersCubit extends Cubit<OrdersState> {
             (r) => r.status == 'موفق' || r.status == 'success',
           );
 
-          // If status is "Pre-Invoice", default to Financial Tab (index 1)
-          final initialTab = detail.orderStatus == OrderStatus.preInvoice
+          // If status is "Pre-Invoice" or "Awaiting Settlement", default to Financial Tab (index 1)
+          final initialTab = (detail.orderStatus == OrderStatus.preInvoice ||
+                  detail.orderStatus == OrderStatus.awaitingSettlement)
               ? 1
               : 0;
 

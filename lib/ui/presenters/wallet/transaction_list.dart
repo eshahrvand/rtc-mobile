@@ -22,7 +22,7 @@ class TransactionListScreen extends StatelessWidget {
     FilterBottomSheet.show(
       context,
       title: S.current.transactionType,
-      subtitle: S.current.transactionType,
+      subtitle: "نوع تراکنش را مشخص کنید ",
       items: [
         FilterItem(id: 'credit', title: S.current.deposit),
         FilterItem(id: 'debit', title: S.current.withdrawal),
@@ -83,22 +83,20 @@ class TransactionListScreen extends StatelessWidget {
           ),
           body: Column(
             children: [
-              const SizedBox(height: 16),
               _buildFilters(context, state),
-              const SizedBox(height: 16),
+
               Expanded(
                 child: state.status == WalletRequestStatus.loading
                     ? const Center(child: CircularProgressIndicator())
                     : state.transactions.isEmpty
-                        ? Center(
-                            child: Text(
-                              S.current.noItemsFound,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppColors.grayPalette.shade600,
-                                  ),
-                            ),
-                          )
-                        : ListView.separated(
+                    ? Center(
+                        child: Text(
+                          S.current.noItemsFound,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.grayPalette.shade600),
+                        ),
+                      )
+                    : ListView.separated(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 16,
