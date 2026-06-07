@@ -295,13 +295,14 @@ class PreInvoiceStep5View extends StatelessWidget {
 
   Widget _buildCustomerInfo(PreInvoiceState state, TextTheme theme) {
     final info = state.customerInfo!;
+    final fullName = '${info.firstName} ${info.lastName}'.trim();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         spacing: 7,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow(S.current.nameLabel, info.firstName, theme),
+          _buildInfoRow(S.current.nameLabel, fullName, theme),
           RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
           _buildInfoRow(S.current.phoneNumberLabel, info.phoneNumber, theme),
           RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
@@ -398,7 +399,7 @@ class PreInvoiceStep5View extends StatelessWidget {
         spacing: 7,
         children: [
           _buildInfoRow(
-            '${S.current.totalBasePrice} ($totalItems ${S.current.products})',
+            '${S.current.totalBasePrice} ($totalItems ${S.current.product})',
             state.totalAmount,
             theme,
             isPrice: true,
