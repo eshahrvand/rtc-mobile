@@ -12,7 +12,7 @@ import '../products/bloc/product_cubit.dart';
 import '../products/bloc/product_state.dart';
 import '../orders/bloc/orders_cubit.dart';
 import '../orders/bloc/orders_state.dart';
-import '../orders/widget/orders_body.dart';
+import '../orders/orders_body.dart';
 import '../../widget/rtc_bottom_nav.dart';
 import '../../widget/rtc_drawer.dart';
 import '../../widget/rtc_appbar.dart';

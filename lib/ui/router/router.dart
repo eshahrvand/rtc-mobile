@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../presenters/auth/auth.dart';
 import '../presenters/customers/customers.dart';
-import '../presenters/orders/orders.dart';
 import '../presenters/orders/bloc/orders_cubit.dart';
 import '../presenters/orders/widget/order_detail_view.dart';
 import '../presenters/pre_invoice/pre_invoice.dart';
@@ -67,7 +66,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.orders,
-      builder: (context, state) => const OrdersScreen(),
+      builder: (context, state) => const DashboardScreen(initialIndex: 2),
     ),
     GoRoute(
       path: AppRoutes.orderDetail,
