@@ -73,37 +73,28 @@ class CustomersCubit extends Cubit<CustomersState> {
   void onCustomerTapped(CustomerItemModel customer) {
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
-    _customersRepo
-        .getCustomers(search: customer.phoneNumber)
-        .then((customerResponse) {
-          if (customerResponse.results.isEmpty) {
-            throw Exception('Customer not found');
-          }
+    _customersRepo.getCustomerDetail(customer.id).then((dto) {
+      return _ordersRepo.getCustomerOrders(dto.id).then((orders) {
+        final detail = CustomerDetailModel(
+          id: dto.id,
+          name: '${dto.firstName} ${dto.lastName}',
+          nationalCode: dto.nationalId,
+          phoneNumber: dto.mobile,
+          postalCode: dto.postalCode,
+          address: dto.address,
+          orders: orders,
+        );
 
-          final dto = customerResponse.results.first;
-
-          return _ordersRepo.getCustomerOrders(dto.id).then((orders) {
-            final detail = CustomerDetailModel(
-              id: dto.id,
-              name: '${dto.firstName} ${dto.lastName}',
-              nationalCode: dto.nationalId,
-              phoneNumber: dto.mobile,
-              postalCode: dto.postalCode,
-              address: dto.address,
-              orders: orders,
-            );
-
-            emit(
-              state.copyWith(
-                status: CustomersRequestStatus.success,
-                step: CustomersStep.customerDetail,
-                selectedCustomer: detail,
-                selectedTabIndex: 0,
-              ),
-            );
-          });
-        })
-        .catchError(_handleError);
+        emit(
+          state.copyWith(
+            status: CustomersRequestStatus.success,
+            step: CustomersStep.customerDetail,
+            selectedCustomer: detail,
+            selectedTabIndex: 0,
+          ),
+        );
+      });
+    }).catchError(_handleError);
   }
 
   /// Updates the selected tab index in the customer detail view.

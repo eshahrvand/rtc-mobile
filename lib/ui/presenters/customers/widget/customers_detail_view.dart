@@ -98,7 +98,7 @@ class _CustomerInfoTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildField(S.current.customerName, customer.name, context ),
+          _buildField(S.current.customerName, customer.name, context),
           _buildField(S.current.nationalId, customer.nationalCode, context),
           _buildField(S.current.phoneNumber, customer.phoneNumber, context),
           _buildField(S.current.postalCode, customer.postalCode, context),
@@ -108,6 +108,7 @@ class _CustomerInfoTab extends StatelessWidget {
             context,
             minLines: 1,
             maxLines: 4,
+            lineHeight: 2,
           ),
         ],
       ),
@@ -120,6 +121,7 @@ class _CustomerInfoTab extends StatelessWidget {
     BuildContext context, {
     int? minLines,
     int? maxLines,
+    double? lineHeight,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
@@ -131,12 +133,14 @@ class _CustomerInfoTab extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: AppColors.grayPalette.shade700,
         ),
+        suffix: lineHeight != null ? SizedBox(height: 0 , width: 0,) : null,
         minLines: minLines,
         maxLines: maxLines,
         controller: TextEditingController(text: value),
-        textStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium!.copyWith(color: AppColors.grayPalette.shade700),
+        textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: AppColors.grayPalette.shade700,
+          height: lineHeight,
+        ),
       ),
     );
   }
