@@ -27,6 +27,7 @@ class RtcChipItem extends StatelessWidget {
       },
       behavior: HitTestBehavior.opaque,
       child: Container(
+        height: 32,
         decoration: BoxDecoration(
           color: isSelected ? Colors.black : AppColors.grayPalette.shade50,
           boxShadow: AppColors.primaryShadow,
@@ -36,7 +37,7 @@ class RtcChipItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
+              padding: EdgeInsets.fromLTRB(isSelected ? 12 : 8, 7, 12, 7),
               child: Text(
                 chip.label,
                 style: theme.bodyMedium!.copyWith(
@@ -49,7 +50,7 @@ class RtcChipItem extends StatelessWidget {
             ),
             if (isSelected)
               Padding(
-                padding: const EdgeInsets.only(right: 12, left: 8),
+                padding: const EdgeInsets.only(left: 8),
                 child: Container(
                   width: 1,
                   height: double.infinity,
@@ -58,7 +59,7 @@ class RtcChipItem extends StatelessWidget {
               ),
             if (isSelected)
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 7, 0, 7),
+                padding: EdgeInsets.fromLTRB(isSelected ? 8 : 12, 7, 0, 7),
                 child: GestureDetector(
                   onTap: (onClose ?? onTap),
                   behavior: HitTestBehavior.opaque,

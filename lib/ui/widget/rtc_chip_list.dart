@@ -19,24 +19,31 @@ class RtcChipList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 32,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: chips.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final chip = chips[index];
-          return RtcChipItem(
-            chip: chip,
-            isSelected: isChipSelected(index, chip),
-            onTap: () => onChipTap(index, chip),
-            onClose: onChipClose != null
-                ? () => onChipClose!(index, chip)
-                : null,
-          );
-        },
+    return Container(
+      height: 64,
+      alignment: Alignment.center,
+      child: SizedBox(
+        height: 44, // Increased height to allow shadow to render
+        child: ListView.separated(
+          clipBehavior: Clip.none, // Allow shadow to bleed out if needed
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: chips.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final chip = chips[index];
+            return Center(
+              child: RtcChipItem(
+                chip: chip,
+                isSelected: isChipSelected(index, chip),
+                onTap: () => onChipTap(index, chip),
+                onClose: onChipClose != null
+                    ? () => onChipClose!(index, chip)
+                    : null,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

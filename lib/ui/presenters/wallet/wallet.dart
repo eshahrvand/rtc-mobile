@@ -101,6 +101,7 @@ class _WalletView extends StatelessWidget {
                             const SizedBox(height: 16),
                             Expanded(
                               child: ListView.separated(
+                                clipBehavior: Clip.none,
                                 padding: EdgeInsets.zero,
                                 itemCount: summary.pockets.length,
                                 separatorBuilder: (context, index) =>
