@@ -128,7 +128,7 @@ class _FilterDateBottomSheetState extends State<FilterDateBottomSheet> {
             const SizedBox(height: 16),
             _buildOptionsList(),
             _buildCustomRangeSection(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 12),
             _buildActions(context, bottomPadding),
           ],
         ),
@@ -262,7 +262,7 @@ class _FilterDateBottomSheetState extends State<FilterDateBottomSheet> {
     final buttonWidth = (screenWidth - 52) / 2;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 16),
       child: Row(
         spacing: 12,
         children: [
@@ -286,7 +286,7 @@ class _FilterDateBottomSheetState extends State<FilterDateBottomSheet> {
             },
             isActive: _hasFilter,
             styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Colors.white,
+              color: _hasFilter ? Colors.white : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w600,
             ),
           ),

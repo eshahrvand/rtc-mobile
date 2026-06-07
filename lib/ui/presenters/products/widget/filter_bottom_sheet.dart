@@ -104,6 +104,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -116,8 +119,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
             _buildSubtitle(context),
             const SizedBox(height: 16),
-            _buildItemsList(),
-            const SizedBox(height: 32),
+            Flexible(child: _buildItemsList()),
+
             _buildActions(context, bottomPadding),
           ],
         ),
@@ -198,7 +201,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildItemsList() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
       itemCount: widget.items.length,
       itemBuilder: (_, index) {
         final item = widget.items[index];
@@ -240,7 +242,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             onPressed: _onApply,
             isActive: _hasSelection,
             styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: AppColors.grayPalette.shade300,
+              color: _hasSelection
+                  ? Colors.white
+                  : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w600,
             ),
           ),

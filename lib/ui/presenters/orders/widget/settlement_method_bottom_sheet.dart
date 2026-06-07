@@ -156,7 +156,9 @@ class _SettlementMethodBottomSheetState
         },
         isActive: _selectedId != null,
         styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: AppColors.grayPalette.shade300,
+          color: _selectedId != null
+              ? Colors.white
+              : AppColors.grayPalette.shade300,
           fontWeight: FontWeight.w600,
         ),
       ),
