@@ -104,6 +104,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           subPlanId: state.selectedCreditPlanId!,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           categoryId: state.selectedCategoryId,
+          inStock: state.showAvailableOnly ? true : null,
         )
         .then((response) {
           final products = response.results.map(_mapProductDtoToModel).toList();
@@ -348,11 +349,18 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       ),
     );
 
-    final body = _buildCustomerRequestBody(info);
+    final body = state.isExistingCustomer
+        ? {
+            'mobile': info.phoneNumber,
+            'address': info.address,
+            'postal_code': info.postalCode,
+          }
+        : _buildCustomerRequestBody(info);
+
     Future<CustomerDtoModel> request;
 
-    if (state.isExistingCustomer && info.id != null) {
-      request = _customerRepo.updateCustomer(info.id!, body);
+    if (state.isExistingCustomer) {
+      request = _customerRepo.updateCustomer(info.nationalId, body);
     } else {
       request = _customerRepo.createCustomer(body);
     }

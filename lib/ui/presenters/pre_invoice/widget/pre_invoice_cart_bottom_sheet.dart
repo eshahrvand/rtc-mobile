@@ -20,49 +20,50 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
 
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Top Handle
-                Container(
-                  width: 32,
-                  height: 2,
-                  decoration: BoxDecoration(
-                    color: AppColors.brandPalette.shade600,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildHeader(state.totalQuantity, context),
-                const SizedBox(height: 14),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: state.cartItems.length,
-                    separatorBuilder: (context, index) => RtcDivider(
-                      color: AppColors.grayPalette.shade200,
-                      height: 0.5,
+        return SafeArea(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Top Handle
+                  Container(
+                    width: 32,
+                    height: 2,
+                    decoration: BoxDecoration(
+                      color: AppColors.brandPalette.shade600,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    itemBuilder: (context, index) {
-                      final item = state.cartItems[index];
-                      return _buildCartItem(item, cubit, context);
-                    },
                   ),
-                ),
-                SizedBox(height: 10),
-                RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
-                const SizedBox(height: 10),
-                _buildSummary(state, context),
-
-                const SizedBox(height: 32),
-              ],
+                  const SizedBox(height: 8),
+                  _buildHeader(state.totalQuantity, context),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    height: state.cartItems.length == 1 ? 110 : null,
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: state.cartItems.length,
+                      separatorBuilder: (context, index) => RtcDivider(
+                        color: AppColors.grayPalette.shade200,
+                        height: 0.5,
+                      ),
+                      itemBuilder: (context, index) {
+                        final item = state.cartItems[index];
+                        return _buildCartItem(item, cubit, context);
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
+                  const SizedBox(height: 10),
+                  _buildSummary(state, context),
+                ],
+              ),
             ),
           ),
         );
@@ -259,7 +260,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: color ?? AppColors.grayPalette.shade700,
                 fontWeight: color != null ? FontWeight.bold : FontWeight.w500,
-                fontSize: 14
+                fontSize: 14,
               ),
             ),
             const SizedBox(width: 4),

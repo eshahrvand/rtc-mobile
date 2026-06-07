@@ -23,6 +23,7 @@ class ProductRepository {
         subPlanId: subPlanId,
         search: search,
         page: page,
+        inStock: inStock,
       );
     } else {
       return await _catalogService.getProducts(

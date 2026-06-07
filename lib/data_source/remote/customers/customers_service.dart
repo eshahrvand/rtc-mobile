@@ -26,9 +26,9 @@ abstract class CustomersService {
     @Path('national_id') String nationalId,
   );
 
-  @PATCH('orders/customers/{id}')
-  Future<CustomerDtoModel> updateCustomer(
-    @Path('id') String id,
+  @PATCH('orders/customers/by-national-id/{national_id}')
+  Future<CustomerDtoModel> updateCustomerByNationalId(
+    @Path('national_id') String nationalId,
     @Body() Map<String, dynamic> body,
   );
 

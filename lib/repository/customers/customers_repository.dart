@@ -29,10 +29,10 @@ class CustomersRepository {
   }
 
   Future<CustomerDtoModel> updateCustomer(
-    String id,
+    String nationalId,
     Map<String, dynamic> body,
   ) async {
-    return await _customersService.updateCustomer(id, body);
+    return await _customersService.updateCustomerByNationalId(nationalId, body);
   }
 
   Future<CustomerDtoModel> createCustomer(Map<String, dynamic> body) async {

@@ -32,6 +32,7 @@ abstract class CatalogService {
   @GET('plans/sub-plans/{sub_plan_id}/products')
   Future<ProductListResponse> getPlanProducts({
     @Path('sub_plan_id') required String subPlanId,
+    @Query('in_stock') bool? inStock,
     @Query('ordering') String? ordering,
     @Query('page') int? page,
     @Query('page_size') int? pageSize,
