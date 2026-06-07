@@ -42,15 +42,21 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   _buildHeader(state.totalQuantity, context),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 34),
                   SizedBox(
                     height: state.cartItems.length == 1 ? 110 : null,
                     child: ListView.separated(
                       shrinkWrap: true,
                       itemCount: state.cartItems.length,
-                      separatorBuilder: (context, index) => RtcDivider(
-                        color: AppColors.grayPalette.shade200,
-                        height: 0.5,
+                      separatorBuilder: (context, index) => Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          RtcDivider(
+                            color: AppColors.grayPalette.shade200,
+                            height: 0.5,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                       ),
                       itemBuilder: (context, index) {
                         final item = state.cartItems[index];
