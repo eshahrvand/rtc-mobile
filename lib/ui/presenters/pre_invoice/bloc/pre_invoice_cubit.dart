@@ -310,7 +310,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         break;
       case 'phoneNumber':
         updated = updated.copyWith(phoneNumber: value);
-        break;
+        final isPhoneValid =
+            value.isEmpty || RegExp(r'^09\d{9}$').hasMatch(value);
+        emit(state.copyWith(customerInfo: updated, isPhoneNumberValid: isPhoneValid));
+        return;
       case 'postalCode':
         updated = updated.copyWith(postalCode: value);
         break;

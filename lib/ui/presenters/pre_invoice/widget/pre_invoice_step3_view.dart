@@ -234,6 +234,28 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                             color: AppColors.grayPalette.shade700,
                           ),
                           controller: _phoneNumberController,
+                          keyboardType: TextInputType.phone,
+                          maxLength: 11,
+                          isError: !state.isPhoneNumberValid,
+                          helper: !state.isPhoneNumberValid
+                              ? Row(
+                                  spacing: 8,
+                                  children: [
+                                    RtcImage(
+                                      image: 'assets/images/alert.svg',
+                                      width: 14,
+                                      height: 14,
+                                      color: AppColors.errorPalette.shade600,
+                                    ),
+                                    Text(
+                                      S.current.phoneNumberWrong,
+                                      style: theme.bodySmall!.copyWith(
+                                        color: AppColors.errorPalette.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
                           onChanged: (value) => cubit.onCustomerFieldChanged(
                             'phoneNumber',
                             value,
@@ -249,6 +271,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                           controller: _postalCodeController,
                           onChanged: (value) =>
                               cubit.onCustomerFieldChanged('postalCode', value),
+                          maxLength: 10,
                         ),
                         SizedBox(height: 12),
                         RtcTextField(

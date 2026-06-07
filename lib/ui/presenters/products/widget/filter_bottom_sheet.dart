@@ -22,6 +22,8 @@ class FilterBottomSheet extends StatefulWidget {
   final String? initialSelectedId;
   final ValueChanged<FilterItem?>? onApply;
   final VoidCallback? onClear;
+  final String? iconPath;
+  final String? clearButtonTitle;
 
   const FilterBottomSheet({
     super.key,
@@ -31,6 +33,8 @@ class FilterBottomSheet extends StatefulWidget {
     this.initialSelectedId,
     this.onApply,
     this.onClear,
+    this.iconPath,
+    this.clearButtonTitle,
   });
 
   static Future<void> show(
@@ -41,6 +45,8 @@ class FilterBottomSheet extends StatefulWidget {
     String? initialSelectedId,
     ValueChanged<FilterItem?>? onApply,
     VoidCallback? onClear,
+    String? iconPath,
+    String? clearButtonTitle,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -53,6 +59,8 @@ class FilterBottomSheet extends StatefulWidget {
         initialSelectedId: initialSelectedId,
         onApply: onApply,
         onClear: onClear,
+        iconPath: iconPath,
+        clearButtonTitle: clearButtonTitle,
       ),
     );
   }
@@ -148,7 +156,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       child: Row(
         children: [
           RtcImage(
-            image: 'assets/images/filter.svg',
+            image: widget.iconPath ?? 'assets/images/filter.svg',
             width: 20,
             height: 20,
             color: AppColors.grayPalette.shade900,
@@ -164,7 +172,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           const Spacer(),
           RtcTextButton(
-            title: S.current.clearFilter,
+            title: widget.clearButtonTitle ?? S.current.clearFilter,
             onPressed: () {
               _onClear();
               context.pop();

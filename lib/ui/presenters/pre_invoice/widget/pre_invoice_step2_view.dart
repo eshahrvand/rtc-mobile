@@ -76,6 +76,8 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
       title: S.current.sortTitle,
       subtitle: S.current.sortSubtitle,
       items: items,
+      iconPath: '$baseImage/sort.svg',
+      clearButtonTitle: 'حذف',
       initialSelectedId: state.selectedSortOrder,
       onApply: (selected) {
         cubit.onSortSelected(selected?.id);
