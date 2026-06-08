@@ -335,6 +335,28 @@ class OrdersCubit extends Cubit<OrdersState> {
     // ─── If in range, proceed with loading and API ───
     print("tlorance>>:: RESULT: WITHIN RANGE. Proceeding to API...");
     emit(state.copyWith(status: OrdersRequestStatus.loading));
+    //
+    // // FIXME: Faking OTP response for disbursement to test bottom sheet
+    // final bool useFakeOtp = true; // Set to true for testing
+    // if (useFakeOtp) {
+    //   final diff = amount - orderAmountVal;
+    //   final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
+    //
+    //   emit(
+    //     state.copyWith(
+    //       status: OrdersRequestStatus.success,
+    //       gatewayType: GatewayType.online,
+    //       disbursementGatewayType: 'otp',
+    //       disbursementMobile: state.selectedOrder?.customer.phone,
+    //       clearanceStep: ClearanceStep.otpPending,
+    //       clearanceAmount: amountStr,
+    //       orderAmount: state.selectedOrder!.financialSummary.finalAmount,
+    //       excessAmount: excess,
+    //       isOutOfTolerance: false,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
@@ -493,6 +515,20 @@ class OrdersCubit extends Cubit<OrdersState> {
     final apiMethod = _mapSettlementMethodToApi(method);
     final finalAmount =
         amount ?? _calculateRemainingSettlement(state.selectedOrder!);
+
+    // FIXME: Faking API success for 'link' method due to backend issues as requested by user.
+    if (method == 'link' || method == 'cash') {
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.success,
+          settlementStep: SettlementStep.methodSelected,
+          settlementMethod: 'link',
+          settlementMobile: state.selectedOrder?.customer.phone,
+        ),
+      );
+      _startSettlementTimer();
+      return;
+    }
 
     _ordersRepo
         .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)

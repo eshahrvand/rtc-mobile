@@ -144,7 +144,7 @@ class _SettlementMethodBottomSheetState
 
   Widget _buildActions(BuildContext context, double bottomPadding) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding + 16),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 16),
       child: RtcButton(
         title: 'تایید روش انتخاب شده',
         width: double.infinity,

@@ -702,7 +702,7 @@ class _OrderSettlementOperationsWidgetState
       case 'ipg':
         return 'پرداخت از طریق درگاه آنلاین';
       case 'link':
-        return 'ارسال لیتک پرداخت به مشتری';
+        return 'ارسال لینک پرداخت به مشتری';
       case 'card_to_card':
         return 'بارگزاری فیش واریزی';
       default:

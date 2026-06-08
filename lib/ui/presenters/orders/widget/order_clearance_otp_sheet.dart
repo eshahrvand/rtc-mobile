@@ -31,14 +31,19 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
     super.dispose();
   }
 
+  String _maskPhoneNumber(String phone) {
+    if (phone.length <= 6) return phone;
+    final firstPart = phone.substring(0, 4);
+    final lastPart = phone.substring(phone.length - 2);
+    final maskedPart = '*' * (phone.length - 6);
+    return '$lastPart$maskedPart$firstPart';
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+    return SafeArea(
       child: Container(
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 24),
         decoration: const BoxDecoration(
@@ -101,7 +106,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  S.current.otpSentToPhone(widget.phoneNumber),
+                  S.current.otpSentToPhone(_maskPhoneNumber(widget.phoneNumber)),
                   textAlign: TextAlign.right,
                   style: theme.bodyLarge!.copyWith(
                     color: AppColors.grayPalette.shade900,
@@ -151,7 +156,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             // Timer Row
             Row(
@@ -162,12 +167,12 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                   '${(60).toString().padLeft(2, '0')}:${(60).toString().padLeft(2, '0')}',
 
                   style: theme.labelLarge!.copyWith(
-                    color: AppColors.grayPalette.shade600,
+                    color: AppColors.grayPalette.shade500,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
 
-                RtcImage(image: "$baseImage/clock.svg", height: 20, width: 20),
+                RtcImage(image: "$baseImage/clock.svg", height: 20, width: 20 , ),
               ],
             ),
             const SizedBox(height: 32),
@@ -204,7 +209,6 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
           ],
         ),
       ),
