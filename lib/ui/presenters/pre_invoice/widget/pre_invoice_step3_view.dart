@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -93,6 +94,10 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                           color: AppColors.grayPalette.shade700,
                           fontWeight: FontWeight.w500,
                         ),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp("[0-9۰-۹\b]"))
+                        ],
+                        maxLength: 10,
                         hintText: S.current.nationalCodeHint,
                         hintStyle: theme.bodyLarge!.copyWith(
                           color: AppColors.grayPalette.shade400,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 
@@ -67,6 +68,9 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                 color: AppColors.grayPalette.shade400,
               ),
               keyboardType: TextInputType.phone,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp("[0-9۰-۹\b]"))
+              ],
               textAlign: TextAlign.right,
               onChanged: (value) =>
                   context.read<AuthCubit>().onPhoneChanged(value),
