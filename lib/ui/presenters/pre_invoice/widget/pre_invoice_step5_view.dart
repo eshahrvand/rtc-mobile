@@ -160,8 +160,8 @@ class PreInvoiceStep5View extends StatelessWidget {
           _buildInfoRow(S.current.providerLabel, plan.providerName, theme),
           _buildInfoRow(S.current.planNameLabel, plan.planName, theme),
           _buildInfoRow(
-            S.current.validityPeriodLabel,
-            plan.validityDuration,
+            '${S.current.validityPeriodLabel} :',
+            '${plan.validityDuration} ${S.current.day}',
             theme,
           ),
         ],
