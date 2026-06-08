@@ -37,15 +37,19 @@ class OrdersRepository {
   }
 
   Future<dynamic> settleInitiate(String id, String method, {double? amount}) {
-    final body = {'method': method};
-    if (amount != null) body['amount'] = amount.toString();
+    final body = {
+      'method': method,
+      if (method == 'wallet_debit' && amount != null) 'amount': amount,
+    };
     return _service.settleInitiate(id, body);
   }
 
   Future<dynamic> settle(String id, String method, {String? trackingCode}) {
     final body = {
       'method': method,
-      if (trackingCode != null) 'payload': {'tracking_code': trackingCode},
+      'payload': (method == 'card_to_card' && trackingCode != null)
+          ? {'tracking_code': trackingCode}
+          : {},
     };
     return _service.settle(id, body);
   }

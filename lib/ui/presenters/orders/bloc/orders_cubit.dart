@@ -36,6 +36,7 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   static Future<double>? _cachedToleranceFuture;
   Timer? _searchTimer;
+  Timer? _settlementTimer;
   final _appLinks = AppLinks();
   StreamSubscription? _linkSubscription;
 
@@ -59,9 +60,11 @@ class OrdersCubit extends Cubit<OrdersState> {
   void _initDeepLinks() {
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
       print("DeepLinkReceived>>:: $uri");
-      // Check if this is a disbursement callback
-      if (uri.path.contains('disbursement/callback') || 
-          uri.host.contains('disbursement')) {
+      // Check if this is a disbursement or settlement callback
+      if (uri.path.contains('callback') || 
+          uri.host.contains('callback') ||
+          uri.path.contains('disbursement') ||
+          uri.path.contains('settlement')) {
         if (state.selectedOrder != null) {
           fetchOrderDetail(state.selectedOrder!.id);
         } else {
@@ -496,6 +499,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         .then((response) {
           final type = response['type'];
           final walletName = type == 'wallet' ? response['wallet_name'] : null;
+          final mobile = response['mobile'];
 
           if (type == 'wallet') {
             _walletService
@@ -533,14 +537,15 @@ class OrdersCubit extends Cubit<OrdersState> {
                   );
                 });
           } else {
+            final redirectUrl = type == 'redirect' ? response['redirect_url'] : null;
+            
             emit(
               state.copyWith(
                 status: OrdersRequestStatus.success,
                 settlementStep: SettlementStep.methodSelected,
                 settlementMethod: method,
-                settlementRedirectUrl: type == 'redirect'
-                    ? response['redirect_url']
-                    : null,
+                settlementRedirectUrl: redirectUrl,
+                settlementMobile: mobile,
                 settlementBankAccount: type == 'offline'
                     ? response['bank_account']
                     : null,
@@ -552,6 +557,14 @@ class OrdersCubit extends Cubit<OrdersState> {
                     : null,
               ),
             );
+
+            if (method == 'ipg' && redirectUrl != null) {
+              launchUrl(Uri.parse(redirectUrl), mode: LaunchMode.externalApplication);
+            }
+
+            if (method == 'link') {
+               _startSettlementTimer();
+            }
           }
         })
         .catchError(
@@ -559,15 +572,36 @@ class OrdersCubit extends Cubit<OrdersState> {
         );
   }
 
+  void _startSettlementTimer() {
+    _settlementTimer?.cancel();
+    emit(state.copyWith(settlementCountdown: 60, isSettlementTimerActive: true));
+    
+    _settlementTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state.settlementCountdown > 0) {
+        emit(state.copyWith(settlementCountdown: state.settlementCountdown - 1));
+      } else {
+        _settlementTimer?.cancel();
+        emit(state.copyWith(isSettlementTimerActive: false));
+      }
+    });
+  }
+
+  void resendSettlementLink() {
+    if (state.selectedOrder == null || state.settlementMethod != 'link') return;
+    initiateSettlement('link');
+  }
+
   void confirmSettlement({String? trackingCode, String? imagePath}) {
     if (state.selectedOrder == null || state.settlementMethod == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
+
+    final apiMethod = _mapSettlementMethodToApi(state.settlementMethod!);
 
     Future<void> performSettle() {
       return _ordersRepo
           .settle(
             state.selectedOrder!.id,
-            state.settlementMethod!,
+            apiMethod,
             trackingCode: trackingCode,
           )
           .then((_) {
@@ -738,6 +772,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   @override
   Future<void> close() {
     _searchTimer?.cancel();
+    _settlementTimer?.cancel();
     _linkSubscription?.cancel();
     return super.close();
   }

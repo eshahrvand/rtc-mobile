@@ -262,6 +262,26 @@ class _OrderSettlementOperationsWidgetState
                                 ],
                               ),
                             )
+                          : (state.settlementMethod == 'link' &&
+                                !state.isSettlementCompleted)
+                          ? Row(
+                              spacing: 8,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                RtcImage(
+                                  image: "assets/images/restart.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                                Text(
+                                  'بروزرسانی',
+                                  style: theme.bodyMedium!.copyWith(
+                                    color: AppColors.brandPalette.shade600,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            )
                           : RtcImage(
                               image:
                                   (state.isSettlementCompleted && !_isExpanded)
@@ -427,6 +447,17 @@ class _OrderSettlementOperationsWidgetState
                             ],
                           ),
                         ),
+                        if (state.settlementMethod == 'link' && !isPartial)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12.0),
+                            child: Text(
+                              'لینک پرداخت به شماره ${state.settlementMobile ?? ""} ارسال شد.',
+                              style: theme.bodyLarge!.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.grayPalette.shade900,
+                              ),
+                            ),
+                          ),
 
                         if (!isPartial) ...[
                           const SizedBox(height: 12),
@@ -514,40 +545,65 @@ class _OrderSettlementOperationsWidgetState
                               ),
                             ),
                           const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              RtcButton(
-                                title: _getButtonTitle(state.settlementMethod),
-                                isActive:
-                                    !isPartial &&
-                                    state.settlementMethod != null &&
-                                    (state.settlementMethod != 'wallet_debit' ||
-                                        state.isWalletBalanceSufficient),
-                                styleBtn: theme.labelLarge!.copyWith(
-                                  color:
-                                      (!isPartial &&
-                                          state.settlementMethod != null &&
-                                          (state.settlementMethod !=
-                                                  'wallet_debit' ||
-                                              state.isWalletBalanceSufficient))
-                                      ? Colors.white
-                                      : AppColors.grayPalette.shade300,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                width:
-                                    state.settlementMethod == 'ipg' ||
-                                        state.settlementMethod == 'link'
-                                    ? 240
-                                    : 160,
-                                onPressed: () => _handleSettlement(
-                                  context,
-                                  cubit,
-                                  state.settlementMethod,
-                                ),
+                          if (state.settlementMethod == 'link' && !isPartial)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Center(
+                                child: state.isSettlementTimerActive
+                                    ? _buildTimerOnly(state)
+                                    : GestureDetector(
+                                        onTap: () =>
+                                            cubit.resendSettlementLink(),
+                                        child: Text(
+                                          "ارسال مجدد لینک پرداخت",
+                                          style: theme.labelLarge!.copyWith(
+                                            color:
+                                                AppColors.brandPalette.shade600,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
                               ),
-                            ],
-                          ),
+                            )
+                          else
+                            Row(
+                              children: [
+                                const Spacer(),
+                                RtcButton(
+                                  title: _getButtonTitle(
+                                    state.settlementMethod,
+                                  ),
+                                  isActive:
+                                      !isPartial &&
+                                      state.settlementMethod != null &&
+                                      (state.settlementMethod !=
+                                              'wallet_debit' ||
+                                          state.isWalletBalanceSufficient),
+                                  styleBtn: theme.labelLarge!.copyWith(
+                                    color:
+                                        (!isPartial &&
+                                            state.settlementMethod != null &&
+                                            (state.settlementMethod !=
+                                                    'wallet_debit' ||
+                                                state
+                                                    .isWalletBalanceSufficient))
+                                        ? Colors.white
+                                        : AppColors.grayPalette.shade300,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  width:
+                                      state.settlementMethod == 'ipg' ||
+                                          state.settlementMethod == 'link'
+                                      ? 240
+                                      : 160,
+                                  onPressed: () => _handleSettlement(
+                                    context,
+                                    cubit,
+                                    state.settlementMethod,
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ],
                     ),
@@ -569,6 +625,33 @@ class _OrderSettlementOperationsWidgetState
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]},',
         );
+  }
+
+  Widget _buildTimerOnly(OrdersState state) {
+    var theme = Theme.of(context).textTheme;
+    final minutes = (state.settlementCountdown / 60).floor();
+    final seconds = state.settlementCountdown % 60;
+    final timeStr =
+        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          timeStr,
+          style: theme.labelLarge!.copyWith(
+            color: AppColors.brandPalette.shade600,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 8),
+        RtcImage(
+          image: "$baseImage/clock.svg",
+          height: 20,
+          width: 20,
+          color: AppColors.brandPalette.shade600,
+        ),
+      ],
+    );
   }
 
   Widget _buildAmountRow(

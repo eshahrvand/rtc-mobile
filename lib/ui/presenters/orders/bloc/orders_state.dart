@@ -69,6 +69,13 @@ class OrdersState with _$OrdersState {
     @Default(true) bool isWalletBalanceSufficient,
     @Default(false) bool isSettlementCompleted,
 
+    // Settlement Timer (for "Send Link" mode)
+    @Default(60) int settlementCountdown,
+    @Default(false) bool isSettlementTimerActive,
+
+    // Settlement Extras
+    String? settlementMobile,
+
     // Disbursement Extras
     String? disbursementMobile,
     String? disbursementRedirectUrl,
