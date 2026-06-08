@@ -31,7 +31,9 @@ class CustomersView extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: RtcAppBar(
-            title: state.step == CustomersStep.customerList ? S.current.myCustomers : "",
+            title: state.step == CustomersStep.customerList
+                ? S.current.myCustomers
+                : (state.selectedCustomer?.name ?? ""),
             onBack: () {
               if (state.step == CustomersStep.customerList) {
                 context.pop();

@@ -109,6 +109,7 @@ class _CustomerInfoTab extends StatelessWidget {
             minLines: 1,
             maxLines: 4,
             lineHeight: 2,
+            isAddress: true,
           ),
         ],
       ),
@@ -122,10 +123,12 @@ class _CustomerInfoTab extends StatelessWidget {
     int? minLines,
     int? maxLines,
     double? lineHeight,
+    bool? isAddress,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: RtcTextField(
+        isAddress: isAddress,
         readOnly: true,
         isSetReadOnlyColor: true,
         labelText: label,
@@ -133,7 +136,7 @@ class _CustomerInfoTab extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: AppColors.grayPalette.shade700,
         ),
-        suffix: lineHeight != null ? SizedBox(height: 0 , width: 0,) : null,
+        suffix: lineHeight != null ? SizedBox(height: 0, width: 0) : null,
         minLines: minLines,
         maxLines: maxLines,
         controller: TextEditingController(text: value),

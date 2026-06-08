@@ -33,6 +33,7 @@ class RtcTextField extends StatelessWidget {
   final String? error;
   final TextStyle? errorStyle;
   final bool? obscureText;
+  final bool? isAddress;
 
   const RtcTextField({
     super.key,
@@ -66,6 +67,7 @@ class RtcTextField extends StatelessWidget {
     this.errorStyle,
     this.obscureText,
     this.isError = false,
+    this.isAddress,
   });
 
   @override
@@ -125,7 +127,7 @@ class RtcTextField extends StatelessWidget {
                   : Colors.white,
               contentPadding:
                   contentPadding ??
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                   EdgeInsets.symmetric(horizontal: (isAddress ?? false) ? 8  : 14, vertical: 10),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
