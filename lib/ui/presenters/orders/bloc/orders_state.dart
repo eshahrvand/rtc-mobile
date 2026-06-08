@@ -68,6 +68,11 @@ class OrdersState with _$OrdersState {
     String? settlementTrackingCode,
     @Default(true) bool isWalletBalanceSufficient,
     @Default(false) bool isSettlementCompleted,
+
+    // Disbursement Extras
+    String? disbursementMobile,
+    String? disbursementRedirectUrl,
+    String? disbursementGatewayType,
   }) = _OrdersState;
 }
 

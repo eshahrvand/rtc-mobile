@@ -363,7 +363,7 @@ class _OrderClearanceOperationWidgetState
                       alignment: Alignment.centerLeft,
                       child: RtcButton(
                         title: widget.isOnline
-                            ? S.current.requestCodeButton
+                            ? (widget.walletName != null ? S.current.requestCodeButton : "پرداخت آنلاین")
                             : S.current.uploadClearanceDocuments,
                         styleBtn: theme.labelLarge!.copyWith(
                           color: Colors.white,

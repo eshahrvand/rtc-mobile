@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/config.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
@@ -72,10 +73,12 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
         final clearanceAmountVal =
             double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
-        final orderAmountVal = double.tryParse(
-          (state.orderAmount ?? widget.order.financialSummary.finalAmount)
-              .replaceAll(',', ''),
-        ) ?? 0;
+        final orderAmountVal =
+            double.tryParse(
+              (state.orderAmount ?? widget.order.financialSummary.finalAmount)
+                  .replaceAll(',', ''),
+            ) ??
+            0;
 
         // 1. Try to find a successful record from server
         final successRecords = widget.order.disbursementRecords.where(
@@ -112,7 +115,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
           return state.excessAmount;
         }();
 
-        final String? walletName = state.walletName ?? widget.order.creditPlan?.planName;
+        final String? walletName =
+            state.walletName ?? widget.order.creditPlan?.planName;
 
         // Hide settlement if the entered clearance amount already covers the total
         final isOverDischarge =
@@ -187,30 +191,40 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           isOnline: state.gatewayType == GatewayType.online,
                           showStep: showSteps,
                           onAction: () {
-                            if (state.gatewayType == GatewayType.online) {
+                            if (state.disbursementGatewayType == 'otp') {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
                                 builder: (_) => OrderClearanceOtpSheet(
-                                  phoneNumber: widget.order.customer.phone,
-                                  onConfirm: () {
+                                  phoneNumber:
+                                      state.disbursementMobile ??
+                                      widget.order.customer.phone,
+                                  onConfirm: (otp) {
                                     Navigator.pop(context);
-                                    cubit.confirmClearanceOtp();
+                                    cubit.confirmClearanceOtp(otp);
                                   },
                                 ),
                               );
+                            } else if (state.disbursementGatewayType ==
+                                'redirect') {
+                              if (state.disbursementRedirectUrl != null) {
+                                launchUrl(
+                                  Uri.parse(state.disbursementRedirectUrl!),
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              }
                             } else {
                               cubit.pickClearanceDocument(context);
                             }
                           },
                           onEdit:
                               state.clearanceAmount.isNotEmpty &&
-                                      (widget.order.orderStatus ==
-                                              OrderStatus.preInvoice ||
-                                          widget.order.orderStatus ==
-                                              OrderStatus.awaitingSettlement)
-                                  ? () {
+                                  (widget.order.orderStatus ==
+                                          OrderStatus.preInvoice ||
+                                      widget.order.orderStatus ==
+                                          OrderStatus.awaitingSettlement)
+                              ? () {
                                   cubit.resetClearance();
                                   _showAmountSheet(context, cubit);
                                 }
@@ -220,7 +234,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
                     if (showSettlement)
                       Padding(
-                        padding: const EdgeInsets.only(top: 8 , bottom: 32),
+                        padding: const EdgeInsets.only(top: 8, bottom: 32),
                         child: OrderSettlementOperationsWidget(
                           showStep: showSteps,
                           op:

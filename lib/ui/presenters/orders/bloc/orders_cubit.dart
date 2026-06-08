@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:app_links/app_links.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../locator.dart';
@@ -34,6 +36,8 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   static Future<double>? _cachedToleranceFuture;
   Timer? _searchTimer;
+  final _appLinks = AppLinks();
+  StreamSubscription? _linkSubscription;
 
   OrdersCubit() : super(const OrdersState());
 
@@ -49,6 +53,22 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _initTolerance();
     fetchOrders();
+    _initDeepLinks();
+  }
+
+  void _initDeepLinks() {
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      print("DeepLinkReceived>>:: $uri");
+      // Check if this is a disbursement callback
+      if (uri.path.contains('disbursement/callback') || 
+          uri.host.contains('disbursement')) {
+        if (state.selectedOrder != null) {
+          fetchOrderDetail(state.selectedOrder!.id);
+        } else {
+          fetchOrders();
+        }
+      }
+    });
   }
 
   void _initTolerance() {
@@ -317,11 +337,11 @@ class OrdersCubit extends Cubit<OrdersState> {
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
           print("tlorance>>:: API SUCCESS: disburseInitiate responded");
-          final isOnline =
-              response != null &&
-              (response is Map) &&
-              (response['gateway_type'] == 'online' ||
-                  response['type'] == 'online');
+          final type = (response is Map) ? response['type'] : 'offline';
+          final mobile = (response is Map) ? response['mobile'] : null;
+          final redirectUrl = (response is Map) ? response['redirect_url'] : null;
+
+          final isOnline = type == 'otp' || type == 'redirect';
 
           final diff = amount - orderAmountVal;
           final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
@@ -331,8 +351,13 @@ class OrdersCubit extends Cubit<OrdersState> {
             state.copyWith(
               status: OrdersRequestStatus.success,
               gatewayType: isOnline ? GatewayType.online : GatewayType.offline,
-              clearanceStep: isOnline
+              disbursementGatewayType: type,
+              disbursementMobile: mobile,
+              disbursementRedirectUrl: redirectUrl,
+              clearanceStep: type == 'otp'
                   ? ClearanceStep.otpPending
+                  : type == 'redirect'
+                  ? ClearanceStep.amountEntered // Show redirect button
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
@@ -341,6 +366,11 @@ class OrdersCubit extends Cubit<OrdersState> {
               isOutOfTolerance: false,
             ),
           );
+
+          // Auto-launch browser if redirect
+          if (type == 'redirect' && redirectUrl != null) {
+             launchUrl(Uri.parse(redirectUrl), mode: LaunchMode.externalApplication);
+          }
         })
         .catchError(
           (e) => _handleError(e, prefix: 'خطا در شروع عملیات تخلیه: '),
@@ -396,12 +426,12 @@ class OrdersCubit extends Cubit<OrdersState> {
         );
   }
 
-  void confirmClearanceOtp() {
+  void confirmClearanceOtp(String otp) {
     if (state.selectedOrder == null) return;
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     _ordersRepo
-        .disburse(state.selectedOrder!.id)
+        .disburse(state.selectedOrder!.id, {'otp': otp})
         .then((_) {
           emit(
             state.copyWith(
@@ -708,6 +738,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   @override
   Future<void> close() {
     _searchTimer?.cancel();
+    _linkSubscription?.cancel();
     return super.close();
   }
 }

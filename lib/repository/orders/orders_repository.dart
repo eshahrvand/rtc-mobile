@@ -32,8 +32,8 @@ class OrdersRepository {
     return _service.disburseInitiate(orderId, {'disbursement_amount': amount});
   }
 
-  Future<dynamic> disburse(String orderId) {
-    return _service.disburse(orderId, {});
+  Future<dynamic> disburse(String orderId, [Map<String, dynamic>? body]) {
+    return _service.disburse(orderId, body ?? {});
   }
 
   Future<dynamic> settleInitiate(String id, String method, {double? amount}) {

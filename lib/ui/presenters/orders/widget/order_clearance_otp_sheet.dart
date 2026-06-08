@@ -9,7 +9,7 @@ import '../../../widget/rtc_image.dart';
 
 class OrderClearanceOtpSheet extends StatefulWidget {
   final String phoneNumber;
-  final VoidCallback onConfirm;
+  final Function(String) onConfirm;
 
   const OrderClearanceOtpSheet({
     super.key,
@@ -198,7 +198,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                         fontWeight: FontWeight.w600,
                       ),
                       isActive: _isComplete,
-                      onPressed: widget.onConfirm,
+                      onPressed: () => widget.onConfirm(_otpController.text),
                     ),
                   ),
                 ],
