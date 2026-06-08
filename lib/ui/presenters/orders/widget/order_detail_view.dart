@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
@@ -264,12 +265,25 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             ],
           ),
         ),
-        ReceiptField(label: S.current.gatewayLabel, value: 'تخلیه آفلاین'),
+        ReceiptField(
+          label: S.current.gatewayLabel,
+          value: state.selectedOrder?.creditPlan?.planName ?? 'تخلیه آفلاین',
+        ),
+        ReceiptField(
+          label: S.current.documentSubmissionDateLabel,
+          value: _formatCurrentJalaliDateTime(),
+        ),
       ],
       onGotIt: () {
         context.read<OrdersCubit>().resetClearance();
       },
     );
+  }
+
+  String _formatCurrentJalaliDateTime() {
+    final now = DateTime.now();
+    final jalali = Jalali.fromDateTime(now);
+    return '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} - ${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
   }
 
   Widget _buildValidityHeader(BuildContext context, dynamic order) {
