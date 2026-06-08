@@ -87,6 +87,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                     children: [
                       RtcTextField(
                         controller: _nationalIdController,
+                        keyboardType: TextInputType.number,
                         labelText: S.current.nationalCodeLabelWithStar,
                         labelStyle: theme.bodyMedium!.copyWith(
                           color: AppColors.grayPalette.shade700,
