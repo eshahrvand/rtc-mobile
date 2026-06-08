@@ -61,7 +61,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
       print("DeepLinkReceived>>:: $uri");
       // Check if this is a disbursement or settlement callback
-      if (uri.path.contains('callback') || 
+      if (uri.path.contains('callback') ||
           uri.host.contains('callback') ||
           uri.path.contains('disbursement') ||
           uri.path.contains('settlement')) {
@@ -143,7 +143,8 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
 
           // If status is "Pre-Invoice" or "Awaiting Settlement", default to Financial Tab (index 1)
-          final initialTab = (detail.orderStatus == OrderStatus.preInvoice ||
+          final initialTab =
+              (detail.orderStatus == OrderStatus.preInvoice ||
                   detail.orderStatus == OrderStatus.awaitingSettlement)
               ? 1
               : 0;
@@ -156,8 +157,23 @@ class OrdersCubit extends Cubit<OrdersState> {
               disburseOperation: _createDisburseOp(detail),
               settlementOperation: _createSettlementOp(detail),
               isSettlementCompleted: isSettled,
+              walletName: detail.creditPlan?.planName,
             ),
           );
+
+          // Pre-fetch wallet to check balance early
+          _walletService
+              .getWallet()
+              .then((walletDto) {
+                final remainingAmount = _calculateRemainingSettlement(detail);
+                final isSufficient = _checkWalletBalance(
+                  walletDto,
+                  detail.creditPlan?.planName,
+                  remainingAmount,
+                );
+                emit(state.copyWith(isWalletBalanceSufficient: isSufficient));
+              })
+              .catchError((_) {});
         })
         .catchError(
           (e) => _handleError(e, prefix: 'خطا در بارگذاری جزئیات سفارش: '),
@@ -287,12 +303,12 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void initiateClearance(String amountStr) {
     print("tlorance>>:: initiateClearance CALLED with input: '$amountStr'");
-    
+
     if (state.selectedOrder == null) {
       print("tlorance>>:: ERROR: selectedOrder is NULL");
       return;
     }
-    
+
     if (state.tolerance == null) {
       print("tlorance>>:: ERROR: tolerance is NULL in state");
       _handleError('تنظیمات تولرانس بارگذاری نشده است');
@@ -301,12 +317,15 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     final rawAmountStr = amountStr.replaceAll(',', '');
     final amount = double.tryParse(rawAmountStr) ?? 0;
-    
-    final rawOrderAmountStr = state.selectedOrder!.financialSummary.finalAmount.replaceAll(',', '');
+
+    final rawOrderAmountStr = state.selectedOrder!.financialSummary.finalAmount
+        .replaceAll(',', '');
     final orderAmountVal = double.tryParse(rawOrderAmountStr) ?? 0;
 
     print("tlorance>>:: Parsed Input Amount: $amount (from '$rawAmountStr')");
-    print("tlorance>>:: Parsed Order Amount: $orderAmountVal (from '$rawOrderAmountStr')");
+    print(
+      "tlorance>>:: Parsed Order Amount: $orderAmountVal (from '$rawOrderAmountStr')",
+    );
 
     // ─── Range Calculation (Before API Call) ───
     // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
@@ -364,7 +383,9 @@ class OrdersCubit extends Cubit<OrdersState> {
           print("tlorance>>:: API SUCCESS: disburseInitiate responded");
           final type = (response is Map) ? response['type'] : 'offline';
           final mobile = (response is Map) ? response['mobile'] : null;
-          final redirectUrl = (response is Map) ? response['redirect_url'] : null;
+          final redirectUrl = (response is Map)
+              ? response['redirect_url']
+              : null;
 
           final isOnline = type == 'otp' || type == 'redirect';
 
@@ -382,7 +403,8 @@ class OrdersCubit extends Cubit<OrdersState> {
               clearanceStep: type == 'otp'
                   ? ClearanceStep.otpPending
                   : type == 'redirect'
-                  ? ClearanceStep.amountEntered // Show redirect button
+                  ? ClearanceStep
+                        .amountEntered // Show redirect button
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
@@ -394,7 +416,10 @@ class OrdersCubit extends Cubit<OrdersState> {
 
           // Auto-launch browser if redirect
           if (type == 'redirect' && redirectUrl != null) {
-             launchUrl(Uri.parse(redirectUrl), mode: LaunchMode.externalApplication);
+            launchUrl(
+              Uri.parse(redirectUrl),
+              mode: LaunchMode.externalApplication,
+            );
           }
         })
         .catchError(
@@ -504,7 +529,11 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   // ─── Settlement Flow ───────────────────────────────────────────────
 
-  void initiateSettlement(String method, {double? amount}) {
+  void initiateSettlement(
+    String method, {
+    double? amount,
+    String? trackingCode,
+  }) {
     if (state.selectedOrder == null) return;
     if (method == 'wallet' && state.tolerance == null) {
       _handleError('تنظیمات تولرانس برای پرداخت با کیف پول بارگذاری نشده است');
@@ -527,6 +556,8 @@ class OrdersCubit extends Cubit<OrdersState> {
         ),
       );
       _startSettlementTimer();
+      // Auto-confirm for link mode to trigger success UI
+      confirmSettlement();
       return;
     }
 
@@ -534,7 +565,10 @@ class OrdersCubit extends Cubit<OrdersState> {
         .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
         .then((response) {
           final type = response['type'];
-          final walletName = type == 'wallet' ? response['wallet_name'] : null;
+          final walletName =
+              (type == 'wallet' && response['wallet_name'] != null)
+              ? response['wallet_name']
+              : state.walletName;
           final mobile = response['mobile'];
 
           if (type == 'wallet') {
@@ -559,6 +593,10 @@ class OrdersCubit extends Cubit<OrdersState> {
                       isWalletBalanceSufficient: isSufficient,
                     ),
                   );
+
+                  if (isSufficient) {
+                    confirmSettlement();
+                  }
                 })
                 .catchError((_) {
                   emit(
@@ -573,8 +611,10 @@ class OrdersCubit extends Cubit<OrdersState> {
                   );
                 });
           } else {
-            final redirectUrl = type == 'redirect' ? response['redirect_url'] : null;
-            
+            final redirectUrl = type == 'redirect'
+                ? response['redirect_url']
+                : null;
+
             emit(
               state.copyWith(
                 status: OrdersRequestStatus.success,
@@ -595,11 +635,20 @@ class OrdersCubit extends Cubit<OrdersState> {
             );
 
             if (method == 'ipg' && redirectUrl != null) {
-              launchUrl(Uri.parse(redirectUrl), mode: LaunchMode.externalApplication);
+              launchUrl(
+                Uri.parse(redirectUrl),
+                mode: LaunchMode.externalApplication,
+              );
+              confirmSettlement();
             }
 
             if (method == 'link') {
-               _startSettlementTimer();
+              _startSettlementTimer();
+              confirmSettlement();
+            }
+
+            if (method == 'card_to_card' || method == 'offline') {
+              confirmSettlement(trackingCode: trackingCode);
             }
           }
         })
@@ -610,11 +659,15 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void _startSettlementTimer() {
     _settlementTimer?.cancel();
-    emit(state.copyWith(settlementCountdown: 60, isSettlementTimerActive: true));
-    
+    emit(
+      state.copyWith(settlementCountdown: 60, isSettlementTimerActive: true),
+    );
+
     _settlementTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.settlementCountdown > 0) {
-        emit(state.copyWith(settlementCountdown: state.settlementCountdown - 1));
+        emit(
+          state.copyWith(settlementCountdown: state.settlementCountdown - 1),
+        );
       } else {
         _settlementTimer?.cancel();
         emit(state.copyWith(isSettlementTimerActive: false));
@@ -625,6 +678,15 @@ class OrdersCubit extends Cubit<OrdersState> {
   void resendSettlementLink() {
     if (state.selectedOrder == null || state.settlementMethod != 'link') return;
     initiateSettlement('link');
+  }
+
+  void selectSettlementMethod(String method) {
+    emit(
+      state.copyWith(
+        settlementMethod: method,
+        settlementStep: SettlementStep.initial,
+      ),
+    );
   }
 
   void confirmSettlement({String? trackingCode, String? imagePath}) {
@@ -766,9 +828,12 @@ class OrdersCubit extends Cubit<OrdersState> {
     String? walletName,
     double requiredAmount,
   ) {
+    if (walletName == null) return false;
     double pocketBalance = 0;
+    final targetName = walletName.trim();
+
     for (var pocket in walletDto.pockets) {
-      if (pocket.subPlan.name == walletName) {
+      if (pocket.subPlan.name.trim() == targetName) {
         pocketBalance = pocket.balance;
         break;
       }

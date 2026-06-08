@@ -33,11 +33,12 @@ class _OrderSettlementOperationsWidgetState
     extends State<OrderSettlementOperationsWidget> {
   bool _isExpanded = true;
 
-  void _showMethodSelector(BuildContext context, OrdersCubit cubit) {
+  void _showMethodSelector(BuildContext context, OrdersCubit cubit, String? currentMethod) {
     SettlementMethodBottomSheet.show(
       context,
+      initialSelectedId: currentMethod,
       onSelect: (method) {
-        cubit.initiateSettlement(method);
+        cubit.selectSettlementMethod(method);
       },
     );
   }
@@ -72,11 +73,7 @@ class _OrderSettlementOperationsWidgetState
                 onTrackingCodeChanged: (val) => trackingCode = val,
                 onConfirm: () {
                   if (trackingCode.isNotEmpty) {
-                    cubit.initiateSettlement(method);
-                    cubit.confirmSettlement(
-                      trackingCode: trackingCode,
-                      imagePath: imagePath,
-                    );
+                    cubit.initiateSettlement(method, trackingCode: trackingCode);
                     Navigator.pop(context);
                   }
                 },
@@ -86,10 +83,8 @@ class _OrderSettlementOperationsWidgetState
           );
         }
       }
-    } else if (method == 'ipg' ||
-        method == 'link' ||
-        method == 'wallet_debit') {
-      cubit.confirmSettlement();
+    } else {
+      cubit.initiateSettlement(method);
     }
   }
 
@@ -263,33 +258,35 @@ class _OrderSettlementOperationsWidgetState
                               ),
                             )
                           : (state.settlementMethod == 'link' &&
-                                !state.isSettlementCompleted)
-                          ? Row(
-                              spacing: 8,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                RtcImage(
-                                  image: "assets/images/restart.svg",
-                                  width: 20,
-                                  height: 20,
+                                  !state.isSettlementCompleted &&
+                                  state.settlementStep !=
+                                      SettlementStep.initial)
+                              ? Row(
+                                  spacing: 8,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    RtcImage(
+                                      image: "assets/images/restart.svg",
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      'بروزرسانی',
+                                      style: theme.bodyMedium!.copyWith(
+                                        color: AppColors.brandPalette.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : RtcImage(
+                                  image: (state.isSettlementCompleted &&
+                                          !_isExpanded)
+                                      ? "$baseImage/angle-down_tab.svg"
+                                      : "$baseImage/arrow_up_tab.svg",
+                                  width: 24,
+                                  height: 24,
                                 ),
-                                Text(
-                                  'بروزرسانی',
-                                  style: theme.bodyMedium!.copyWith(
-                                    color: AppColors.brandPalette.shade600,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : RtcImage(
-                              image:
-                                  (state.isSettlementCompleted && !_isExpanded)
-                                  ? "$baseImage/angle-down_tab.svg"
-                                  : "$baseImage/arrow_up_tab.svg",
-                              width: 24,
-                              height: 24,
-                            ),
                     ],
                   ),
                 ),
@@ -365,7 +362,7 @@ class _OrderSettlementOperationsWidgetState
                           ),
                           const SizedBox(height: 8),
                           GestureDetector(
-                            onTap: () => _showMethodSelector(context, cubit),
+                            onTap: () => _showMethodSelector(context, cubit, state.settlementMethod),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -401,7 +398,7 @@ class _OrderSettlementOperationsWidgetState
                         Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: AppColors.grayPalette.shade25,
+                            color: AppColors.grayPalette.shade50,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -447,7 +444,9 @@ class _OrderSettlementOperationsWidgetState
                             ],
                           ),
                         ),
-                        if (state.settlementMethod == 'link' && !isPartial)
+                        if (state.settlementMethod == 'link' &&
+                            !isPartial &&
+                            state.settlementStep != SettlementStep.initial)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: Text(
@@ -489,9 +488,7 @@ class _OrderSettlementOperationsWidgetState
                                   ),
                                   Expanded(
                                     child: Text(
-                                      state.walletName != null
-                                          ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت ما به تفاوت مبلغ کافیست'
-                                          : S.current.walletBalanceSufficient,
+                                      'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت ما به تفاوت مبلغ کافیست',
                                       textAlign: TextAlign.right,
                                       style: theme.bodyMedium!.copyWith(
                                         color:
@@ -531,9 +528,7 @@ class _OrderSettlementOperationsWidgetState
                                   ),
                                   Expanded(
                                     child: Text(
-                                      state.walletName != null
-                                          ? 'موجودی کیف پول ${state.walletName} شما برای پرداخت این مبلغ کافی نمی‌باشد'
-                                          : 'موجودی کیف پول شما کافی نمی‌باشد',
+                                      'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت این مبلغ کافی نمی‌باشد',
                                       textAlign: TextAlign.right,
                                       style: theme.bodyMedium!.copyWith(
                                         color: AppColors.errorPalette.shade600,
@@ -545,7 +540,9 @@ class _OrderSettlementOperationsWidgetState
                               ),
                             ),
                           const SizedBox(height: 12),
-                          if (state.settlementMethod == 'link' && !isPartial)
+                          if (state.settlementMethod == 'link' &&
+                              !isPartial &&
+                              state.settlementStep != SettlementStep.initial)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: Center(
@@ -591,11 +588,7 @@ class _OrderSettlementOperationsWidgetState
                                         : AppColors.grayPalette.shade300,
                                     fontWeight: FontWeight.w600,
                                   ),
-                                  width:
-                                      state.settlementMethod == 'ipg' ||
-                                          state.settlementMethod == 'link'
-                                      ? 240
-                                      : 160,
+                                  width: 160,
                                   onPressed: () => _handleSettlement(
                                     context,
                                     cubit,
