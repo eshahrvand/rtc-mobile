@@ -27,6 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(state.copyWith(
       phoneNumber: phoneNumber,
       isPhoneValid: isValid,
+      showPhoneError: !isValid && phoneNumber.isNotEmpty,
     ));
   }
 
@@ -108,6 +109,7 @@ class AuthCubit extends Cubit<AuthState> {
       isOtpComplete: false,
       isTimerExpired: false,
       remainingSeconds: 120,
+      showPhoneError: false,
     ));
   }
 

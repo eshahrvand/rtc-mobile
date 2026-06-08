@@ -29,5 +29,6 @@ class AuthState with _$AuthState {
     @Default(120) int remainingSeconds,
     @Default(AuthRequestStatus.initial) AuthRequestStatus status,
     @Default('') String errorMessage,
+    @Default(false) bool showPhoneError,
   }) = _AuthState;
 }

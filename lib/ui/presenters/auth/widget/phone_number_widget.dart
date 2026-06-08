@@ -39,6 +39,14 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
     var theme = Theme.of(context).textTheme;
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
+        const double kTitleBottomSpacing = 10.0;
+        const double kInputTopSpacing = 32.0;
+        const double kIconSize = 20.0;
+        const double kErrorSpacing = 8.0;
+        const double kErrorIconSize = 14.0;
+        const double kButtonBottomPadding = 16.0;
+        const int kMaxPhoneLength = 11;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -50,7 +58,7 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                 color: AppColors.grayPalette.shade900,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: kTitleBottomSpacing),
             Text(
               S.current.enterPhoneNumber,
               textAlign: TextAlign.right,
@@ -58,7 +66,7 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                 color: AppColors.grayPalette.shade600,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: kInputTopSpacing),
             RtcTextField(
               autoFocus: true,
               controller: _controller,
@@ -72,19 +80,18 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                   context.read<AuthCubit>().onPhoneChanged(value),
               prefix: RtcImage(
                 image: "$baseImage/mobile.svg",
-                width: 20,
-                height: 20,
+                width: kIconSize,
+                height: kIconSize,
               ),
-              maxLength: 11,
-
-              helper: !state.isPhoneValid && state.phoneNumber.length > 0
+              maxLength: kMaxPhoneLength,
+              helper: state.showPhoneError
                   ? Row(
-                      spacing: 8,
+                      spacing: kErrorSpacing,
                       children: [
                         RtcImage(
                           image: 'assets/images/alert.svg',
-                          width: 14,
-                          height: 14,
+                          width: kErrorIconSize,
+                          height: kErrorIconSize,
                           color: AppColors.errorPalette.shade600,
                         ),
                         Text(
@@ -99,7 +106,7 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
             ),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: kButtonBottomPadding),
               child: RtcButton(
                 title: S.current.getOtpCode,
                 isActive: state.isPhoneValid,

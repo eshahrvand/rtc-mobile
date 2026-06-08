@@ -10,6 +10,7 @@ import '../../router/app_route.dart';
 import '../../widget/rtc_image.dart';
 import 'bloc/auth_cubit.dart';
 import 'bloc/auth_state.dart';
+import 'widget/auth_ui_helpers.dart';
 import 'widget/otp_widget.dart';
 import 'widget/phone_number_widget.dart';
 
@@ -25,23 +26,8 @@ class AuthScreen extends StatelessWidget {
         listeners: [
           BlocListener<AuthCubit, AuthState>(
             listenWhen: (prev, curr) => prev.status != curr.status,
-            listener: (context, state) {
-              if (state.status == AuthRequestStatus.success) {
-                context.go(AppRoutes.dashboard);
-              } else if (state.status == AuthRequestStatus.error) {
-                rtcSnackBar(
-                  context: context,
-                  type: SnackBarType.error,
-                  message: state.errorMessage,
-                );
-              } else if (state.status == AuthRequestStatus.otpResent) {
-                rtcSnackBar(
-                  context: context,
-                  type: SnackBarType.success,
-                  message: S.current.otpResent,
-                );
-              }
-            },
+            listener: (context, state) =>
+                AuthUiHelpers.handleStatusAction(context, state),
           ),
         ],
         child: Scaffold(
@@ -50,21 +36,24 @@ class AuthScreen extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                  ),
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
                     child: IntrinsicHeight(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 30.0),
                           RtcImage(
                             image: '$baseImage/rtc_logo.png',
-                            height: 42,
-                            width: 80,
+                            height: 42.0,
+                            width: 80.0,
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 12.0),
                           Text(
                             S.current.companyName,
                             textAlign: TextAlign.center,
@@ -73,7 +62,7 @@ class AuthScreen extends StatelessWidget {
                               color: AppColors.grayPalette.shade900,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 10.0),
                           Text(
                             S.current.appSubtitle,
                             textAlign: TextAlign.center,
@@ -82,7 +71,7 @@ class AuthScreen extends StatelessWidget {
                               color: AppColors.grayPalette.shade600,
                             ),
                           ),
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 30.0),
                           Expanded(
                             child: BlocBuilder<AuthCubit, AuthState>(
                               buildWhen: (prev, curr) => prev.step != curr.step,

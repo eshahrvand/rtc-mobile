@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
+import 'package:rtc_mobile/config/auth_calculations.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 
 import '../../../../config/config.dart';
@@ -20,6 +21,16 @@ class OtpWidget extends StatelessWidget {
     var theme = Theme.of(context).textTheme;
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
+        const double kTitleBottomSpacing = 10.0;
+        const double kEditIconSize = 24.0;
+        const double kOtpTopSpacing = 32.0;
+        const double kOtpCharSpacing = 18.0;
+        const double kOtpFieldSize = 56.0;
+        const double kTimerTopSpacing = 24.0;
+        const double kClockIconSize = 20.0;
+        const double kResendDividerHeight = 32.0;
+        const double kButtonBottomPadding = 16.0;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -31,41 +42,40 @@ class OtpWidget extends StatelessWidget {
                 color: AppColors.grayPalette.shade900,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: kTitleBottomSpacing),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   S.current.otpSentTo(state.phoneNumber),
                   textAlign: TextAlign.right,
-
                   style: theme.bodyLarge!.copyWith(
                     color: AppColors.grayPalette.shade600,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 GestureDetector(
                   onTap: () => context.read<AuthCubit>().editPhoneNumber(),
                   child: RtcImage(
                     image: "$baseImage/edit.svg",
-                    height: 24,
-                    width: 24,
+                    height: kEditIconSize,
+                    width: kEditIconSize,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
-
+            const SizedBox(height: kOtpTopSpacing),
             Directionality(
               textDirection: TextDirection.ltr,
               child: Pinput(
-                separatorBuilder: (index) => const SizedBox(width: 18),
+                separatorBuilder: (index) =>
+                    const SizedBox(width: kOtpCharSpacing),
                 length: 5,
                 onChanged: (value) =>
                     context.read<AuthCubit>().onOtpChanged(value),
                 defaultPinTheme: PinTheme(
-                  width: 56,
-                  height: 56,
+                  width: kOtpFieldSize,
+                  height: kOtpFieldSize,
                   textStyle: theme.displaySmall!.copyWith(
                     color: AppColors.grayPalette.shade900,
                     fontWeight: FontWeight.w600,
@@ -77,15 +87,13 @@ class OtpWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-
+            const SizedBox(height: kTimerTopSpacing),
             if (!state.isTimerExpired)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${(state.remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(state.remainingSeconds % 60).toString().padLeft(2, '0')}',
-
+                    AuthCalculations.formatRemainingTime(state.remainingSeconds),
                     style: theme.labelLarge!.copyWith(
                       color: AppColors.grayPalette.shade600,
                       fontWeight: FontWeight.w600,
@@ -94,8 +102,8 @@ class OtpWidget extends StatelessWidget {
                   const SizedBox(width: 10),
                   RtcImage(
                     image: "$baseImage/clock.svg",
-                    height: 20,
-                    width: 20,
+                    height: kClockIconSize,
+                    width: kClockIconSize,
                   ),
                 ],
               )
@@ -111,15 +119,13 @@ class OtpWidget extends StatelessWidget {
                     title: S.current.resendSms,
                     onPressed: () => context.read<AuthCubit>().resendOtp(),
                   ),
-
-                  Spacer(),
+                  const Spacer(),
                   Container(
                     width: 1,
-                    height: 32,
+                    height: kResendDividerHeight,
                     color: AppColors.grayPalette.shade300,
                   ),
-                  Spacer(),
-
+                  const Spacer(),
                   RtcTextButton(
                     styleBtn: theme.labelLarge!.copyWith(
                       color: AppColors.brandPalette.shade600,
@@ -131,9 +137,8 @@ class OtpWidget extends StatelessWidget {
                 ],
               ),
             const Spacer(),
-
             Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: kButtonBottomPadding),
               child: RtcButton(
                 title: S.current.confirm,
                 isActive: state.isOtpComplete,
