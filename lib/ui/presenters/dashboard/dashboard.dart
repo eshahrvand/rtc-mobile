@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
-import 'package:rtc_mobile/generated/l10n.dart';
-import '../../widget/rtc_image.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/dashboard_state.dart';
+import 'widget/dashboard_app_bar.dart';
 import 'widget/dashboard_body.dart';
 import '../products/widget/products_body.dart';
 import '../products/bloc/product_cubit.dart';
@@ -15,8 +13,6 @@ import '../orders/bloc/orders_state.dart';
 import '../orders/orders_body.dart';
 import '../../widget/rtc_bottom_nav.dart';
 import '../../widget/rtc_drawer.dart';
-import '../../widget/rtc_appbar.dart';
-import '../../widget/rtc_search_appbar.dart';
 
 class DashboardScreen extends StatelessWidget {
   final int initialIndex;
@@ -130,12 +126,11 @@ class _MainViewState extends State<MainView> {
                   return Scaffold(
                     key: scaffoldKey,
                     drawer: RtcDrawer(scaffoldKey: scaffoldKey),
-                    appBar: _buildAppBar(
-                      context,
-                      dashboardState.selectedNavIndex,
-                      scaffoldKey,
-                      productState,
-                      ordersState,
+                    appBar: DashboardAppBar(
+                      index: dashboardState.selectedNavIndex,
+                      scaffoldKey: scaffoldKey,
+                      productState: productState,
+                      ordersState: ordersState,
                     ),
                     body: IndexedStack(
                       index: dashboardState.selectedNavIndex,
@@ -159,49 +154,5 @@ class _MainViewState extends State<MainView> {
         },
       ),
     );
-  }
-
-  PreferredSizeWidget? _buildAppBar(
-    BuildContext context,
-    int index,
-    GlobalKey<ScaffoldState> scaffoldKey,
-    ProductState productState,
-    OrdersState ordersState,
-  ) {
-    if (index == 0) {
-      return RtcAppBar(
-        onBack: () {
-          scaffoldKey.currentState?.openDrawer();
-        },
-        backIconPath: "$baseImage/drawer_menu.svg",
-      );
-    } else if (index == 1) {
-      return RtcSearchAppBar(
-        isSearchActive: productState.isSearchActive,
-        showShadow: true,
-        title: "",
-        searchHint: S.current.searchProducts,
-        onSearchChanged: (value) =>
-            context.read<ProductCubit>().onSearchChanged(value),
-        onSearchActivated: () => context.read<ProductCubit>().activateSearch(),
-        onSearchDeactivated: () =>
-            context.read<ProductCubit>().deactivateSearch(),
-        scaffoldKey: scaffoldKey,
-      );
-    } else if (index == 2) {
-      return RtcSearchAppBar(
-        isSearchActive: ordersState.isSearchActive,
-        showShadow: true,
-        title: '',
-        searchHint: 'جستجو در سفارشات',
-        onSearchChanged: (value) =>
-            context.read<OrdersCubit>().onSearchChanged(value),
-        onSearchActivated: () => context.read<OrdersCubit>().activateSearch(),
-        onSearchDeactivated: () =>
-            context.read<OrdersCubit>().deactivateSearch(),
-        scaffoldKey: scaffoldKey,
-      );
-    }
-    return null;
   }
 }
