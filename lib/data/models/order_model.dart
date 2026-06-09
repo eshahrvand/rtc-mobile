@@ -45,6 +45,8 @@ class OrderDetailModel {
   final bool isSettled;
   final List<DisbursementRecordModel> disbursementRecords;
   final List<SettlementRecordModel> settlementRecords;
+  final String? assignedSalesReviewer;
+  final String? assignedFinanceReviewer;
 
   OrderDetailModel({
     required this.id,
@@ -62,6 +64,8 @@ class OrderDetailModel {
     this.isSettled = false,
     this.disbursementRecords = const [],
     this.settlementRecords = const [],
+    this.assignedSalesReviewer,
+    this.assignedFinanceReviewer,
   });
 }
 

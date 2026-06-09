@@ -159,7 +159,8 @@ class OrdersRepository {
         status: dto.status,
         remainingTime: remainingTimeStr,
         // Need API support or calculation if available
-        isSettled: OrderStatus.fromString(dto.status) == OrderStatus.approved ||
+        isSettled:
+            OrderStatus.fromString(dto.status) == OrderStatus.approved ||
             OrderStatus.fromString(dto.status) == OrderStatus.rejected,
         rejectionReason: dto.rejectionNote,
         creditPlan: CreditPlanModel(
@@ -240,6 +241,8 @@ class OrdersRepository {
             trackingCode: s.trackingCode ?? s.reference,
           );
         }).toList(),
+        assignedSalesReviewer: dto.assignedSalesReviewer,
+        assignedFinanceReviewer: dto.assignedFinanceReviewer,
       );
     });
   }

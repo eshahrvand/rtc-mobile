@@ -41,6 +41,8 @@ class OrderDtoModel with _$OrderDtoModel {
     List<DisbursementRecordDtoModel>? disbursementRecords,
     @JsonKey(name: 'settlement_records')
     List<SettlementRecordDtoModel>? settlementRecords,
+    @JsonKey(name: 'assigned_sales_reviewer') String? assignedSalesReviewer,
+    @JsonKey(name: 'assigned_finance_reviewer') String? assignedFinanceReviewer,
   }) = _OrderDtoModel;
 
   factory OrderDtoModel.fromJson(Map<String, dynamic> json) =>

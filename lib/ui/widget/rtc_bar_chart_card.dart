@@ -90,7 +90,7 @@ class RtcBarChartCard extends StatelessWidget {
                             }
                             return const SizedBox.shrink();
                           },
-                          reservedSize: 80,
+                          reservedSize: 28,
                         ),
                       ),
                       leftTitles: const AxisTitles(

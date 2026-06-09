@@ -31,6 +31,33 @@ class OrderTabHistory extends StatelessWidget {
                 .skip(splitIndex)
                 .map((h) => OrderHistoryRowWidget(label: h.label, value: h.value)),
 
+            if ((order.assignedSalesReviewer != null &&
+                    order.assignedSalesReviewer!.isNotEmpty) ||
+                (order.assignedFinanceReviewer != null &&
+                    order.assignedFinanceReviewer!.isNotEmpty)) ...[
+              const SizedBox(height: 15.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Divider(
+                  height: 1,
+                  color: AppColors.grayPalette.shade200,
+                ),
+              ),
+              const SizedBox(height: 15.0),
+              if (order.assignedSalesReviewer != null &&
+                  order.assignedSalesReviewer!.isNotEmpty)
+                OrderHistoryRowWidget(
+                  label: 'نام پشتیبان:',
+                  value: order.assignedSalesReviewer!,
+                ),
+              if (order.assignedFinanceReviewer != null &&
+                  order.assignedFinanceReviewer!.isNotEmpty)
+                OrderHistoryRowWidget(
+                  label: 'نام سرپرست مالی:',
+                  value: order.assignedFinanceReviewer!,
+                ),
+            ],
+
             const SizedBox(height: 15.0),
 
             if (order.rejectionReason != null && order.rejectionReason!.isNotEmpty) ...[
