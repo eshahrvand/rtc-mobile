@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
-import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:go_router/go_router.dart';
-import '../../../router/app_route.dart';
-import '../../../widget/rtc_customer_order_item.dart';
 import '../../../widget/rtc_tab_bar.dart';
-import '../../../widget/rtc_text_field.dart';
 import '../bloc/customers_cubit.dart';
 import '../bloc/customers_state.dart';
+
+import 'customers_info_tab.dart';
+import 'customers_orders_tab.dart';
 
 class CustomersDetailView extends StatefulWidget {
   const CustomersDetailView({super.key});
@@ -66,15 +64,15 @@ class _CustomersDetailViewState extends State<CustomersDetailView> {
                 onTabChanged: (index) =>
                     context.read<CustomersCubit>().onTabChanged(index),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16.0),
               Expanded(
                 child: PageView(
                   controller: _pageController,
                   onPageChanged: (index) =>
                       context.read<CustomersCubit>().onTabChanged(index),
                   children: [
-                    _CustomerInfoTab(customer: state.selectedCustomer!),
-                    _CustomerOrdersTab(orders: state.selectedCustomer!.orders),
+                    CustomersInfoTab(customer: state.selectedCustomer!),
+                    CustomersOrdersTab(orders: state.selectedCustomer!.orders),
                   ],
                 ),
               ),
@@ -82,94 +80,6 @@ class _CustomersDetailViewState extends State<CustomersDetailView> {
           ),
         );
       },
-    );
-  }
-}
-
-class _CustomerInfoTab extends StatelessWidget {
-  final dynamic customer;
-
-  const _CustomerInfoTab({required this.customer});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          _buildField(S.current.customerName, customer.name, context),
-          _buildField(S.current.nationalId, customer.nationalCode, context),
-          _buildField(S.current.phoneNumber, customer.phoneNumber, context),
-          _buildField(S.current.postalCode, customer.postalCode, context),
-          _buildField(
-            S.current.address,
-            customer.address,
-            context,
-            minLines: 1,
-            maxLines: 4,
-            lineHeight: 2,
-            isAddress: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildField(
-    String label,
-    String value,
-    BuildContext context, {
-    int? minLines,
-    int? maxLines,
-    double? lineHeight,
-    bool? isAddress,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: RtcTextField(
-        isAddress: isAddress,
-        readOnly: true,
-        isSetReadOnlyColor: true,
-        labelText: label,
-        labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-          fontWeight: FontWeight.w500,
-          color: AppColors.grayPalette.shade700,
-        ),
-        suffix: lineHeight != null ? SizedBox(height: 0, width: 0) : null,
-        minLines: minLines,
-        maxLines: maxLines,
-        controller: TextEditingController(text: value),
-        textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-          color: AppColors.grayPalette.shade700,
-          height: lineHeight,
-        ),
-      ),
-    );
-  }
-}
-
-class _CustomerOrdersTab extends StatelessWidget {
-  final List<dynamic> orders;
-
-  const _CustomerOrdersTab({required this.orders});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: ListView.builder(
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          final order = orders[index];
-          return RtcCustomerOrderItem(
-            order: order,
-            onTap: () {
-              context.push(AppRoutes.orderDetail, extra: order.orderId);
-            },
-          );
-        },
-      ),
     );
   }
 }
