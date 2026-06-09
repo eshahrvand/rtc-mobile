@@ -74,19 +74,23 @@ class RtcBarChartCard extends StatelessWidget {
                           getTitlesWidget: (value, meta) {
                             final index = value.toInt();
                             if (index >= 0 && index < data.length) {
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  data[index].label,
-                                  style: theme.bodySmall!.copyWith(
-                                    color: Colors.black,
+                              return SideTitleWidget(
+                                meta: meta,
+                                space: 8,
+                                child: RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Text(
+                                    data[index].label,
+                                    style: theme.bodySmall!.copyWith(
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               );
                             }
                             return const SizedBox.shrink();
                           },
-                          reservedSize: 28,
+                          reservedSize: 80,
                         ),
                       ),
                       leftTitles: const AxisTitles(
