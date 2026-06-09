@@ -85,3 +85,16 @@ class SubPlanChartDtoModel with _$SubPlanChartDtoModel {
 
   factory SubPlanChartDtoModel.fromJson(Map<String, dynamic> json) => _$SubPlanChartDtoModelFromJson(json);
 }
+
+@freezed
+class CommissionDtoModel with _$CommissionDtoModel {
+  const factory CommissionDtoModel({
+    @JsonKey(name: 'monthly_sales_total') required double monthlySalesTotal,
+    @JsonKey(name: 'commission_rate') required int commissionRate,
+    @JsonKey(name: 'commission_amount') required double commissionAmount,
+    @JsonKey(name: 'next_tier_rate') required int nextTierRate,
+    @JsonKey(name: 'distance_to_next_tier') required double distanceToNextTier,
+  }) = _CommissionDtoModel;
+
+  factory CommissionDtoModel.fromJson(Map<String, dynamic> json) => _$CommissionDtoModelFromJson(json);
+}

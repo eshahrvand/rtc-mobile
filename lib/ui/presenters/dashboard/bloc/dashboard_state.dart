@@ -4,6 +4,7 @@ import '../../../../data/models/pie_chart_item_model.dart';
 import '../../../../data/models/line_chart_data_model.dart';
 import '../../../../data/models/bar_chart_item_model.dart';
 import '../../../../data/models/order_model.dart';
+import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 
 part 'dashboard_state.freezed.dart';
@@ -47,5 +48,8 @@ class DashboardState with _$DashboardState {
 
     // User Profile
     UserProfileDtoModel? userProfile,
+
+    // Commission
+    CommissionDtoModel? commission,
   }) = _DashboardState;
 }

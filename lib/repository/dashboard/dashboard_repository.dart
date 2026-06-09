@@ -36,4 +36,8 @@ class DashboardRepository {
   Future<List<SubPlanChartDtoModel>> getSubPlanChart() async {
     return await _dashboardService.getSubPlanChart();
   }
+
+  Future<CommissionDtoModel> getCommission() async {
+    return await _dashboardService.getCommission();
+  }
 }

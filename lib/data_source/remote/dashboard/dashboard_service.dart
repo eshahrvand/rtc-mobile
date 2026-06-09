@@ -30,4 +30,7 @@ abstract class DashboardService {
 
   @GET('dashboard/subplan-chart')
   Future<List<SubPlanChartDtoModel>> getSubPlanChart();
+
+  @GET('dashboard/commission')
+  Future<CommissionDtoModel> getCommission();
 }

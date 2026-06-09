@@ -30,17 +30,14 @@ class RtcMessageCard extends StatelessWidget {
             spacing: 10,
             children: [
               RtcImage(
-                image: "$baseImage/alert.svg",
-
-                // iconPath,
+                image: iconPath,
                 width: 16,
                 height: 16,
               ),
 
               Expanded(
                 child: Text(
-                  "با فروش ۲۰,۰۰۰,۰۰۰ تومان دیگر پورسانت شما به ۸٪ نقدی و یا ۱۱٪ کالایی افزایش می‌یابد.",
-                  // message,
+                  message,
                   style: theme.bodyMedium!.copyWith(
                     color: AppColors.warningPalette.shade600,
                   ),

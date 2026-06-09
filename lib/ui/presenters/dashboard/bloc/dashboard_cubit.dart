@@ -12,6 +12,7 @@ import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
 import '../../../../generated/l10n.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../theme/colors.dart';
 import 'dashboard_state.dart';
 import '../../../../data/models/order_model.dart';
@@ -66,6 +67,7 @@ class DashboardCubit extends Cubit<DashboardState> {
           _dashboardRepo.getSubPlanChart(),
           _ordersRepo.getOrders(page: 1, pageSize: 5),
           _dashboardRepo.getOrderStatus(),
+          _dashboardRepo.getCommission(),
         ])
         .then<void>((results) {
           final summary = results[0] as DashboardSummaryDtoModel;
@@ -74,11 +76,12 @@ class DashboardCubit extends Cubit<DashboardState> {
           final subplans = results[3] as List<SubPlanChartDtoModel>;
           final orders = results[4] as List<OrderSummaryModel>;
           final orderStatuses = results[5] as List<OrderStatusDtoModel>;
+          final commission = results[6] as CommissionDtoModel;
 
           emit(
             state.copyWith(
               status: DashboardRequestStatus.success,
-              quickAccessItems: _mapQuickAccessItems(summary),
+              quickAccessItems: _mapQuickAccessItems(summary, commission),
               lineChartData: [_mapLineChartData(dailyChart)],
               pieChart1Title: S.current.orderStatusChartTitle,
               pieChart1Data: _mapOrderStatusChart(orderStatuses),
@@ -87,6 +90,9 @@ class DashboardCubit extends Cubit<DashboardState> {
               barChartTitle: S.current.plansSalesChartTitle,
               barChartData: _mapSubPlanChart(subplans),
               recentOrders: orders,
+              commission: commission,
+              messageText: _formatCommissionMessage(commission),
+              messageIconPath: 'assets/images/alert.svg',
             ),
           );
         })
@@ -96,7 +102,8 @@ class DashboardCubit extends Cubit<DashboardState> {
   // ─── Mapping Helpers ───────────────────────────────────────────────
 
   /// Maps summary DTO to quick access UI models.
-  List<QuickAccessItemModel> _mapQuickAccessItems(DashboardSummaryDtoModel s) {
+  List<QuickAccessItemModel> _mapQuickAccessItems(
+      DashboardSummaryDtoModel s, CommissionDtoModel? c) {
     String formatDelta(double? deltaPct) {
       if (deltaPct == null) return '0%';
       final sign = deltaPct >= 0 ? '+' : '';
@@ -133,7 +140,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       ),
       QuickAccessItemModel(
         title: S.current.cashCommission,
-        value: s.activeOrders.toString(),
+        value: c?.commissionAmount.toStringAsFixed(0).formatCurrency ?? '0',
         currency: "assets/images/toman.svg",
         iconPath: 'assets/images/trend-up.svg',
       ),
@@ -264,6 +271,15 @@ class DashboardCubit extends Cubit<DashboardState> {
     return list.map((s) {
       return BarChartItemModel(label: s.planName, value: s.totalSalesAmount);
     }).toList();
+  }
+
+  /// Formats the commission message for RtcMessageCard.
+  String _formatCommissionMessage(CommissionDtoModel c) {
+    final distance = c.distanceToNextTier.toStringAsFixed(0).formatCurrency;
+    final nextRate = c.nextTierRate;
+    // Note: The original hardcoded text had "8% نقدی و یا 11% کالایی".
+    // I'll stick to a simpler version based on the API response fields unless specified otherwise.
+    return "با فروش $distance تومان دیگر پورسانت شما به $nextRate٪ افزایش می‌یابد.";
   }
 
   /// Centralized handler for repository errors.
