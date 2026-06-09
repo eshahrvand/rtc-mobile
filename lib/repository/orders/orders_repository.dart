@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../core/utils/date_time_utils.dart';
 import '../../data/models/customer_model.dart';
 import '../../data/models/order_model.dart';
@@ -154,6 +153,37 @@ class OrdersRepository {
         );
       }
 
+      double totalBasePrice = 0;
+      double totalDiscountAmount = 0;
+
+      final products = (dto.lines ?? []).map((line) {
+        final unitPrice = line.unitPriceAtCreation;
+        final discountPct = line.discountPctAtCreation ?? 0;
+        final discountAmountPerUnit = line.discountAmountAtCreation ?? 0;
+
+        // Calculate old price (original price) per unit
+        // total_per_unit = original_price * (1 - discount_pct/100) - discount_amount_per_unit
+        // So original_price = (unitPrice + discount_amount_per_unit) / (1 - discount_pct/100)
+        double originalPrice = unitPrice;
+        if (discountPct < 100) {
+          originalPrice = (unitPrice + discountAmountPerUnit) /
+              (1 - (discountPct / 100));
+        }
+
+        totalBasePrice += (originalPrice * line.quantity);
+        totalDiscountAmount +=
+            (originalPrice - unitPrice) * line.quantity;
+
+        return OrderProductModel(
+          name: line.product.name,
+          price: _formatCurrency(unitPrice),
+          quantity: line.quantity.toString(),
+          imageUrl: line.product.featuredImage?.file ?? '',
+          oldPrice: _formatCurrency(originalPrice),
+          discount: discountPct > 0 ? '${discountPct.toStringAsFixed(0)}٪' : null,
+        );
+      }).toList();
+
       return OrderDetailModel(
         id: dto.id,
         status: dto.status,
@@ -169,14 +199,7 @@ class OrdersRepository {
           priceIncrease: '', // Need clarification on where this comes from
           validityPeriod: '${dto.subPlan.repaymentDurationMonths} ماه',
         ),
-        products: (dto.lines ?? []).map((line) {
-          return OrderProductModel(
-            name: line.product.name,
-            price: _formatCurrency(line.unitPriceAtCreation),
-            quantity: line.quantity.toString(),
-            imageUrl: line.product.featuredImage?.file ?? '',
-          );
-        }).toList(),
+        products: products,
         customer: OrderCustomerModel(
           name: '${dto.customer.firstName} ${dto.customer.lastName}',
           phone: dto.customer.mobile,
@@ -205,8 +228,8 @@ class OrdersRepository {
           );
         }).toList(),
         financialSummary: FinancialSummaryModel(
-          basePrice: _formatCurrency(dto.total),
-          totalDiscount: '۰',
+          basePrice: _formatCurrency(totalBasePrice),
+          totalDiscount: _formatCurrency(totalDiscountAmount),
           finalAmount: _formatCurrency(dto.total),
         ),
         payments: (dto.payments ?? []).map((p) {

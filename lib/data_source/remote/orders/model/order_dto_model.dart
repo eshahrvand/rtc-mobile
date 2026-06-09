@@ -143,8 +143,9 @@ class OrderLineDtoModel with _$OrderLineDtoModel {
     required String id,
     required OrderProductSummaryDtoModel product,
     required int quantity,
-    @JsonKey(name: 'unit_price_at_creation')
-    required double unitPriceAtCreation,
+    @JsonKey(name: 'unit_price_at_creation') required double unitPriceAtCreation,
+    @JsonKey(name: 'discount_pct_at_creation') double? discountPctAtCreation,
+    @JsonKey(name: 'discount_amount_at_creation') double? discountAmountAtCreation,
     @JsonKey(name: 'line_total') required double lineTotal,
   }) = _OrderLineDtoModel;
 

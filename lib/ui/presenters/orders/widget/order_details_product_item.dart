@@ -41,31 +41,46 @@ class OrderDetailsProductItem extends StatelessWidget {
                   spacing: 4,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (product.oldPrice != null)
-                      Text(
-                        product.oldPrice!,
-                        style: theme.bodyMedium!.copyWith(
-                          color: AppColors.grayPalette.shade500,
-                          decoration: TextDecoration.lineThrough,
-                        ),
+                    SizedBox(
+                      height: 18,
+                      child: Row(
+                        spacing: 4,
+                        children: [
+                          if (product.oldPrice != null)
+                            Text(
+                              product.oldPrice!,
+                              style: theme.bodyMedium!.copyWith(
+                                color: AppColors.grayPalette.shade500,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          if (product.discount != null)
+                            //TODO: use rtc badge
+                            Container(
+                              width: 32,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.errorPalette.shade50,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  product.discount!,
+                                  style: theme.bodyMedium!.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.errorPalette.shade700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                    if (product.discount != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.errorPalette.shade50,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          product.discount!,
-                          style: theme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.errorPalette.shade700,
-                          ),
-                        ),
-                      ),
+                    ),
                   ],
                 ),
+                SizedBox(height: 4),
                 Row(
                   spacing: 2,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -89,7 +104,9 @@ class OrderDetailsProductItem extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 2, left: 2),
                       decoration: BoxDecoration(
                         color: AppColors.brandPalette.shade25,
-                        borderRadius: const BorderRadius.all(Radius.circular(100)),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(100),
+                        ),
                       ),
                       child: Center(
                         child: Text(
