@@ -67,7 +67,7 @@ class DashboardCubit extends Cubit<DashboardState> {
           _ordersRepo.getOrders(page: 1, pageSize: 5),
           _dashboardRepo.getOrderStatus(),
         ])
-        .then((results) {
+        .then<void>((results) {
           final summary = results[0] as DashboardSummaryDtoModel;
           final dailyChart = results[1] as List<DailyChartDtoModel>;
           final categories = results[2] as List<CategoryChartDtoModel>;
@@ -90,27 +90,40 @@ class DashboardCubit extends Cubit<DashboardState> {
             ),
           );
         })
-        .catchError(_handleError);
+        .catchError((e) => _handleError(e));
   }
 
   // ─── Mapping Helpers ───────────────────────────────────────────────
 
   /// Maps summary DTO to quick access UI models.
   List<QuickAccessItemModel> _mapQuickAccessItems(DashboardSummaryDtoModel s) {
+    String formatDelta(double? deltaPct) {
+      if (deltaPct == null) return '0%';
+      final sign = deltaPct >= 0 ? '+' : '';
+      return '$sign${deltaPct.toStringAsFixed(0)}%';
+    }
+
+    double calculatePercentage(int current, int delta) {
+      final previous = current - delta;
+      if (previous <= 0) return delta > 0 ? 100.0 : 0.0;
+      return (delta / previous) * 100;
+    }
+
     return [
       QuickAccessItemModel(
         title: S.current.monthlySales,
         value: s.totalSalesAmount.toStringAsFixed(0),
         currency: "assets/images/toman.svg",
         iconPath: 'assets/images/dollar.svg',
-        percentage: '${(s.totalSalesDeltaPct ?? 0).toStringAsFixed(0)}%',
+        percentage: formatDelta(s.totalSalesDeltaPct),
       ),
       QuickAccessItemModel(
         title: S.current.approvedOrders,
         value: s.orderCount.toString(),
         currency: "",
         iconPath: 'assets/images/document-list-check.svg',
-        percentage: '${s.orderCountDelta}%',
+        percentage:
+            formatDelta(calculatePercentage(s.orderCount, s.orderCountDelta)),
       ),
       QuickAccessItemModel(
         title: S.current.walletBalance,
