@@ -107,7 +107,9 @@ class _WalletView extends StatelessWidget {
                                   const SizedBox(height: 16),
                                   Expanded(
                                     child: ListView.separated(
-                                      padding: const EdgeInsets.only(bottom: 32),
+                                      padding: const EdgeInsets.only(
+                                        bottom: 32,
+                                      ),
                                       itemCount: summary.pockets.length,
                                       separatorBuilder: (context, index) =>
                                           const SizedBox(height: 12),
@@ -121,8 +123,8 @@ class _WalletView extends StatelessWidget {
                                                 .selectPocket(pocket);
                                             context.push(
                                               AppRoutes.transactionList,
-                                              extra:
-                                                  context.read<WalletCubit>(),
+                                              extra: context
+                                                  .read<WalletCubit>(),
                                             );
                                           },
                                         );
