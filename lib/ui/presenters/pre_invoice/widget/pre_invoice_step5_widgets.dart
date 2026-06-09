@@ -193,16 +193,20 @@ class PreInvoiceStep5ProductItem extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Text(
                                   product.oldPrice!,
-                                  style: theme.bodySmall!.copyWith(
+                                  style: theme.bodyMedium!.copyWith(
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
                                     color: AppColors.grayPalette.shade400,
                                   ),
                                 ),
-                                const SizedBox(width: 2),
+                                const SizedBox(width: 4),
                               ],
-                              if (product.discount != "0%")
+                              if (product.discount != null && product.discount != "0%")
                                 RtcDiscountBadge(
+                                  backgroundColor: AppColors.errorPalette.shade50,
+                                  textStyle: theme.bodyMedium!.copyWith(
+                                      color: AppColors.errorPalette.shade700
+                                  ),
                                   discount: product.discount!,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 6,

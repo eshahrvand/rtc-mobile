@@ -39,7 +39,7 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                   PreInvoiceCartHeader(count: state.totalQuantity),
                   const SizedBox(height: 34),
                   SizedBox(
-                    height: state.cartItems.length == 1 ? 110 : null,
+                    height: state.cartItems.length == 1 ? 120 : null,
                     child: ListView.separated(
                       shrinkWrap: true,
                       itemCount: state.cartItems.length,

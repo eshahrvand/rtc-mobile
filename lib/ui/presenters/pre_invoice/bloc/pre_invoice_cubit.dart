@@ -46,7 +46,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     _plansRepo
         .getSubPlans()
-        .then((response) {
+        .then<void>((response) {
           final plans = response.results.map(_mapToCreditPlanModel).toList();
 
           final chips = [
@@ -67,7 +67,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e));
+        .catchError((e) {
+          _handleError(e);
+          return null;
+        });
   }
 
   void goToStep(PreInvoiceStep step) {
@@ -117,7 +120,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e));
+        .catchError((e) {
+          _handleError(e);
+          return null;
+        });
   }
 
   void onCreditPlanSelected(String id) {
@@ -503,8 +509,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void _createOrder(bool shouldClear) {
-    if (state.customerInfo == null || state.selectedCreditPlanId == null)
+    if (state.customerInfo == null || state.selectedCreditPlanId == null) {
       return;
+    }
 
     emit(
       state.copyWith(
@@ -553,17 +560,31 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   PreInvoiceProductModel _mapProductDtoToModel(ProductDtoModel dto) {
     final formatter = NumberFormat('#,###', 'en_US');
+    final planPrice = dto.planPrice ?? 0;
+
+    // Calculate old price if discount is present but oldPrice is null
+    num? finalOldPrice = dto.oldPrice;
+
+    if (finalOldPrice == null &&
+        dto.discountPct != null &&
+        dto.discountPct! > 0) {
+      // Calculate without manual rounding
+      finalOldPrice = planPrice / (1 - (dto.discountPct! / 100));
+    }
+
+    // Use basePrice as final fallback
+    finalOldPrice ??= dto.basePrice;
+
     return PreInvoiceProductModel(
       id: dto.id,
       name: dto.name,
       imageUrl: dto.featuredImage?.file ?? '$baseImage/frame1.png',
-      price: formatter.format(dto.planPrice ?? 0),
-      oldPrice: dto.oldPrice != null
-          ? formatter.format(dto.oldPrice!)
-          : dto.basePrice != null
-          ? formatter.format(dto.basePrice!)
-          : null,
-      discount: dto.discountPct != null ? '${dto.discountPct}%' : null,
+      price: formatter.format(planPrice),
+      oldPrice: finalOldPrice != null ? formatter.format(finalOldPrice) : null,
+      discount:
+          dto.discountPct != null && dto.discountPct! > 0
+              ? '${dto.discountPct}%'
+              : null,
       inventory: dto.stockQty.toString(),
       isAvailable: dto.stockQty > 0,
     );

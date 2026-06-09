@@ -44,9 +44,9 @@ class RtcPreInvoiceProductImage extends StatelessWidget {
                   isCardStyle: false,
                   colorDeleteIcon: false,
                   textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 )
               : const SizedBox.shrink(),
         ),
@@ -72,11 +72,11 @@ class RtcPreInvoiceProductAvailability extends StatelessWidget {
       child: Text(
         isAvailable ? 'موجودی ($inventory)' : 'ناموجود',
         style: Theme.of(context).textTheme.labelSmall!.copyWith(
-              fontWeight: FontWeight.w600,
-              color: !isAvailable
-                  ? AppColors.grayPalette.shade500
-                  : AppColors.successPalette.shade600,
-            ),
+          fontWeight: FontWeight.w600,
+          color: !isAvailable
+              ? AppColors.grayPalette.shade500
+              : AppColors.successPalette.shade600,
+        ),
       ),
     );
   }
@@ -97,20 +97,26 @@ class RtcPreInvoiceProductPriceAndActions extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           if (product.oldPrice != null)
-            Text(
-              product.oldPrice!,
-              style: theme.bodyMedium!.copyWith(
-                fontWeight: FontWeight.w500,
-                decoration: TextDecoration.lineThrough,
-                color: AppColors.grayPalette.shade500,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  product.oldPrice!,
+                  style: theme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    decoration: TextDecoration.lineThrough,
+                    color: AppColors.grayPalette.shade500,
+                  ),
+                ),
+                SizedBox(width: 26, height: 0),
+              ],
             ),
           product.isAvailable
               ? SizedBox(
                   height: 24,
                   child: Row(
                     children: [
-                      if (product.discount != "0%")
+                      if (product.discount != null && product.discount != "0%")
                         RtcDiscountBadge(
                           discount: product.discount!,
                           padding: const EdgeInsets.symmetric(

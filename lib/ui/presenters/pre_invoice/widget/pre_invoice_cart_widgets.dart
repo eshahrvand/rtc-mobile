@@ -123,7 +123,7 @@ class PreInvoiceCartItem extends StatelessWidget {
                         height: 24,
                       ),
                       const Spacer(),
-                      if (item.discount != "0%")
+                      if (item.discount != null && item.discount != "0%")
                         RtcDiscountBadge(
                           discount: item.discount!,
                           padding: const EdgeInsets.symmetric(
