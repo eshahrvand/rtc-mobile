@@ -1,16 +1,11 @@
-import 'package:flutter/services.dart';
-import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../data/models/pre_invoice_model.dart';
-import '../../../widget/rtc_text_field.dart';
-import '../../../widget/rtc_image.dart';
-import '../../../../config/config.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
+import 'pre_invoice_step3_widgets.dart';
 
 class PreInvoiceStep3View extends StatefulWidget {
   const PreInvoiceStep3View({super.key});
@@ -68,7 +63,6 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
     return BlocListener<PreInvoiceCubit, PreInvoiceState>(
       listenWhen: (prev, curr) => prev.customerInfo != curr.customerInfo,
       listener: (context, state) {
@@ -86,92 +80,16 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      RtcTextField(
+                      PreInvoiceStep3NationalIdField(
                         controller: _nationalIdController,
-                        keyboardType: TextInputType.number,
-                        labelText: S.current.nationalCodeLabelWithStar,
-                        labelStyle: theme.bodyMedium!.copyWith(
-                          color: AppColors.grayPalette.shade700,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp("[0-9۰-۹\b]"))
-                        ],
-                        maxLength: 10,
-                        hintText: S.current.nationalCodeHint,
-                        hintStyle: theme.bodyLarge!.copyWith(
-                          color: AppColors.grayPalette.shade400,
-                        ),
-                        isError:
-                            !state.isNationalIdValid &&
-                            state.customerIdQuery.isNotEmpty,
-                        suffix: _nationalIdController.text.isNotEmpty
-                            ? GestureDetector(
-                                onTap: () {
-                                  _nationalIdController.clear();
-                                  cubit.onCustomerIdChanged('');
-                                  setState(() {});
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
-                                  child: RtcImage(
-                                    image: '$baseImage/close.svg',
-                                    width: 20,
-                                    height: 20,
-                                    color: AppColors.grayPalette.shade600,
-                                    boxFit: BoxFit.fill,
-                                  ),
-                                ),
-                              )
-                            : null,
-                        helper:
-                            !state.isNationalIdValid &&
-                                state.customerIdQuery.isNotEmpty
-                            ? Row(
-                                spacing: 8,
-                                children: [
-                                  RtcImage(
-                                    image: 'assets/images/alert.svg',
-                                    width: 14,
-                                    height: 14,
-                                    color: AppColors.errorPalette.shade600,
-                                  ),
-                                  Text(
-                                    S.current.nationalIdWrong,
-                                    style: theme.bodySmall!.copyWith(
-                                      color: AppColors.errorPalette.shade600,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
-                        onChanged: (value) {
-                          cubit.onCustomerIdChanged(value);
+                        state: state,
+                        cubit: cubit,
+                        onClear: () {
+                          _nationalIdController.clear();
+                          cubit.onCustomerIdChanged('');
                           setState(() {});
                         },
                       ),
-                      if (state.customerInfo == null) ...[
-                        const SizedBox(height: 12),
-                        RtcButton(
-                          title: S.current.checkButton,
-                          isActive:
-                              state.isNationalIdValid &&
-                              state.customerIdQuery.isNotEmpty,
-                          isLoading: state.customerSearchLoading,
-                          styleBtn: theme.titleSmall!.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color:
-                                state.isNationalIdValid &&
-                                    state.customerIdQuery.isNotEmpty
-                                ? Colors.white
-                                : AppColors.grayPalette.shade300,
-                          ),
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            cubit.searchCustomer();
-                          },
-                        ),
-                      ],
                       if (state.customerInfo != null) ...[
                         const SizedBox(height: 12),
                         RtcDivider(
@@ -179,165 +97,27 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                           height: 1,
                         ),
                         const SizedBox(height: 12),
-                        RtcTextField(
-                          labelText:
-                              state.isExistingCustomer &&
-                                  (state
-                                          .originalCustomerInfo
-                                          ?.lastName
-                                          .isNotEmpty ??
-                                      false)
-                              ? S.current.nameLabel
-                              : S.current.nameLabelWithStar,
-                          labelStyle: theme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.grayPalette.shade700,
-                          ),
-                          controller: _firstNameController,
-                          readOnly:
-                              state.isExistingCustomer &&
-                              (state
-                                      .originalCustomerInfo
-                                      ?.firstName
-                                      .isNotEmpty ??
-                                  false),
-                          isSetReadOnlyColor: true,
-                          onChanged: (value) =>
-                              cubit.onCustomerFieldChanged('firstName', value),
+                        PreInvoiceStep3CustomerFields(
+                          state: state,
+                          cubit: cubit,
+                          firstNameController: _firstNameController,
+                          lastNameController: _lastNameController,
+                          phoneNumberController: _phoneNumberController,
+                          postalCodeController: _postalCodeController,
+                          addressController: _addressController,
                         ),
-                        SizedBox(height: 12),
-                        RtcTextField(
-                          labelText:
-                              state.isExistingCustomer &&
-                                  (state
-                                          .originalCustomerInfo
-                                          ?.lastName
-                                          .isNotEmpty ??
-                                      false)
-                              ? S.current.lastNameLabel
-                              : S.current.lastNameLabelWithStar,
-                          labelStyle: theme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.grayPalette.shade700,
-                          ),
-                          controller: _lastNameController,
-                          readOnly:
-                              state.isExistingCustomer &&
-                              (state
-                                      .originalCustomerInfo
-                                      ?.lastName
-                                      .isNotEmpty ??
-                                  false),
-                          isSetReadOnlyColor: true,
-                          onChanged: (value) =>
-                              cubit.onCustomerFieldChanged('lastName', value),
-                        ),
-                        SizedBox(height: 12),
-                        RtcTextField(
-                          labelText: S.current.phoneNumberLabelWithStar,
-                          labelStyle: theme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.grayPalette.shade700,
-                          ),
-                          controller: _phoneNumberController,
-                          keyboardType: TextInputType.phone,
-                          maxLength: 11,
-                          isError: !state.isPhoneNumberValid,
-                          helper: !state.isPhoneNumberValid
-                              ? Row(
-                                  spacing: 8,
-                                  children: [
-                                    RtcImage(
-                                      image: 'assets/images/alert.svg',
-                                      width: 14,
-                                      height: 14,
-                                      color: AppColors.errorPalette.shade600,
-                                    ),
-                                    Text(
-                                      S.current.phoneNumberWrong,
-                                      style: theme.bodySmall!.copyWith(
-                                        color: AppColors.errorPalette.shade600,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
-                          onChanged: (value) => cubit.onCustomerFieldChanged(
-                            'phoneNumber',
-                            value,
+                        const SizedBox(height: 24),
+                        PreInvoiceStep3AddressToggle(
+                          isOrderSentToCustomerAddress:
+                              state.customerInfo!.isOrderSentToCustomerAddress,
+                          onToggle: () => cubit.onCustomerFieldChanged(
+                            'isOrderSentToCustomerAddress',
+                            !state
+                                .customerInfo!
+                                .isOrderSentToCustomerAddress,
                           ),
                         ),
-                        SizedBox(height: 12),
-                        RtcTextField(
-                          labelText: S.current.postalCodeLabelWithStar,
-                          labelStyle: theme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.grayPalette.shade700,
-                          ),
-                          controller: _postalCodeController,
-                          onChanged: (value) =>
-                              cubit.onCustomerFieldChanged('postalCode', value),
-                          maxLength: 10,
-                        ),
-                        SizedBox(height: 12),
-                        RtcTextField(
-                          labelText: S.current.fullAddressLabelWithStar,
-                          labelStyle: theme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.grayPalette.shade700,
-                          ),
-                          minLines: 1,
-                          maxLines: 3,
-                          controller: _addressController,
-                          onChanged: (value) =>
-                              cubit.onCustomerFieldChanged('address', value),
-                        ),
-                        SizedBox(height: 24),
-                        Row(
-                          spacing: 8,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              S.current.sendOrderToCustomerAddress,
-                              style: theme.bodyMedium!.copyWith(
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.grayPalette.shade700,
-                              ),
-                            ),
-                            const Expanded(child: SizedBox()),
-                            GestureDetector(
-                              onTap: () => cubit.onCustomerFieldChanged(
-                                'isOrderSentToCustomerAddress',
-                                !state
-                                    .customerInfo!
-                                    .isOrderSentToCustomerAddress,
-                              ),
-                              child: RtcImage(
-                                image:
-                                    state
-                                        .customerInfo!
-                                        .isOrderSentToCustomerAddress
-                                    ? "$baseImage/toggle_active.svg"
-                                    : "$baseImage/toggle_base.svg",
-                                width: 36,
-                                height: 20,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 48,
-                              child: Text(
-                                textAlign: TextAlign.right,
-                                state.customerInfo!.isOrderSentToCustomerAddress
-                                    ? S.current.active
-                                    : S.current.inactive,
-                                style: theme.bodyMedium!.copyWith(
-                                  color: AppColors.grayPalette.shade700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                       ],
                     ],
                   ),

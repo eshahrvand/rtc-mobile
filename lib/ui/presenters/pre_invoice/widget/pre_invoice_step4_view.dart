@@ -13,6 +13,8 @@ import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'pre_invoice_document_item.dart';
 
+import 'pre_invoice_step4_widgets.dart';
+
 class PreInvoiceStep4View extends StatelessWidget {
   const PreInvoiceStep4View({super.key});
 
@@ -47,8 +49,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    _buildUploadBox(
-                      context,
+                    PreInvoiceStep4UploadBox(
                       path: state.mandatoryDocPath,
                       onTap: () => cubit.pickMandatoryDoc(context),
                       onRemove: () => cubit.removeMandatoryDoc(),
@@ -116,8 +117,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                       );
                     }),
                     if (state.optionalDocPaths.isEmpty)
-                      _buildUploadPlaceholder(
-                        context,
+                      PreInvoiceStep4UploadPlaceholder(
                         onTap: () => cubit.pickOptionalDoc(context),
                       ),
                   ],
@@ -127,172 +127,6 @@ class PreInvoiceStep4View extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildUploadPlaceholder(
-    BuildContext context, {
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 140,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.grayPalette.shade25,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 14),
-            RtcImage(
-              image: "$baseImage/featured-icon.svg",
-              width: 32,
-              height: 32,
-            ),
-            const SizedBox(height: 12),
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: S.current.clickToUpload.split('بارگذاری عکس')[0],
-                  ),
-                  TextSpan(
-                    text: 'بارگذاری عکس ',
-                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: AppColors.brandPalette.shade600,
-                    ),
-                  ),
-                  TextSpan(
-                    text: S.current.clickToUpload.split('بارگذاری عکس')[1],
-                  ),
-                ],
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.grayPalette.shade700,
-                ),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              S.current.uploadFormatInfo,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: AppColors.grayPalette.shade600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUploadBox(
-    BuildContext context, {
-    String? path,
-    required VoidCallback onTap,
-    required VoidCallback onRemove,
-  }) {
-    return GestureDetector(
-      onTap: path == null ? onTap : null,
-      child: Container(
-        height: 140,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.grayPalette.shade25,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
-        ),
-        child: path == null
-            ? _buildUploadPlaceholderContent(context)
-            : Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      File(path),
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Center(
-                            child: Icon(
-                              Icons.image,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(8),
-                        bottomRight: Radius.circular(8),
-                      ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                        child: GestureDetector(
-                          onTap: onRemove,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 4, bottom: 4),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: RtcImage(
-                                image: "$baseImage/delete_national_card.svg",
-                                width: 20,
-                                height: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-
-  Widget _buildUploadPlaceholderContent(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 14),
-        RtcImage(image: "$baseImage/featured-icon.svg", width: 32, height: 32),
-        const SizedBox(height: 12),
-        Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(text: S.current.clickToUpload.split('بارگذاری عکس')[0]),
-              TextSpan(
-                text: 'بارگذاری عکس ',
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: AppColors.brandPalette.shade600,
-                ),
-              ),
-              TextSpan(text: S.current.clickToUpload.split('بارگذاری عکس')[1]),
-            ],
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              fontWeight: FontWeight.w500,
-              color: AppColors.grayPalette.shade700,
-            ),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          S.current.uploadFormatInfo,
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-            color: AppColors.grayPalette.shade600,
-          ),
-        ),
-      ],
     );
   }
 }

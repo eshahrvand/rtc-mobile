@@ -16,12 +16,13 @@ import 'package:rtc_mobile/core/utils/file_utils.dart';
 import 'pre_invoice_document_item.dart';
 import 'pre_invoice_section_widget.dart';
 
+import 'pre_invoice_step5_widgets.dart';
+
 class PreInvoiceStep5View extends StatelessWidget {
   const PreInvoiceStep5View({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
     return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
@@ -42,7 +43,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                           width: 20,
                           height: 20,
                         ),
-                        child: _buildCreditPlanInfo(state, theme),
+                        child: PreInvoiceStep5CreditPlan(state: state),
                       ),
                     ),
                     PreInvoiceSectionWidget(
@@ -52,8 +53,8 @@ class PreInvoiceStep5View extends StatelessWidget {
                         width: 20,
                         height: 20,
                       ),
-                      trailing: _buildEditButton(
-                        () => cubit.enterEditMode(PreInvoiceStep.products),
+                      trailing: PreInvoiceEditButton(
+                        onTap: () => cubit.enterEditMode(PreInvoiceStep.products),
                       ),
                       child: Column(
                         children: state.cartItems.asMap().entries.map((entry) {
@@ -70,13 +71,16 @@ class PreInvoiceStep5View extends StatelessWidget {
                           );
                           return Column(
                             children: [
-                              _buildProductItem(item, product, theme, cubit),
+                              PreInvoiceStep5ProductItem(
+                                item: item,
+                                product: product,
+                                cubit: cubit,
+                              ),
                               if (entry.key != state.cartItems.length - 1) ...[
                                 const SizedBox(height: 7),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 16,
-                                    right: 16,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
                                   ),
                                   child: RtcDivider(
                                     color: AppColors.grayPalette.shade200,
@@ -97,10 +101,10 @@ class PreInvoiceStep5View extends StatelessWidget {
                         width: 20,
                         height: 20,
                       ),
-                      trailing: _buildEditButton(
-                        () => cubit.enterEditMode(PreInvoiceStep.customerInfo),
+                      trailing: PreInvoiceEditButton(
+                        onTap: () => cubit.enterEditMode(PreInvoiceStep.customerInfo),
                       ),
-                      child: _buildCustomerInfo(state, theme),
+                      child: PreInvoiceStep5CustomerInfo(state: state),
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.uploadedDocumentsTitle,
@@ -109,10 +113,10 @@ class PreInvoiceStep5View extends StatelessWidget {
                         width: 20,
                         height: 20,
                       ),
-                      trailing: _buildEditButton(
-                        () => cubit.enterEditMode(PreInvoiceStep.documents),
+                      trailing: PreInvoiceEditButton(
+                        onTap: () => cubit.enterEditMode(PreInvoiceStep.documents),
                       ),
-                      child: _buildDocuments(state, context),
+                      child: PreInvoiceStep5Documents(state: state),
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.financialSummaryTitle,
@@ -122,7 +126,7 @@ class PreInvoiceStep5View extends StatelessWidget {
                         height: 16,
                         color: AppColors.grayPalette.shade700,
                       ),
-                      child: _buildFinancialSummary(state, theme),
+                      child: PreInvoiceStep5FinancialSummary(state: state),
                     ),
                     const SizedBox(height: 32),
                   ],
@@ -132,348 +136,6 @@ class PreInvoiceStep5View extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildEditButton(VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: RtcImage(
-        image: "$baseImage/edit.svg",
-        width: 20,
-        height: 20,
-        color: AppColors.brandPalette.shade600,
-      ),
-    );
-  }
-
-  Widget _buildCreditPlanInfo(PreInvoiceState state, TextTheme theme) {
-    final plan = state.creditPlans.firstWhere(
-      (p) => p.id == state.selectedCreditPlanId,
-      orElse: () => state.creditPlans.first,
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        spacing: 7,
-        children: [
-          _buildInfoRow(S.current.providerLabel, plan.providerName, theme),
-          _buildInfoRow(S.current.planNameLabel, plan.planName, theme),
-          _buildInfoRow(
-            '${S.current.validityPeriodLabel} :',
-            '${plan.validityDuration} ${S.current.day}',
-            theme,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductItem(
-    CartItemModel item,
-    PreInvoiceProductModel product,
-    TextTheme theme,
-    PreInvoiceCubit cubit,
-  ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      constraints: const BoxConstraints(minHeight: 95),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            padding: const EdgeInsets.all(4),
-
-            child: RtcImage(image: product.imageUrl, boxFit: BoxFit.contain),
-          ),
-          const SizedBox(width: 10),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.name,
-                  textAlign: TextAlign.right,
-                  style: theme.labelMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.grayPalette.shade800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  product.isAvailable
-                      ? 'موجودی (${product.inventory})'
-                      : 'ناموجود',
-                  style: theme.labelSmall!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: product.isAvailable
-                        ? AppColors.successPalette.shade600
-                        : AppColors.errorPalette.shade600,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                SizedBox(
-                  height: 49,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              if (product.oldPrice != null) ...[
-                                const SizedBox(width: 8),
-                                Text(
-                                  product.oldPrice!,
-                                  style: theme.bodySmall!.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    decoration: TextDecoration.lineThrough,
-                                    color: AppColors.grayPalette.shade400,
-                                  ),
-                                ),
-                                SizedBox(width: 2),
-                              ],
-                              if (product.discount != "0%")
-                                RtcDiscountBadge(
-                                  discount: product.discount!,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            spacing: 2,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.price,
-                                style: theme.labelLarge!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.grayPalette.shade900,
-                                ),
-                              ),
-                              RtcImage(
-                                image: "$baseImage/toman.svg",
-                                width: 18,
-                                height: 18,
-                                boxFit: BoxFit.fill,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      RtcCounterWidget(
-                        quantity: item.quantity,
-                        onAdd: () => cubit.increaseQuantity(item.productId),
-                        onRemove: () => cubit.removeFromCart(item.productId),
-                        isAvailable: true,
-                        isCardStyle: false,
-                        colorDeleteIcon: true,
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCustomerInfo(PreInvoiceState state, TextTheme theme) {
-    final info = state.customerInfo!;
-    final fullName = '${info.firstName} ${info.lastName}'.trim();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        spacing: 7,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildInfoRow(S.current.nameLabel, fullName, theme),
-          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
-          _buildInfoRow(S.current.phoneNumberLabel, info.phoneNumber, theme),
-          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
-          _buildInfoRow(S.current.nationalCodeLabel, info.nationalId, theme),
-          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
-          _buildInfoRow(S.current.postalCodeLabel, info.postalCode, theme),
-          RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
-          _buildInfoRow(S.current.addressLabel, '', theme),
-          Text(
-            info.address,
-
-            style: theme.bodyMedium!.copyWith(
-              fontWeight: FontWeight.w500,
-              color: AppColors.grayPalette.shade900,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDocuments(PreInvoiceState state, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          if (state.mandatoryDocPath != null)
-            _buildDocItem(
-              S.current.nationalCardFront,
-              FileUtils.getFileSizeString(state.mandatoryDocPath!),
-              state.mandatoryDocPath!.split('/').last,
-              state.mandatoryDocPath!,
-              context,
-            ),
-          ...state.optionalDocPaths.asMap().entries.map((entry) {
-            return _buildDocItem(
-              S.current.otherDocumentsLabel(entry.key + 1),
-              FileUtils.getFileSizeString(entry.value),
-              entry.value.split('/').last,
-              entry.value,
-              context,
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDocItem(
-    String title,
-    String size,
-    String fileName,
-    String path,
-    BuildContext context,
-  ) {
-    return PreInvoiceDocumentItem(
-      title: title,
-      fileName: fileName,
-      fileSize: size,
-      onDelete: () {},
-      onView: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Scaffold(
-              backgroundColor: Colors.black,
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                iconTheme: const IconThemeData(color: Colors.white),
-              ),
-              body: Center(
-                child: InteractiveViewer(
-                  child: Image.file(File(path), fit: BoxFit.contain),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-      showDeleteButton: false,
-    );
-  }
-
-  Widget _buildFinancialSummary(PreInvoiceState state, TextTheme theme) {
-    int totalItems = state.cartItems.fold(
-      0,
-      (sum, item) => sum + item.quantity,
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        spacing: 7,
-        children: [
-          _buildInfoRow(
-            '${S.current.totalBasePrice} ($totalItems ${S.current.product})',
-            state.totalAmount,
-            theme,
-            isPrice: true,
-          ),
-          _buildInfoRow(
-            S.current.totalDiscounts,
-            state.totalDiscounts,
-            theme,
-            isPrice: true,
-          ),
-
-          RtcDivider(
-            height: 0.5,
-            color: AppColors.grayPalette.shade200,
-            isDashed: true,
-          ),
-          _buildInfoRow(
-            S.current.payableAmount,
-            state.payableAmount,
-            theme,
-            isFinalPrice: true,
-            isPrice: true,
-            valueColor: AppColors.brandPalette.shade600,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(
-    String label,
-    String value,
-    TextTheme theme, {
-    Color? valueColor,
-    bool isFinalPrice = false,
-    bool isPrice = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: theme.bodyMedium!.copyWith(
-              color: AppColors.grayPalette.shade600,
-            ),
-          ),
-
-          Row(
-            mainAxisSize: MainAxisSize.min,
-
-            children: [
-              Text(
-                value,
-                style: theme.labelMedium!.copyWith(
-                  color: valueColor ?? AppColors.grayPalette.shade900,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (isPrice) ...[
-                SizedBox(width: 4),
-                RtcImage(
-                  image: isFinalPrice
-                      ? "$baseImage/toman_blue.svg"
-                      : "$baseImage/toman.svg",
-                  width: 16,
-                  height: 16,
-                  boxFit: BoxFit.fill,
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

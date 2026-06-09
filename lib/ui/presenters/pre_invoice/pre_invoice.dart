@@ -7,7 +7,6 @@ import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_cart_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_step_indicator.dart';
@@ -18,6 +17,8 @@ import 'widget/pre_invoice_step2_view.dart';
 import 'widget/pre_invoice_step3_view.dart';
 import 'widget/pre_invoice_step4_view.dart';
 import 'widget/pre_invoice_step5_view.dart';
+import 'widget/pre_invoice_bottom_buttons.dart';
+import 'widget/pre_invoice_ui_helpers.dart';
 
 class PreInvoiceScreen extends StatelessWidget {
   const PreInvoiceScreen({super.key});
@@ -95,7 +96,7 @@ class PreInvoiceView extends StatelessWidget {
             child: Scaffold(
               appBar: RtcAppBar(
                 title: state.isEditMode
-                    ? _getEditTitle(state.currentStep)
+                    ? PreInvoiceUiHelpers.resolveEditTitle(state.currentStep)
                     : S.current.releaseFactor,
                 onBack: () {
                   if (state.isEditMode) {
@@ -108,11 +109,9 @@ class PreInvoiceView extends StatelessWidget {
                     cubit.goToStep(prevStep);
                   }
                 },
-                hideBackIcon:
-                    (state.currentStep == PreInvoiceStep.creditPlan ||
+                hideBackIcon: (state.currentStep == PreInvoiceStep.creditPlan ||
                     state.isEditMode),
-                backIconPath:
-                    (state.currentStep == PreInvoiceStep.creditPlan ||
+                backIconPath: (state.currentStep == PreInvoiceStep.creditPlan ||
                         state.isEditMode)
                     ? ""
                     : '$baseImage/angle-right.svg',
@@ -139,16 +138,12 @@ class PreInvoiceView extends StatelessWidget {
                       RtcStepIndicator(
                         totalSteps: 5,
                         currentStepIndex: state.currentStep.index,
-                        stepLabels: [
-                          S.current.selectCreditPlan,
-                          S.current.selectProducts,
-                          S.current.customerInfo,
-                          S.current.uploadDocuments,
-                          S.current.reviewAndSubmit,
-                        ],
+                        stepLabels: PreInvoiceUiHelpers.stepLabels,
                       ),
-                    Expanded(child: _buildStepView(state.currentStep)),
-                    _buildBottomButtons(context, state, cubit),
+                    Expanded(
+                      child: PreInvoiceStepContent(step: state.currentStep),
+                    ),
+                    PreInvoiceBottomButtons(state: state, cubit: cubit),
                   ],
                 ),
               ),
@@ -157,207 +152,6 @@ class PreInvoiceView extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String _getEditTitle(PreInvoiceStep step) {
-    switch (step) {
-      case PreInvoiceStep.products:
-        return S.current.editProductsTitle;
-      case PreInvoiceStep.customerInfo:
-        return S.current.editCustomerInfoTitle;
-      case PreInvoiceStep.documents:
-        return S.current.editDocumentsTitle;
-      default:
-        return '';
-    }
-  }
-
-  Widget _buildBottomButtons(
-    BuildContext context,
-    PreInvoiceState state,
-    PreInvoiceCubit cubit,
-  ) {
-    if (state.isEditMode) {
-      return SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: AppColors.secondaryShadow,
-          ),
-          child: Row(
-            spacing: 12,
-            children: [
-              Expanded(
-                child: RtcButton(
-                  title: S.current.back,
-                  backgroundColor: AppColors.grayPalette.shade50,
-                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.grayPalette.shade700,
-                  ),
-                  onPressed: () => cubit.exitEditMode(),
-                  borderColor: AppColors.grayPalette.shade300,
-                ),
-              ),
-              Expanded(
-                child: RtcButton(
-                  title: S.current.save,
-                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => cubit.exitEditMode(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (state.currentStep == PreInvoiceStep.review) {
-      return SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: AppColors.secondaryShadow,
-          ),
-          child: Row(
-            spacing: 12,
-            children: [
-              Expanded(
-                child: RtcButton(
-                  title: S.current.submitPreInvoice,
-                  backgroundColor: AppColors.brandPalette.shade50,
-                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.brandPalette.shade700,
-                  ),
-                  isLoading: state.isSubmittingAndClearing,
-                  onPressed: () => cubit.submitAndClear(),
-
-                  borderColor: AppColors.brandPalette.shade50,
-                ),
-              ),
-              Expanded(
-                child: RtcButton(
-                  title: S.current.submitAndClearCart,
-                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-
-                  isLoading: state.isSubmittingPreInvoice,
-                  onPressed: () => cubit.submitPreInvoice(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    String title = S.current.nextStep;
-    bool isActive = false;
-    bool isLoading = false;
-    VoidCallback onPressed = () {};
-
-    if (state.currentStep == PreInvoiceStep.creditPlan) {
-      isActive = state.selectedCreditPlanId != null;
-      onPressed = () => cubit.goToStep(PreInvoiceStep.products);
-    } else if (state.currentStep == PreInvoiceStep.products) {
-      int totalItems = state.cartItems.fold(
-        0,
-        (sum, item) => sum + item.quantity,
-      );
-      isActive = totalItems > 0;
-      title = isActive
-          ? '${S.current.nextStep} ($totalItems ${S.current.product})'
-          : S.current.nextStep;
-      onPressed = () => cubit.goToStep(PreInvoiceStep.customerInfo);
-    } else if (state.currentStep == PreInvoiceStep.customerInfo) {
-      if (state.customerInfo == null) return const SizedBox.shrink();
-      isActive = state.customerInfo != null;
-      isLoading = state.isSubmittingCustomerInfo;
-      onPressed = () => cubit.goToStep(PreInvoiceStep.documents);
-    } else if (state.currentStep == PreInvoiceStep.documents) {
-      isActive = state.mandatoryDocPath != null;
-      isLoading = state.isUploadingDocuments;
-      onPressed = () => cubit.goToStep(PreInvoiceStep.review);
-    }
-
-    return SafeArea(
-      child: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: AppColors.secondaryShadow,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Row(
-            spacing: 10,
-            children: [
-              Expanded(
-                child: RtcButton(
-                  title: title,
-                  styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: isActive
-                        ? Colors.white
-                        : AppColors.grayPalette.shade300,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  isActive: isActive,
-                  isLoading: isLoading,
-                  onPressed: onPressed,
-                ),
-              ),
-              if (state.currentStep == PreInvoiceStep.products &&
-                  state.cartItems.isNotEmpty)
-                GestureDetector(
-                  onTap: () => cubit.showCart(),
-                  child: Container(
-                    height: 44,
-                    width: 44,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: AppColors.brandPalette.shade50,
-                      border: Border.all(
-                        color: AppColors.grayPalette.shade200,
-                        width: 0.5,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: RtcImage(
-                      image: "$baseImage/basket-bottom-sheet.svg",
-                      width: 24,
-                      height: 24,
-                      color: AppColors.brandPalette.shade600,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStepView(PreInvoiceStep step) {
-    switch (step) {
-      case PreInvoiceStep.creditPlan:
-        return const PreInvoiceStep1View();
-      case PreInvoiceStep.products:
-        return const PreInvoiceStep2View();
-      case PreInvoiceStep.customerInfo:
-        return const PreInvoiceStep3View();
-      case PreInvoiceStep.documents:
-        return const PreInvoiceStep4View();
-      case PreInvoiceStep.review:
-        return const PreInvoiceStep5View();
-    }
   }
 
   void _showCartBottomSheet(BuildContext context) {
@@ -374,5 +168,22 @@ class PreInvoiceView extends StatelessWidget {
         context.read<PreInvoiceCubit>().hideCart();
       }
     });
+  }
+}
+
+class PreInvoiceStepContent extends StatelessWidget {
+  final PreInvoiceStep step;
+
+  const PreInvoiceStepContent({super.key, required this.step});
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (step) {
+      PreInvoiceStep.creditPlan => const PreInvoiceStep1View(),
+      PreInvoiceStep.products => const PreInvoiceStep2View(),
+      PreInvoiceStep.customerInfo =>  PreInvoiceStep3View(),
+      PreInvoiceStep.documents => const PreInvoiceStep4View(),
+      PreInvoiceStep.review => const PreInvoiceStep5View(),
+    };
   }
 }

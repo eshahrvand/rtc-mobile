@@ -4,11 +4,11 @@ import '../../../../data/models/pre_invoice_model.dart';
 part 'pre_invoice_state.freezed.dart';
 
 enum PreInvoiceStep {
-  creditPlan,      // Step 1
-  products,        // Step 2
-  customerInfo,    // Step 3
-  documents,       // Step 4
-  review,          // Step 5
+  creditPlan, // Step 1
+  products, // Step 2
+  customerInfo, // Step 3
+  documents, // Step 4
+  review, // Step 5
 }
 
 enum PreInvoiceRequestStatus {
@@ -76,4 +76,25 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(false) bool isUploadingDocuments,
     @Default(false) bool isSubmittingCustomerInfo,
   }) = _PreInvoiceState;
+}
+
+extension PreInvoiceStateX on PreInvoiceState {
+  int get totalCartItemsCount => cartItems.fold(
+        0,
+        (sum, item) => sum + item.quantity,
+      );
+
+  bool get isCurrentStepValid => switch (currentStep) {
+        PreInvoiceStep.creditPlan => selectedCreditPlanId != null,
+        PreInvoiceStep.products => totalCartItemsCount > 0,
+        PreInvoiceStep.customerInfo => customerInfo != null,
+        PreInvoiceStep.documents => mandatoryDocPath != null,
+        PreInvoiceStep.review => true,
+      };
+
+  bool get isNextStepLoading => switch (currentStep) {
+        PreInvoiceStep.customerInfo => isSubmittingCustomerInfo,
+        PreInvoiceStep.documents => isUploadingDocuments,
+        _ => false,
+      };
 }
