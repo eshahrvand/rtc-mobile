@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/config.dart';
@@ -9,7 +10,6 @@ import '../../../../generated/l10n.dart';
 import '../../../router/app_route.dart';
 import '../../../widget/rtc_appbar.dart';
 import '../../../widget/rtc_image.dart';
-import '../../../widget/rtc_status_badge.dart';
 import '../../../widget/rtc_tab_bar.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
@@ -18,6 +18,7 @@ import 'order_upload_documents_sheet.dart';
 import 'order_tab_details.dart';
 import 'order_tab_financial.dart';
 import 'order_tab_history.dart';
+import 'orders_ui_helpers.dart';
 
 class OrderDetailView extends StatefulWidget {
   const OrderDetailView({super.key});
@@ -142,11 +143,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 backIconPath: '$baseImage/angle-right.svg',
                 actions: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 16),
+                    padding: const EdgeInsets.only(left: 16.0),
                     child: RtcImage(
                       image: '$baseImage/print.svg',
-                      width: 24,
-                      height: 24,
+                      width: 24.0,
+                      height: 24.0,
                     ),
                   ),
                 ],
@@ -159,7 +160,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       color: Colors.white,
                       child: Column(
                         children: [
-                          _buildValidityHeader(context, order),
+                          OrdersUiHelpers.resolveValidityHeader(context, order),
 
                           RtcTabBar(
                             tabs: const [
@@ -271,53 +272,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         ),
         ReceiptField(
           label: S.current.documentSubmissionDateLabel,
-          value: _formatCurrentJalaliDateTime(),
+          value: OrderCalculations.formatCurrentJalaliDateTime(),
         ),
       ],
       onGotIt: () {
         context.read<OrdersCubit>().resetClearance();
       },
-    );
-  }
-
-  String _formatCurrentJalaliDateTime() {
-    final now = DateTime.now();
-    final jalali = Jalali.fromDateTime(now);
-    return '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} - ${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
-  }
-
-  Widget _buildValidityHeader(BuildContext context, dynamic order) {
-    var theme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          if (order.remainingTime.isNotEmpty)
-            Row(
-              spacing: 4,
-              children: [
-                Text(
-                  'زمان باقی‌مانده: ',
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
-                    fontSize: 12,
-                  ),
-                ),
-                Text(
-                  order.remainingTime,
-                  style: theme.bodySmall!.copyWith(
-                    fontSize: 12,
-                    color: AppColors.errorPalette.shade500,
-                  ),
-                ),
-              ],
-            )
-          else
-            const SizedBox.shrink(),
-          RtcStatusBadge(status: order.status, isPrimary: true),
-        ],
-      ),
     );
   }
 }

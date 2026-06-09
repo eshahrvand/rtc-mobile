@@ -4,7 +4,6 @@ import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
-import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 
@@ -34,7 +33,7 @@ class RtcOrderItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 4,
+                  spacing: 4.0,
                   children: [
                     Text(
                       order.orderId,
@@ -43,7 +42,6 @@ class RtcOrderItem extends StatelessWidget {
                         color: AppColors.grayPalette.shade900,
                       ),
                     ),
-
                     Text(
                       '#',
                       style: theme.labelLarge!.copyWith(
@@ -53,16 +51,15 @@ class RtcOrderItem extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 RtcImage(
                   image: '$baseImage/angle-left.svg',
-                  width: 20,
-                  height: 20,
+                  width: 20.0,
+                  height: 20.0,
                   color: AppColors.grayPalette.shade600,
                 ),
               ],
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6.0),
             Text(
               order.customerName,
               style: theme.bodyLarge!.copyWith(
@@ -70,8 +67,7 @@ class RtcOrderItem extends StatelessWidget {
                 color: AppColors.grayPalette.shade700,
               ),
             ),
-
-            const SizedBox(height: 12),
+            const SizedBox(height: 12.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -82,13 +78,12 @@ class RtcOrderItem extends StatelessWidget {
                     color: AppColors.grayPalette.shade700,
                   ),
                 ),
-
-                RtcStatusBadge(status: order.status ,   isPrimary: false,),
+                RtcStatusBadge(status: order.status, isPrimary: false),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 12.0),
             RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
-            const SizedBox(height: 12),
+            const SizedBox(height: 12.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -100,7 +95,7 @@ class RtcOrderItem extends StatelessWidget {
                   ),
                 ),
                 Row(
-                  spacing: 2,
+                  spacing: 2.0,
                   children: [
                     Text(
                       order.amount,
@@ -111,8 +106,8 @@ class RtcOrderItem extends StatelessWidget {
                     ),
                     RtcImage(
                       image: "$baseImage/toman.svg",
-                      width: 24,
-                      height: 24,
+                      width: 24.0,
+                      height: 24.0,
                     ),
                   ],
                 ),

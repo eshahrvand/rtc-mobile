@@ -4,7 +4,6 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/config.dart';
-import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_collapsible_section.dart';
@@ -14,7 +13,9 @@ import '../bloc/orders_state.dart';
 import 'order_clearance_amount_sheet.dart';
 import 'order_clearance_operation_widget.dart';
 import 'order_clearance_otp_sheet.dart';
+import 'order_financial_summary_widget.dart';
 import 'order_operation_item_widget.dart';
+import 'order_payment_history_widget.dart';
 import 'order_settlement_operations_widget.dart';
 
 class OrderTabFinancial extends StatefulWidget {
@@ -66,72 +67,10 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
-        final isPreInvoice = widget.order.orderStatus == OrderStatus.preInvoice;
-        final isWaitingSettlement =
-            widget.order.orderStatus == OrderStatus.awaitingSettlement;
-        final isInitialClearance = state.clearanceStep == ClearanceStep.initial;
-
-        final clearanceAmountVal =
-            double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
-        final orderAmountVal =
-            double.tryParse(
-              (state.orderAmount ?? widget.order.financialSummary.finalAmount)
-                  .replaceAll(',', ''),
-            ) ??
-            0;
-
-        // 1. Try to find a successful record from server
-        final successRecords = widget.order.disbursementRecords.where(
-          (r) => r.status == 'موفق' || r.status == 'success',
-        );
-
-        final String clearanceAmount = () {
-          if (successRecords.isNotEmpty) {
-            return successRecords.first.amount;
-          }
-          if (state.clearanceAmount.isNotEmpty) {
-            return state.clearanceAmount;
-          }
-          return widget.order.financialSummary.finalAmount;
-        }();
-
-        final String? excessAmount = () {
-          if (successRecords.isNotEmpty) {
-            final disbursedVal =
-                double.tryParse(
-                  successRecords.first.amount.replaceAll(',', ''),
-                ) ??
-                0;
-            final orderVal =
-                double.tryParse(
-                  widget.order.financialSummary.finalAmount.replaceAll(',', ''),
-                ) ??
-                0;
-            if (disbursedVal > orderVal) {
-              return (disbursedVal - orderVal).toStringAsFixed(0);
-            }
-            return null;
-          }
-          return state.excessAmount;
-        }();
-
-        final String? walletName =
-            state.walletName ?? widget.order.creditPlan?.planName;
-
-        // Hide settlement if the entered clearance amount already covers the total
-        final isOverDischarge =
-            state.clearanceAmount.isNotEmpty &&
-            clearanceAmountVal >= orderAmountVal;
-
-        final showSettlement =
-            !isOverDischarge &&
-            !state.isOutOfTolerance && // Hide if out of tolerance
-            (isWaitingSettlement ||
-                widget.order.settlementRecords.isNotEmpty ||
-                state.clearanceStep == ClearanceStep.success ||
-                state.clearanceAmount.isNotEmpty);
-
-        final showSteps = showSettlement;
+        final clearanceAmount = state.resolvedClearanceAmount;
+        final excessAmount = state.resolvedExcessAmount;
+        final walletName = state.walletName ?? widget.order.creditPlan?.planName;
+        final showSettlement = state.shouldShowSettlement;
 
         return Column(
           children: [
@@ -140,44 +79,33 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: 8.0),
                       child: RtcCollapsibleSection(
                         title: S.current.financialSummaryTitle,
                         icon: RtcImage(
                           image: '$baseImage/dollar.svg',
-                          width: 20,
-                          height: 20,
+                          width: 20.0,
+                          height: 20.0,
                           color: AppColors.grayPalette.shade700,
                         ),
                         isExpanded: state.isFinancialSummaryExpanded,
                         alwaysShowChild: true,
                         onToggle: () => cubit.toggleFinancialSummary(),
                         showDivider: true,
-                        headerSpacing: 8,
+                        headerSpacing: 8.0,
                         trailing: RtcImage(
                           image: state.isFinancialSummaryExpanded
                               ? "$baseImage/arrow_up_tab.svg"
                               : "$baseImage/angle-down_tab.svg",
                           color: AppColors.grayPalette.shade600,
                         ),
-                        child: _buildFinancialSummary(
-                          widget.order.financialSummary,
-                          widget.order.isSettled,
-                          isWaitingSettlement,
-                          state.isFinancialSummaryExpanded,
-                          context,
+                        child: OrderFinancialSummaryWidget(
+                          summary: widget.order.financialSummary,
+                          isExpanded: state.isFinancialSummaryExpanded,
                         ),
                       ),
                     ),
-
-                    if (state.disburseOperation != null &&
-                        (state.clearanceAmount.isNotEmpty ||
-                            widget.order.orderStatus ==
-                                OrderStatus.underReview ||
-                            widget.order.orderStatus == OrderStatus.approved ||
-                            widget.order.orderStatus ==
-                                OrderStatus.awaitingSettlement ||
-                            widget.order.orderStatus == OrderStatus.rejected))
+                    if (state.shouldShowDisbursement)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: OrderClearanceOperationWidget(
@@ -189,7 +117,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           walletName: walletName,
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
-                          showStep: showSteps,
+                          showStep: showSettlement,
                           onAction: () {
                             if (state.disbursementGatewayType == 'otp') {
                               showModalBottomSheet(
@@ -220,10 +148,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           },
                           onEdit:
                               state.clearanceAmount.isNotEmpty &&
-                                  (widget.order.orderStatus ==
-                                          OrderStatus.preInvoice ||
-                                      widget.order.orderStatus ==
-                                          OrderStatus.awaitingSettlement)
+                                  (state.isPreInvoice ||
+                                      state.isWaitingSettlement)
                               ? () {
                                   cubit.resetClearance();
                                   _showAmountSheet(context, cubit);
@@ -231,12 +157,12 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                               : null,
                         ),
                       ),
-
                     if (showSettlement)
                       Padding(
-                        padding: const EdgeInsets.only(top: 8, bottom: 32),
+                        padding:
+                            const EdgeInsets.only(top: 8.0, bottom: 32.0),
                         child: OrderSettlementOperationsWidget(
-                          showStep: showSteps,
+                          showStep: showSettlement,
                           op:
                               state.settlementOperation ??
                               const OrderOperationModel(
@@ -247,21 +173,22 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                               ),
                         ),
                       ),
-
                     if (widget.order.operations.isNotEmpty)
                       ...widget.order.operations.map(
                         (op) => OrderOperationItemWidget(op: op),
                       ),
-
                     if (widget.order.payments.isNotEmpty)
-                      _buildPaymentHistory(widget.order.payments, context),
+                      OrderPaymentHistoryWidget(
+                        payments: widget.order.payments,
+                      ),
                   ],
                 ),
               ),
             ),
-            if (isPreInvoice && isInitialClearance)
+            if (state.isPreInvoice &&
+                state.clearanceStep == ClearanceStep.initial)
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
                 child: RtcButton(
                   styleBtn: theme.labelLarge!.copyWith(
                     color: Colors.white,
@@ -274,159 +201,6 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildFinancialSummary(
-    FinancialSummaryModel summary,
-    bool isSettled,
-    bool isWaitingSettlement,
-    bool isExpanded,
-    BuildContext context,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        children: [
-          if (isExpanded) ...[
-            _buildInfoRow(context, S.current.totalBasePrice, summary.basePrice),
-            _buildInfoRow(
-              context,
-              S.current.totalDiscounts,
-              summary.totalDiscount,
-            ),
-          ],
-          _buildInfoRow(
-            context,
-            S.current.finalFactorAmount,
-            summary.finalAmount,
-            isBold: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentHistory(
-    List<OrderPaymentModel> payments,
-    BuildContext context,
-  ) {
-    var theme = Theme.of(context).textTheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-          child: Text(
-            'تاریخچه پرداخت‌ها',
-            style: theme.labelLarge!.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.grayPalette.shade900,
-            ),
-          ),
-        ),
-        ...payments.map(
-          (p) => Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.grayPalette.shade200),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(p.type, style: theme.bodyMedium),
-                    Text(
-                      p.date,
-                      style: theme.bodySmall!.copyWith(
-                        color: AppColors.grayPalette.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          p.amount,
-                          style: theme.titleSmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.brandPalette.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        RtcImage(
-                          image: "$baseImage/toman.svg",
-                          width: 24,
-                          height: 24,
-                        ),
-                      ],
-                    ),
-                    if (p.status != null)
-                      Text(
-                        p.status!,
-                        style: theme.labelSmall!.copyWith(
-                          color: p.status == 'موفق'
-                              ? AppColors.successPalette.shade600
-                              : AppColors.errorPalette.shade600,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow(
-    BuildContext context,
-    String label,
-    String value, {
-    bool isBold = false,
-  }) {
-    var theme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: theme.bodyMedium!.copyWith(
-              color: AppColors.grayPalette.shade600,
-            ),
-          ),
-          Row(
-            spacing: 4,
-            children: [
-              Text(
-                value,
-                style: theme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade900,
-                  fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
-                  fontSize: isBold ? 14 : 12,
-                ),
-              ),
-              RtcImage(
-                image: "$baseImage/toman.svg",
-                width: 18,
-                height: 18,
-                boxFit: BoxFit.fill,
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

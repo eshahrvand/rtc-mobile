@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
+import 'document_viewer_screen.dart';
 
 class OrderDetailsDocumentItem extends StatelessWidget {
   final OrderDocumentModel doc;
@@ -23,22 +21,22 @@ class OrderDetailsDocumentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 14.0, 16.0, 14.0),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.grayPalette.shade200, width: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Row(
-        spacing: 14,
+        spacing: 14.0,
         children: [
           RtcImage(
             image: '$baseImage/featured-icon.svg',
-            width: 32,
-            height: 32,
+            width: 32.0,
+            height: 32.0,
           ),
           Column(
-            spacing: 3,
+            spacing: 3.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -71,17 +69,28 @@ class OrderDetailsDocumentItem extends StatelessWidget {
                   color: AppColors.grayPalette.shade600,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 4.0),
               if (doc.url != null)
                 Row(
-                  spacing: 12,
+                  spacing: 12.0,
                   children: [
                     GestureDetector(
-                      onTap: () => _viewDocument(context, doc.url!, doc.title),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DocumentViewerScreen(
+                              url: doc.url!,
+                              title: doc.title,
+                              isLocalFile: isLocalFile,
+                            ),
+                          ),
+                        );
+                      },
                       child: RtcImage(
                         image: '$baseImage/eye-document.svg',
-                        width: 20,
-                        height: 20,
+                        width: 20.0,
+                        height: 20.0,
                       ),
                     ),
                     if (onDelete != null)
@@ -89,8 +98,8 @@ class OrderDetailsDocumentItem extends StatelessWidget {
                         onTap: onDelete,
                         child: RtcImage(
                           image: '$baseImage/delete.svg',
-                          width: 20,
-                          height: 20,
+                          width: 20.0,
+                          height: 20.0,
                           color: AppColors.errorPalette.shade600,
                         ),
                       ),
@@ -99,64 +108,6 @@ class OrderDetailsDocumentItem extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  void _viewDocument(BuildContext context, String url, String title) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          backgroundColor: Colors.black,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Text(
-              title,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            iconTheme: const IconThemeData(color: Colors.white),
-          ),
-          body: Center(
-            child: InteractiveViewer(
-              minScale: 0.5,
-              maxScale: 4.0,
-              child: isLocalFile
-                  ? Image.file(
-                      File(url),
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.error, color: Colors.white, size: 48),
-                              SizedBox(height: 16),
-                              Text(
-                                'خطا در بارگذاری تصویر',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                    )
-                  : CachedNetworkImage(
-                      imageUrl: url,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(color: Colors.white),
-                      errorWidget: (context, url, error) => const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error, color: Colors.white, size: 48),
-                          SizedBox(height: 16),
-                          Text(
-                            'خطا در بارگذاری تصویر',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-            ),
-          ),
-        ),
       ),
     );
   }

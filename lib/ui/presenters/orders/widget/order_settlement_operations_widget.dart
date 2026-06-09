@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import '../../../../config/config.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../generated/l10n.dart';
@@ -12,6 +13,9 @@ import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'settlement_method_bottom_sheet.dart';
 import 'order_upload_documents_sheet.dart';
+import 'order_settlement_amount_row.dart';
+import 'order_settlement_timer.dart';
+import 'orders_ui_helpers.dart';
 import '../../media_picker/media_picker.dart';
 
 class OrderSettlementOperationsWidget extends StatefulWidget {
@@ -33,7 +37,11 @@ class _OrderSettlementOperationsWidgetState
     extends State<OrderSettlementOperationsWidget> {
   bool _isExpanded = true;
 
-  void _showMethodSelector(BuildContext context, OrdersCubit cubit, String? currentMethod) {
+  void _showMethodSelector(
+    BuildContext context,
+    OrdersCubit cubit,
+    String? currentMethod,
+  ) {
     SettlementMethodBottomSheet.show(
       context,
       initialSelectedId: currentMethod,
@@ -73,7 +81,10 @@ class _OrderSettlementOperationsWidgetState
                 onTrackingCodeChanged: (val) => trackingCode = val,
                 onConfirm: () {
                   if (trackingCode.isNotEmpty) {
-                    cubit.initiateSettlement(method, trackingCode: trackingCode);
+                    cubit.initiateSettlement(
+                      method,
+                      trackingCode: trackingCode,
+                    );
                     Navigator.pop(context);
                   }
                 },
@@ -90,78 +101,27 @@ class _OrderSettlementOperationsWidgetState
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
+    final theme = Theme.of(context).textTheme;
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
-        final isPartial =
-            state.clearanceStep != ClearanceStep.success &&
-            state.clearanceAmount.isNotEmpty;
+        final isPartial = state.isPartialClearance;
 
-        // Calculate actual difference amount dynamically
-        double diffValue = 0;
-        String differenceAmount = '۰';
-        if (state.selectedOrder != null) {
-          final orderTotal =
-              double.tryParse(
-                state.selectedOrder!.financialSummary.finalAmount.replaceAll(
-                  ',',
-                  '',
-                ),
-              ) ??
-              0;
+        // Derived calculations from state extension
+        final differenceAmountStr = state.settlementDifferenceValue
+            .toString()
+            .formatCurrency;
+        final payableAmountStr = state.settlementPayableValue
+            .toString()
+            .formatCurrency;
 
-          double totalCleared = 0;
-          for (var record in state.selectedOrder!.disbursementRecords) {
-            if (record.status == 'موفق' || record.status == 'success') {
-              totalCleared +=
-                  double.tryParse(record.amount.replaceAll(',', '')) ?? 0;
-            }
-          }
-
-          diffValue = (orderTotal - totalCleared);
-
-          // Subtract the pending clearance amount if we're in the middle of a discharge
-          if (isPartial) {
-            final pendingAmount =
-                double.tryParse(state.clearanceAmount.replaceAll(',', '')) ?? 0;
-            diffValue -= pendingAmount;
-          }
-
-          if (diffValue < 0) diffValue = 0;
-
-          differenceAmount = _formatAmount(diffValue);
-        }
-
-        // Placeholder for cash discount - can be updated if data exists in state/order
-        double cashDiscountValue = 0;
-        String cashDiscount = _formatAmount(cashDiscountValue);
-
-        // Calculate payable amount
-        double payableValue = diffValue - cashDiscountValue;
-        if (payableValue < 0) payableValue = 0;
-        String payableAmount = _formatAmount(payableValue);
-
-        // Get total and cleared strings for display
-        final orderTotalValue =
-            double.tryParse(
-              state.selectedOrder!.financialSummary.finalAmount.replaceAll(
-                ',',
-                '',
-              ),
-            ) ??
-            0;
-        final totalClearedValue = orderTotalValue - diffValue;
-
-        String orderTotalStr = _formatAmount(orderTotalValue);
-        String totalClearedStr = _formatAmount(totalClearedValue);
+        // Cash discount placeholder
+        final cashDiscountStr = '۰';
 
         // Get successful settlement amount if completed
-        String settledAmountStr = '۰';
-        if (state.isSettlementCompleted && state.selectedOrder != null) {
-          // Calculate from total balance and successful disburse records as requested
-          settledAmountStr = differenceAmount;
-        }
+        final settledAmountStr = state.isSettlementCompleted
+            ? differenceAmountStr
+            : '۰';
 
         final showBorder = !isPartial && !state.isSettlementCompleted;
 
@@ -172,7 +132,7 @@ class _OrderSettlementOperationsWidgetState
                 ? Border(
                     right: BorderSide(
                       color: AppColors.brandPalette.shade600,
-                      width: 4,
+                      width: 4.0,
                     ),
                   )
                 : null,
@@ -193,11 +153,11 @@ class _OrderSettlementOperationsWidgetState
                     children: [
                       if (widget.showStep || state.isSettlementCompleted) ...[
                         Container(
-                          width: 20,
-                          height: 20,
+                          width: 20.0,
+                          height: 20.0,
                           decoration: BoxDecoration(
                             color: AppColors.grayPalette.shade900,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(4.0),
                           ),
                           child: Center(
                             child: Text(
@@ -209,7 +169,7 @@ class _OrderSettlementOperationsWidgetState
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 8.0),
                       ],
                       Text(
                         widget.op.title,
@@ -218,83 +178,19 @@ class _OrderSettlementOperationsWidgetState
                           color: AppColors.grayPalette.shade900,
                         ),
                       ),
-
-                      if (state.isSettlementCompleted)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: RtcStatusBadge(status: "انجام شده"),
-                        ),
-
                       const Spacer(),
-
-                      isPartial
-                          ? Container(
-                              height: 22,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 2,
-                                horizontal: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.warningPalette.shade100,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Row(
-                                spacing: 4,
-                                children: [
-                                  RtcImage(
-                                    image: "$baseImage/waiting.svg",
-                                    width: 12,
-                                    height: 12,
-                                    color: AppColors.grayPalette.shade900,
-                                  ),
-                                  Text(
-                                    'در انتظار تکمیل تخلیه',
-                                    style: theme.bodyMedium!.copyWith(
-                                      color: AppColors.grayPalette.shade900,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : (state.settlementMethod == 'link' &&
-                                  !state.isSettlementCompleted &&
-                                  state.settlementStep !=
-                                      SettlementStep.initial)
-                              ? Row(
-                                  spacing: 8,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    RtcImage(
-                                      image: "assets/images/restart.svg",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                    Text(
-                                      'بروزرسانی',
-                                      style: theme.bodyMedium!.copyWith(
-                                        color: AppColors.brandPalette.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : RtcImage(
-                                  image: (state.isSettlementCompleted &&
-                                          !_isExpanded)
-                                      ? "$baseImage/angle-down_tab.svg"
-                                      : "$baseImage/arrow_up_tab.svg",
-                                  width: 24,
-                                  height: 24,
-                                ),
+                      OrdersUiHelpers.resolveSettlementHeaderTrailing(
+                        context: context,
+                        state: state,
+                        isExpanded: _isExpanded,
+                      ),
                     ],
                   ),
                 ),
               ),
-
               if (_isExpanded) ...[
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: RtcDivider(
                     height: 0.5,
                     color: AppColors.grayPalette.shade300,
@@ -307,12 +203,12 @@ class _OrderSettlementOperationsWidgetState
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 16,
+                            horizontal: 12.0,
+                            vertical: 16.0,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.grayPalette.shade50,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Row(
                             children: [
@@ -332,11 +228,11 @@ class _OrderSettlementOperationsWidgetState
                                       color: AppColors.brandPalette.shade600,
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(width: 4.0),
                                   RtcImage(
                                     image: "$baseImage/toman.svg",
-                                    width: 24,
-                                    height: 24,
+                                    width: 24.0,
+                                    height: 24.0,
                                   ),
                                 ],
                               ),
@@ -348,7 +244,7 @@ class _OrderSettlementOperationsWidgetState
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 12, 16.0, 16.0),
+                    padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -360,25 +256,31 @@ class _OrderSettlementOperationsWidgetState
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 8.0),
                           GestureDetector(
-                            onTap: () => _showMethodSelector(context, cubit, state.settlementMethod),
+                            onTap: () => _showMethodSelector(
+                              context,
+                              cubit,
+                              state.settlementMethod,
+                            ),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 12,
+                                horizontal: 12.0,
+                                vertical: 12.0,
                               ),
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: AppColors.grayPalette.shade300,
-                                  width: 1,
+                                  width: 1.0,
                                 ),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Row(
                                 children: [
                                   Text(
-                                    _getMethodTitle(state.settlementMethod),
+                                    OrdersUiHelpers.resolveSettlementMethodTitle(
+                                      state.settlementMethod,
+                                    ),
                                     style: theme.bodyLarge!.copyWith(
                                       color: AppColors.grayPalette.shade900,
                                     ),
@@ -386,58 +288,56 @@ class _OrderSettlementOperationsWidgetState
                                   const Spacer(),
                                   RtcImage(
                                     image: "$baseImage/angle-down_tab.svg",
-                                    width: 24,
-                                    height: 24,
+                                    width: 24.0,
+                                    height: 24.0,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 12.0),
                         ],
                         Container(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(14.0),
                           decoration: BoxDecoration(
                             color: AppColors.grayPalette.shade50,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Column(
                             children: [
-                              _buildAmountRow(
-                                theme,
-                                S.current.differenceAmount,
-                                differenceAmount,
-                                isPartial
+                              OrderSettlementAmountRow(
+                                label: S.current.differenceAmount,
+                                amount: differenceAmountStr,
+                                amountColor: isPartial
                                     ? AppColors.warningPalette.shade600
                                     : AppColors.grayPalette.shade900,
-                                isPartial,
+                                warningItem: isPartial,
                               ),
                               if (!isPartial) ...[
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 8.0),
                                 RtcDivider(
-                                  height: 1,
+                                  height: 1.0,
                                   color: AppColors.grayPalette.shade200,
                                 ),
-                                const SizedBox(height: 8),
-                                _buildAmountRow(
-                                  theme,
-                                  'جمع تخفیف نقدی',
-                                  cashDiscount,
-                                  AppColors.grayPalette.shade900,
-                                  false,
+                                const SizedBox(height: 8.0),
+                                OrderSettlementAmountRow(
+                                  label: 'جمع تخفیف نقدی',
+                                  amount: cashDiscountStr,
+                                  amountColor: AppColors.grayPalette.shade900,
+                                  warningItem: false,
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 8.0),
                                 RtcDivider(
-                                  height: 1,
+                                  height: 1.0,
                                   color: AppColors.grayPalette.shade200,
                                 ),
-                                const SizedBox(height: 8),
-                                _buildAmountRow(
-                                  theme,
-                                  S.current.payableAmount,
-                                  payableAmount,
-                                  AppColors.warningPalette.shade600,
-                                  true,
+                                const SizedBox(height: 8.0),
+                                OrderSettlementAmountRow(
+                                  label: S.current.payableAmount,
+                                  amount: payableAmountStr,
+                                  amountColor:
+                                      AppColors.warningPalette.shade600,
+                                  warningItem: true,
                                   isBold: true,
                                 ),
                               ],
@@ -457,97 +357,19 @@ class _OrderSettlementOperationsWidgetState
                               ),
                             ),
                           ),
-
                         if (!isPartial) ...[
-                          const SizedBox(height: 12),
-                          if (state.settlementMethod == 'wallet_debit' &&
-                              state.isWalletBalanceSufficient)
-                            Container(
-                              padding: const EdgeInsets.fromLTRB(
-                                14,
-                                12,
-                                14,
-                                12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.successPalette.shade25,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: AppColors.successPalette.shade100,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                spacing: 10,
-                                children: [
-                                  RtcImage(
-                                    image: "$baseImage/tick_circle.svg",
-                                    width: 16,
-                                    height: 16,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت ما به تفاوت مبلغ کافیست',
-                                      textAlign: TextAlign.right,
-                                      style: theme.bodyMedium!.copyWith(
-                                        color:
-                                            AppColors.successPalette.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (state.settlementMethod == 'wallet_debit' &&
-                              !state.isWalletBalanceSufficient)
-                            Container(
-                              padding: const EdgeInsets.fromLTRB(
-                                14,
-                                12,
-                                14,
-                                12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.errorPalette.shade25,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: AppColors.errorPalette.shade100,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                spacing: 10,
-                                children: [
-                                  Icon(
-                                    Icons.error_outline,
-                                    color: AppColors.errorPalette.shade600,
-                                    size: 16,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت این مبلغ کافی نمی‌باشد',
-                                      textAlign: TextAlign.right,
-                                      style: theme.bodyMedium!.copyWith(
-                                        color: AppColors.errorPalette.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 12.0),
+                          if (state.settlementMethod == 'wallet_debit')
+                            _buildWalletBalanceStatus(state, theme),
+                          const SizedBox(height: 12.0),
                           if (state.settlementMethod == 'link' &&
                               !isPartial &&
                               state.settlementStep != SettlementStep.initial)
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.only(bottom: 10.0),
                               child: Center(
                                 child: state.isSettlementTimerActive
-                                    ? _buildTimerOnly(state)
+                                    ? OrderSettlementTimer(state: state)
                                     : GestureDetector(
                                         onTap: () =>
                                             cubit.resendSettlementLink(),
@@ -567,9 +389,10 @@ class _OrderSettlementOperationsWidgetState
                               children: [
                                 const Spacer(),
                                 RtcButton(
-                                  title: _getButtonTitle(
-                                    state.settlementMethod,
-                                  ),
+                                  title:
+                                      OrdersUiHelpers.resolveSettlementButtonTitle(
+                                        state.settlementMethod,
+                                      ),
                                   isActive:
                                       !isPartial &&
                                       state.settlementMethod != null &&
@@ -588,7 +411,7 @@ class _OrderSettlementOperationsWidgetState
                                         : AppColors.grayPalette.shade300,
                                     fontWeight: FontWeight.w600,
                                   ),
-                                  width: 160,
+                                  width: 160.0,
                                   onPressed: () => _handleSettlement(
                                     context,
                                     cubit,
@@ -601,7 +424,7 @@ class _OrderSettlementOperationsWidgetState
                       ],
                     ),
                   ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 4.0),
               ],
             ],
           ),
@@ -610,111 +433,46 @@ class _OrderSettlementOperationsWidgetState
     );
   }
 
-  String _formatAmount(double amount) {
-    if (amount <= 0) return '۰';
-    return amount
-        .toStringAsFixed(0)
-        .replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]},',
-        );
-  }
+  Widget _buildWalletBalanceStatus(OrdersState state, TextTheme theme) {
+    final isSufficient = state.isWalletBalanceSufficient;
+    final colorPalette = isSufficient
+        ? AppColors.successPalette
+        : AppColors.errorPalette;
+    final message = isSufficient
+        ? 'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت ما به تفاوت مبلغ کافیست'
+        : 'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت این مبلغ کافی نمی‌باشد';
 
-  Widget _buildTimerOnly(OrdersState state) {
-    var theme = Theme.of(context).textTheme;
-    final minutes = (state.settlementCountdown / 60).floor();
-    final seconds = state.settlementCountdown % 60;
-    final timeStr =
-        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          timeStr,
-          style: theme.labelLarge!.copyWith(
-            color: AppColors.brandPalette.shade600,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 8),
-        RtcImage(
-          image: "$baseImage/clock.svg",
-          height: 20,
-          width: 20,
-          color: AppColors.brandPalette.shade600,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAmountRow(
-    TextTheme theme,
-    String label,
-    String amount,
-    Color amountColor,
-    bool warningItem, {
-    bool isBold = false,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: theme.bodyMedium!.copyWith(
-            color: AppColors.grayPalette.shade700,
-          ),
-        ),
-        Row(
-          spacing: 2,
-          children: [
-            Text(
-              amount,
-              style: theme.labelLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: amountColor,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14.0, 12.0, 14.0, 12.0),
+      decoration: BoxDecoration(
+        color: colorPalette.shade25,
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: colorPalette.shade100, width: 1.0),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        spacing: 10.0,
+        children: [
+          if (isSufficient)
+            RtcImage(
+              image: "$baseImage/tick_circle.svg",
+              width: 16.0,
+              height: 16.0,
+            )
+          else
+            Icon(Icons.error_outline, color: colorPalette.shade600, size: 16.0),
+          Expanded(
+            child: Text(
+              message,
+              textAlign: TextAlign.right,
+              style: theme.bodyMedium!.copyWith(
+                color: colorPalette.shade600,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            RtcImage(
-              image: warningItem
-                  ? "$baseImage/toman_warning.svg"
-                  : "$baseImage/toman.svg",
-              width: 16,
-              height: 16,
-              boxFit: BoxFit.fill,
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
-  }
-
-  String _getMethodTitle(String? method) {
-    switch (method) {
-      case 'wallet_debit':
-        return S.current.walletSettlement;
-      case 'ipg':
-        return 'پرداخت از طریق درگاه آنلاین';
-      case 'link':
-        return 'ارسال لینک پرداخت به مشتری';
-      case 'card_to_card':
-        return 'بارگزاری فیش واریزی';
-      default:
-        return 'انتخاب روش تسویه';
-    }
-  }
-
-  String _getButtonTitle(String? method) {
-    switch (method) {
-      case 'wallet_debit':
-        return 'پرداخت با کیف پول';
-      case 'ipg':
-        return ' رفتن به درگاه شاپرک ';
-      case 'link':
-        return 'ارسال لینک پرداخت';
-      case 'card_to_card':
-        return 'بارگزاری فیش واریزی';
-      default:
-        return 'تایید و پرداخت';
-    }
   }
 }

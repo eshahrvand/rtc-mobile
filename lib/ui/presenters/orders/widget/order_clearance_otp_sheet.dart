@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import '../../../../config/config.dart';
@@ -31,24 +32,16 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
     super.dispose();
   }
 
-  String _maskPhoneNumber(String phone) {
-    if (phone.length <= 6) return phone;
-    final firstPart = phone.substring(0, 4);
-    final lastPart = phone.substring(phone.length - 2);
-    final maskedPart = '*' * (phone.length - 6);
-    return '$lastPart$maskedPart$firstPart';
-  }
-
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
 
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 24),
+        padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 24.0),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -56,18 +49,18 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
             // Drag handle
             Center(
               child: Container(
-                width: 31,
-                height: 2,
+                width: 31.0,
+                height: 2.0,
                 decoration: BoxDecoration(
                   color: AppColors.brandPalette.shade600,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 8.0),
 
             // Header Row
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Row(
                 children: [
                   Text(
@@ -82,8 +75,8 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                     onTap: () => Navigator.pop(context),
                     child: RtcImage(
                       image: "$baseImage/close.svg",
-                      width: 20,
-                      height: 20,
+                      width: 20.0,
+                      height: 20.0,
                       color: AppColors.grayPalette.shade800,
                       boxFit: BoxFit.fill,
                     ),
@@ -91,22 +84,24 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 16.0),
 
             RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
 
             // Prompt Text
             Padding(
               padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: 24,
+                left: 20.0,
+                right: 20.0,
+                top: 20.0,
+                bottom: 24.0,
               ),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  S.current.otpSentToPhone(_maskPhoneNumber(widget.phoneNumber)),
+                  S.current.otpSentToPhone(
+                    OrderCalculations.maskPhoneNumber(widget.phoneNumber),
+                  ),
                   textAlign: TextAlign.right,
                   style: theme.bodyLarge!.copyWith(
                     color: AppColors.grayPalette.shade900,
@@ -118,7 +113,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
 
             // OTP Input
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Directionality(
                 textDirection: TextDirection.ltr,
                 child: Pinput(
@@ -130,24 +125,25 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                     });
                   },
                   defaultPinTheme: PinTheme(
-                    width: 56,
-                    height: 56,
+                    width: 56.0,
+                    height: 56.0,
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.grayPalette.shade200),
-                      borderRadius: BorderRadius.circular(12),
+                      border:
+                          Border.all(color: AppColors.grayPalette.shade200),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     textStyle: theme.titleLarge!.copyWith(
                       color: AppColors.grayPalette.shade900,
                     ),
                   ),
                   focusedPinTheme: PinTheme(
-                    width: 56,
-                    height: 56,
+                    width: 56.0,
+                    height: 56.0,
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: AppColors.brandPalette.shade600,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     textStyle: theme.titleLarge!.copyWith(
                       color: AppColors.grayPalette.shade900,
@@ -156,30 +152,28 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 12.0),
 
             // Timer Row
             Row(
-              spacing: 8,
+              spacing: 8.0,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '${(60).toString().padLeft(2, '0')}:${(60).toString().padLeft(2, '0')}',
-
                   style: theme.labelLarge!.copyWith(
                     color: AppColors.grayPalette.shade500,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
-                RtcImage(image: "$baseImage/clock.svg", height: 20, width: 20 , ),
+                RtcImage(image: "$baseImage/clock.svg", height: 20.0, width: 20.0),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 32.0),
 
             // Buttons Row
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Row(
                 children: [
                   Expanded(
@@ -194,7 +188,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 12.0),
                   Expanded(
                     child: RtcButton(
                       title: S.current.confirmAndClearance,

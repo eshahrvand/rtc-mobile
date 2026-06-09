@@ -43,7 +43,7 @@ class _OrderClearanceOperationWidgetState
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
+    final theme = Theme.of(context).textTheme;
     final bool isCompleted = widget.onEdit == null && !widget.isOutOfTolerance;
 
     return Container(
@@ -53,7 +53,7 @@ class _OrderClearanceOperationWidgetState
             ? Border(
                 right: BorderSide(
                   color: AppColors.brandPalette.shade600,
-                  width: 4,
+                  width: 4.0,
                 ),
               )
             : null,
@@ -70,16 +70,16 @@ class _OrderClearanceOperationWidgetState
                   }
                 : null,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
               child: Row(
                 children: [
                   if (widget.showStep || isCompleted) ...[
                     Container(
-                      width: 20,
-                      height: 20,
+                      width: 20.0,
+                      height: 20.0,
                       decoration: BoxDecoration(
                         color: AppColors.grayPalette.shade900,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(4.0),
                       ),
                       child: Center(
                         child: Text(
@@ -87,12 +87,12 @@ class _OrderClearanceOperationWidgetState
                           style: theme.labelLarge!.copyWith(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
-                            fontSize: 12,
+                            fontSize: 12.0,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 8.0),
                   ],
                   Text(
                     S.current.clearanceOperation,
@@ -117,8 +117,8 @@ class _OrderClearanceOperationWidgetState
                       },
                       child: RtcImage(
                         image: "$baseImage/edit.svg",
-                        width: 24,
-                        height: 24,
+                        width: 24.0,
+                        height: 24.0,
                         color: AppColors.brandPalette.shade600,
                       ),
                     )
@@ -127,43 +127,38 @@ class _OrderClearanceOperationWidgetState
                       image: _isExpanded
                           ? "$baseImage/arrow_up_tab.svg"
                           : "$baseImage/angle-down_tab.svg",
-                      width: 24,
-                      height: 24,
+                      width: 24.0,
+                      height: 24.0,
                       color: AppColors.grayPalette.shade600,
                     ),
                 ],
               ),
             ),
           ),
-
           if (_isExpanded) ...[
-            // Top Divider
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: RtcDivider(
                 height: 0.5,
                 color: AppColors.grayPalette.shade300,
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Amount Box
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 16,
+                      horizontal: 12.0,
+                      vertical: 16.0,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.grayPalette.shade50,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Column(
                       children: [
-                        // Order Amount Row (only in Out of Tolerance)
                         if (widget.isOutOfTolerance &&
                             widget.orderAmount != null) ...[
                           Row(
@@ -184,20 +179,18 @@ class _OrderClearanceOperationWidgetState
                                       color: AppColors.grayPalette.shade900,
                                     ),
                                   ),
-                                  const SizedBox(width: 2),
+                                  const SizedBox(width: 2.0),
                                   RtcImage(
                                     image: "$baseImage/toman.svg",
-                                    width: 24,
-                                    height: 24,
+                                    width: 24.0,
+                                    height: 24.0,
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 16.0),
                         ],
-
-                        // Clearance Amount Row
                         Row(
                           children: [
                             Text(
@@ -213,25 +206,21 @@ class _OrderClearanceOperationWidgetState
                                   widget.amount.formatCurrency,
                                   style: theme.titleSmall!.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: widget.isOutOfTolerance
-                                        ? AppColors.brandPalette.shade600
-                                        : AppColors.brandPalette.shade600,
+                                    color: AppColors.brandPalette.shade600,
                                   ),
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: 4.0),
                                 RtcImage(
                                   image: "$baseImage/toman.svg",
-                                  width: 24,
-                                  height: 24,
+                                  width: 24.0,
+                                  height: 24.0,
                                 ),
                               ],
                             ),
                           ],
                         ),
-
-                        // Excess Amount Row (if exists)
                         if (widget.excessAmount != null) ...[
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 16.0),
                           Row(
                             children: [
                               Text(
@@ -252,11 +241,11 @@ class _OrderClearanceOperationWidgetState
                                           : AppColors.successPalette.shade600,
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(width: 4.0),
                                   RtcImage(
                                     image: "$baseImage/toman.svg",
-                                    width: 24,
-                                    height: 24,
+                                    width: 24.0,
+                                    height: 24.0,
                                   ),
                                 ],
                               ),
@@ -266,84 +255,30 @@ class _OrderClearanceOperationWidgetState
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 4),
-
-                  // Status Message Box
+                  const SizedBox(height: 4.0),
                   if (widget.isOutOfTolerance)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.errorPalette.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppColors.errorPalette.shade100,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          RtcImage(
-                            image: "$baseImage/warning.svg",
-                            width: 20,
-                            height: 20,
-                            color: AppColors.errorPalette.shade600,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              S.current.excessAmountOutOfTolerance,
-                              style: theme.labelMedium!.copyWith(
-                                color: AppColors.errorPalette.shade700,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    _buildStatusMessage(
+                      theme: theme,
+                      message: S.current.excessAmountOutOfTolerance,
+                      icon: "$baseImage/warning.svg",
+                      colorPalette: AppColors.errorPalette,
                     )
                   else if (widget.excessAmount != null)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.successPalette.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppColors.successPalette.shade100,
-                        ),
+                    _buildStatusMessage(
+                      theme: theme,
+                      message: S.current.excessAmountAddedToWallet(
+                        widget.walletName ?? "",
                       ),
-                      child: Row(
-                        children: [
-                          RtcImage(
-                            image: "$baseImage/wallet.svg",
-                            width: 20,
-                            height: 20,
-                            color: AppColors.successPalette.shade600,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              S.current.excessAmountAddedToWallet(
-                                widget.walletName ?? "",
-                              ),
-                              style: theme.labelMedium!.copyWith(
-                                color: AppColors.successPalette.shade700,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      icon: "$baseImage/wallet.svg",
+                      colorPalette: AppColors.successPalette,
                     ),
-
                   if (!widget.isOutOfTolerance && widget.onEdit != null) ...[
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 16.0),
                     RtcDivider(
                       color: AppColors.grayPalette.shade300,
-                      height: 1,
+                      height: 1.0,
                     ),
-                    const SizedBox(height: 16),
-
-                    // Instruction Text
+                    const SizedBox(height: 16.0),
                     Text(
                       widget.isOnline
                           ? S.current.clearanceRequestInstruction
@@ -355,10 +290,7 @@ class _OrderClearanceOperationWidgetState
                         height: 1.5,
                       ),
                     ),
-
-                    const SizedBox(height: 24),
-
-                    // Action Button
+                    const SizedBox(height: 24.0),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: RtcButton(
@@ -369,7 +301,7 @@ class _OrderClearanceOperationWidgetState
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
-                        width: widget.isOnline ? 147 : 172,
+                        width: widget.isOnline ? 147.0 : 172.0,
                         onPressed: widget.onAction,
                       ),
                     ),
@@ -378,6 +310,44 @@ class _OrderClearanceOperationWidgetState
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusMessage({
+    required TextTheme theme,
+    required String message,
+    required String icon,
+    required MaterialColor colorPalette,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: colorPalette.shade50,
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(
+          color: colorPalette.shade100,
+        ),
+      ),
+      child: Row(
+        children: [
+          RtcImage(
+            image: icon,
+            width: 20.0,
+            height: 20.0,
+            color: colorPalette.shade600,
+          ),
+          const SizedBox(width: 8.0),
+          Expanded(
+            child: Text(
+              message,
+              style: theme.labelMedium!.copyWith(
+                color: colorPalette.shade700,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );

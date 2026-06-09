@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -81,6 +82,121 @@ class OrdersState with _$OrdersState {
     String? disbursementRedirectUrl,
     String? disbursementGatewayType,
   }) = _OrdersState;
+}
+
+extension OrdersStateX on OrdersState {
+  bool get isPreInvoice => selectedOrder?.orderStatus == OrderStatus.preInvoice;
+  bool get isWaitingSettlement =>
+      selectedOrder?.orderStatus == OrderStatus.awaitingSettlement;
+
+  bool get isPartialClearance =>
+      clearanceStep != ClearanceStep.success && clearanceAmount.isNotEmpty;
+
+  String get resolvedClearanceAmount {
+    if (selectedOrder == null) return clearanceAmount;
+
+    final successRecords = selectedOrder!.disbursementRecords.where(
+      (r) => r.status == 'موفق' || r.status == 'success',
+    );
+
+    if (successRecords.isNotEmpty) {
+      return successRecords.first.amount;
+    }
+    if (clearanceAmount.isNotEmpty) {
+      return clearanceAmount;
+    }
+    return selectedOrder!.financialSummary.finalAmount;
+  }
+
+  String? get resolvedExcessAmount {
+    if (selectedOrder == null) return excessAmount;
+
+    final successRecords = selectedOrder!.disbursementRecords.where(
+      (r) => r.status == 'موفق' || r.status == 'success',
+    );
+
+    if (successRecords.isNotEmpty) {
+      final disbursedVal =
+          double.tryParse(successRecords.first.amount.replaceAll(',', '')) ?? 0;
+      final orderVal =
+          double.tryParse(
+                selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
+              ) ??
+              0;
+      if (disbursedVal > orderVal) {
+        return (disbursedVal - orderVal).toStringAsFixed(0);
+      }
+      return null;
+    }
+    return excessAmount;
+  }
+
+  bool get isOverDischarge {
+    final clearanceAmountVal =
+        double.tryParse(resolvedClearanceAmount.replaceAll(',', '')) ?? 0;
+    final currentOrderAmount =
+        orderAmount ?? selectedOrder?.financialSummary.finalAmount ?? '0';
+    final orderAmountVal =
+        double.tryParse(currentOrderAmount.replaceAll(',', '')) ?? 0;
+
+    return resolvedClearanceAmount.isNotEmpty &&
+        clearanceAmountVal >= orderAmountVal;
+  }
+
+  bool get shouldShowSettlement {
+    if (selectedOrder == null) return false;
+
+    return !isOverDischarge &&
+        !isOutOfTolerance &&
+        (isWaitingSettlement ||
+            selectedOrder!.settlementRecords.isNotEmpty ||
+            clearanceStep == ClearanceStep.success ||
+            clearanceAmount.isNotEmpty);
+  }
+
+  bool get shouldShowDisbursement {
+    if (selectedOrder == null || disburseOperation == null) return false;
+
+    final status = selectedOrder!.orderStatus;
+    return clearanceAmount.isNotEmpty ||
+        status == OrderStatus.underReview ||
+        status == OrderStatus.approved ||
+        status == OrderStatus.awaitingSettlement ||
+        status == OrderStatus.rejected;
+  }
+
+  double get settlementDifferenceValue {
+    if (selectedOrder == null) return 0;
+
+    final orderTotal = double.tryParse(
+          selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
+        ) ??
+        0;
+
+    double totalCleared = 0;
+    for (var record in selectedOrder!.disbursementRecords) {
+      if (record.status == 'موفق' || record.status == 'success') {
+        totalCleared += double.tryParse(record.amount.replaceAll(',', '')) ?? 0;
+      }
+    }
+
+    double diffValue = orderTotal - totalCleared;
+
+    if (isPartialClearance) {
+      final pendingAmount =
+          double.tryParse(clearanceAmount.replaceAll(',', '')) ?? 0;
+      diffValue -= pendingAmount;
+    }
+
+    return diffValue < 0 ? 0 : diffValue;
+  }
+
+  double get settlementPayableValue {
+    // Placeholder for cash discount (0 for now)
+    const double cashDiscountValue = 0;
+    final payableValue = settlementDifferenceValue - cashDiscountValue;
+    return payableValue < 0 ? 0 : payableValue;
+  }
 }
 
 enum ClearanceStep {
