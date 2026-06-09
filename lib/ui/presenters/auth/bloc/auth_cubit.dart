@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../domain/repository/auth/auth_repository.dart';
+
 import '../../../../locator.dart';
+import '../../../../repository/auth/auth_repository.dart';
 import 'auth_state.dart';
 
 // ─── REFACTOR LOG ───────────────────────────────────────────────────

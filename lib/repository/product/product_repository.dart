@@ -22,6 +22,7 @@ class ProductRepository {
     if (subPlanId != null) {
       return await _catalogService.getPlanProducts(
         subPlanId: subPlanId,
+        categoryId: categoryId,
         search: search,
         page: page,
         inStock: inStock,

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:rtc_mobile/repository/auth/auth_repository.dart';
 import 'package:rtc_mobile/repository/media/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data_source/local/prefs/prefs.dart';
@@ -11,7 +12,6 @@ import 'data_source/remote/orders/orders_service.dart';
 import 'data_source/remote/plans/plans_service.dart';
 import 'data_source/remote/service_util.dart';
 import 'data_source/remote/wallet/wallet_service.dart';
-import 'domain/repository/auth/auth_repository.dart';
 import 'repository/customers/customers_repository.dart';
 import 'repository/dashboard/dashboard_repository.dart';
 import 'repository/orders/orders_repository.dart';
