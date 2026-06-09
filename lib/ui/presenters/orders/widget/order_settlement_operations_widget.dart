@@ -178,11 +178,13 @@ class _OrderSettlementOperationsWidgetState
                           color: AppColors.grayPalette.shade900,
                         ),
                       ),
-                      const Spacer(),
-                      OrdersUiHelpers.resolveSettlementHeaderTrailing(
-                        context: context,
-                        state: state,
-                        isExpanded: _isExpanded,
+
+                      Expanded(
+                        child: OrdersUiHelpers.resolveSettlementHeaderTrailing(
+                          context: context,
+                          state: state,
+                          isExpanded: _isExpanded,
+                        ),
                       ),
                     ],
                   ),

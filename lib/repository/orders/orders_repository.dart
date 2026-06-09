@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import '../../core/utils/date_time_utils.dart';
 import '../../data/models/customer_model.dart';
 import '../../data/models/order_model.dart';
 import '../../data_source/remote/orders/model/order_dto_model.dart';
@@ -75,10 +76,7 @@ class OrdersRepository {
         )
         .then((response) {
           return response.results.map((dto) {
-            final dateTime = DateTime.parse(dto.createdAt);
-            final jalali = Jalali.fromDateTime(dateTime);
-            final dateStr =
-                '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} | ${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
+            final dateStr = DateTimeUtils.formatToJalali(dto.createdAt);
 
             return OrderSummaryModel(
               id: dto.id,
@@ -98,10 +96,7 @@ class OrdersRepository {
   Future<List<CustomerOrderItemModel>> getCustomerOrders(String customerId) {
     return _service.getOrders(customerId: customerId).then((response) {
       return response.results.map((dto) {
-        final dateTime = DateTime.parse(dto.createdAt);
-        final jalali = Jalali.fromDateTime(dateTime);
-        final dateStr =
-            '${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
+        final dateStr = DateTimeUtils.formatToJalaliDate(dto.createdAt);
 
         return CustomerOrderItemModel(
           orderId: dto.id,
@@ -214,11 +209,7 @@ class OrdersRepository {
           finalAmount: _formatCurrency(dto.total),
         ),
         payments: (dto.payments ?? []).map((p) {
-          final pDateTime =
-              DateTime.tryParse(p.createdAt ?? '') ?? DateTime.now();
-          final pJalali = Jalali.fromDateTime(pDateTime);
-          final pDateStr =
-              '${pJalali.year}/${pJalali.month.toString().padLeft(2, '0')}/${pJalali.day.toString().padLeft(2, '0')}';
+          final pDateStr = DateTimeUtils.formatToJalaliDate(p.createdAt ?? '');
 
           return OrderPaymentModel(
             amount: _formatCurrency(p.amount),
@@ -254,10 +245,7 @@ class OrdersRepository {
   }
 
   String _formatJalaliDateTime(String dateStr) {
-    final dateTime = DateTime.tryParse(dateStr);
-    if (dateTime == null) return dateStr;
-    final jalali = Jalali.fromDateTime(dateTime);
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} - ${jalali.year}/${jalali.month.toString().padLeft(2, '0')}/${jalali.day.toString().padLeft(2, '0')}';
+    return DateTimeUtils.formatToJalali(dateStr, separator: ' - ');
   }
 
   String _mapDocType(String type) {

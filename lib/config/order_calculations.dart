@@ -3,7 +3,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 class OrderCalculations {
   /// Formats the current date and time into a Jalali string.
   static String formatCurrentJalaliDateTime() {
-    final now = DateTime.now();
+    final now = DateTime.now().toLocal();
     final jalali = Jalali.fromDateTime(now);
     final hour = now.hour.toString().padLeft(2, '0');
     final minute = now.minute.toString().padLeft(2, '0');

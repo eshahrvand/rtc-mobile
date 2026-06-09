@@ -43,11 +43,13 @@ class TransactionListScreen extends StatelessWidget {
 
     if (state.selectedDateFrom != null) {
       startJalali = Jalali.fromDateTime(
-        DateTime.parse(state.selectedDateFrom!),
+        DateTime.parse(state.selectedDateFrom!).toLocal(),
       );
     }
     if (state.selectedDateTo != null) {
-      endJalali = Jalali.fromDateTime(DateTime.parse(state.selectedDateTo!));
+      endJalali = Jalali.fromDateTime(
+        DateTime.parse(state.selectedDateTo!).toLocal(),
+      );
     }
 
     FilterDateBottomSheet.show(

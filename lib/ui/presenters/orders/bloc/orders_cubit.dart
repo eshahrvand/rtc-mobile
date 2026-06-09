@@ -804,7 +804,9 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   String? _formatJalaliDate(Jalali? date) {
     if (date == null) return null;
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final dateTime = date.toDateTime().toLocal();
+    final localJalali = Jalali.fromDateTime(dateTime);
+    return '${localJalali.year}-${localJalali.month.toString().padLeft(2, '0')}-${localJalali.day.toString().padLeft(2, '0')}';
   }
 
   double _calculateRemainingSettlement(OrderDetailModel detail) {

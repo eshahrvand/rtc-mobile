@@ -135,7 +135,8 @@ class DashboardCubit extends Cubit<DashboardState> {
     for (int i = 1; i <= now.day; i++) {
       final dailyData = dailyChart.where((d) {
         try {
-          final dJalali = Jalali.fromDateTime(DateTime.parse(d.date));
+          final localDateTime = DateTime.parse(d.date).toLocal();
+          final dJalali = Jalali.fromDateTime(localDateTime);
           return dJalali.year == now.year &&
               dJalali.month == now.month &&
               dJalali.day == i;

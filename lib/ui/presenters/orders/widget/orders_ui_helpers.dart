@@ -22,23 +22,21 @@ class OrdersUiHelpers {
         state.filteredOrders.isEmpty) {
       true => const Center(child: CircularProgressIndicator()),
       false => ListView.builder(
-          itemCount: state.filteredOrders.length,
-          itemBuilder: (context, index) {
-            final OrderSummaryModel order = state.filteredOrders[index];
-            return RtcOrderItem(
-              order: order,
-              onTap: () {
-                context
-                    .push(AppRoutes.orderDetail, extra: order.id)
-                    .then((_) {
-                  if (context.mounted) {
-                    context.read<OrdersCubit>().fetchOrders();
-                  }
-                });
-              },
-            );
-          },
-        ),
+        itemCount: state.filteredOrders.length,
+        itemBuilder: (context, index) {
+          final OrderSummaryModel order = state.filteredOrders[index];
+          return RtcOrderItem(
+            order: order,
+            onTap: () {
+              context.push(AppRoutes.orderDetail, extra: order.id).then((_) {
+                if (context.mounted) {
+                  context.read<OrdersCubit>().fetchOrders();
+                }
+              });
+            },
+          );
+        },
+      ),
     };
   }
 
@@ -109,33 +107,75 @@ class OrdersUiHelpers {
     final theme = Theme.of(context).textTheme;
 
     if (state.isSettlementCompleted) {
-      return Padding(
-        padding: const EdgeInsets.only(right: 8.0),
-        child: RtcStatusBadge(status: "انجام شده"),
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: RtcStatusBadge(status: "انجام شده"),
+          ),
+          Spacer(),
+          RtcImage(
+            image: (state.isSettlementCompleted && !isExpanded)
+                ? "$baseImage/angle-down_tab.svg"
+                : "$baseImage/arrow_up_tab.svg",
+            width: 24.0,
+            height: 24.0,
+          ),
+        ],
       );
     }
 
     if (state.isPartialClearance) {
-      return Container(
-        height: 22.0,
-        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-        decoration: BoxDecoration(
-          color: AppColors.warningPalette.shade100,
-          borderRadius: BorderRadius.circular(6.0),
+      return Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: Container(
+          height: 22.0,
+          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: AppColors.warningPalette.shade100,
+            borderRadius: BorderRadius.circular(6.0),
+          ),
+          child: Row(
+            spacing: 4.0,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RtcImage(
+                image: "$baseImage/waiting.svg",
+                width: 12.0,
+                height: 12.0,
+                color: AppColors.grayPalette.shade900,
+              ),
+              Text(
+                'در انتظار تکمیل تخلیه',
+                style: theme.bodyMedium!.copyWith(
+                  color: AppColors.grayPalette.shade900,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
+      );
+    }
+
+    if (state.settlementMethod == 'link' &&
+        state.settlementStep != SettlementStep.initial) {
+      return Align(
+        alignment: AlignmentDirectional.centerEnd,
         child: Row(
-          spacing: 4.0,
+          spacing: 8.0,
+          mainAxisSize: MainAxisSize.min,
           children: [
             RtcImage(
-              image: "$baseImage/waiting.svg",
-              width: 12.0,
-              height: 12.0,
-              color: AppColors.grayPalette.shade900,
+              image: "assets/images/restart.svg",
+              width: 20.0,
+              height: 20.0,
             ),
             Text(
-              'در انتظار تکمیل تخلیه',
+              'بروزرسانی',
               style: theme.bodyMedium!.copyWith(
-                color: AppColors.grayPalette.shade900,
+                color: AppColors.brandPalette.shade600,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -144,34 +184,15 @@ class OrdersUiHelpers {
       );
     }
 
-    if (state.settlementMethod == 'link' &&
-        state.settlementStep != SettlementStep.initial) {
-      return Row(
-        spacing: 8.0,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RtcImage(
-            image: "assets/images/restart.svg",
-            width: 20.0,
-            height: 20.0,
-          ),
-          Text(
-            'بروزرسانی',
-            style: theme.bodyMedium!.copyWith(
-              color: AppColors.brandPalette.shade600,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      );
-    }
-
-    return RtcImage(
-      image: (state.isSettlementCompleted && !isExpanded)
-          ? "$baseImage/angle-down_tab.svg"
-          : "$baseImage/arrow_up_tab.svg",
-      width: 24.0,
-      height: 24.0,
+    return Align(
+      alignment: AlignmentDirectional.centerEnd,
+      child: RtcImage(
+        image: (state.isSettlementCompleted && !isExpanded)
+            ? "$baseImage/angle-down_tab.svg"
+            : "$baseImage/arrow_up_tab.svg",
+        width: 24.0,
+        height: 24.0,
+      ),
     );
   }
 }
