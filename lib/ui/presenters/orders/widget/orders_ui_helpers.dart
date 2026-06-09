@@ -18,25 +18,36 @@ class OrdersUiHelpers {
     required BuildContext context,
     required OrdersState state,
   }) {
+    final theme = Theme.of(context).textTheme;
+
     return switch (state.status == OrdersRequestStatus.loading &&
         state.filteredOrders.isEmpty) {
       true => const Center(child: CircularProgressIndicator()),
-      false => ListView.builder(
-        itemCount: state.filteredOrders.length,
-        itemBuilder: (context, index) {
-          final OrderSummaryModel order = state.filteredOrders[index];
-          return RtcOrderItem(
-            order: order,
-            onTap: () {
-              context.push(AppRoutes.orderDetail, extra: order.id).then((_) {
-                if (context.mounted) {
-                  context.read<OrdersCubit>().fetchOrders();
-                }
-              });
-            },
-          );
-        },
-      ),
+      false => state.filteredOrders.isEmpty
+          ? Center(
+              child: Text(
+                S.current.noItemsFound,
+                style: theme.bodyLarge?.copyWith(
+                  color: AppColors.grayPalette.shade600,
+                ),
+              ),
+            )
+          : ListView.builder(
+              itemCount: state.filteredOrders.length,
+              itemBuilder: (context, index) {
+                final OrderSummaryModel order = state.filteredOrders[index];
+                return RtcOrderItem(
+                  order: order,
+                  onTap: () {
+                    context.push(AppRoutes.orderDetail, extra: order.id).then((_) {
+                      if (context.mounted) {
+                        context.read<OrdersCubit>().fetchOrders();
+                      }
+                    });
+                  },
+                );
+              },
+            ),
     };
   }
 
