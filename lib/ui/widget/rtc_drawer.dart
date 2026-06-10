@@ -153,7 +153,9 @@ class RtcDrawer extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        profile?.role != "agent" ? 'نماینده' : 'نماینده فروش',
+                        profile?.agentType == 'natural'
+                            ? S.current.naturalAgent
+                            : S.current.legalAgent,
                         style: theme.bodyMedium!.copyWith(
                           color: AppColors.grayPalette.shade600,
                         ),

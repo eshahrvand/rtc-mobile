@@ -61,7 +61,9 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     RtcTextField(
-                      labelText: S.current.nationalId,
+                      labelText: userProfile?.agentType == 'natural'
+                          ? S.current.nationalId
+                          : S.current.legalId,
                       labelStyle: theme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w500,
                         color: AppColors.grayPalette.shade700,
@@ -272,8 +274,9 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    userProfile?.role != "agent" ? 'نماینده' : 'نماینده ',
-
+                    userProfile?.agentType == 'natural'
+                        ? S.current.naturalAgent
+                        : S.current.legalAgent,
                     style: theme.bodyLarge!.copyWith(
                       color: AppColors.grayPalette.shade600,
                     ),
