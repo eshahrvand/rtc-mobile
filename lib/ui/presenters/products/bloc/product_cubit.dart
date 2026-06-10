@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/network_helper.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/product_item_model.dart';
 import '../../../../repository/plans/plans_repository.dart';
@@ -226,12 +227,14 @@ class ProductCubit extends Cubit<ProductState> {
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
-    emit(
-      state.copyWith(
-        status: ProductRequestStatus.error,
-        errorMessage: e.toString(),
-      ),
-    );
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      emit(
+        state.copyWith(
+          status: ProductRequestStatus.error,
+          errorMessage: networkMessage ?? e.toString(),
+        ),
+      );
+    });
   }
 
   @override

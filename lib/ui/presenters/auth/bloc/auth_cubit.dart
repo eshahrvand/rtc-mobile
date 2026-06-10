@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/utils/network_helper.dart';
 import '../../../../locator.dart';
 import '../../../../repository/auth/auth_repository.dart';
 import 'auth_state.dart';
@@ -129,11 +130,13 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
-    emit(state.copyWith(
-      status: AuthRequestStatus.error,
-      errorMessage: e.toString(),
-      isLoading: false,
-    ));
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      emit(state.copyWith(
+        status: AuthRequestStatus.error,
+        errorMessage: networkMessage ?? e.toString(),
+        isLoading: false,
+      ));
+    });
   }
 
   @override

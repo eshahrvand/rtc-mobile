@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/network_helper.dart';
 import '../../../../data/models/customer_model.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
@@ -33,7 +34,9 @@ class CustomersCubit extends Cubit<CustomersState> {
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
         )
         .then((response) {
-          print('>> CUSTOMERS: API success. count: ${response.count}, results: ${response.results.length}');
+          print(
+            '>> CUSTOMERS: API success. count: ${response.count}, results: ${response.results.length}',
+          );
           final customers = response.results.map(_mapToCustomerItem).toList();
           print('>> CUSTOMERS: Mapped to ${customers.length} items');
 
@@ -73,28 +76,31 @@ class CustomersCubit extends Cubit<CustomersState> {
   void onCustomerTapped(CustomerItemModel customer) {
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
-    _customersRepo.getCustomerDetail(customer.id).then((dto) {
-      return _ordersRepo.getCustomerOrders(dto.id).then((orders) {
-        final detail = CustomerDetailModel(
-          id: dto.id,
-          name: '${dto.firstName} ${dto.lastName}',
-          nationalCode: dto.nationalId,
-          phoneNumber: dto.mobile,
-          postalCode: dto.postalCode,
-          address: dto.address,
-          orders: orders,
-        );
+    _customersRepo
+        .getCustomerDetail(customer.id)
+        .then((dto) {
+          return _ordersRepo.getCustomerOrders(dto.id).then((orders) {
+            final detail = CustomerDetailModel(
+              id: dto.id,
+              name: '${dto.firstName} ${dto.lastName}',
+              nationalCode: dto.nationalId,
+              phoneNumber: dto.mobile,
+              postalCode: dto.postalCode,
+              address: dto.address,
+              orders: orders,
+            );
 
-        emit(
-          state.copyWith(
-            status: CustomersRequestStatus.success,
-            step: CustomersStep.customerDetail,
-            selectedCustomer: detail,
-            selectedTabIndex: 0,
-          ),
-        );
-      });
-    }).catchError(_handleError);
+            emit(
+              state.copyWith(
+                status: CustomersRequestStatus.success,
+                step: CustomersStep.customerDetail,
+                selectedCustomer: detail,
+                selectedTabIndex: 0,
+              ),
+            );
+          });
+        })
+        .catchError(_handleError);
   }
 
   /// Updates the selected tab index in the customer detail view.
@@ -123,12 +129,14 @@ class CustomersCubit extends Cubit<CustomersState> {
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
-    emit(
-      state.copyWith(
-        status: CustomersRequestStatus.error,
-        errorMessage: e.toString(),
-      ),
-    );
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      emit(
+        state.copyWith(
+          status: CustomersRequestStatus.error,
+          errorMessage: networkMessage ?? e.toString(),
+        ),
+      );
+    });
   }
 
   @override

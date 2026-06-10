@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import '../../../core/utils/network_helper.dart';
 import '../../../generated/l10n.dart';
 import '../../router/router.dart';
 import '../../theme/theme.dart';

@@ -16,6 +16,7 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../theme/colors.dart';
 import 'dashboard_state.dart';
 import '../../../../data/models/order_model.dart';
+import '../../../../core/utils/network_helper.dart';
 
 // ─── REFACTOR LOG ───────────────────────────────────────────────────
 // [1] Extracted `_mapQuickAccessItems()` to simplify summary data processing.
@@ -282,12 +283,14 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   /// Centralized handler for repository errors.
-  void _handleError(Object e) {
-    emit(
-      state.copyWith(
-        status: DashboardRequestStatus.error,
-        errorMessage: e.toString(),
-      ),
-    );
+  void _handleError(Object e, {BuildContext? context}) {
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      emit(
+        state.copyWith(
+          status: DashboardRequestStatus.error,
+          errorMessage: networkMessage ?? e.toString(),
+        ),
+      );
+    });
   }
 }
