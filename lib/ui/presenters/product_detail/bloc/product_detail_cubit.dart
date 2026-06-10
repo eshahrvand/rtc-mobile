@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/network_helper.dart';
 import '../../../../data/models/product_detail_model.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
@@ -78,17 +79,28 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
             ),
           );
         })
-        .catchError((Object e) {
-          emit(
-            state.copyWith(
-              status: ProductDetailRequestStatus.error,
-              errorMessage: e.toString(),
-            ),
-          );
-        });
+        .catchError(_handleError);
   }
 
   void onImageSelected(int index) {
     emit(state.copyWith(selectedImageIndex: index));
+  }
+
+  void _handleError(Object e) {
+    if (isClosed) return;
+
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+
+      final finalMessage = networkMessage ?? e.toString();
+      if (state.errorMessage == finalMessage) return;
+
+      emit(
+        state.copyWith(
+          status: ProductDetailRequestStatus.error,
+          errorMessage: finalMessage,
+        ),
+      );
+    });
   }
 }

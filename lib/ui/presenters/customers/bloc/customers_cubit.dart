@@ -129,11 +129,18 @@ class CustomersCubit extends Cubit<CustomersState> {
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
+    if (isClosed) return;
+
     NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+
+      final finalMessage = networkMessage ?? e.toString();
+      if (state.errorMessage == finalMessage) return;
+
       emit(
         state.copyWith(
           status: CustomersRequestStatus.error,
-          errorMessage: networkMessage ?? e.toString(),
+          errorMessage: finalMessage,
         ),
       );
     });

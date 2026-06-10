@@ -14,6 +14,7 @@ import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/wallet/wallet_service.dart';
 import '../../../../data_source/remote/wallet/model/wallet_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
+import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
 import 'orders_state.dart';
 
@@ -864,12 +865,21 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void _handleError(Object e, {String prefix = ''}) {
-    emit(
-      state.copyWith(
-        status: OrdersRequestStatus.error,
-        errorMessage: '$prefix${e.toString()}',
-      ),
-    );
+    if (isClosed) return;
+
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+
+      final finalMessage = networkMessage ?? '$prefix${e.toString()}';
+      if (state.errorMessage == finalMessage) return;
+
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.error,
+          errorMessage: finalMessage,
+        ),
+      );
+    });
   }
 
   @override

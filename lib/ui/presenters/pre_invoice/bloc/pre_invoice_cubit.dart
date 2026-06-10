@@ -15,6 +15,7 @@ import '../../../../repository/media/media_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
+import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
 
@@ -662,18 +663,27 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void _handleError(Object e, {String prefix = ''}) {
-    emit(
-      state.copyWith(
-        status: PreInvoiceRequestStatus.error,
-        errorMessage: prefix.isEmpty
-            ? e.toString()
-            : '$prefix: ${e.toString()}',
-        isUploadingDocuments: false,
-        isSubmittingCustomerInfo: false,
-        isSubmittingPreInvoice: false,
-        isSubmittingAndClearing: false,
-      ),
-    );
+    if (isClosed) return;
+
+    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+
+      final finalMessage = networkMessage ??
+          (prefix.isEmpty ? e.toString() : '$prefix: ${e.toString()}');
+          
+      if (state.errorMessage == finalMessage) return;
+
+      emit(
+        state.copyWith(
+          status: PreInvoiceRequestStatus.error,
+          errorMessage: finalMessage,
+          isUploadingDocuments: false,
+          isSubmittingCustomerInfo: false,
+          isSubmittingPreInvoice: false,
+          isSubmittingAndClearing: false,
+        ),
+      );
+    });
   }
 
   @override

@@ -130,10 +130,17 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
+    if (isClosed) return;
+
     NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+      
+      final finalMessage = networkMessage ?? e.toString();
+      if (state.errorMessage == finalMessage) return;
+
       emit(state.copyWith(
         status: AuthRequestStatus.error,
-        errorMessage: networkMessage ?? e.toString(),
+        errorMessage: finalMessage,
         isLoading: false,
       ));
     });

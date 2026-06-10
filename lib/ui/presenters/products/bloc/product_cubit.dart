@@ -227,11 +227,18 @@ class ProductCubit extends Cubit<ProductState> {
 
   /// Centralized handler for repository errors.
   void _handleError(Object e) {
+    if (isClosed) return;
+
     NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+
+      final finalMessage = networkMessage ?? e.toString();
+      if (state.errorMessage == finalMessage) return;
+
       emit(
         state.copyWith(
           status: ProductRequestStatus.error,
-          errorMessage: networkMessage ?? e.toString(),
+          errorMessage: finalMessage,
         ),
       );
     });

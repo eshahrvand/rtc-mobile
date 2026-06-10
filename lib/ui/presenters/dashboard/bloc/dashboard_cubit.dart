@@ -283,12 +283,21 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   /// Centralized handler for repository errors.
-  void _handleError(Object e, {BuildContext? context}) {
+  void _handleError(Object e) {
+    if (isClosed) return;
+    
     NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+      if (isClosed) return;
+      
+      final finalMessage = networkMessage ?? e.toString();
+      
+      // Prevent duplicate identical error messages
+      if (state.errorMessage == finalMessage) return;
+
       emit(
         state.copyWith(
           status: DashboardRequestStatus.error,
-          errorMessage: networkMessage ?? e.toString(),
+          errorMessage: finalMessage,
         ),
       );
     });
