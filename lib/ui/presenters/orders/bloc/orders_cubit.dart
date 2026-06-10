@@ -129,7 +129,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e));
+        .catchError((e) {
+          _handleError(e);
+          return null;
+        });
   }
 
   void fetchOrderDetail(String orderId) {
@@ -176,9 +179,10 @@ class OrdersCubit extends Cubit<OrdersState> {
               })
               .catchError((_) {});
         })
-        .catchError(
-          (e) => _handleError(e, prefix: 'خطا در بارگذاری جزئیات سفارش: '),
-        );
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در بارگذاری جزئیات سفارش: ');
+          return null;
+        });
   }
 
   // ─── Search & Filters ─────────────────────────────────────────────
@@ -442,8 +446,9 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void confirmClearanceDocument() {
-    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null)
+    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) {
       return;
+    }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     _mediaRepo
@@ -727,7 +732,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             );
           })
           .then((_) => performSettle())
-          .catchError((e) => _handleError(e, prefix: 'خطا در بارگذاری فیش: '));
+          .catchError((e) {
+            _handleError(e, prefix: 'خطا در بارگذاری فیش: ');
+            return null;
+          });
     } else {
       performSettle().catchError(
         (e) => _handleError(e, prefix: 'خطا در تایید تسویه: '),
@@ -865,13 +873,18 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void _handleError(Object e, {String prefix = ''}) {
-    if (isClosed) return;
+    if (isClosed) {
+      return;
+    }
 
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
+    NetworkHelper.getNetworkErrorMessage().then<void>((networkMessage) {
+      if (isClosed) {
+        return;
+      }
 
       final finalMessage = networkMessage ?? '$prefix${e.toString()}';
-      if (state.errorMessage == finalMessage) return;
+
+      emit(state.copyWith(status: OrdersRequestStatus.initial));
 
       emit(
         state.copyWith(
