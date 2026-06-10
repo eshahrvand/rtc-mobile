@@ -414,6 +414,7 @@ class _OrderSettlementOperationsWidgetState
                                     fontWeight: FontWeight.w600,
                                   ),
                                   width: 160.0,
+                                  isLoading: state.status == OrdersRequestStatus.loading,
                                   onPressed: () => _handleSettlement(
                                     context,
                                     cubit,

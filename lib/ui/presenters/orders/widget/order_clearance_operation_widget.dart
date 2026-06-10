@@ -18,6 +18,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
   final bool isOnline;
   final bool isOutOfTolerance;
   final bool showStep;
+  final bool isLoading;
 
   const OrderClearanceOperationWidget({
     super.key,
@@ -30,6 +31,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
     this.isOnline = false,
     this.isOutOfTolerance = false,
     this.showStep = false,
+    this.isLoading = false,
   });
 
   @override
@@ -302,6 +304,7 @@ class _OrderClearanceOperationWidgetState
                           fontWeight: FontWeight.w600,
                         ),
                         width: widget.isOnline ? 147.0 : 172.0,
+                        isLoading: widget.isLoading,
                         onPressed: widget.onAction,
                       ),
                     ),

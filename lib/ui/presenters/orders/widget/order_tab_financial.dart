@@ -50,13 +50,28 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => OrderClearanceAmountSheet(
-        totalAmount: widget.order.financialSummary.finalAmount,
-        amountController: _amountController,
-        onCheckPressed: () {
-          cubit.initiateClearance(_amountController.text);
-          Navigator.pop(context);
-        },
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) => prev.clearanceStep != curr.clearanceStep,
+          listener: (context, state) {
+            if (state.clearanceStep != ClearanceStep.initial) {
+              Navigator.pop(context);
+            }
+          },
+          child: BlocBuilder<OrdersCubit, OrdersState>(
+            builder: (context, state) {
+              return OrderClearanceAmountSheet(
+                totalAmount: widget.order.financialSummary.finalAmount,
+                amountController: _amountController,
+                isLoading: state.status == OrdersRequestStatus.loading,
+                onCheckPressed: () {
+                  cubit.initiateClearance(_amountController.text);
+                },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -118,20 +133,37 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
                           showStep: showSettlement,
+                          isLoading: state.status == OrdersRequestStatus.loading,
                           onAction: () {
                             if (state.disbursementGatewayType == 'otp') {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
-                                builder: (_) => OrderClearanceOtpSheet(
-                                  phoneNumber:
-                                      state.disbursementMobile ??
-                                      widget.order.customer.phone,
-                                  onConfirm: (otp) {
-                                    Navigator.pop(context);
-                                    cubit.confirmClearanceOtp(otp);
-                                  },
+                                builder: (_) => BlocProvider.value(
+                                  value: cubit,
+                                  child: BlocListener<OrdersCubit, OrdersState>(
+                                    listenWhen: (prev, curr) =>
+                                        prev.clearanceStep != curr.clearanceStep,
+                                    listener: (context, state) {
+                                      if (state.clearanceStep == ClearanceStep.success) {
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: BlocBuilder<OrdersCubit, OrdersState>(
+                                      builder: (context, state) {
+                                        return OrderClearanceOtpSheet(
+                                          phoneNumber:
+                                              state.disbursementMobile ??
+                                              widget.order.customer.phone,
+                                          isLoading: state.status == OrdersRequestStatus.loading,
+                                          onConfirm: (otp) {
+                                            cubit.confirmClearanceOtp(otp);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
                                 ),
                               );
                             } else if (state.disbursementGatewayType ==

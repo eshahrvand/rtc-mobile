@@ -16,6 +16,7 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
   final VoidCallback onDelete;
   final bool showTrackingField;
   final Function(String)? onTrackingCodeChanged;
+  final bool isLoading;
 
   const OrderUploadDocumentsSheet({
     super.key,
@@ -24,6 +25,7 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
     required this.onDelete,
     this.showTrackingField = false,
     this.onTrackingCodeChanged,
+    this.isLoading = false,
   });
 
   @override
@@ -188,6 +190,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
+                      isLoading: widget.isLoading,
                       onPressed: widget.onConfirm,
                     ),
                   ),

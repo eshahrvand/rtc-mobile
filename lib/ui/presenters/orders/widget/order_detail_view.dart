@@ -205,15 +205,31 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => OrderUploadDocumentsSheet(
-        filePath: filePath,
-        onConfirm: () {
-          Navigator.pop(context);
-          cubit.confirmClearanceDocument();
-        },
-        onDelete: () {
-          cubit.clearClearanceDocument();
-        },
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) => prev.clearanceStep != curr.clearanceStep,
+          listener: (context, state) {
+            if (state.clearanceStep == ClearanceStep.success) {
+              Navigator.pop(context);
+            }
+          },
+          child: BlocBuilder<OrdersCubit, OrdersState>(
+            builder: (context, state) {
+              return OrderUploadDocumentsSheet(
+                filePath: filePath,
+                isLoading: state.status == OrdersRequestStatus.loading,
+                onConfirm: () {
+                  cubit.confirmClearanceDocument();
+                },
+                onDelete: () {
+                  cubit.clearClearanceDocument();
+                  Navigator.pop(context);
+                },
+              );
+            },
+          ),
+        ),
       ),
     );
   }

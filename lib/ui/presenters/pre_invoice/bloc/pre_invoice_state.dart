@@ -93,6 +93,7 @@ extension PreInvoiceStateX on PreInvoiceState {
       };
 
   bool get isNextStepLoading => switch (currentStep) {
+        PreInvoiceStep.creditPlan => status == PreInvoiceRequestStatus.loading,
         PreInvoiceStep.customerInfo => isSubmittingCustomerInfo,
         PreInvoiceStep.documents => isUploadingDocuments,
         _ => false,

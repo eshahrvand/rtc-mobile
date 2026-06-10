@@ -11,11 +11,13 @@ import '../../../widget/rtc_image.dart';
 class OrderClearanceOtpSheet extends StatefulWidget {
   final String phoneNumber;
   final Function(String) onConfirm;
+  final bool isLoading;
 
   const OrderClearanceOtpSheet({
     super.key,
     required this.phoneNumber,
     required this.onConfirm,
+    this.isLoading = false,
   });
 
   @override
@@ -197,6 +199,7 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                         fontWeight: FontWeight.w600,
                       ),
                       isActive: _isComplete,
+                      isLoading: widget.isLoading,
                       onPressed: () => widget.onConfirm(_otpController.text),
                     ),
                   ),

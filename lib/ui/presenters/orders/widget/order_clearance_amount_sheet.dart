@@ -12,12 +12,14 @@ class OrderClearanceAmountSheet extends StatefulWidget {
   final String totalAmount;
   final TextEditingController amountController;
   final VoidCallback onCheckPressed;
+  final bool isLoading;
 
   const OrderClearanceAmountSheet({
     super.key,
     required this.totalAmount,
     required this.amountController,
     required this.onCheckPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -147,6 +149,7 @@ class _OrderClearanceAmountSheetState extends State<OrderClearanceAmountSheet> {
                   RtcButton(
                     title: S.current.checkButton,
                     onPressed: widget.onCheckPressed,
+                    isLoading: widget.isLoading,
                     height: 44,
                     width: 88,
                     styleBtn: theme.titleSmall!.copyWith(
