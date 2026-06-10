@@ -7,6 +7,8 @@ enum SplashStatus {
   loading,
   tokenValid,
   tokenNotValid,
+  internetError,
+  vpnError,
 }
 
 @freezed
