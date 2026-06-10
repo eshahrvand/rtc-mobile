@@ -117,7 +117,7 @@ class PreInvoiceStep5CreditPlan extends StatelessWidget {
             value: plan.planName,
           ),
           PreInvoiceStep5InfoRow(
-            label: '${S.current.validityPeriodLabel} :',
+            label: '${S.current.validityPeriodLabel}',
             value: '${plan.validityDuration} ${S.current.day}',
           ),
         ],

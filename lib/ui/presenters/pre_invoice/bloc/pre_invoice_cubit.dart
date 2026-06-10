@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -259,7 +260,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void searchCustomer() {
     if (state.customerIdQuery.isEmpty) return;
-    emit(state.copyWith(customerSearchLoading: true));
+    emit(state.copyWith(
+      customerSearchLoading: true,
+      status: PreInvoiceRequestStatus.initial,
+    ));
 
     _customerRepo
         .getCustomerByNationalId(state.customerIdQuery)
@@ -283,21 +287,45 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          emit(
-            state.copyWith(
-              customerSearchLoading: false,
-              customerInfo: CustomerInfoModel(
-                firstName: '',
-                lastName: '',
-                nationalId: state.customerIdQuery,
-                phoneNumber: '',
-                postalCode: '',
-                address: '',
-              ),
-              originalCustomerInfo: null,
-              isExistingCustomer: false,
-            ),
-          );
+          if (isClosed) return;
+
+          NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+            if (isClosed) return;
+
+            if (networkMessage != null) {
+              _handleError(e);
+              emit(state.copyWith(customerSearchLoading: false));
+              return;
+            }
+
+            bool isNotFound = false;
+            if (e is DioException) {
+              if (e.response?.statusCode == 404) {
+                isNotFound = true;
+              }
+            }
+
+            if (isNotFound) {
+              emit(
+                state.copyWith(
+                  customerSearchLoading: false,
+                  customerInfo: CustomerInfoModel(
+                    firstName: '',
+                    lastName: '',
+                    nationalId: state.customerIdQuery,
+                    phoneNumber: '',
+                    postalCode: '',
+                    address: '',
+                  ),
+                  originalCustomerInfo: null,
+                  isExistingCustomer: false,
+                ),
+              );
+            } else {
+              _handleError(e);
+              emit(state.copyWith(customerSearchLoading: false));
+            }
+          });
         });
   }
 
@@ -396,7 +424,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e, prefix: 'خطا در ثبت اطلاعات مشتری'));
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در ثبت اطلاعات مشتری');
+          return null;
+        });
   }
 
   // ─── Step 4 — Documents ────────────────────────────────────────────
@@ -496,7 +527,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e, prefix: 'خطا در بارگذاری مدارک: '));
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در بارگذاری مدارک: ');
+          return null;
+        });
   }
 
   // ─── Step 5 — Submit Pre-Invoice ───────────────────────────────────
@@ -544,7 +578,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e, prefix: 'خطا در ثبت پیش فاکتور: '));
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در ثبت پیش فاکتور: ');
+          return null;
+        });
   }
 
   // ─── Private Helpers ───────────────────────────────────────────────
@@ -665,13 +702,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void _handleError(Object e, {String prefix = ''}) {
     if (isClosed) return;
 
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
+    NetworkHelper.getNetworkErrorMessage().then<void>((networkMessage) {
       if (isClosed) return;
 
       final finalMessage = networkMessage ??
           (prefix.isEmpty ? e.toString() : '$prefix: ${e.toString()}');
-          
-      if (state.errorMessage == finalMessage) return;
+
+      emit(state.copyWith(status: PreInvoiceRequestStatus.initial));
 
       emit(
         state.copyWith(
@@ -681,6 +718,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           isSubmittingCustomerInfo: false,
           isSubmittingPreInvoice: false,
           isSubmittingAndClearing: false,
+          customerSearchLoading: false,
         ),
       );
     });
