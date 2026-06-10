@@ -90,11 +90,13 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                 child: Container(
                   width: 33,
                   height: 2,
-                  decoration: BoxDecoration(color: AppColors.brandPalette.shade600),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandPalette.shade600,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
-      
+
               // Header
               Row(
                 children: [
@@ -121,7 +123,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
               const SizedBox(height: 16),
               const Divider(height: 1),
               const SizedBox(height: 24),
-      
+
               // Instruction Text
               Align(
                 alignment: Alignment.centerRight,
@@ -134,7 +136,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                 ),
               ),
               const SizedBox(height: 12),
-      
+
               // File Card
               OrderDetailsDocumentItem(
                 isLocalFile: true,
@@ -164,7 +166,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                 ),
               ],
               const SizedBox(height: 32),
-      
+
               // Action Buttons
               Row(
                 children: [
@@ -184,8 +186,9 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                   Expanded(
                     child: RtcButton(
                       title: S.current.confirmAndSend,
-                      isActive:
-                          widget.showTrackingField ? _isTrackingCodeNotEmpty : true,
+                      isActive: widget.showTrackingField
+                          ? _isTrackingCodeNotEmpty
+                          : true,
                       styleBtn: theme.labelLarge!.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
