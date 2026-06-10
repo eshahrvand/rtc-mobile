@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -207,28 +206,22 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: cubit,
-        child: BlocListener<OrdersCubit, OrdersState>(
-          listenWhen: (prev, curr) => prev.clearanceStep != curr.clearanceStep,
-          listener: (context, state) {
-            if (state.clearanceStep == ClearanceStep.success) {
-              Navigator.pop(context);
-            }
+        child: BlocBuilder<OrdersCubit, OrdersState>(
+          builder: (context, state) {
+            return OrderUploadDocumentsSheet(
+              filePath: filePath,
+              isLoading: state.status == OrdersRequestStatus.loading,
+              onConfirm: () {
+                cubit.confirmClearanceDocument().then((_) {
+                  if (context.mounted) Navigator.pop(context);
+                }).catchError((_) {});
+              },
+              onDelete: () {
+                cubit.clearClearanceDocument();
+                Navigator.pop(context);
+              },
+            );
           },
-          child: BlocBuilder<OrdersCubit, OrdersState>(
-            builder: (context, state) {
-              return OrderUploadDocumentsSheet(
-                filePath: filePath,
-                isLoading: state.status == OrdersRequestStatus.loading,
-                onConfirm: () {
-                  cubit.confirmClearanceDocument();
-                },
-                onDelete: () {
-                  cubit.clearClearanceDocument();
-                  Navigator.pop(context);
-                },
-              );
-            },
-          ),
         ),
       ),
     );

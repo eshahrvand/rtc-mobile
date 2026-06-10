@@ -306,18 +306,18 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   // ─── Clearance Flow ───────────────────────────────────────────────
 
-  void initiateClearance(String amountStr) {
+  Future<void> initiateClearance(String amountStr) {
     print("tlorance>>:: initiateClearance CALLED with input: '$amountStr'");
 
     if (state.selectedOrder == null) {
       print("tlorance>>:: ERROR: selectedOrder is NULL");
-      return;
+      return Future.value();
     }
 
     if (state.tolerance == null) {
       print("tlorance>>:: ERROR: tolerance is NULL in state");
       _handleError('تنظیمات تولرانس بارگذاری نشده است');
-      return;
+      return Future.value();
     }
 
     final rawAmountStr = amountStr.replaceAll(',', '');
@@ -353,36 +353,14 @@ class OrdersCubit extends Cubit<OrdersState> {
           isOutOfTolerance: true,
         ),
       );
-      return;
+      return Future.value();
     }
 
     // ─── If in range, proceed with loading and API ───
     print("tlorance>>:: RESULT: WITHIN RANGE. Proceeding to API...");
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    // FIXME: Faking OTP response for disbursement to test bottom sheet
-    // final bool useFakeOtp = true; // Set to true for testing
-    // if (useFakeOtp) {
-    //   final diff = amount - orderAmountVal;
-    //   final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
-    //
-    //   emit(
-    //     state.copyWith(
-    //       status: OrdersRequestStatus.success,
-    //       gatewayType: GatewayType.online,
-    //       disbursementGatewayType: 'otp',
-    //       disbursementMobile: state.selectedOrder?.customer.phone,
-    //       clearanceStep: ClearanceStep.otpPending,
-    //       clearanceAmount: amountStr,
-    //       orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-    //       excessAmount: excess,
-    //       isOutOfTolerance: false,
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    _ordersRepo
+    return _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
           print("tlorance>>:: API SUCCESS: disburseInitiate responded");
@@ -427,9 +405,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             );
           }
         })
-        .catchError(
-          (e) => _handleError(e, prefix: 'خطا در شروع عملیات تخلیه: '),
-        );
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در شروع عملیات تخلیه: ');
+          throw e;
+        });
   }
 
   Future<void> pickClearanceDocument(dynamic context) async {
@@ -445,13 +424,13 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void confirmClearanceDocument() {
+  Future<void> confirmClearanceDocument() {
     if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) {
-      return;
+      return Future.value();
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    _mediaRepo
+    return _mediaRepo
         .uploadOrderDocument(File(state.uploadedClearanceDocPath!))
         .then((media) {
           return _ordersRepo.addOrderDocument(
@@ -476,17 +455,17 @@ class OrdersCubit extends Cubit<OrdersState> {
             fetchOrderDetail(state.selectedOrder!.id);
           }
         })
-        .catchError(
-          (e) =>
-              _handleError(e, prefix: 'خطا در بارگذاری مدارک یا نهایی‌سازی: '),
-        );
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در بارگذاری مدارک یا نهایی‌سازی: ');
+          throw e;
+        });
   }
 
-  void confirmClearanceOtp(String otp) {
-    if (state.selectedOrder == null) return;
+  Future<void> confirmClearanceOtp(String otp) {
+    if (state.selectedOrder == null) return Future.value();
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    _ordersRepo
+    return _ordersRepo
         .disburse(state.selectedOrder!.id, {'otp': otp})
         .then((_) {
           emit(
@@ -499,9 +478,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             fetchOrderDetail(state.selectedOrder!.id);
           }
         })
-        .catchError(
-          (e) => _handleError(e, prefix: 'خطا در تایید کد و نهایی‌سازی: '),
-        );
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در تایید کد و نهایی‌سازی: ');
+          throw e;
+        });
   }
 
   void resetClearance() {
@@ -658,9 +638,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             }
           }
         })
-        .catchError(
-          (e) => _handleError(e, prefix: 'خطا در شروع عملیات تسویه: '),
-        );
+        .catchError((e) {
+          _handleError(e, prefix: 'خطا در شروع عملیات تسویه: ');
+          return null;
+        });
   }
 
   void _startSettlementTimer() {

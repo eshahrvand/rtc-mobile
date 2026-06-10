@@ -52,25 +52,19 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: cubit,
-        child: BlocListener<OrdersCubit, OrdersState>(
-          listenWhen: (prev, curr) => prev.clearanceStep != curr.clearanceStep,
-          listener: (context, state) {
-            if (state.clearanceStep != ClearanceStep.initial) {
-              Navigator.pop(context);
-            }
+        child: BlocBuilder<OrdersCubit, OrdersState>(
+          builder: (context, state) {
+            return OrderClearanceAmountSheet(
+              totalAmount: widget.order.financialSummary.finalAmount,
+              amountController: _amountController,
+              isLoading: state.status == OrdersRequestStatus.loading,
+              onCheckPressed: () {
+                cubit.initiateClearance(_amountController.text).then((_) {
+                  if (context.mounted) Navigator.pop(context);
+                }).catchError((_) {});
+              },
+            );
           },
-          child: BlocBuilder<OrdersCubit, OrdersState>(
-            builder: (context, state) {
-              return OrderClearanceAmountSheet(
-                totalAmount: widget.order.financialSummary.finalAmount,
-                amountController: _amountController,
-                isLoading: state.status == OrdersRequestStatus.loading,
-                onCheckPressed: () {
-                  cubit.initiateClearance(_amountController.text);
-                },
-              );
-            },
-          ),
         ),
       ),
     );
@@ -142,31 +136,27 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                                 backgroundColor: Colors.transparent,
                                 builder: (_) => BlocProvider.value(
                                   value: cubit,
-                                  child: BlocListener<OrdersCubit, OrdersState>(
-                                    listenWhen: (prev, curr) =>
-                                        prev.clearanceStep != curr.clearanceStep,
-                                    listener: (context, state) {
-                                      if (state.clearanceStep == ClearanceStep.success) {
-                                        Navigator.pop(context);
-                                      }
+                                  child: BlocBuilder<OrdersCubit, OrdersState>(
+                                    builder: (context, state) {
+                                      return OrderClearanceOtpSheet(
+                                        phoneNumber:
+                                            state.disbursementMobile ??
+                                            widget.order.customer.phone,
+                                        isLoading: state.status == OrdersRequestStatus.loading,
+                                        onConfirm: (otp) {
+                                          cubit.confirmClearanceOtp(otp).then((_) {
+                                            if (context.mounted) {
+                                              Navigator.pop(context);
+                                            }
+                                          }).catchError((_) {});
+                                        },
+                                      );
                                     },
-                                    child: BlocBuilder<OrdersCubit, OrdersState>(
-                                      builder: (context, state) {
-                                        return OrderClearanceOtpSheet(
-                                          phoneNumber:
-                                              state.disbursementMobile ??
-                                              widget.order.customer.phone,
-                                          isLoading: state.status == OrdersRequestStatus.loading,
-                                          onConfirm: (otp) {
-                                            cubit.confirmClearanceOtp(otp);
-                                          },
-                                        );
-                                      },
-                                    ),
                                   ),
                                 ),
                               );
-                            } else if (state.disbursementGatewayType ==
+                            }
+else if (state.disbursementGatewayType ==
                                 'redirect') {
                               if (state.disbursementRedirectUrl != null) {
                                 launchUrl(

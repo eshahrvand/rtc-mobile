@@ -79,23 +79,21 @@ class PreInvoiceState with _$PreInvoiceState {
 }
 
 extension PreInvoiceStateX on PreInvoiceState {
-  int get totalCartItemsCount => cartItems.fold(
-        0,
-        (sum, item) => sum + item.quantity,
-      );
+  int get totalCartItemsCount =>
+      cartItems.fold(0, (sum, item) => sum + item.quantity);
 
   bool get isCurrentStepValid => switch (currentStep) {
-        PreInvoiceStep.creditPlan => selectedCreditPlanId != null,
-        PreInvoiceStep.products => totalCartItemsCount > 0,
-        PreInvoiceStep.customerInfo => customerInfo != null,
-        PreInvoiceStep.documents => mandatoryDocPath != null,
-        PreInvoiceStep.review => true,
-      };
+    PreInvoiceStep.creditPlan => selectedCreditPlanId != null,
+    PreInvoiceStep.products => totalCartItemsCount > 0,
+    PreInvoiceStep.customerInfo => customerInfo != null,
+    PreInvoiceStep.documents => mandatoryDocPath != null,
+    PreInvoiceStep.review => true,
+  };
 
   bool get isNextStepLoading => switch (currentStep) {
-        PreInvoiceStep.creditPlan => status == PreInvoiceRequestStatus.loading,
-        PreInvoiceStep.customerInfo => isSubmittingCustomerInfo,
-        PreInvoiceStep.documents => isUploadingDocuments,
-        _ => false,
-      };
+    PreInvoiceStep.creditPlan => status == PreInvoiceRequestStatus.loading,
+    PreInvoiceStep.customerInfo => isSubmittingCustomerInfo,
+    PreInvoiceStep.documents => isUploadingDocuments,
+    _ => false,
+  };
 }
