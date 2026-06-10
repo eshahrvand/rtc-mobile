@@ -45,7 +45,9 @@ class RtcQuickAccessItem extends StatelessWidget {
                   percentage != null
                       ? Container(
                           decoration: BoxDecoration(
-                            color: AppColors.successPalette.shade50,
+                            color: (percentage?.startsWith('-') ?? false)
+                                ? AppColors.errorPalette.shade50
+                                : AppColors.successPalette.shade50,
 
                             borderRadius: BorderRadius.circular(100),
                           ),
@@ -58,13 +60,18 @@ class RtcQuickAccessItem extends StatelessWidget {
                                 Text(
                                   percentage!,
                                   style: theme.bodySmall!.copyWith(
-                                    color: AppColors.successPalette.shade600,
+                                    color:
+                                        (percentage?.startsWith('-') ?? false)
+                                        ? AppColors.errorPalette.shade600
+                                        : AppColors.successPalette.shade600,
                                     fontSize: 12,
                                   ),
                                 ),
 
                                 RtcImage(
-                                  image: "$baseImage/arrow-up.svg",
+                                  image: (percentage?.startsWith('-') ?? false)
+                                      ? "$baseImage/arrow-down-red.svg"
+                                      : "$baseImage/arrow-up.svg",
                                   width: 10,
                                   height: 10,
                                 ),
