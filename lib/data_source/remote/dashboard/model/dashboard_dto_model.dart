@@ -90,9 +90,12 @@ class SubPlanChartDtoModel with _$SubPlanChartDtoModel {
 class CommissionDtoModel with _$CommissionDtoModel {
   const factory CommissionDtoModel({
     @JsonKey(name: 'monthly_sales_total') required double monthlySalesTotal,
-    @JsonKey(name: 'commission_rate') required int commissionRate,
-    @JsonKey(name: 'commission_amount') required double commissionAmount,
-    @JsonKey(name: 'next_tier_rate') required int nextTierRate,
+    @JsonKey(name: 'commission_rate_cash') required int commissionRateCash,
+    @JsonKey(name: 'commission_rate_product') required int commissionRateProduct,
+    @JsonKey(name: 'commission_amount_cash') required double commissionAmountCash,
+    @JsonKey(name: 'commission_amount_product') required double commissionAmountProduct,
+    @JsonKey(name: 'next_tier_rate_cash') required int nextTierRateCash,
+    @JsonKey(name: 'next_tier_rate_product') required int nextTierRateProduct,
     @JsonKey(name: 'distance_to_next_tier') required double distanceToNextTier,
   }) = _CommissionDtoModel;
 

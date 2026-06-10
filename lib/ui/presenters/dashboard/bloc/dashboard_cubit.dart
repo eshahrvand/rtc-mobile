@@ -140,7 +140,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       ),
       QuickAccessItemModel(
         title: S.current.cashCommission,
-        value: c?.commissionAmount.toStringAsFixed(0).formatCurrency ?? '0',
+        value: c?.commissionAmountCash.toStringAsFixed(0).formatCurrency ?? '0',
         currency: "assets/images/toman.svg",
         iconPath: 'assets/images/trend-up.svg',
       ),
@@ -276,10 +276,9 @@ class DashboardCubit extends Cubit<DashboardState> {
   /// Formats the commission message for RtcMessageCard.
   String _formatCommissionMessage(CommissionDtoModel c) {
     final distance = c.distanceToNextTier.toStringAsFixed(0).formatCurrency;
-    final nextRate = c.nextTierRate;
-    // Note: The original hardcoded text had "8% نقدی و یا 11% کالایی".
-    // I'll stick to a simpler version based on the API response fields unless specified otherwise.
-    return "با فروش $distance تومان دیگر پورسانت شما به $nextRate٪ افزایش می‌یابد.";
+    final nextRateCash = c.nextTierRateCash;
+    final nextRateProduct = c.nextTierRateProduct;
+    return "با فروش $distance تومان دیگر پورسانت شما به $nextRateCash٪ نقدی و یا $nextRateProduct٪ کالایی افزایش می‌یابد.";
   }
 
   /// Centralized handler for repository errors.
