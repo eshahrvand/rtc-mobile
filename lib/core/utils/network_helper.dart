@@ -7,15 +7,13 @@ class NetworkHelper {
 
   /// Checks internet connectivity and VPN status.
   /// Returns a localized error message if an issue is detected, otherwise returns [null].
-  static Future<String?> getNetworkErrorMessage({
-    bool checkVpn = true,
-  }) async {
+  static Future<String?> getNetworkErrorMessage({bool checkVpn = true}) async {
     bool hasConnection = false;
 
     // 1. Try connectivity_plus plugin
     try {
-      final List<ConnectivityResult> connectivityResult =
-          await Connectivity().checkConnectivity();
+      final List<ConnectivityResult> connectivityResult = await Connectivity()
+          .checkConnectivity();
       hasConnection = !connectivityResult.contains(ConnectivityResult.none);
     } catch (_) {
       // Fallback if plugin fails
@@ -30,9 +28,9 @@ class NetworkHelper {
     // 2. Reachability check
     if (hasConnection) {
       try {
-        final result = await InternetAddress.lookup('google.com').timeout(
-          const Duration(seconds: 3),
-        );
+        final result = await InternetAddress.lookup(
+          'google.com',
+        ).timeout(const Duration(seconds: 3));
         hasConnection = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
       } catch (_) {
         hasConnection = false;
@@ -41,21 +39,6 @@ class NetworkHelper {
 
     if (!hasConnection) {
       return S.current.internetError;
-    }
-
-    // 3. VPN check
-    if (checkVpn) {
-      try {
-        final interfaces = await NetworkInterface.list();
-        for (var interface in interfaces) {
-          final name = interface.name.toLowerCase();
-          if (name.contains('tun') ||
-              name.contains('ppp') ||
-              name.contains('ipsec')) {
-            return S.current.vpnError;
-          }
-        }
-      } catch (_) {}
     }
 
     return null;

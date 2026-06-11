@@ -23,8 +23,10 @@ class SplashCubit extends Cubit<SplashState> {
           emit(state.copyWith(status: SplashStatus.tokenValid));
         })
         .catchError((Object error) {
-          print('>> SPLASH: Summary fetch failed: $error. Checking connectivity');
-          
+          print(
+            '>> SPLASH: Summary fetch failed: $error. Checking connectivity',
+          );
+
           if (error is DioException) {
             final type = error.type;
             if (type == DioExceptionType.connectionTimeout ||
@@ -34,11 +36,11 @@ class SplashCubit extends Cubit<SplashState> {
               _handleNetworkError();
               return;
             }
-            
+
             // If it's a response error, check status code
             if (error.response?.statusCode == 401) {
-               emit(state.copyWith(status: SplashStatus.tokenNotValid));
-               return;
+              emit(state.copyWith(status: SplashStatus.tokenNotValid));
+              return;
             }
           }
 
@@ -57,7 +59,8 @@ class SplashCubit extends Cubit<SplashState> {
 
     // 1. Try connectivity_plus plugin
     try {
-      final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+      final List<ConnectivityResult> connectivityResult = await Connectivity()
+          .checkConnectivity();
       hasConnection = !connectivityResult.contains(ConnectivityResult.none);
     } catch (e) {
       print('>> SPLASH: Connectivity plugin failed (MissingPlugin?): $e');
@@ -73,7 +76,9 @@ class SplashCubit extends Cubit<SplashState> {
     // 2. Double check with InternetAddress.lookup (most reliable for "reachability")
     if (hasConnection) {
       try {
-        final result = await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 3));
+        final result = await InternetAddress.lookup(
+          'google.com',
+        ).timeout(const Duration(seconds: 3));
         hasConnection = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
       } catch (_) {
         hasConnection = false;
@@ -83,19 +88,6 @@ class SplashCubit extends Cubit<SplashState> {
     if (!hasConnection) {
       return SplashStatus.internetError;
     }
-
-    // 3. VPN check
-    try {
-      final interfaces = await NetworkInterface.list();
-      for (var interface in interfaces) {
-        final name = interface.name.toLowerCase();
-        if (name.contains('tun') ||
-            name.contains('ppp') ||
-            name.contains('ipsec')) {
-          return SplashStatus.vpnError;
-        }
-      }
-    } catch (_) {}
 
     return SplashStatus.internetError;
   }
