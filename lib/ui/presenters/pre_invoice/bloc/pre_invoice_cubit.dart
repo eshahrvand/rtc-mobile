@@ -20,15 +20,7 @@ import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
 
-// ─── REFACTOR LOG ───────────────────────────────────────────────────
-// [1] Extracted `_mapToCreditPlanModel()` to simplify initialization logic.
-// [2] Extracted `_buildCustomerData()` to isolate the logic for creating request payloads.
-// [3] Extracted `_updateCartSummary()` to move financial calculations to a private helper.
-// [4] Extracted `_handleError()` to remove duplication in API error handling.
-// [5] Extracted `_buildOrderLines()` and `_buildOrderDocuments()` for cleaner order creation.
-// [6] Reordered methods: Setup -> Navigation -> Domain Logic (Products/Customers/Docs) -> Helpers.
-// [7] Improved method naming and added internal comments for clarity.
-// ────────────────────────────────────────────────────────────────────
+
 
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _plansRepo = sl<PlansRepository>();

@@ -19,14 +19,9 @@ class SplashCubit extends Cubit<SplashState> {
 
     Future.wait([delay, summaryFetch])
         .then((_) {
-          print('>> SPLASH: Summary fetched successfully. Emitting tokenValid');
           emit(state.copyWith(status: SplashStatus.tokenValid));
         })
         .catchError((Object error) {
-          print(
-            '>> SPLASH: Summary fetch failed: $error. Checking connectivity',
-          );
-
           if (error is DioException) {
             final type = error.type;
             if (type == DioExceptionType.connectionTimeout ||
@@ -37,7 +32,6 @@ class SplashCubit extends Cubit<SplashState> {
               return;
             }
 
-            // If it's a response error, check status code
             if (error.response?.statusCode == 401) {
               emit(state.copyWith(status: SplashStatus.tokenNotValid));
               return;
@@ -57,14 +51,11 @@ class SplashCubit extends Cubit<SplashState> {
   Future<SplashStatus> _checkConnectivityStatus() async {
     bool hasConnection = false;
 
-    // 1. Try connectivity_plus plugin
     try {
       final List<ConnectivityResult> connectivityResult = await Connectivity()
           .checkConnectivity();
       hasConnection = !connectivityResult.contains(ConnectivityResult.none);
     } catch (e) {
-      print('>> SPLASH: Connectivity plugin failed (MissingPlugin?): $e');
-      // Fallback if plugin fails: check Network Interfaces
       try {
         final interfaces = await NetworkInterface.list();
         hasConnection = interfaces.any((i) => i.addresses.isNotEmpty);
@@ -73,7 +64,6 @@ class SplashCubit extends Cubit<SplashState> {
       }
     }
 
-    // 2. Double check with InternetAddress.lookup (most reliable for "reachability")
     if (hasConnection) {
       try {
         final result = await InternetAddress.lookup(

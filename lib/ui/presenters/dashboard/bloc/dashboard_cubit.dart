@@ -18,14 +18,6 @@ import 'dashboard_state.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../core/utils/network_helper.dart';
 
-// ─── REFACTOR LOG ───────────────────────────────────────────────────
-// [1] Extracted `_mapQuickAccessItems()` to simplify summary data processing.
-// [2] Extracted `_mapLineChartData()` to isolate Jalali-based sales calculation.
-// [3] Extracted `_mapOrderStatusChart()` and `_mapCategoryChart()` for cleaner UI mapping.
-// [4] Extracted `_mapSubPlanChart()` to handle bar chart item generation.
-// [5] Grouped private mapping helpers at the bottom for better readability.
-// [6] Added documentation to clarify the dashboard initialization and data fetching.
-// ────────────────────────────────────────────────────────────────────
 
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit({int initialIndex = 0})
@@ -34,9 +26,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   final _dashboardRepo = sl<DashboardRepository>();
   final _ordersRepo = sl<OrdersRepository>();
 
-  // ─── Event Handlers ────────────────────────────────────────────────
 
-  /// Initializes the dashboard by fetching user profile and then loading overview data.
   void init() {
     emit(state.copyWith(status: DashboardRequestStatus.loading));
 
@@ -52,14 +42,12 @@ class DashboardCubit extends Cubit<DashboardState> {
         });
   }
 
-  /// Updates the selected navigation index.
+
   void onNavItemSelected(int index) {
     emit(state.copyWith(selectedNavIndex: index));
   }
 
-  // ─── Private Data Loaders ──────────────────────────────────────────
 
-  /// Fetches all dashboard components in parallel and updates the state.
   void _loadDashboardData() {
     Future.wait([
           _dashboardRepo.getSummary(),
@@ -100,11 +88,11 @@ class DashboardCubit extends Cubit<DashboardState> {
         .catchError((e) => _handleError(e));
   }
 
-  // ─── Mapping Helpers ───────────────────────────────────────────────
 
-  /// Maps summary DTO to quick access UI models.
   List<QuickAccessItemModel> _mapQuickAccessItems(
-      DashboardSummaryDtoModel s, CommissionDtoModel? c) {
+    DashboardSummaryDtoModel s,
+    CommissionDtoModel? c,
+  ) {
     String formatDelta(double? deltaPct) {
       if (deltaPct == null) return '0%';
       final sign = deltaPct >= 0 ? '+' : '';
@@ -130,8 +118,9 @@ class DashboardCubit extends Cubit<DashboardState> {
         value: s.orderCount.toString(),
         currency: "",
         iconPath: 'assets/images/document-list-check.svg',
-        percentage:
-            formatDelta(calculatePercentage(s.orderCount, s.orderCountDelta)),
+        percentage: formatDelta(
+          calculatePercentage(s.orderCount, s.orderCountDelta),
+        ),
       ),
       QuickAccessItemModel(
         title: S.current.walletBalance,
@@ -148,7 +137,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     ];
   }
 
-  /// Generates Jalali-based sales spots for the line chart.
+
   LineChartDataModel _mapLineChartData(List<DailyChartDtoModel> dailyChart) {
     final now = Jalali.now();
     final List<FlSpot> currentMonthSpots = [];
@@ -178,7 +167,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     );
   }
 
-  /// Maps order statuses to localized pie chart items with semantic colors and specific sorting.
+
   List<PieChartItemModel> _mapOrderStatusChart(List<OrderStatusDtoModel> list) {
     if (list.isEmpty) {
       return [
@@ -190,8 +179,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       ];
     }
 
-    // ─── Custom Sorting Logic ───
-    // Desired Order: Approved -> Under Review -> Awaiting Settlement -> Pre-Invoice -> Rejected -> Expired
+
     final orderWeights = {
       OrderStatus.approved: 1,
       OrderStatus.underReview: 2,
@@ -242,7 +230,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     }).toList();
   }
 
-  /// Maps categories to pie chart segments.
+
   List<PieChartItemModel> _mapCategoryChart(List<CategoryChartDtoModel> list) {
     if (list.isEmpty) {
       return [
@@ -263,18 +251,18 @@ class DashboardCubit extends Cubit<DashboardState> {
     }).toList();
   }
 
-  /// Maps sub-plans to bar chart bars.
+
   List<BarChartItemModel> _mapSubPlanChart(List<SubPlanChartDtoModel> list) {
     if (list.isEmpty) {
       return [BarChartItemModel(label: '...', value: 0)];
     }
 
     return list.map((s) {
-      return BarChartItemModel(label: s.planName, value: s.totalSalesAmount);
+      return BarChartItemModel(label: "${s.planName} - ${s.subPlanDuration}", value: s.totalSalesAmount);
     }).toList();
   }
 
-  /// Formats the commission message for RtcMessageCard.
+
   String _formatCommissionMessage(CommissionDtoModel c) {
     final distance = c.distanceToNextTier.toStringAsFixed(0).formatCurrency;
     final nextRateCash = c.nextTierRateCash;
@@ -282,16 +270,16 @@ class DashboardCubit extends Cubit<DashboardState> {
     return "با فروش $distance تومان دیگر پورسانت شما به $nextRateCash٪ نقدی و یا $nextRateProduct٪ کالایی افزایش می‌یابد.";
   }
 
-  /// Centralized handler for repository errors.
+
   void _handleError(Object e) {
     if (isClosed) return;
-    
+
     NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
       if (isClosed) return;
-      
+
       final finalMessage = networkMessage ?? e.toString();
-      
-      // Prevent duplicate identical error messages
+
+
       if (state.errorMessage == finalMessage) return;
 
       emit(

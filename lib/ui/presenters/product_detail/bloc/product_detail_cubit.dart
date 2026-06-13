@@ -18,7 +18,7 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
         .then((dto) {
           final List<ProductBadgeModel> badges = [];
 
-          // Add Plan Badge if subPlanId is present
+
           if (subPlanId != null) {
             badges.add(
               ProductBadgeModel(

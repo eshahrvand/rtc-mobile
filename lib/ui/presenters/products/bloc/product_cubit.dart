@@ -8,14 +8,6 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
 import 'product_state.dart';
 
-// ─── REFACTOR LOG ───────────────────────────────────────────────────
-// [1] Extracted `_createInitialChips()` to simplify initialization logic.
-// [2] Extracted `_mapToProductItemModel()` to isolate DTO mapping logic.
-// [3] Extracted `_handleError()` to remove duplication in API error handling.
-// [4] Reordered methods: Event handlers first, followed by private helpers.
-// [5] Added inline documentation for search and filter logic.
-// ────────────────────────────────────────────────────────────────────
-
 class ProductCubit extends Cubit<ProductState> {
   ProductCubit() : super(const ProductState());
 
@@ -23,9 +15,6 @@ class ProductCubit extends Cubit<ProductState> {
   final _plansRepo = sl<PlansRepository>();
   Timer? _debounce;
 
-  // ─── Event Handlers ────────────────────────────────────────────────
-
-  /// Initializes the products screen by loading categories, plans, and the initial product list.
   void init() {
     emit(state.copyWith(status: ProductRequestStatus.loading));
 
@@ -49,19 +38,16 @@ class ProductCubit extends Cubit<ProductState> {
         .catchError(_handleError);
   }
 
-  /// Activates the search mode in the UI.
   void activateSearch() {
     emit(state.copyWith(isSearchActive: true));
   }
 
-  /// Deactivates search, clears the query, and refreshes the product list.
   void deactivateSearch() {
     _debounce?.cancel();
     emit(state.copyWith(isSearchActive: false, searchQuery: ''));
     _fetchProducts();
   }
 
-  /// Handles real-time search query changes with a 1-second debounce.
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
 
@@ -79,7 +65,6 @@ class ProductCubit extends Cubit<ProductState> {
     });
   }
 
-  /// Filters products by the selected category.
   void selectCategory(String? categoryId) {
     if (state.selectedCategoryId == categoryId) return;
 
@@ -92,7 +77,6 @@ class ProductCubit extends Cubit<ProductState> {
     _fetchProducts();
   }
 
-  /// Filters products by the selected credit plan.
   void selectSubPlan(String? subPlanId) {
     if (state.selectedSubPlanId == subPlanId) return;
 
@@ -110,7 +94,6 @@ class ProductCubit extends Cubit<ProductState> {
     _fetchProducts();
   }
 
-  /// Toggles the "Only Available" stock filter.
   void toggleOnlyAvailable() {
     final newValue = !state.isOnlyAvailable;
     emit(
@@ -122,7 +105,6 @@ class ProductCubit extends Cubit<ProductState> {
     _fetchProducts();
   }
 
-  /// Generic handler for chip interactions.
   void onChipTap(ProductChipModel chip) {
     if (chip.opensBottomSheet) {
       emit(state.copyWith(activeFilterChip: chip));
@@ -131,7 +113,6 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  /// Handles the removal of a specific filter via the chip "X" button.
   void onChipClose(ProductChipModel chip) {
     if (chip.id == 1) {
       selectCategory(null);
@@ -142,12 +123,10 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  /// Clears the request to open a filter bottom sheet.
   void clearActiveFilterRequest() {
     emit(state.copyWith(activeFilterChip: null));
   }
 
-  /// Resets all search and filter parameters to their default state.
   void clearAllFilters() {
     _debounce?.cancel();
     emit(
@@ -164,9 +143,6 @@ class ProductCubit extends Cubit<ProductState> {
     _fetchProducts();
   }
 
-  // ─── Private Helpers ───────────────────────────────────────────────
-
-  /// Fetches the product list from the repository using current filters.
   void _fetchProducts() {
     emit(state.copyWith(status: ProductRequestStatus.loading));
 
@@ -193,7 +169,6 @@ class ProductCubit extends Cubit<ProductState> {
         .catchError(_handleError);
   }
 
-  /// Defines the initial static filter chips.
   List<ProductChipModel> _createInitialChips() {
     return [
       ProductChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
@@ -206,7 +181,6 @@ class ProductCubit extends Cubit<ProductState> {
     ];
   }
 
-  /// Maps a product DTO to the presentation model, handling plan-specific pricing.
   ProductItemModel _mapToProductItemModel(dynamic dto) {
     return ProductItemModel(
       id: dto.id,
@@ -225,7 +199,6 @@ class ProductCubit extends Cubit<ProductState> {
     );
   }
 
-  /// Centralized handler for repository errors.
   void _handleError(Object e) {
     if (isClosed) return;
 

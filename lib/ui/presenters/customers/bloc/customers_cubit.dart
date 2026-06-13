@@ -7,14 +7,6 @@ import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
 import 'customers_state.dart';
 
-// ─── REFACTOR LOG ───────────────────────────────────────────────────
-// [1] Extracted `_mapToCustomerItem()` to clean up the `init()` method.
-// [2] Extracted `_handleError()` to reduce duplication in error handling branches.
-// [3] Extracted `_fetchCustomerDetails()` from `onCustomerTapped()` to simplify nested logic.
-// [4] Grouped private helper methods at the bottom of the class.
-// [5] Added documentation comments to explain search debouncing and detail fetching.
-// ────────────────────────────────────────────────────────────────────
-
 class CustomersCubit extends Cubit<CustomersState> {
   CustomersCubit() : super(const CustomersState());
 
@@ -22,11 +14,7 @@ class CustomersCubit extends Cubit<CustomersState> {
   final _ordersRepo = sl<OrdersRepository>();
   Timer? _debounce;
 
-  // ─── Event Handlers ────────────────────────────────────────────────
-
-  /// Fetches the initial list of customers, optionally filtered by the current search query.
   void init() {
-    print('>> CUSTOMERS: init() called');
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
     _customersRepo
@@ -34,11 +22,7 @@ class CustomersCubit extends Cubit<CustomersState> {
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
         )
         .then((response) {
-          print(
-            '>> CUSTOMERS: API success. count: ${response.count}, results: ${response.results.length}',
-          );
           final customers = response.results.map(_mapToCustomerItem).toList();
-          print('>> CUSTOMERS: Mapped to ${customers.length} items');
 
           emit(
             state.copyWith(
@@ -49,12 +33,10 @@ class CustomersCubit extends Cubit<CustomersState> {
           );
         })
         .catchError((e) {
-          print('>> CUSTOMERS: API error: $e');
           _handleError(e);
         });
   }
 
-  /// Handles search query changes with a 1-second debounce to avoid excessive API calls.
   void onSearchChanged(String query) {
     emit(state.copyWith(searchQuery: query));
 
@@ -72,7 +54,6 @@ class CustomersCubit extends Cubit<CustomersState> {
     });
   }
 
-  /// Fetches detailed information and order history for a specific customer.
   void onCustomerTapped(CustomerItemModel customer) {
     emit(state.copyWith(status: CustomersRequestStatus.loading));
 
@@ -103,21 +84,16 @@ class CustomersCubit extends Cubit<CustomersState> {
         .catchError(_handleError);
   }
 
-  /// Updates the selected tab index in the customer detail view.
   void onTabChanged(int index) {
     emit(state.copyWith(selectedTabIndex: index));
   }
 
-  /// Resets the UI step back to the customer list view.
   void backToList() {
     emit(
       state.copyWith(step: CustomersStep.customerList, selectedCustomer: null),
     );
   }
 
-  // ─── Private Helpers ───────────────────────────────────────────────
-
-  /// Maps a DTO result to the local `CustomerItemModel`.
   CustomerItemModel _mapToCustomerItem(dynamic dto) {
     return CustomerItemModel(
       id: dto.id,
@@ -127,7 +103,6 @@ class CustomersCubit extends Cubit<CustomersState> {
     );
   }
 
-  /// Centralized handler for repository errors.
   void _handleError(Object e) {
     if (isClosed) return;
 
