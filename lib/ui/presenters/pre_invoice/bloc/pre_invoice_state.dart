@@ -18,6 +18,7 @@ enum PreInvoiceRequestStatus {
   error,
   submitted,
   submittedAndCleared,
+  stockLimitReached,
 }
 
 @freezed
@@ -56,6 +57,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default('') String customerIdQuery,
     @Default(false) bool isNationalIdValid,
     @Default(true) bool isPhoneNumberValid,
+    @Default(true) bool isPostalCodeValid,
     CustomerInfoModel? customerInfo,
     CustomerInfoModel? originalCustomerInfo,
     @Default(false) bool customerSearchLoading,
@@ -85,7 +87,14 @@ extension PreInvoiceStateX on PreInvoiceState {
   bool get isCurrentStepValid => switch (currentStep) {
     PreInvoiceStep.creditPlan => selectedCreditPlanId != null,
     PreInvoiceStep.products => totalCartItemsCount > 0,
-    PreInvoiceStep.customerInfo => customerInfo != null,
+    PreInvoiceStep.customerInfo => customerInfo != null &&
+        customerInfo!.firstName.isNotEmpty &&
+        customerInfo!.lastName.isNotEmpty &&
+        customerInfo!.phoneNumber.isNotEmpty &&
+        isPhoneNumberValid &&
+        customerInfo!.postalCode.isNotEmpty &&
+        isPostalCodeValid &&
+        customerInfo!.address.isNotEmpty,
     PreInvoiceStep.documents => mandatoryDocPath != null,
     PreInvoiceStep.review => true,
   };

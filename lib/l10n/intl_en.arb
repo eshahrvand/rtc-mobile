@@ -158,6 +158,7 @@
   "preInvoiceValidityDuration": "",
   "nationalCodeLabelWithStar": "",
   "nationalIdWrong": "",
+  "postalCodeWrong": "Invalid postal code",
   "editProductsTitle": "",
   "editCustomerInfoTitle": "",
   "editDocumentsTitle": "",
@@ -246,5 +247,7 @@
   "internetError": "Please check your internet connection and try again",
   "vpnError": "Please turn off your VPN and try again",
   "retry": "Retry",
-  "sortSubtitle": ""
+  "sortSubtitle": "",
+  "stockLimitError": "Quantity exceeds stock",
+  "outOfStockError": "Item is out of stock"
 }

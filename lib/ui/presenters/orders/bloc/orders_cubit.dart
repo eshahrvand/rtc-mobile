@@ -104,7 +104,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         });
   }
 
-  void fetchOrders() {
+  void fetchOrders({OrdersState? rollbackState}) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final createdAfter = _formatJalaliDate(state.startDate);
@@ -130,7 +130,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          _handleError(e, rollbackState: rollbackState);
           return null;
         });
   }
@@ -202,21 +202,25 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void deactivateSearch() {
     _searchTimer?.cancel();
+    final rollbackState = state;
     emit(state.copyWith(isSearchActive: false, searchQuery: ''));
-    fetchOrders();
+    fetchOrders(rollbackState: rollbackState);
   }
 
   void onStatusFilterChanged(String? statusId) {
+    final rollbackState = state;
     emit(state.copyWith(selectedStatusId: statusId));
-    fetchOrders();
+    fetchOrders(rollbackState: rollbackState);
   }
 
   void onSubPlanFilterChanged(String? subPlanId) {
+    final rollbackState = state;
     emit(state.copyWith(selectedSubPlanId: subPlanId));
-    fetchOrders();
+    fetchOrders(rollbackState: rollbackState);
   }
 
   void onDateFilterChanged(Jalali? start, Jalali? end, String? optionId) {
+    final rollbackState = state;
     emit(
       state.copyWith(
         startDate: start,
@@ -224,10 +228,11 @@ class OrdersCubit extends Cubit<OrdersState> {
         selectedDateOptionId: optionId,
       ),
     );
-    fetchOrders();
+    fetchOrders(rollbackState: rollbackState);
   }
 
   void clearDateFilter() {
+    final rollbackState = state;
     emit(
       state.copyWith(
         startDate: null,
@@ -235,11 +240,12 @@ class OrdersCubit extends Cubit<OrdersState> {
         selectedDateOptionId: null,
       ),
     );
-    fetchOrders();
+    fetchOrders(rollbackState: rollbackState);
   }
 
   void resetSearchAndFilters() {
     _searchTimer?.cancel();
+    final rollbackState = state;
     emit(
       state.copyWith(
         searchQuery: '',
@@ -251,7 +257,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         selectedDateOptionId: null,
       ),
     );
-    fetchOrders();
+    fetchOrders(rollbackState: rollbackState);
   }
 
   // ─── UI Toggles ───────────────────────────────────────────────────
@@ -853,7 +859,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void _handleError(Object e, {String prefix = ''}) {
+  void _handleError(Object e, {String prefix = '', OrdersState? rollbackState}) {
     if (isClosed) {
       return;
     }
@@ -865,10 +871,12 @@ class OrdersCubit extends Cubit<OrdersState> {
 
       final finalMessage = networkMessage ?? '$prefix${e.toString()}';
 
-      emit(state.copyWith(status: OrdersRequestStatus.initial));
+      final baseState = rollbackState ?? state;
+
+      emit(baseState.copyWith(status: OrdersRequestStatus.initial));
 
       emit(
-        state.copyWith(
+        baseState.copyWith(
           status: OrdersRequestStatus.error,
           errorMessage: finalMessage,
         ),

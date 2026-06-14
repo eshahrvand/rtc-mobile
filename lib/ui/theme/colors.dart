@@ -264,7 +264,4 @@ class AppColors {
       color: Color(0x14676E76),
     ),
   ];
-
-
-
 }

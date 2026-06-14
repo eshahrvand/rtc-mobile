@@ -77,13 +77,15 @@ class OrdersRepository {
           return response.results.map((dto) {
             final dateStr = DateTimeUtils.formatToJalali(dto.createdAt);
 
+            final totalQuantity = (dto.lines ?? []).fold<int>(0, (sum, line) => sum + line.quantity);
+
             return OrderSummaryModel(
               id: dto.id,
               orderId: dto.id.substring(0, 8).toUpperCase(),
               // Placeholder for real order ID if missing
               customerName:
                   '${dto.customer.firstName} ${dto.customer.lastName}',
-              itemCount: '${dto.lines?.length ?? 0} کالا',
+              itemCount: '$totalQuantity کالا',
               status: dto.status,
               dateTime: dateStr,
               amount: _formatCurrency(dto.total),

@@ -6,7 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../config/config.dart';
 import '../../../../config/regex_national_number_validator.dart';
+import '../../../../config/postal_code_validator.dart';
 import '../../../../data/models/pre_invoice_model.dart';
+import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
@@ -166,6 +168,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   // ─── Step 2 — Cart Operations ──────────────────────────────────────
 
   void addToCart(PreInvoiceProductModel product) {
+    final inventoryCount = int.tryParse(product.inventory) ?? 0;
     final existingIndex = state.cartItems.indexWhere(
       (item) => item.productId == product.id,
     );
@@ -173,10 +176,30 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     if (existingIndex != -1) {
       final existingItem = updatedCart[existingIndex];
+      if (existingItem.quantity >= inventoryCount) {
+        emit(state.copyWith(status: PreInvoiceRequestStatus.initial));
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.stockLimitReached,
+            errorMessage: S.current.stockLimitError,
+          ),
+        );
+        return;
+      }
       updatedCart[existingIndex] = existingItem.copyWith(
         quantity: existingItem.quantity + 1,
       );
     } else {
+      if (inventoryCount <= 0) {
+        emit(state.copyWith(status: PreInvoiceRequestStatus.initial));
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.stockLimitReached,
+            errorMessage: S.current.outOfStockError,
+          ),
+        );
+        return;
+      }
       updatedCart.add(
         CartItemModel(
           productId: product.id,
@@ -197,6 +220,31 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     final updatedCart = List<CartItemModel>.from(state.cartItems);
     final index = updatedCart.indexWhere((item) => item.productId == productId);
     if (index != -1) {
+      // Find product in allProducts to check inventory
+      final product = state.allProducts.firstWhere(
+        (p) => p.id == productId,
+        orElse:
+            () => PreInvoiceProductModel(
+              id: '',
+              name: '',
+              imageUrl: '',
+              price: '',
+              inventory: '0',
+            ),
+      );
+      final inventoryCount = int.tryParse(product.inventory) ?? 0;
+
+      if (updatedCart[index].quantity >= inventoryCount) {
+        emit(state.copyWith(status: PreInvoiceRequestStatus.initial));
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.stockLimitReached,
+            errorMessage: S.current.stockLimitError,
+          ),
+        );
+        return;
+      }
+
       updatedCart[index] = updatedCart[index].copyWith(
         quantity: updatedCart[index].quantity + 1,
       );
@@ -343,7 +391,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         return;
       case 'postalCode':
         updated = updated.copyWith(postalCode: value);
-        break;
+        final isPostalValid = validatePostalCode(value);
+        emit(state.copyWith(
+          customerInfo: updated,
+          isPostalCodeValid: isPostalValid,
+        ));
+        return;
       case 'address':
         updated = updated.copyWith(address: value);
         break;

@@ -21,7 +21,7 @@ class ServiceUtil {
           if (options.data != null) {
             print('>> [API BODY] ${options.data}');
           }
-          
+
           final token = prefs.accessToken;
           if (token != null) {
             print('>> ACCESS TOKEN: $token');
@@ -30,12 +30,16 @@ class ServiceUtil {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          print('>> [API RESPONSE] ${response.statusCode} ${response.requestOptions.uri}');
+          print(
+            '>> [API RESPONSE] ${response.statusCode} ${response.requestOptions.uri}',
+          );
           print('>> [API DATA] ${response.data}');
           return handler.next(response);
         },
         onError: (DioException e, handler) async {
-          print('>> [API ERROR] ${e.response?.statusCode} ${e.requestOptions.uri}');
+          print(
+            '>> [API ERROR] ${e.response?.statusCode} ${e.requestOptions.uri}',
+          );
           print('>> [API MESSAGE] ${e.message}');
           if (e.response?.data != null) {
             print('>> [API DATA] ${e.response?.data}');
@@ -47,7 +51,9 @@ class ServiceUtil {
               print('>> REFRESH TOKEN: $refreshToken');
               try {
                 // Separate Dio for refresh to avoid cycles
-                final refreshDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
+                final refreshDio = Dio(
+                  BaseOptions(baseUrl: dio.options.baseUrl),
+                );
                 final response = await refreshDio.post(
                   'accounts/token/refresh',
                   data: {'refresh': refreshToken},

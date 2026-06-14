@@ -42,13 +42,23 @@ class PreInvoiceView extends StatelessWidget {
         BlocListener<PreInvoiceCubit, PreInvoiceState>(
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
-            if (state.status == PreInvoiceRequestStatus.error) {
+            if (state.status == PreInvoiceRequestStatus.error
+                ) {
               rtcSnackBar(
                 context: context,
                 type: SnackBarType.error,
                 message: state.errorMessage,
               );
             }
+            if(state.status == PreInvoiceRequestStatus.stockLimitReached){
+              rtcSnackBar(
+                context: context,
+                type: SnackBarType.warning,
+                message: state.errorMessage,
+              );
+
+            }
+
             if (state.status == PreInvoiceRequestStatus.submitted ||
                 state.status == PreInvoiceRequestStatus.submittedAndCleared) {
               rtcSnackBar(

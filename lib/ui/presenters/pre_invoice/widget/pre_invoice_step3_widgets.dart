@@ -203,10 +203,31 @@ class PreInvoiceStep3CustomerFields extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: AppColors.grayPalette.shade700,
           ),
+          keyboardType: TextInputType.number,
           controller: postalCodeController,
           onChanged: (value) =>
               cubit.onCustomerFieldChanged('postalCode', value),
           maxLength: 10,
+          isError: !state.isPostalCodeValid,
+          helper: !state.isPostalCodeValid
+              ? Row(
+                  spacing: 8,
+                  children: [
+                    RtcImage(
+                      image: 'assets/images/alert.svg',
+                      width: 14,
+                      height: 14,
+                      color: AppColors.errorPalette.shade600,
+                    ),
+                    Text(
+                      S.current.postalCodeWrong,
+                      style: theme.bodySmall!.copyWith(
+                        color: AppColors.errorPalette.shade600,
+                      ),
+                    ),
+                  ],
+                )
+              : const SizedBox.shrink(),
         ),
         const SizedBox(height: 12),
         RtcTextField(

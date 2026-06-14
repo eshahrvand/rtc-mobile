@@ -52,9 +52,11 @@ void rtcSnackBar({
                 RtcImage(
                   image: type == SnackBarType.success
                       ? '$baseImage/done.svg'
-                      : '$baseImage/warning.svg',
-                  width: 14,
-                  height: 14,
+                      : type == SnackBarType.error
+                      ? '$baseImage/warning.svg'
+                      : '$baseImage/warning-orange.svg',
+                  width: 16,
+                  height: 16,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -64,7 +66,9 @@ void rtcSnackBar({
                       fontWeight: FontWeight.w500,
                       color: type == SnackBarType.success
                           ? AppColors.successPalette.shade600
-                          : AppColors.errorPalette.shade600,
+                          : type == SnackBarType.error
+                          ? AppColors.errorPalette.shade600
+                          : AppColors.warningPalette.shade600,
                     ),
                   ),
                 ),
@@ -76,7 +80,9 @@ void rtcSnackBar({
                     height: 10,
                     color: type == SnackBarType.success
                         ? AppColors.successPalette.shade600
-                        : AppColors.errorPalette.shade600,
+                        : type == SnackBarType.error
+                        ? AppColors.errorPalette.shade600
+                        : AppColors.warningPalette.shade600,
                   ),
 
                   onTap: () {
