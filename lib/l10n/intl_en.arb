@@ -284,5 +284,6 @@
   "sendPaymentLinkButton": "",
   "confirmAndPayButton": "",
   "waitingForClearanceCompletion": "",
-  "updateLabel": ""
+  "updateLabel": "",
+  "noSell": ""
 }

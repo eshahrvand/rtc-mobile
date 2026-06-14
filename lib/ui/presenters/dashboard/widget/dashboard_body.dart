@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import '../../../../generated/l10n.dart';
 import '../../../widget/rtc_bar_chart_card.dart';
 import '../../../widget/rtc_line_chart_card.dart';
 import '../../../widget/rtc_message_card.dart';
@@ -94,6 +95,8 @@ class DashboardBody extends StatelessWidget {
                 RtcPieChartCard(
                   title: state.pieChart2Title,
                   data: state.pieChart2Data,
+                  emptyMessage: S.current.noSell,
+                  emptyImage: "assets/images/no-sell.svg",
                 ),
                 RtcBarChartCard(
                   title: state.barChartTitle,

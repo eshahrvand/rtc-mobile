@@ -4,11 +4,21 @@ import 'package:intl/intl.dart';
 import '../../data/models/pie_chart_item_model.dart';
 import '../theme/colors.dart';
 
+import '../widget/rtc_image.dart';
+
 class RtcPieChartCard extends StatefulWidget {
   final String title;
   final List<PieChartItemModel> data;
+  final String? emptyMessage;
+  final String? emptyImage;
 
-  const RtcPieChartCard({super.key, required this.title, required this.data});
+  const RtcPieChartCard({
+    super.key,
+    required this.title,
+    required this.data,
+    this.emptyMessage,
+    this.emptyImage,
+  });
 
   @override
   State<RtcPieChartCard> createState() => _RtcPieChartCardState();
@@ -25,6 +35,7 @@ class _RtcPieChartCardState extends State<RtcPieChartCard> {
     return Padding(
       padding: const EdgeInsets.only(top: 18),
       child: Container(
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
@@ -43,79 +54,108 @@ class _RtcPieChartCardState extends State<RtcPieChartCard> {
                 ),
               ),
               const SizedBox(height: 12),
-              Row(
-                spacing: 31,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: widget.data.asMap().entries.map((entry) {
-                        return _buildLegendItem(entry.value, textTheme);
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 142,
-                    height: 142,
-                    child: PieChart(
-                      PieChartData(
-                        pieTouchData: PieTouchData(
-                          touchCallback:
-                              (FlTouchEvent event, pieTouchResponse) {
-                                setState(() {
-                                  if (!event.isInterestedForInteractions ||
-                                      pieTouchResponse == null ||
-                                      pieTouchResponse.touchedSection == null) {
-                                    touchedIndex = -1;
-                                    return;
-                                  }
-                                  touchedIndex = pieTouchResponse
-                                      .touchedSection!
-                                      .touchedSectionIndex;
-                                });
-                              },
+              if (total == 0 && widget.emptyMessage != null)
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (widget.emptyImage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10, top: 13.5),
+                          child: RtcImage(
+                            image: widget.emptyImage!,
+                            width: 143,
+                            height: 124,
+                          ),
                         ),
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 50,
-                        sections: total == 0
-                            ? [
-                                PieChartSectionData(
-                                  color: AppColors.grayPalette.shade200,
-                                  value: 1,
-                                  radius: 21.0,
-                                  showTitle: false,
-                                ),
-                              ]
-                            : widget.data.asMap().entries.map((entry) {
-                                final index = entry.key;
-                                final item = entry.value;
-                                final isTouched = index == touchedIndex;
-                                final radius = isTouched ? 30.0 : 21.0;
-
-                                // Calculate percentage
-                                final percentage = total > 0
-                                    ? (item.value / total * 100)
-                                          .toStringAsFixed(0)
-                                    : '0';
-
-                                return PieChartSectionData(
-                                  color: item.color,
-                                  value: item.value,
-                                  radius: radius,
-                                  showTitle: isTouched,
-                                  title: '$percentage%',
-                                  titleStyle: textTheme.labelSmall?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10,
-                                  ),
-                                );
-                              }).toList(),
+                      Text(
+                        widget.emptyMessage!,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.grayPalette.shade900,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                )
+              else
+                Row(
+                  spacing: 31,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: widget.data.asMap().entries.map((entry) {
+                          return _buildLegendItem(entry.value, textTheme);
+                        }).toList(),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 19),
+                    SizedBox(
+                      width: 142,
+                      height: 142,
+                      child: PieChart(
+                        PieChartData(
+                          pieTouchData: PieTouchData(
+                            touchCallback:
+                                (FlTouchEvent event, pieTouchResponse) {
+                                  setState(() {
+                                    if (!event.isInterestedForInteractions ||
+                                        pieTouchResponse == null ||
+                                        pieTouchResponse.touchedSection ==
+                                            null) {
+                                      touchedIndex = -1;
+                                      return;
+                                    }
+                                    touchedIndex = pieTouchResponse
+                                        .touchedSection!
+                                        .touchedSectionIndex;
+                                  });
+                                },
+                          ),
+                          sectionsSpace: 0,
+                          centerSpaceRadius: 50,
+                          sections: total == 0
+                              ? [
+                                  PieChartSectionData(
+                                    color: AppColors.grayPalette.shade200,
+                                    value: 1,
+                                    radius: 21.0,
+                                    showTitle: false,
+                                  ),
+                                ]
+                              : widget.data.asMap().entries.map((entry) {
+                                  final index = entry.key;
+                                  final item = entry.value;
+                                  final isTouched = index == touchedIndex;
+                                  final radius = isTouched ? 30.0 : 21.0;
+
+                                  // Calculate percentage
+                                  final percentage = total > 0
+                                      ? (item.value / total * 100)
+                                            .toStringAsFixed(0)
+                                      : '0';
+
+                                  return PieChartSectionData(
+                                    color: item.color,
+                                    value: item.value,
+                                    radius: radius,
+                                    showTitle: isTouched,
+                                    title: '$percentage%',
+                                    titleStyle: textTheme.labelSmall?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
+                                    ),
+                                  );
+                                }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              if (total != 0 || widget.emptyMessage == null)
+                const SizedBox(height: 19),
             ],
           ),
         ),

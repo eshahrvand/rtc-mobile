@@ -170,13 +170,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   List<PieChartItemModel> _mapOrderStatusChart(List<OrderStatusDtoModel> list) {
     if (list.isEmpty) {
-      return [
-        PieChartItemModel(
-          label: '...',
-          value: 1,
-          color: AppColors.grayPalette.shade200,
-        ),
-      ];
+      return [];
     }
 
 
@@ -233,13 +227,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   List<PieChartItemModel> _mapCategoryChart(List<CategoryChartDtoModel> list) {
     if (list.isEmpty) {
-      return [
-        PieChartItemModel(
-          label: '...',
-          value: 1,
-          color: AppColors.grayPalette.shade200,
-        ),
-      ];
+      return [];
     }
 
     final sortedList = List<CategoryChartDtoModel>.from(list);
@@ -270,7 +258,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   List<BarChartItemModel> _mapSubPlanChart(List<SubPlanChartDtoModel> list) {
     if (list.isEmpty) {
-      return [BarChartItemModel(label: '...', value: 0)];
+      return [];
     }
 
     return list.map((s) {
