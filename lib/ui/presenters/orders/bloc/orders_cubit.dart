@@ -7,6 +7,7 @@ import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
+import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/plans/plans_repository.dart';
@@ -542,8 +543,8 @@ class OrdersCubit extends Cubit<OrdersState> {
           final type = response['type'];
           final walletName =
               (type == 'wallet' && response['wallet_name'] != null)
-                  ? response['wallet_name']
-                  : state.walletName;
+              ? response['wallet_name']
+              : state.walletName;
           final mobile = response['mobile'];
 
           if (type == 'wallet') {
@@ -559,8 +560,9 @@ class OrdersCubit extends Cubit<OrdersState> {
               ),
             );
           } else {
-            final redirectUrl =
-                type == 'redirect' ? response['redirect_url'] : null;
+            final redirectUrl = type == 'redirect'
+                ? response['redirect_url']
+                : null;
 
             emit(
               state.copyWith(
@@ -743,7 +745,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       return OrderOperationModel(
         step: 1,
         title: 'عملیات تخلیه',
-        status: isDone ? 'انجام شده' : '',
+        status: isDone ? S.current.statusDone : '',
         isCompleted: isDone,
       );
     }
@@ -766,7 +768,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       return OrderOperationModel(
         step: 2,
         title: 'عملیات تسویه',
-        status: isDone ? 'انجام شده' : '',
+        status: isDone ? S.current.statusDone : '',
         isCompleted: isDone,
       );
     }
@@ -813,7 +815,11 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void _handleError(Object e, {String prefix = '', OrdersState? rollbackState}) {
+  void _handleError(
+    Object e, {
+    String prefix = '',
+    OrdersState? rollbackState,
+  }) {
     if (isClosed) {
       return;
     }

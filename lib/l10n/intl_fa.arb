@@ -158,6 +158,27 @@
   "productsTitle": "کالاها",
   "totalAmount": "جمع کل",
   "statusDone": "انجام شده",
+  "walletReceiptTitle": "رسید تراکنش کیف پول",
+  "selectTransactionTypeSubtitle": "نوع تراکنش را مشخص کنید ",
+  "unknown": "نامشخص",
+  "itemCount": "{count} کالا",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dayUnit": "روز",
+  "hourUnit": "ساعت",
+  "minuteUnit": "دقیقه",
+  "monthUnit": "ماه",
+  "registrationDateLabel": "تاریخ ثبت:",
+  "clearanceDateLabelColon": "تاریخ تخلیه:",
+  "settlementDateLabel": "تاریخ تسویه:",
+  "success": "موفق",
+  "nationalIdFront": "کارت ملی - روی",
+  "otherDocuments": "سایر مدارک",
   "preInvoiceValidityDuration": "مدت اعتبار پیش‌فاکتور",
   "nationalIdWrong": "کد ملی وارد شده صحیح نمی‌باشد.",
   "postalCodeWrong": "کد پستی وارد شده صحیح نمی‌باشد.",
@@ -232,7 +253,7 @@
   "selectDate": "تاریخ مورد نظر را انتخاب کنید",
   "clearanceOperation": "عملیات تخلیه",
   "excessAmountOutOfTolerance": "مبلغ مازاد خارج از تولرانس مجاز است.",
-  "documentConfirmationUpload": "در صورت تایید مدارک بارگزاری شده جهت تکمیل فرآیند دکمه تایید و ارسال را بزنید .",
+  "documentConfirmationUpload": "در صورت تایید مدارک بارگذاری شده جهت تکمیل فرآیند دکمه تایید و ارسال را بزنید .",
   "excessAmountAddedToWallet": "مبلغ مازاد به جیب \"{walletName}\" اضافه خواهد شد.",
   "@excessAmountAddedToWallet": {
     "placeholders": {

@@ -1,3 +1,5 @@
+import 'package:rtc_mobile/generated/l10n.dart';
+
 enum OrderStatus {
   preInvoice,
   approved,
@@ -32,17 +34,17 @@ enum OrderStatus {
   String toDisplayString() {
     switch (this) {
       case OrderStatus.preInvoice:
-        return 'پیش فاکتور';
+        return S.current.preInvoice;
       case OrderStatus.approved:
-        return 'تایید شده';
+        return S.current.statusApproved;
       case OrderStatus.rejected:
-        return 'رد شده';
+        return S.current.statusRejected;
       case OrderStatus.underReview:
-        return 'در انتظار تایید';
+        return S.current.statusPending;
       case OrderStatus.awaitingSettlement:
-        return 'در انتظار تسویه';
+        return S.current.statusWaitingSettlement;
       case OrderStatus.expired:
-        return 'منقضی شده';
+        return S.current.statusExpired;
       case OrderStatus.unknown:
         return '';
     }

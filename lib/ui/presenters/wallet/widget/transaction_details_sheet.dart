@@ -174,7 +174,7 @@ class TransactionDetailsSheet extends StatelessWidget {
           ),
         ),
         Text(
-          'رسید تراکنش کیف پول',
+          S.current.walletReceiptTitle,
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
             color: AppColors.grayPalette.shade900,
           ),

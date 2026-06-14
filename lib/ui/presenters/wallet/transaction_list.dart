@@ -22,7 +22,7 @@ class TransactionListScreen extends StatelessWidget {
     FilterBottomSheet.show(
       context,
       title: S.current.transactionType,
-      subtitle: "نوع تراکنش را مشخص کنید ",
+      subtitle: S.current.selectTransactionTypeSubtitle,
       items: [
         FilterItem(id: 'credit', title: S.current.deposit),
         FilterItem(id: 'debit', title: S.current.withdrawal),

@@ -36,9 +36,7 @@ class AuthScreen extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: constraints.maxHeight,

@@ -155,6 +155,27 @@
   "productsTitle": "",
   "totalAmount": "",
   "statusDone": "",
+  "walletReceiptTitle": "",
+  "selectTransactionTypeSubtitle": "",
+  "unknown": "",
+  "itemCount": "",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dayUnit": "",
+  "hourUnit": "",
+  "minuteUnit": "",
+  "monthUnit": "",
+  "registrationDateLabel": "",
+  "clearanceDateLabelColon": "",
+  "settlementDateLabel": "",
+  "success": "",
+  "nationalIdFront": "",
+  "otherDocuments": "",
   "preInvoiceValidityDuration": "",
   "nationalCodeLabelWithStar": "",
   "nationalIdWrong": "",

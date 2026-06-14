@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import '../../core/utils/date_time_utils.dart';
 import '../../data/models/customer_model.dart';
 import '../../data/models/order_model.dart';
@@ -85,7 +86,7 @@ class OrdersRepository {
               // Placeholder for real order ID if missing
               customerName:
                   '${dto.customer.firstName} ${dto.customer.lastName}',
-              itemCount: '$totalQuantity کالا',
+              itemCount: S.current.itemCount(totalQuantity),
               status: dto.status,
               dateTime: dateStr,
               amount: _formatCurrency(dto.total),
@@ -117,25 +118,25 @@ class OrdersRepository {
       if (dto.remainingTime != null) {
         final rt = dto.remainingTime!;
         if (rt.days > 0) {
-          remainingTimeStr = '${rt.days} روز';
+          remainingTimeStr = '${rt.days} ${S.current.dayUnit}';
         } else if (rt.hours > 0) {
-          remainingTimeStr = '${rt.hours} ساعت';
+          remainingTimeStr = '${rt.hours} ${S.current.hourUnit}';
         } else if (rt.minutes > 0) {
-          remainingTimeStr = '${rt.minutes} دقیقه';
+          remainingTimeStr = '${rt.minutes} ${S.current.minuteUnit}';
         }
       }
 
-      final history = [OrderHistoryModel(label: 'تاریخ ثبت:', value: dateStr)];
+      final history = [OrderHistoryModel(label: S.current.registrationDateLabel, value: dateStr)];
 
       // Add clearance date if successful record exists
       final successDisburse = (dto.disbursementRecords ?? []).firstWhere(
-        (r) => r.status == 'success' || r.status == 'موفق',
+        (r) => r.status == 'success' || r.status == S.current.success,
         orElse: () => const DisbursementRecordDtoModel(amount: 0),
       );
       if (successDisburse.createdAt != null) {
         history.add(
           OrderHistoryModel(
-            label: 'تاریخ تخلیه:',
+            label: S.current.clearanceDateLabelColon,
             value: _formatJalaliDateTime(successDisburse.createdAt!),
           ),
         );
@@ -143,13 +144,13 @@ class OrdersRepository {
 
       // Add settlement date if successful record exists
       final successSettle = (dto.settlementRecords ?? []).firstWhere(
-        (s) => s.status == 'success' || s.status == 'موفق',
+        (s) => s.status == 'success' || s.status == S.current.success,
         orElse: () => const SettlementRecordDtoModel(amount: 0),
       );
       if (successSettle.createdAt != null) {
         history.add(
           OrderHistoryModel(
-            label: 'تاریخ تسویه:',
+            label: S.current.settlementDateLabel,
             value: _formatJalaliDateTime(successSettle.createdAt!),
           ),
         );
@@ -199,7 +200,7 @@ class OrdersRepository {
           provider: dto.subPlan.creditPlan?.name ?? '',
           planName: dto.subPlan.name,
           priceIncrease: '', // Need clarification on where this comes from
-          validityPeriod: '${dto.subPlan.repaymentDurationMonths} ماه',
+          validityPeriod: '${dto.subPlan.repaymentDurationMonths} ${S.current.monthUnit}',
         ),
         products: products,
         customer: OrderCustomerModel(
@@ -279,10 +280,10 @@ class OrdersRepository {
   String _mapDocType(String type) {
     switch (type) {
       case 'national_id_front':
-        return 'کارت ملی - روی';
+        return S.current.nationalIdFront;
       case 'supporting':
       case 'disbursement_proof':
-        return 'سایر مدارک';
+        return S.current.otherDocuments;
       default:
         return type;
     }

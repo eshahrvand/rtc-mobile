@@ -93,7 +93,7 @@ class OrdersUiHelpers {
       'wallet_debit' => S.current.walletSettlement,
       'ipg' => 'پرداخت از طریق درگاه آنلاین',
       'link' => 'ارسال لینک پرداخت به مشتری',
-      'card_to_card' => 'بارگزاری فیش واریزی',
+      'card_to_card' => 'بارگذاری فیش واریزی',
       _ => 'انتخاب روش تسویه',
     };
   }
@@ -104,7 +104,7 @@ class OrdersUiHelpers {
       'wallet_debit' => 'پرداخت با کیف پول',
       'ipg' => ' رفتن به درگاه شاپرک ',
       'link' => 'ارسال لینک پرداخت',
-      'card_to_card' => 'بارگزاری فیش واریزی',
+      'card_to_card' => 'بارگذاری فیش واریزی',
       _ => 'تایید و پرداخت',
     };
   }
@@ -123,7 +123,7 @@ class OrdersUiHelpers {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: RtcStatusBadge(status: "انجام شده"),
+            child: RtcStatusBadge(status: S.current.statusDone),
           ),
           Spacer(),
           RtcImage(

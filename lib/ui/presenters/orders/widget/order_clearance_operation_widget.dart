@@ -106,7 +106,7 @@ class _OrderClearanceOperationWidgetState
                   if (isCompleted)
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: RtcStatusBadge(status: 'بارگزاری شده'),
+                      child: RtcStatusBadge(status: S.current.uploaded),
                     ),
                   const Spacer(),
                   if (widget.onEdit != null)
@@ -329,9 +329,7 @@ class _OrderClearanceOperationWidgetState
       decoration: BoxDecoration(
         color: colorPalette.shade50,
         borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          color: colorPalette.shade100,
-        ),
+        border: Border.all(color: colorPalette.shade100),
       ),
       child: Row(
         children: [

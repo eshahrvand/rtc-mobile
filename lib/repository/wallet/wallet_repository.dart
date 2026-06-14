@@ -2,9 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../core/utils/date_time_utils.dart';
 import '../../data/models/wallet_model.dart';
-import '../../data_source/remote/wallet/model/transaction_dto_model.dart';
-import '../../data_source/remote/wallet/model/wallet_dto_model.dart';
 import '../../data_source/remote/wallet/wallet_service.dart';
+import '../../generated/l10n.dart';
 
 class WalletRepository {
   final WalletService _service;
@@ -22,7 +21,7 @@ class WalletRepository {
             .map(
               (p) => PocketModel(
                 id: p.id,
-                bankName: p.subPlan.creditPlan?.name ?? 'نامشخص',
+                bankName: p.subPlan.creditPlan?.name ?? S.current.unknown,
                 planName: p.subPlan.name,
                 balance: _formatCurrency(p.balance),
                 balanceRaw: p.balance,
