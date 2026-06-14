@@ -19,6 +19,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
   final bool isOutOfTolerance;
   final bool showStep;
   final bool isLoading;
+  final String? statusDisplay;
 
   const OrderClearanceOperationWidget({
     super.key,
@@ -32,6 +33,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
     this.isOutOfTolerance = false,
     this.showStep = false,
     this.isLoading = false,
+    this.statusDisplay,
   });
 
   @override
@@ -103,7 +105,12 @@ class _OrderClearanceOperationWidgetState
                       color: AppColors.grayPalette.shade900,
                     ),
                   ),
-                  if (isCompleted)
+                  if (widget.statusDisplay != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: RtcStatusBadge(status: widget.statusDisplay!),
+                    )
+                  else if (isCompleted)
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: RtcStatusBadge(status: S.current.uploaded),

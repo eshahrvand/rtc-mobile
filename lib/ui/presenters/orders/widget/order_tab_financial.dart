@@ -119,6 +119,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: OrderClearanceOperationWidget(
                           amount: clearanceAmount,
+                          statusDisplay: state.lastDisbursementStatusDisplay,
                           orderAmount:
                               state.orderAmount ??
                               widget.order.financialSummary.finalAmount,

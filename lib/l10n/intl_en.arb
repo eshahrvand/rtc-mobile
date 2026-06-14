@@ -155,6 +155,8 @@
   "productsTitle": "",
   "totalAmount": "",
   "statusDone": "",
+  "statusFailed": "",
+  "failed": "",
   "walletReceiptTitle": "",
   "selectTransactionTypeSubtitle": "",
   "unknown": "",

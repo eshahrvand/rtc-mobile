@@ -158,6 +158,8 @@
   "productsTitle": "کالاها",
   "totalAmount": "جمع کل",
   "statusDone": "انجام شده",
+  "statusFailed": "ناموفق",
+  "failed": "ناموفق",
   "walletReceiptTitle": "رسید تراکنش کیف پول",
   "selectTransactionTypeSubtitle": "نوع تراکنش را مشخص کنید ",
   "unknown": "نامشخص",

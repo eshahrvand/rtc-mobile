@@ -46,7 +46,10 @@ class RtcStatusBadge extends StatelessWidget {
     } else if (status == S.current.uploaded) {
       palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
-    } else if (orderStatus == OrderStatus.rejected) {
+    } else if (orderStatus == OrderStatus.rejected ||
+        status == 'failed' ||
+        status == 'ناموفق' ||
+        status == S.current.statusFailed) {
       palette = AppColors.errorPalette;
       iconPath = '$baseImage/close_badge.svg';
     } else if (orderStatus == OrderStatus.expired) {

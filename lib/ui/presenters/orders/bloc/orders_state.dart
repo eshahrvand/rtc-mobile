@@ -3,6 +3,7 @@ import '../../../../core/enums/order_status.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import '../../../../generated/l10n.dart';
 
 part 'orders_state.freezed.dart';
 
@@ -95,13 +96,13 @@ extension OrdersStateX on OrdersState {
   String get resolvedClearanceAmount {
     if (selectedOrder == null) return clearanceAmount;
 
-    final successRecords = selectedOrder!.disbursementRecords.where(
-      (r) => r.status == 'موفق' || r.status == 'success',
-    );
-
-    if (successRecords.isNotEmpty) {
-      return successRecords.first.amount;
+    if (selectedOrder!.disbursementRecords.isNotEmpty) {
+      final last = selectedOrder!.disbursementRecords.last;
+      if (last.status == 'موفق' || last.status == 'success') {
+        return last.amount;
+      }
     }
+
     if (clearanceAmount.isNotEmpty) {
       return clearanceAmount;
     }
@@ -111,24 +112,55 @@ extension OrdersStateX on OrdersState {
   String? get resolvedExcessAmount {
     if (selectedOrder == null) return excessAmount;
 
-    final successRecords = selectedOrder!.disbursementRecords.where(
-      (r) => r.status == 'موفق' || r.status == 'success',
-    );
-
-    if (successRecords.isNotEmpty) {
-      final disbursedVal =
-          double.tryParse(successRecords.first.amount.replaceAll(',', '')) ?? 0;
-      final orderVal =
-          double.tryParse(
-                selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
-              ) ??
-              0;
-      if (disbursedVal > orderVal) {
-        return (disbursedVal - orderVal).toStringAsFixed(0);
+    if (selectedOrder!.disbursementRecords.isNotEmpty) {
+      final last = selectedOrder!.disbursementRecords.last;
+      if (last.status == 'موفق' || last.status == 'success') {
+        final disbursedVal =
+            double.tryParse(last.amount.replaceAll(',', '')) ?? 0;
+        final orderVal =
+            double.tryParse(
+                  selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
+                ) ??
+                0;
+        if (disbursedVal > orderVal) {
+          return (disbursedVal - orderVal).toStringAsFixed(0);
+        }
+        return null;
       }
-      return null;
     }
     return excessAmount;
+  }
+
+  String? get lastDisbursementStatusDisplay {
+    if (selectedOrder == null || selectedOrder!.disbursementRecords.isEmpty) {
+      return null;
+    }
+    final last = selectedOrder!.disbursementRecords.last;
+    if (last.status == 'success' || last.status == 'موفق') {
+      if (last.gateway == 'offline') {
+        return S.current.uploaded;
+      }
+      return S.current.statusDone;
+    } else if (last.status == 'failed' || last.status == 'ناموفق') {
+      return S.current.statusFailed;
+    }
+    return last.status;
+  }
+
+  String? get lastSettlementStatusDisplay {
+    if (selectedOrder == null || selectedOrder!.settlementRecords.isEmpty) {
+      return null;
+    }
+    final last = selectedOrder!.settlementRecords.last;
+    if (last.status == 'success' || last.status == 'موفق') {
+      if (last.paymentType == 'card_to_card' || last.paymentType == 'offline') {
+        return S.current.uploaded;
+      }
+      return S.current.statusDone;
+    } else if (last.status == 'failed' || last.status == 'ناموفق') {
+      return S.current.statusFailed;
+    }
+    return last.status;
   }
 
   bool get isOverDischarge {

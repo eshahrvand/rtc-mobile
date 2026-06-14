@@ -117,17 +117,21 @@ class OrdersUiHelpers {
   }) {
     final theme = Theme.of(context).textTheme;
 
-    if (state.isSettlementCompleted) {
+    final lastStatus = state.lastSettlementStatusDisplay;
+
+    if (state.isSettlementCompleted || lastStatus != null) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: RtcStatusBadge(status: S.current.statusDone),
-          ),
+          if (lastStatus != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: RtcStatusBadge(status: lastStatus),
+            ),
           Spacer(),
           RtcImage(
-            image: (state.isSettlementCompleted && !isExpanded)
+            image: ((state.isSettlementCompleted || lastStatus != null) &&
+                    !isExpanded)
                 ? "$baseImage/angle-down_tab.svg"
                 : "$baseImage/arrow_up_tab.svg",
             width: 24.0,
