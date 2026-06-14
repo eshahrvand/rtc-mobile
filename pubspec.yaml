@@ -66,6 +66,8 @@ dependencies:
   photo_manager: ^3.7.1
   custom_refresh_indicator: ^4.0.1
   flutter_markdown_plus: ^1.0.7
+  share_plus: ^10.1.4
+  screenshot: ^3.0.0
 
 dev_dependencies:
   flutter_test:

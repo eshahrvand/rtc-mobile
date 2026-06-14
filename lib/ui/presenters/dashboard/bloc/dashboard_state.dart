@@ -9,12 +9,7 @@ import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart
 
 part 'dashboard_state.freezed.dart';
 
-enum DashboardRequestStatus {
-  initial,
-  loading,
-  success,
-  error,
-}
+enum DashboardRequestStatus { initial, loading, success, error }
 
 @freezed
 class DashboardState with _$DashboardState {

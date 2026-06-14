@@ -1,18 +1,24 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 import '../bloc/wallet_cubit.dart';
 import '../bloc/wallet_state.dart';
 
 class TransactionDetailsSheet extends StatelessWidget {
   final WalletCubit cubit;
+  final ScreenshotController _screenshotController = ScreenshotController();
 
-  const TransactionDetailsSheet({super.key, required this.cubit});
+  TransactionDetailsSheet({super.key, required this.cubit});
 
   static Future<void> show(BuildContext context, WalletCubit cubit) {
     return showModalBottomSheet(
@@ -57,7 +63,13 @@ class TransactionDetailsSheet extends StatelessWidget {
 
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-                    child: _buildDetailsList(context, transaction),
+                    child: Screenshot(
+                      controller: _screenshotController,
+                      child: Container(
+                        color: Colors.white,
+                        child: _buildDetailsList(context, transaction),
+                      ),
+                    ),
                   ),
 
                   Padding(
@@ -118,6 +130,7 @@ class TransactionDetailsSheet extends StatelessWidget {
 
   Widget _buildDetailsList(BuildContext context, dynamic transaction) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _DetailRow(label: S.current.transactionType, value: transaction.type),
         const RtcDivider(),
@@ -129,11 +142,55 @@ class TransactionDetailsSheet extends StatelessWidget {
         _DetailRow(
           label: S.current.amount,
           value: transaction.amount,
-          unit: RtcImage(
-            image: "$baseImage/toman.svg",
-            width: 24,
-            height: 24,
+          unit: RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
+          isBold: true,
+        ),
+        RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
+        _DetailRow(
+          label: S.current.withdrawalFrom,
+          value: transaction.fromAccount,
+        ),
+        const RtcDivider(),
+        _DetailRow(label: S.current.depositTo, value: transaction.toAccount),
+        const RtcDivider(),
+        _DetailRow(
+          label: S.current.trackingNumber,
+          value: transaction.trackingNumber,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailsShareList(BuildContext context, dynamic transaction) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 12),
+          child: RtcImage(
+            image: "$baseImage/rtc_logo.png",
+            width: 80,
+            height: 42,
           ),
+        ),
+        Text(
+          'رسید تراکنش کیف پول',
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+            color: AppColors.grayPalette.shade900,
+          ),
+        ),
+        SizedBox(height: 12),
+        _DetailRow(label: S.current.transactionType, value: transaction.type),
+        const RtcDivider(),
+        _DetailRow(
+          label: S.current.registrationDate,
+          value: '${transaction.date} - ${transaction.time}',
+        ),
+        const RtcDivider(),
+        _DetailRow(
+          label: S.current.amount,
+          value: transaction.amount,
+          unit: RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
           isBold: true,
         ),
         RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
@@ -172,7 +229,7 @@ class TransactionDetailsSheet extends StatelessWidget {
         Expanded(
           child: RtcButton(
             title: S.current.share,
-            onPressed: () {},
+            onPressed: () => _share(context),
             styleBtn: theme.labelLarge!.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -181,6 +238,45 @@ class TransactionDetailsSheet extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _share(BuildContext context) async {
+    try {
+      final state = cubit.state;
+      final transaction = state.selectedTransaction;
+      if (transaction == null) return;
+
+      // Use captureFromWidget to create a dedicated widget for the screenshot
+      // with white background and 20px padding
+      final bytes = await _screenshotController.captureFromWidget(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: Material(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              color: Colors.white,
+              child: _buildDetailsShareList(context, transaction),
+            ),
+          ),
+        ),
+        pixelRatio: 3.0,
+        context: context,
+      );
+
+      final tempDir = await getTemporaryDirectory();
+      final file = await File(
+        '${tempDir.path}/transaction_details.png',
+      ).create();
+      await file.writeAsBytes(bytes);
+
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], text: S.current.transactionDetails);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error sharing: $e');
+      }
+    }
   }
 }
 

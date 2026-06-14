@@ -259,7 +259,8 @@ class _TransactionCard extends StatelessWidget {
                   Text(
                     '...',
                     style: theme.bodyMedium!.copyWith(
-                      color: AppColors.grayPalette.shade400,
+                      color: AppColors.grayPalette.shade600,
+                      fontSize: 16
                     ),
                   ),
                 ],
