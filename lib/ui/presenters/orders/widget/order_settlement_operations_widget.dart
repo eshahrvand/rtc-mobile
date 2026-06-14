@@ -94,6 +94,8 @@ class _OrderSettlementOperationsWidgetState
           );
         }
       }
+    } else if (method == 'wallet_debit') {
+      cubit.confirmSettlement();
     } else {
       cubit.initiateSettlement(method);
     }

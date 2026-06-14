@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:app_links/app_links.dart';
@@ -11,8 +12,6 @@ import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
-import '../../../../data_source/remote/wallet/wallet_service.dart';
-import '../../../../data_source/remote/wallet/model/wallet_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
@@ -21,9 +20,8 @@ import 'orders_state.dart';
 // ─── REFACTOR LOG ───────────────────────────────────────────────────
 // [1] Extracted `_formatJalaliDate()` helper for consistent API date strings.
 // [2] Extracted `_calculateRemainingSettlement()` to simplify settlement flow logic.
-// [3] Extracted `_checkWalletBalance()` helper to handle complex pocket balance validation.
-// [4] Extracted `_mapSettlementMethodToApi()` for cleaner method ID mapping.
-// [5] Extracted `_handleError()` to remove duplication in API error handling.
+// [3] Extracted `_mapSettlementMethodToApi()` for cleaner method ID mapping.
+// [4] Extracted `_handleError()` to remove duplication in API error handling.
 // [6] Reordered methods: Public event handlers first, followed by feature-specific flows, then helpers.
 // [7] Improved inline documentation and method grouping for better maintainability.
 // ────────────────────────────────────────────────────────────────────
@@ -32,7 +30,6 @@ class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
   final _mediaRepo = sl<MediaRepository>();
-  final _walletService = sl<WalletService>();
   final _dashboardRepo = sl<DashboardRepository>();
 
   static Future<double>? _cachedToleranceFuture;
@@ -164,20 +161,6 @@ class OrdersCubit extends Cubit<OrdersState> {
               walletName: detail.creditPlan?.planName,
             ),
           );
-
-          // Pre-fetch wallet to check balance early
-          _walletService
-              .getWallet()
-              .then((walletDto) {
-                final remainingAmount = _calculateRemainingSettlement(detail);
-                final isSufficient = _checkWalletBalance(
-                  walletDto,
-                  detail.creditPlan?.planName,
-                  remainingAmount,
-                );
-                emit(state.copyWith(isWalletBalanceSufficient: isSufficient));
-              })
-              .catchError((_) {});
         })
         .catchError((e) {
           _handleError(e, prefix: 'خطا در بارگذاری جزئیات سفارش: ');
@@ -559,53 +542,25 @@ class OrdersCubit extends Cubit<OrdersState> {
           final type = response['type'];
           final walletName =
               (type == 'wallet' && response['wallet_name'] != null)
-              ? response['wallet_name']
-              : state.walletName;
+                  ? response['wallet_name']
+                  : state.walletName;
           final mobile = response['mobile'];
 
           if (type == 'wallet') {
-            _walletService
-                .getWallet()
-                .then((walletDto) {
-                  final requiredAmount =
-                      response['reserved_amount']?.toDouble() ?? 0;
-                  final isSufficient = _checkWalletBalance(
-                    walletDto,
-                    walletName,
-                    requiredAmount,
-                  );
-
-                  emit(
-                    state.copyWith(
-                      status: OrdersRequestStatus.success,
-                      settlementStep: SettlementStep.methodSelected,
-                      settlementMethod: method,
-                      settlementReservedAmount: requiredAmount,
-                      walletName: walletName,
-                      isWalletBalanceSufficient: isSufficient,
-                    ),
-                  );
-
-                  if (isSufficient) {
-                    confirmSettlement();
-                  }
-                })
-                .catchError((_) {
-                  emit(
-                    state.copyWith(
-                      status: OrdersRequestStatus.success,
-                      settlementStep: SettlementStep.methodSelected,
-                      settlementMethod: method,
-                      settlementReservedAmount: response['reserved_amount']
-                          ?.toDouble(),
-                      walletName: walletName,
-                    ),
-                  );
-                });
+            final requiredAmount = response['reserved_amount']?.toDouble() ?? 0;
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.success,
+                settlementStep: SettlementStep.methodSelected,
+                settlementMethod: method,
+                settlementReservedAmount: requiredAmount,
+                walletName: walletName,
+                isWalletBalanceSufficient: true,
+              ),
+            );
           } else {
-            final redirectUrl = type == 'redirect'
-                ? response['redirect_url']
-                : null;
+            final redirectUrl =
+                type == 'redirect' ? response['redirect_url'] : null;
 
             emit(
               state.copyWith(
@@ -645,6 +600,25 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
+          if (method == 'wallet_debit' || method == 'wallet') {
+            bool isBalanceError = false;
+            if (e is DioException) {
+              if (e.response?.statusCode == 400) {
+                isBalanceError = true;
+              }
+            }
+            if (isBalanceError) {
+              emit(
+                state.copyWith(
+                  status: OrdersRequestStatus.success,
+                  isWalletBalanceSufficient: false,
+                  settlementMethod: method,
+                  settlementStep: SettlementStep.methodSelected,
+                ),
+              );
+              return null;
+            }
+          }
           _handleError(e, prefix: 'خطا در شروع عملیات تسویه: ');
           return null;
         });
@@ -680,6 +654,9 @@ class OrdersCubit extends Cubit<OrdersState> {
         settlementStep: SettlementStep.initial,
       ),
     );
+    if (method == 'wallet_debit' || method == 'wallet') {
+      initiateSettlement(method);
+    }
   }
 
   void confirmSettlement({String? trackingCode, String? imagePath}) {
@@ -819,29 +796,6 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
     final remaining = orderTotal - totalCleared;
     return remaining < 0 ? 0 : remaining;
-  }
-
-  bool _checkWalletBalance(
-    WalletDtoModel walletDto,
-    String? walletName,
-    double requiredAmount,
-  ) {
-    if (walletName == null) return false;
-    double pocketBalance = 0;
-    final targetName = walletName.trim();
-
-    for (var pocket in walletDto.pockets) {
-      if (pocket.subPlan.name.trim() == targetName) {
-        pocketBalance = pocket.balance;
-        break;
-      }
-    }
-    // Use dynamic tolerance from profile
-    // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
-    final tolerancePercent = state.tolerance! / 100;
-    print("tlorance>>:: used in _checkWalletBalance: $tolerancePercent");
-    final amountWithTolerance = requiredAmount * (1 - tolerancePercent);
-    return pocketBalance >= amountWithTolerance;
   }
 
   String _mapSettlementMethodToApi(String method) {

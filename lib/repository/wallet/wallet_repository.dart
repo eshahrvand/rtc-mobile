@@ -15,6 +15,7 @@ class WalletRepository {
     return _service.getWallet().then(
       (dto) => WalletSummaryModel(
         totalBalance: _formatCurrency(dto.balance),
+        totalBalanceRaw: dto.balance,
         totalCredit: _formatCurrency(dto.creditLimit),
         remainingCredit: _formatCurrency(dto.remainingCredit),
         pockets: dto.pockets
@@ -24,6 +25,7 @@ class WalletRepository {
                 bankName: p.subPlan.creditPlan?.name ?? 'نامشخص',
                 planName: p.subPlan.name,
                 balance: _formatCurrency(p.balance),
+                balanceRaw: p.balance,
                 logoPath:
                     p.subPlan.creditPlan?.image?.file ??
                     'assets/images/wallet.svg',
@@ -76,6 +78,7 @@ class WalletRepository {
 
   String _formatCurrency(double value) {
     final formatter = NumberFormat('#,###', 'en_US');
-    return formatter.format(value.abs().toInt());
+    String formatted = formatter.format(value.abs().toInt());
+    return value < 0 ? '\u200E-$formatted' : formatted;
   }
 }

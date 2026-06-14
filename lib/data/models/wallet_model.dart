@@ -8,6 +8,7 @@ part 'wallet_model.g.dart';
 class WalletSummaryModel with _$WalletSummaryModel {
   const factory WalletSummaryModel({
     required String totalBalance,
+    @Default(0.0) double totalBalanceRaw,
     required String totalCredit,
     required String remainingCredit,
     required List<PocketModel> pockets,
@@ -24,6 +25,7 @@ class PocketModel with _$PocketModel {
     required String bankName,
     required String planName,
     required String balance,
+    @Default(0.0) double balanceRaw,
     required String logoPath,
   }) = _PocketModel;
 

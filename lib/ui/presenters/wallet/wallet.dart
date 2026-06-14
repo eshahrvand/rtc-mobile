@@ -8,6 +8,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import '../../../data/models/wallet_model.dart';
 import 'bloc/wallet_cubit.dart';
 import 'bloc/wallet_state.dart';
 
@@ -148,7 +149,7 @@ class _WalletView extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, dynamic summary) {
+  Widget _buildHeader(BuildContext context, WalletSummaryModel summary) {
     var theme = Theme.of(context).textTheme;
     return Container(
       height: 190,
@@ -267,7 +268,7 @@ class _HeaderInfoItem extends StatelessWidget {
 }
 
 class _PocketCard extends StatelessWidget {
-  final dynamic pocket;
+  final PocketModel pocket;
   final VoidCallback onTap;
 
   const _PocketCard({required this.pocket, required this.onTap});
@@ -279,7 +280,6 @@ class _PocketCard extends StatelessWidget {
       padding: const EdgeInsets.only(right: 1, left: 1, top: 1),
       child: GestureDetector(
         onTap: onTap,
-
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(

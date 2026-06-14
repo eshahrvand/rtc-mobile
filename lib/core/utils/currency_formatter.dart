@@ -11,7 +11,8 @@ class CurrencyFormatter {
     if (numValue == null) return value;
 
     final formatter = NumberFormat('#,###');
-    return formatter.format(numValue);
+    String formatted = formatter.format(numValue.abs());
+    return numValue < 0 ? '\u200E-$formatted' : formatted;
   }
 }
 

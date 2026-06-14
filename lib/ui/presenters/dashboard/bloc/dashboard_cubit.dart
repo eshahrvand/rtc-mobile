@@ -124,7 +124,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       ),
       QuickAccessItemModel(
         title: S.current.walletBalance,
-        value: s.walletBalance.toStringAsFixed(0),
+        value: s.walletBalance.toStringAsFixed(0).formatCurrency,
         currency: "assets/images/toman.svg",
         iconPath: 'assets/images/wallet.svg',
       ),
