@@ -95,8 +95,8 @@ class DashboardCubit extends Cubit<DashboardState> {
   ) {
     String formatDelta(double? deltaPct) {
       if (deltaPct == null) return '0%';
-      final sign = deltaPct >= 0 ? '+' : '';
-      return '$sign${deltaPct.toStringAsFixed(0)}%';
+      final prefix = (deltaPct < 0) ? '\u200E' : '';
+      return '$prefix${deltaPct.toStringAsFixed(0)}%';
     }
 
     double calculatePercentage(int current, int delta) {
