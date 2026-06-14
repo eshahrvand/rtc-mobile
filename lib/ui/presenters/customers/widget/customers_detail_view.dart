@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../widget/rtc_tab_bar.dart';
 import '../bloc/customers_cubit.dart';
 import '../bloc/customers_state.dart';
@@ -56,27 +57,32 @@ class _CustomersDetailViewState extends State<CustomersDetailView> {
               },
             ),
           ],
-          child: Column(
-            children: [
-              RtcTabBar(
-                tabs: [S.current.customerInfo, S.current.orders],
-                selectedIndex: state.selectedTabIndex,
-                onTabChanged: (index) =>
-                    context.read<CustomersCubit>().onTabChanged(index),
-              ),
-              const SizedBox(height: 16.0),
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) =>
+          child: Container(
+            color: AppColors.grayPalette.shade25,
+            child: Column(
+              children: [
+                RtcTabBar(
+                  tabs: [S.current.customerInfo, S.current.orders],
+                  selectedIndex: state.selectedTabIndex,
+                  onTabChanged: (index) =>
                       context.read<CustomersCubit>().onTabChanged(index),
-                  children: [
-                    CustomersInfoTab(customer: state.selectedCustomer!),
-                    CustomersOrdersTab(orders: state.selectedCustomer!.orders),
-                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16.0),
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) =>
+                        context.read<CustomersCubit>().onTabChanged(index),
+                    children: [
+                      CustomersInfoTab(customer: state.selectedCustomer!),
+                      CustomersOrdersTab(
+                        orders: state.selectedCustomer!.orders,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

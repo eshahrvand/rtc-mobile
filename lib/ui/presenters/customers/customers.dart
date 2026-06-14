@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../widget/rtc_appbar.dart';
 import 'bloc/customers_cubit.dart';
 import 'bloc/customers_state.dart';
@@ -29,7 +30,7 @@ class CustomersView extends StatelessWidget {
     return BlocBuilder<CustomersCubit, CustomersState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.grayPalette.shade25,
           appBar: RtcAppBar(
             title: state.step == CustomersStep.customerList
                 ? S.current.myCustomers
