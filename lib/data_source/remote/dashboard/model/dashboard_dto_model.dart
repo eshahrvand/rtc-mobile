@@ -78,6 +78,7 @@ class SubPlanChartDtoModel with _$SubPlanChartDtoModel {
   const factory SubPlanChartDtoModel({
     @JsonKey(name: 'sub_plan_id') required String subPlanId,
     @JsonKey(name: 'plan_name') required String planName,
+    @JsonKey(name: 'sub_plan_name') required String subPlanName,
     @JsonKey(name: 'sub_plan_duration') required int subPlanDuration,
     @JsonKey(name: 'order_count') required int orderCount,
     @JsonKey(name: 'total_sales_amount') required double totalSalesAmount,

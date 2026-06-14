@@ -157,6 +157,7 @@
   "statusDone": "",
   "statusFailed": "",
   "failed": "",
+  "noItemsFound": "",
   "walletReceiptTitle": "",
   "selectTransactionTypeSubtitle": "",
   "unknown": "",

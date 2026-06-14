@@ -258,7 +258,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
 
     return list.map((s) {
-      return BarChartItemModel(label: "${s.planName} - ${s.subPlanDuration}", value: s.totalSalesAmount);
+      return BarChartItemModel(label: s.subPlanName, value: s.totalSalesAmount);
     }).toList();
   }
 
@@ -278,9 +278,6 @@ class DashboardCubit extends Cubit<DashboardState> {
       if (isClosed) return;
 
       final finalMessage = networkMessage ?? e.toString();
-
-
-      if (state.errorMessage == finalMessage) return;
 
       emit(
         state.copyWith(

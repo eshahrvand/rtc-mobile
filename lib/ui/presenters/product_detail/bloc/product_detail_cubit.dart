@@ -93,7 +93,6 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       if (isClosed) return;
 
       final finalMessage = networkMessage ?? e.toString();
-      if (state.errorMessage == finalMessage) return;
 
       emit(
         state.copyWith(

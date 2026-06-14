@@ -129,7 +129,6 @@ class AuthCubit extends Cubit<AuthState> {
       if (isClosed) return;
 
       final finalMessage = networkMessage ?? e.toString();
-      if (state.errorMessage == finalMessage) return;
 
       emit(
         state.copyWith(

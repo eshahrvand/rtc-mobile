@@ -15,8 +15,9 @@ class DashboardUiHelpers {
     required DashboardState state,
     required TextTheme theme,
   }) {
-    return switch (state.recentOrders.isEmpty) {
-      true => Padding(
+    if (state.recentOrders.isEmpty) {
+      return Center(
+        child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 24.0),
           child: Text(
             S.current.noItemsFound,
@@ -25,28 +26,27 @@ class DashboardUiHelpers {
             ),
           ),
         ),
-      false => ListView.builder(
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: state.recentOrders.length,
-          itemBuilder: (context, index) {
-            final order = state.recentOrders[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: RtcDashboardOrderItem(
-                order: order,
-                onTap: () {
-                  context.read<DashboardCubit>().onNavItemSelected(2);
-                  context.push(
-                    AppRoutes.orderDetail,
-                    extra: order.id,
-                  );
-                },
-              ),
-            );
-          },
-        ),
-    };
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: state.recentOrders.length,
+      itemBuilder: (context, index) {
+        final order = state.recentOrders[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: RtcDashboardOrderItem(
+            order: order,
+            onTap: () {
+              context.read<DashboardCubit>().onNavItemSelected(2);
+              context.push(AppRoutes.orderDetail, extra: order.id);
+            },
+          ),
+        );
+      },
+    );
   }
 }

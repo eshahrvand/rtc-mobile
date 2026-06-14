@@ -76,30 +76,40 @@ class _RtcPieChartCardState extends State<RtcPieChartCard> {
                         ),
                         sectionsSpace: 0,
                         centerSpaceRadius: 50,
-                        sections: widget.data.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final item = entry.value;
-                          final isTouched = index == touchedIndex;
-                          final radius = isTouched ? 30.0 : 21.0;
+                        sections: total == 0
+                            ? [
+                                PieChartSectionData(
+                                  color: AppColors.grayPalette.shade200,
+                                  value: 1,
+                                  radius: 21.0,
+                                  showTitle: false,
+                                ),
+                              ]
+                            : widget.data.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final item = entry.value;
+                                final isTouched = index == touchedIndex;
+                                final radius = isTouched ? 30.0 : 21.0;
 
-                          // Calculate percentage
-                          final percentage = total > 0
-                              ? (item.value / total * 100).toStringAsFixed(0)
-                              : '0';
+                                // Calculate percentage
+                                final percentage = total > 0
+                                    ? (item.value / total * 100)
+                                          .toStringAsFixed(0)
+                                    : '0';
 
-                          return PieChartSectionData(
-                            color: item.color,
-                            value: item.value,
-                            radius: radius,
-                            showTitle: isTouched,
-                            title: '$percentage%',
-                            titleStyle: textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                            ),
-                          );
-                        }).toList(),
+                                return PieChartSectionData(
+                                  color: item.color,
+                                  value: item.value,
+                                  radius: radius,
+                                  showTitle: isTouched,
+                                  title: '$percentage%',
+                                  titleStyle: textTheme.labelSmall?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                  ),
+                                );
+                              }).toList(),
                       ),
                     ),
                   ),

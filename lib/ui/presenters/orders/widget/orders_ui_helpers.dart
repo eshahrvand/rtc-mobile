@@ -20,35 +20,38 @@ class OrdersUiHelpers {
   }) {
     final theme = Theme.of(context).textTheme;
 
-    return switch (state.status == OrdersRequestStatus.loading &&
+    if (state.status == OrdersRequestStatus.loading &&
         state.filteredOrders.isEmpty) {
-      true => const Center(child: CircularProgressIndicator()),
-      false => state.filteredOrders.isEmpty
-          ? Center(
-              child: Text(
-                S.current.noItemsFound,
-                style: theme.bodyLarge?.copyWith(
-                  color: AppColors.grayPalette.shade600,
-                ),
-              ),
-            )
-          : ListView.builder(
-              itemCount: state.filteredOrders.length,
-              itemBuilder: (context, index) {
-                final OrderSummaryModel order = state.filteredOrders[index];
-                return RtcOrderItem(
-                  order: order,
-                  onTap: () {
-                    context.push(AppRoutes.orderDetail, extra: order.id).then((_) {
-                      if (context.mounted) {
-                        context.read<OrdersCubit>().fetchOrders();
-                      }
-                    });
-                  },
-                );
-              },
-            ),
-    };
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.filteredOrders.isEmpty) {
+      return Center(
+        child: Text(
+          S.current.noItemsFound,
+          style: theme.bodyLarge?.copyWith(
+            color: AppColors.grayPalette.shade600,
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: state.filteredOrders.length,
+      itemBuilder: (context, index) {
+        final OrderSummaryModel order = state.filteredOrders[index];
+        return RtcOrderItem(
+          order: order,
+          onTap: () {
+            context.push(AppRoutes.orderDetail, extra: order.id).then((_) {
+              if (context.mounted) {
+                context.read<OrdersCubit>().fetchOrders();
+              }
+            });
+          },
+        );
+      },
+    );
   }
 
   /// Resolves the validity header for the order detail view.

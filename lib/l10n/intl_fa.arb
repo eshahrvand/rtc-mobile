@@ -264,6 +264,7 @@
       }
     }
   },
+  "noItemsFound": "موردی یافت نشد",
   "remainingTimeLabel": "زمان باقی‌مانده: ",
   "ipgSettlementTitle": "پرداخت از طریق درگاه آنلاین",
   "linkSettlementTitle": "ارسال لینک پرداخت به مشتری",
