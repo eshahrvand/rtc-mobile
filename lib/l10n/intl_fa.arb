@@ -264,7 +264,17 @@
       }
     }
   },
-  "noItemsFound": "موردی یافت نشد",
+  "remainingTimeLabel": "زمان باقی‌مانده: ",
+  "ipgSettlementTitle": "پرداخت از طریق درگاه آنلاین",
+  "linkSettlementTitle": "ارسال لینک پرداخت به مشتری",
+  "cardToCardSettlementTitle": "بارگذاری فیش واریزی",
+  "selectSettlementMethodTitle": "انتخاب روش تسویه",
+  "payWithWalletButton": "پرداخت با کیف پول",
+  "goToShaparakButton": " رفتن به درگاه شاپرک ",
+  "sendPaymentLinkButton": "ارسال لینک پرداخت",
+  "confirmAndPayButton": "تایید و پرداخت",
+  "waitingForClearanceCompletion": "در انتظار تکمیل تخلیه",
+  "updateLabel": "بروزرسانی",
   "cheapest": "ارزانترین",
   "mostExpensive": "گرانترین",
   "newest": "جدیدترین",

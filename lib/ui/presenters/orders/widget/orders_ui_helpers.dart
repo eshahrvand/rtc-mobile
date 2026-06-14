@@ -64,7 +64,7 @@ class OrdersUiHelpers {
               spacing: 4.0,
               children: [
                 Text(
-                  'زمان باقی‌مانده: ',
+                  S.current.remainingTimeLabel,
                   style: theme.bodySmall!.copyWith(
                     color: AppColors.grayPalette.shade600,
                     fontSize: 12.0,
@@ -91,21 +91,21 @@ class OrdersUiHelpers {
   static String resolveSettlementMethodTitle(String? method) {
     return switch (method) {
       'wallet_debit' => S.current.walletSettlement,
-      'ipg' => 'پرداخت از طریق درگاه آنلاین',
-      'link' => 'ارسال لینک پرداخت به مشتری',
-      'card_to_card' => 'بارگذاری فیش واریزی',
-      _ => 'انتخاب روش تسویه',
+      'ipg' => S.current.ipgSettlementTitle,
+      'link' => S.current.linkSettlementTitle,
+      'card_to_card' => S.current.cardToCardSettlementTitle,
+      _ => S.current.selectSettlementMethodTitle,
     };
   }
 
   /// Resolves the settlement action button title.
   static String resolveSettlementButtonTitle(String? method) {
     return switch (method) {
-      'wallet_debit' => 'پرداخت با کیف پول',
-      'ipg' => ' رفتن به درگاه شاپرک ',
-      'link' => 'ارسال لینک پرداخت',
-      'card_to_card' => 'بارگذاری فیش واریزی',
-      _ => 'تایید و پرداخت',
+      'wallet_debit' => S.current.payWithWalletButton,
+      'ipg' => S.current.goToShaparakButton,
+      'link' => S.current.sendPaymentLinkButton,
+      'card_to_card' => S.current.cardToCardSettlementTitle,
+      _ => S.current.confirmAndPayButton,
     };
   }
 
@@ -162,7 +162,7 @@ class OrdersUiHelpers {
                 color: AppColors.grayPalette.shade900,
               ),
               Text(
-                'در انتظار تکمیل تخلیه',
+                S.current.waitingForClearanceCompletion,
                 style: theme.bodyMedium!.copyWith(
                   color: AppColors.grayPalette.shade900,
                   fontWeight: FontWeight.w500,
@@ -188,7 +188,7 @@ class OrdersUiHelpers {
               height: 20.0,
             ),
             Text(
-              'بروزرسانی',
+              S.current.updateLabel,
               style: theme.bodyMedium!.copyWith(
                 color: AppColors.brandPalette.shade600,
                 fontWeight: FontWeight.w500,
