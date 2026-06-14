@@ -242,11 +242,27 @@ class DashboardCubit extends Cubit<DashboardState> {
       ];
     }
 
-    return list.map((c) {
+    final sortedList = List<CategoryChartDtoModel>.from(list);
+    sortedList.sort((a, b) => b.totalOrders.compareTo(a.totalOrders));
+
+    final List<Color> palette = [
+      AppColors.brandPalette.shade400,
+      AppColors.successPalette.shade400,
+      AppColors.warningPalette.shade400,
+      AppColors.errorPalette.shade400,
+      AppColors.purplePalette.shade400,
+      AppColors.orangePalette.shade400,
+      AppColors.indigoPalette.shade400,
+      AppColors.pinkPalette.shade400,
+    ];
+
+    return sortedList.asMap().entries.map((entry) {
+      final index = entry.key;
+      final c = entry.value;
       return PieChartItemModel(
         label: c.categoryName,
         value: c.totalOrders.toDouble(),
-        color: AppColors.successPalette.shade400,
+        color: palette[index % palette.length],
       );
     }).toList();
   }
