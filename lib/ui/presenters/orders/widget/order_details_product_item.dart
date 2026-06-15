@@ -46,7 +46,7 @@ class OrderDetailsProductItem extends StatelessWidget {
                       child: Row(
                         spacing: 4,
                         children: [
-                          if (product.oldPrice != null)
+                          if (product.oldPrice != null && product.discount != null)
                             Text(
                               product.oldPrice!,
                               style: theme.bodyMedium!.copyWith(

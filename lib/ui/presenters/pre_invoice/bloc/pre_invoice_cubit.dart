@@ -22,8 +22,6 @@ import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
 
-
-
 class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _plansRepo = sl<PlansRepository>();
   final _productRepo = sl<ProductRepository>();
@@ -51,7 +49,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               label: S.current.category,
               opensBottomSheet: true,
             ),
-            PreInvoiceChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
+            PreInvoiceChipModel(
+              id: 2,
+              label: S.current.plan,
+              opensBottomSheet: true,
+            ),
             PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
           ];
 
@@ -223,14 +225,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       // Find product in allProducts to check inventory
       final product = state.allProducts.firstWhere(
         (p) => p.id == productId,
-        orElse:
-            () => PreInvoiceProductModel(
-              id: '',
-              name: '',
-              imageUrl: '',
-              price: '',
-              inventory: '0',
-            ),
+        orElse: () => PreInvoiceProductModel(
+          id: '',
+          name: '',
+          imageUrl: '',
+          price: '',
+          inventory: '0',
+        ),
       );
       final inventoryCount = int.tryParse(product.inventory) ?? 0;
 
@@ -300,10 +301,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void searchCustomer() {
     if (state.customerIdQuery.isEmpty) return;
-    emit(state.copyWith(
-      customerSearchLoading: true,
-      status: PreInvoiceRequestStatus.initial,
-    ));
+    emit(
+      state.copyWith(
+        customerSearchLoading: true,
+        status: PreInvoiceRequestStatus.initial,
+      ),
+    );
 
     _customerRepo
         .getCustomerByNationalId(state.customerIdQuery)
@@ -387,15 +390,22 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         updated = updated.copyWith(phoneNumber: value);
         final isPhoneValid =
             value.isEmpty || RegExp(r'^09\d{9}$').hasMatch(value);
-        emit(state.copyWith(customerInfo: updated, isPhoneNumberValid: isPhoneValid));
+        emit(
+          state.copyWith(
+            customerInfo: updated,
+            isPhoneNumberValid: isPhoneValid,
+          ),
+        );
         return;
       case 'postalCode':
         updated = updated.copyWith(postalCode: value);
         final isPostalValid = validatePostalCode(value);
-        emit(state.copyWith(
-          customerInfo: updated,
-          isPostalCodeValid: isPostalValid,
-        ));
+        emit(
+          state.copyWith(
+            customerInfo: updated,
+            isPostalCodeValid: isPostalValid,
+          ),
+        );
         return;
       case 'address':
         updated = updated.copyWith(address: value);
@@ -664,10 +674,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       imageUrl: dto.featuredImage?.file ?? '$baseImage/frame1.png',
       price: formatter.format(planPrice),
       oldPrice: finalOldPrice != null ? formatter.format(finalOldPrice) : null,
-      discount:
-          dto.discountPct != null && dto.discountPct! > 0
-              ? '${dto.discountPct}%'
-              : null,
+      discount: dto.discountPct != null && dto.discountPct! > 0
+          ? '${dto.discountPct}%'
+          : null,
       inventory: dto.stockQty.toString(),
       isAvailable: dto.stockQty > 0,
     );
@@ -750,7 +759,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     NetworkHelper.getNetworkErrorMessage().then<void>((networkMessage) {
       if (isClosed) return;
 
-      final finalMessage = networkMessage ??
+      final finalMessage =
+          networkMessage ??
           (prefix.isEmpty ? e.toString() : '$prefix: ${e.toString()}');
 
       emit(state.copyWith(status: PreInvoiceRequestStatus.initial));

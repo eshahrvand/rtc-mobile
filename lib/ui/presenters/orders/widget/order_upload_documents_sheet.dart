@@ -141,7 +141,6 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
               OrderDetailsDocumentItem(
                 isLocalFile: true,
                 onDelete: () {
-                  Navigator.pop(context);
                   widget.onDelete();
                 },
                 doc: OrderDocumentModel(

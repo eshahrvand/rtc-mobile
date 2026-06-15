@@ -28,6 +28,11 @@ class PreInvoiceBottomButtons extends StatelessWidget {
       return _buildReviewModeButtons(context);
     }
 
+    if (state.currentStep == PreInvoiceStep.customerInfo &&
+        state.customerInfo == null) {
+      return const SizedBox.shrink();
+    }
+
     return _buildStandardStepButtons(context);
   }
 

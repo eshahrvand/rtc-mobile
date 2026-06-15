@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../../../data/models/product_chip_model.dart';
 import '../../../../data/models/product_item_model.dart';
@@ -7,6 +8,7 @@ import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
+import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import 'product_state.dart';
 
 class ProductCubit extends Cubit<ProductState> {
@@ -36,7 +38,10 @@ class ProductCubit extends Cubit<ProductState> {
 
           _fetchProducts();
         })
-        .catchError(_handleError);
+        .catchError((e) {
+          _handleError(e);
+          return null;
+        });
   }
 
   void activateSearch() {
@@ -167,12 +172,19 @@ class ProductCubit extends Cubit<ProductState> {
             ),
           );
         })
-        .catchError(_handleError);
+        .catchError((e) {
+          _handleError(e);
+          return null;
+        });
   }
 
   List<ProductChipModel> _createInitialChips() {
     return [
-      ProductChipModel(id: 1, label: S.current.category, opensBottomSheet: true),
+      ProductChipModel(
+        id: 1,
+        label: S.current.category,
+        opensBottomSheet: true,
+      ),
       ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
       ProductChipModel(
         id: 3,
@@ -182,17 +194,32 @@ class ProductCubit extends Cubit<ProductState> {
     ];
   }
 
-  ProductItemModel _mapToProductItemModel(dynamic dto) {
+  ProductItemModel _mapToProductItemModel(ProductDtoModel dto) {
+    final formatter = NumberFormat('#,###', 'en_US');
+
+    final currentPrice = state.selectedSubPlanId != null
+        ? dto.planPrice ?? 0
+        : dto.basePrice ?? 0;
+
+    num? finalOldPrice = dto.oldPrice;
+
+    if (finalOldPrice == null &&
+        dto.discountPct != null &&
+        dto.discountPct! > 0) {
+      finalOldPrice = currentPrice / (1 - (dto.discountPct! / 100));
+    }
+
+    // fallback if still null and not applying plan price
+    if (state.selectedSubPlanId == null) {
+      finalOldPrice ??= dto.basePrice;
+    }
+
     return ProductItemModel(
       id: dto.id,
       name: dto.name,
       imageUrl: dto.featuredImage?.file ?? '',
-      price: state.selectedSubPlanId != null
-          ? dto.planPrice?.toString() ?? '۰'
-          : dto.basePrice?.toString() ?? '۰',
-      oldPrice: state.selectedSubPlanId != null
-          ? dto.basePrice?.toString()
-          : null,
+      price: formatter.format(currentPrice),
+      oldPrice: finalOldPrice != null ? formatter.format(finalOldPrice) : null,
       inventory: dto.stockQty.toString(),
       discount: dto.discountPct != null && dto.discountPct != 0
           ? '${dto.discountPct}٪'

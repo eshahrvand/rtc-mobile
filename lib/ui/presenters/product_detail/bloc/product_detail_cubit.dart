@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../../../data/models/product_detail_model.dart';
 import '../../../../generated/l10n.dart';
@@ -59,13 +60,29 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
             imageUrls.addAll(dto.images!.map((i) => i.image.file));
           }
 
+          final formatter = NumberFormat('#,###', 'en_US');
+
+          final currentPrice = subPlanId != null
+              ? dto.planPrice ?? 0
+              : dto.basePrice ?? 0;
+
+          num? finalOldPrice = dto.oldPrice;
+
+          if (finalOldPrice == null &&
+              dto.discountPct != null &&
+              dto.discountPct! > 0) {
+            finalOldPrice = currentPrice / (1 - (dto.discountPct! / 100));
+          }
+
+          if (subPlanId == null) {
+            finalOldPrice ??= dto.basePrice;
+          }
+
           final model = ProductDetailModel(
             id: dto.id,
             name: dto.name,
-            price: subPlanId != null
-                ? dto.planPrice?.toString() ?? '۰'
-                : dto.basePrice?.toString() ?? '۰',
-            oldPrice: subPlanId != null ? dto.basePrice?.toString() ?? '' : '',
+            price: formatter.format(currentPrice),
+            oldPrice: finalOldPrice != null ? formatter.format(finalOldPrice) : '',
             discountPercent: dto.discountPct != null && dto.discountPct != 0
                 ? '${dto.discountPct}%'
                 : '۰',
@@ -88,7 +105,10 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
             ),
           );
         })
-        .catchError(_handleError);
+        .catchError((e) {
+          _handleError(e);
+          return null;
+        });
   }
 
   void onImageSelected(int index) {

@@ -96,7 +96,7 @@ class RtcPreInvoiceProductPriceAndActions extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (product.oldPrice != null)
+          if (product.oldPrice != null && product.isAvailable)
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

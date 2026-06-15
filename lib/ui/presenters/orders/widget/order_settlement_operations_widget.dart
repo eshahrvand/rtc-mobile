@@ -88,7 +88,7 @@ class _OrderSettlementOperationsWidgetState
                     Navigator.pop(context);
                   }
                 },
-                onDelete: () {},
+                onDelete: () => Navigator.pop(context),
               ),
             ),
           );

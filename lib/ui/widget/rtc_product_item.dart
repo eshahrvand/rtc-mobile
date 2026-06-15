@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../data/models/product_item_model.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
@@ -37,8 +36,8 @@ class RtcProductItem extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: RtcImage(
                   image: product.imageUrl,
-                  width: 100,
-                  height: 100,
+                  width: 104,
+                  height: 104,
                   boxFit: BoxFit.contain,
                 ),
               ),
@@ -50,13 +49,16 @@ class RtcProductItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        product.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.labelMedium!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.grayPalette.shade20,
+                      SizedBox(
+                        height: 40,
+                        child: Text(
+                          product.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.labelMedium!.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.grayPalette.shade20,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -84,16 +86,23 @@ class RtcProductItem extends StatelessWidget {
                                 showPrice &&
                                 product.discount != '۰٪' &&
                                 product.discount != '0٪')
-                              RtcDiscountBadge(discount: product.discount!),
+                              SizedBox(
+                                width: 34,
+                                height: 22,
+                                child: RtcDiscountBadge(
+                                  discount: product.discount!,
+                                ),
+                              ),
                             const Spacer(),
                             if (showPrice)
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  if (product.oldPrice != null)
+                                  if (product.oldPrice != null &&
+                                      product.discount != null)
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 18),
+                                      padding: const EdgeInsets.only(left: 26),
                                       child: Text(
                                         product.oldPrice!,
                                         style: theme.bodyMedium!.copyWith(
@@ -104,24 +113,26 @@ class RtcProductItem extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                  Row(
-                                    spacing: 2,
-                                    children: [
-                                      Text(
-                                        product.price,
-                                        style: theme.labelLarge!.copyWith(
-                                          color: AppColors.grayPalette.shade900,
-                                          fontWeight: FontWeight.w600,
+                                  if (product.inventory != "0")
+                                    Row(
+                                      spacing: 2,
+                                      children: [
+                                        Text(
+                                          product.price,
+                                          style: theme.labelLarge!.copyWith(
+                                            color:
+                                                AppColors.grayPalette.shade900,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
-                                      ),
 
-                                      RtcImage(
-                                        image: "assets/images/toman.svg",
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                    ],
-                                  ),
+                                        RtcImage(
+                                          image: "assets/images/toman.svg",
+                                          width: 24,
+                                          height: 24,
+                                        ),
+                                      ],
+                                    ),
                                 ],
                               ),
                           ],
