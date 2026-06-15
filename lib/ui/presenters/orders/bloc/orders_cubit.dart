@@ -18,15 +18,6 @@ import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
 import 'orders_state.dart';
 
-// ─── REFACTOR LOG ───────────────────────────────────────────────────
-// [1] Extracted `_formatJalaliDate()` helper for consistent API date strings.
-// [2] Extracted `_calculateRemainingSettlement()` to simplify settlement flow logic.
-// [3] Extracted `_mapSettlementMethodToApi()` for cleaner method ID mapping.
-// [4] Extracted `_handleError()` to remove duplication in API error handling.
-// [6] Reordered methods: Public event handlers first, followed by feature-specific flows, then helpers.
-// [7] Improved inline documentation and method grouping for better maintainability.
-// ────────────────────────────────────────────────────────────────────
-
 class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
@@ -58,8 +49,6 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void _initDeepLinks() {
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      print("DeepLinkReceived>>:: $uri");
-      // Check if this is a disbursement or settlement callback
       if (uri.path.contains('callback') ||
           uri.host.contains('callback') ||
           uri.path.contains('disbursement') ||
@@ -79,15 +68,14 @@ class OrdersCubit extends Cubit<OrdersState> {
         .then((profile) {
           final tol = profile?.tolerance;
           if (tol == null) {
-            _cachedToleranceFuture =
-                null; // Reset to allow retry on next attempt
+            _cachedToleranceFuture = null;
             throw 'مقدار تولرانس در تنظیمات یافت نشد';
           }
-          print("tlorance>>:: fetched from profile: $tol");
+
           return tol;
         })
         .catchError((e) {
-          _cachedToleranceFuture = null; // Reset to allow retry
+          _cachedToleranceFuture = null;
           throw e;
         });
 
@@ -317,10 +305,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         .replaceAll(',', '');
     final orderAmountVal = double.tryParse(rawOrderAmountStr) ?? 0;
 
-    print("tlorance>>:: Parsed Input Amount: $amount (from '$rawAmountStr')");
-    print(
-      "tlorance>>:: Parsed Order Amount: $orderAmountVal (from '$rawOrderAmountStr')",
-    );
+
 
     // ─── Range Calculation (Before API Call) ───
     // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
@@ -328,11 +313,9 @@ class OrdersCubit extends Cubit<OrdersState> {
     final minAllowed = orderAmountVal * (1 - tolerancePercent);
     final maxAllowed = orderAmountVal * (1 + tolerancePercent);
 
-    print("tlorance>>:: Tolerance Percent: $tolerancePercent");
-    print("tlorance>>:: Allowed Range: [$minAllowed to $maxAllowed]");
 
     if (amount < minAllowed || amount > maxAllowed) {
-      print("tlorance>>:: RESULT: OUT OF RANGE (TOO LOW or TOO HIGH)");
+
       emit(
         state.copyWith(
           status: OrdersRequestStatus.success,
@@ -347,13 +330,12 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
 
     // ─── If in range, proceed with loading and API ───
-    print("tlorance>>:: RESULT: WITHIN RANGE. Proceeding to API...");
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
-          print("tlorance>>:: API SUCCESS: disburseInitiate responded");
+
           final type = (response is Map) ? response['type'] : 'offline';
           final mobile = (response is Map) ? response['mobile'] : null;
           final redirectUrl = (response is Map)
@@ -377,7 +359,7 @@ class OrdersCubit extends Cubit<OrdersState> {
                   ? ClearanceStep.otpPending
                   : type == 'redirect'
                   ? ClearanceStep
-                        .amountEntered // Show redirect button
+                        .amountEntered
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
@@ -520,22 +502,6 @@ class OrdersCubit extends Cubit<OrdersState> {
     final apiMethod = _mapSettlementMethodToApi(method);
     final finalAmount =
         amount ?? _calculateRemainingSettlement(state.selectedOrder!);
-
-    // FIXME: Faking API success for 'link' method due to backend issues as requested by user.
-    // if (method == 'link' || method == 'cash') {
-    //   emit(
-    //     state.copyWith(
-    //       status: OrdersRequestStatus.success,
-    //       settlementStep: SettlementStep.methodSelected,
-    //       settlementMethod: 'link',
-    //       settlementMobile: state.selectedOrder?.customer.phone,
-    //     ),
-    //   );
-    //   _startSettlementTimer();
-    //   // Auto-confirm for link mode to trigger success UI
-    //   confirmSettlement();
-    //   return;
-    // }
 
     _ordersRepo
         .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)

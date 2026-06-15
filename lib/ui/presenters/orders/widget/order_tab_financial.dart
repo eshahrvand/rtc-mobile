@@ -59,9 +59,12 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
               amountController: _amountController,
               isLoading: state.status == OrdersRequestStatus.loading,
               onCheckPressed: () {
-                cubit.initiateClearance(_amountController.text).then((_) {
-                  if (context.mounted) Navigator.pop(context);
-                }).catchError((_) {});
+                cubit
+                    .initiateClearance(_amountController.text)
+                    .then((_) {
+                      if (context.mounted) Navigator.pop(context);
+                    })
+                    .catchError((_) {});
               },
             );
           },
@@ -78,7 +81,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
         final cubit = context.read<OrdersCubit>();
         final clearanceAmount = state.resolvedClearanceAmount;
         final excessAmount = state.resolvedExcessAmount;
-        final walletName = state.walletName ?? widget.order.creditPlan?.planName;
+        final walletName =
+            state.walletName ?? widget.order.creditPlan?.planName;
         final showSettlement = state.shouldShowSettlement;
 
         return Column(
@@ -128,7 +132,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
                           showStep: showSettlement,
-                          isLoading: state.status == OrdersRequestStatus.loading,
+                          isLoading:
+                              state.status == OrdersRequestStatus.loading,
                           onAction: () {
                             if (state.disbursementGatewayType == 'otp') {
                               showModalBottomSheet(
@@ -143,21 +148,25 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                                         phoneNumber:
                                             state.disbursementMobile ??
                                             widget.order.customer.phone,
-                                        isLoading: state.status == OrdersRequestStatus.loading,
+                                        isLoading:
+                                            state.status ==
+                                            OrdersRequestStatus.loading,
                                         onConfirm: (otp) {
-                                          cubit.confirmClearanceOtp(otp).then((_) {
-                                            if (context.mounted) {
-                                              Navigator.pop(context);
-                                            }
-                                          }).catchError((_) {});
+                                          cubit
+                                              .confirmClearanceOtp(otp)
+                                              .then((_) {
+                                                if (context.mounted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              })
+                                              .catchError((_) {});
                                         },
                                       );
                                     },
                                   ),
                                 ),
                               );
-                            }
-else if (state.disbursementGatewayType ==
+                            } else if (state.disbursementGatewayType ==
                                 'redirect') {
                               if (state.disbursementRedirectUrl != null) {
                                 launchUrl(
@@ -182,8 +191,7 @@ else if (state.disbursementGatewayType ==
                       ),
                     if (showSettlement)
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 8.0, bottom: 32.0),
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 32.0),
                         child: OrderSettlementOperationsWidget(
                           showStep: showSettlement,
                           op:

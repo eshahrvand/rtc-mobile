@@ -2,12 +2,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/enums/order_status.dart';
 
 part 'dashboard_dto_model.freezed.dart';
+
 part 'dashboard_dto_model.g.dart';
 
 @freezed
 class DashboardSummaryDtoModel with _$DashboardSummaryDtoModel {
   const factory DashboardSummaryDtoModel({
-    @JsonKey(name: 'wallet_balance', fromJson: _parseStringToDouble) required double walletBalance,
+    @JsonKey(name: 'wallet_balance', fromJson: _parseStringToDouble)
+    required double walletBalance,
     @JsonKey(name: 'order_count') required int orderCount,
     @JsonKey(name: 'order_count_delta') required int orderCountDelta,
     @JsonKey(name: 'total_sales_amount') required double totalSalesAmount,
@@ -15,7 +17,8 @@ class DashboardSummaryDtoModel with _$DashboardSummaryDtoModel {
     @JsonKey(name: 'active_orders') required int activeOrders,
   }) = _DashboardSummaryDtoModel;
 
-  factory DashboardSummaryDtoModel.fromJson(Map<String, dynamic> json) => _$DashboardSummaryDtoModelFromJson(json);
+  factory DashboardSummaryDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$DashboardSummaryDtoModelFromJson(json);
 }
 
 double _parseStringToDouble(dynamic value) {
@@ -34,7 +37,8 @@ class WalletStatusDtoModel with _$WalletStatusDtoModel {
     required double percentage,
   }) = _WalletStatusDtoModel;
 
-  factory WalletStatusDtoModel.fromJson(Map<String, dynamic> json) => _$WalletStatusDtoModelFromJson(json);
+  factory WalletStatusDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$WalletStatusDtoModelFromJson(json);
 }
 
 @freezed
@@ -44,7 +48,8 @@ class DailyChartDtoModel with _$DailyChartDtoModel {
     @JsonKey(name: 'total_sales_amount') required double totalSalesAmount,
   }) = _DailyChartDtoModel;
 
-  factory DailyChartDtoModel.fromJson(Map<String, dynamic> json) => _$DailyChartDtoModelFromJson(json);
+  factory DailyChartDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$DailyChartDtoModelFromJson(json);
 }
 
 @freezed
@@ -57,12 +62,14 @@ class CategoryChartDtoModel with _$CategoryChartDtoModel {
     required double percentage,
   }) = _CategoryChartDtoModel;
 
-  factory CategoryChartDtoModel.fromJson(Map<String, dynamic> json) => _$CategoryChartDtoModelFromJson(json);
+  factory CategoryChartDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$CategoryChartDtoModelFromJson(json);
 }
 
 @freezed
 class OrderStatusDtoModel with _$OrderStatusDtoModel {
   const OrderStatusDtoModel._();
+
   const factory OrderStatusDtoModel({
     required String status,
     required int count,
@@ -70,7 +77,8 @@ class OrderStatusDtoModel with _$OrderStatusDtoModel {
 
   OrderStatus get orderStatus => OrderStatus.fromString(status);
 
-  factory OrderStatusDtoModel.fromJson(Map<String, dynamic> json) => _$OrderStatusDtoModelFromJson(json);
+  factory OrderStatusDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$OrderStatusDtoModelFromJson(json);
 }
 
 @freezed
@@ -84,7 +92,8 @@ class SubPlanChartDtoModel with _$SubPlanChartDtoModel {
     @JsonKey(name: 'total_sales_amount') required double totalSalesAmount,
   }) = _SubPlanChartDtoModel;
 
-  factory SubPlanChartDtoModel.fromJson(Map<String, dynamic> json) => _$SubPlanChartDtoModelFromJson(json);
+  factory SubPlanChartDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$SubPlanChartDtoModelFromJson(json);
 }
 
 @freezed
@@ -92,13 +101,17 @@ class CommissionDtoModel with _$CommissionDtoModel {
   const factory CommissionDtoModel({
     @JsonKey(name: 'monthly_sales_total') required double monthlySalesTotal,
     @JsonKey(name: 'commission_rate_cash') required int commissionRateCash,
-    @JsonKey(name: 'commission_rate_product') required int commissionRateProduct,
-    @JsonKey(name: 'commission_amount_cash') required double commissionAmountCash,
-    @JsonKey(name: 'commission_amount_product') required double commissionAmountProduct,
+    @JsonKey(name: 'commission_rate_product')
+    required int commissionRateProduct,
+    @JsonKey(name: 'commission_amount_cash')
+    required double commissionAmountCash,
+    @JsonKey(name: 'commission_amount_product')
+    required double commissionAmountProduct,
     @JsonKey(name: 'next_tier_rate_cash') required int nextTierRateCash,
     @JsonKey(name: 'next_tier_rate_product') required int nextTierRateProduct,
     @JsonKey(name: 'distance_to_next_tier') required double distanceToNextTier,
   }) = _CommissionDtoModel;
 
-  factory CommissionDtoModel.fromJson(Map<String, dynamic> json) => _$CommissionDtoModelFromJson(json);
+  factory CommissionDtoModel.fromJson(Map<String, dynamic> json) =>
+      _$CommissionDtoModelFromJson(json);
 }

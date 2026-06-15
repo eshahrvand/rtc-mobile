@@ -20,7 +20,6 @@ class OrderDetailsCreditPlanWidget extends StatelessWidget {
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
-        // Credit plan section
         return RtcCollapsibleSection(
           title: S.current.creditPlanTitle,
           icon: RtcImage(
