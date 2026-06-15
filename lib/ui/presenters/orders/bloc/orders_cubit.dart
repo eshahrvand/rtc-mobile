@@ -93,8 +93,8 @@ class OrdersCubit extends Cubit<OrdersState> {
   void fetchOrders({OrdersState? rollbackState}) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-    final createdAfter = _formatJalaliDate(state.startDate);
-    final createdBefore = _formatJalaliDate(state.endDate);
+    final createdAfter = _formatGregorianDate(state.startDate);
+    final createdBefore = _formatGregorianDate(state.endDate);
 
     _ordersRepo
         .getOrders(
@@ -743,11 +743,10 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   // ─── Private Helpers ───────────────────────────────────────────────
 
-  String? _formatJalaliDate(Jalali? date) {
+  String? _formatGregorianDate(Jalali? date) {
     if (date == null) return null;
-    final dateTime = date.toDateTime().toLocal();
-    final localJalali = Jalali.fromDateTime(dateTime);
-    return '${localJalali.year}-${localJalali.month.toString().padLeft(2, '0')}-${localJalali.day.toString().padLeft(2, '0')}';
+    final dateTime = date.toDateTime();
+    return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   }
 
   double _calculateRemainingSettlement(OrderDetailModel detail) {

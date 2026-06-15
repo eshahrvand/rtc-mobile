@@ -8,7 +8,6 @@ import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
 import '../../../widget/rtc_image.dart';
-import '../../../widget/rtc_status_badge.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'settlement_method_bottom_sheet.dart';
@@ -62,6 +61,7 @@ class _OrderSettlementOperationsWidgetState
       final result = await MediaPickerBottomSheet.show(
         context,
         isMultiSelection: false,
+        showCameraOverlay: false,
       );
       if (result != null && result.isNotEmpty) {
         final imagePath = result.first.file.path;
@@ -111,9 +111,11 @@ class _OrderSettlementOperationsWidgetState
 
         // Derived calculations from state extension
         final differenceAmountStr = state.settlementDifferenceValue
+            .toInt()
             .toString()
             .formatCurrency;
         final payableAmountStr = state.settlementPayableValue
+            .toInt()
             .toString()
             .formatCurrency;
 
