@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../../../data/models/product_detail_model.dart';
+import '../../../../generated/l10n.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
 import 'product_detail_state.dart';

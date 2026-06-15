@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import '../../../../generated/l10n.dart';
 import '../bloc/model/media_item.dart';
 
 class MediaEditScreen extends StatelessWidget {

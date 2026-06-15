@@ -8,6 +8,8 @@ import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
+import '../../../../generated/l10n.dart';
+
 class RtcCameraScreen extends StatefulWidget {
   final bool showOverlay;
   const RtcCameraScreen({super.key, this.showOverlay = true});

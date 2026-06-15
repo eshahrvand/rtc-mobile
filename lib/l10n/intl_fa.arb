@@ -329,6 +329,7 @@
   "settlementConfirmError": "خطا در تایید تسویه: ",
   "toleranceSettingNotFoundError": "مقدار تولرانس در تنظیمات یافت نشد",
   "upload": "بارگذاری",
+  "inventory":"موجودی",
   "selectOptionSubtitle": "{label} مورد نظر را انتخاب کنید",
   "@selectOptionSubtitle": {
     "placeholders": {

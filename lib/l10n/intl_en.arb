@@ -328,6 +328,7 @@
   "initiateSettlementError": "",
   "receiptUploadError": "",
   "settlementConfirmError": "",
+  "inventory": "",
   "toleranceSettingNotFoundError": "",
   "upload": "",
   "selectOptionSubtitle": "{label}",
