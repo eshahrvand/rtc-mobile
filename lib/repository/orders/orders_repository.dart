@@ -78,7 +78,10 @@ class OrdersRepository {
           return response.results.map((dto) {
             final dateStr = DateTimeUtils.formatToJalali(dto.createdAt);
 
-            final totalQuantity = (dto.lines ?? []).fold<int>(0, (sum, line) => sum + line.quantity);
+            final totalQuantity = (dto.lines ?? []).fold<int>(
+              0,
+              (sum, line) => sum + line.quantity,
+            );
 
             return OrderSummaryModel(
               id: dto.id,
@@ -126,7 +129,12 @@ class OrdersRepository {
         }
       }
 
-      final history = [OrderHistoryModel(label: S.current.registrationDateLabel, value: dateStr)];
+      final history = [
+        OrderHistoryModel(
+          label: S.current.registrationDateLabel,
+          value: dateStr,
+        ),
+      ];
 
       // Add clearance date if successful record exists
       final successDisburse = (dto.disbursementRecords ?? []).firstWhere(
@@ -164,26 +172,28 @@ class OrdersRepository {
         final discountPct = line.discountPctAtCreation ?? 0;
         final discountAmountPerUnit = line.discountAmountAtCreation ?? 0;
 
-        // Calculate old price (original price) per unit
-        // total_per_unit = original_price * (1 - discount_pct/100) - discount_amount_per_unit
-        // So original_price = (unitPrice + discount_amount_per_unit) / (1 - discount_pct/100)
-        double originalPrice = unitPrice;
-        if (discountPct < 100) {
-          originalPrice = (unitPrice + discountAmountPerUnit) /
-              (1 - (discountPct / 100));
+        double originalPrice = unitPrice + discountAmountPerUnit;
+
+        if (discountAmountPerUnit == 0 &&
+            discountPct > 0 &&
+            discountPct < 100) {
+          originalPrice = unitPrice / (1 - (discountPct / 100));
         }
 
         totalBasePrice += (originalPrice * line.quantity);
-        totalDiscountAmount +=
-            (originalPrice - unitPrice) * line.quantity;
+        totalDiscountAmount += (originalPrice - unitPrice) * line.quantity;
 
         return OrderProductModel(
           name: line.product.name,
           price: _formatCurrency(unitPrice),
           quantity: line.quantity.toString(),
           imageUrl: line.product.featuredImage?.file ?? '',
-          oldPrice: _formatCurrency(originalPrice),
-          discount: discountPct > 0 ? '${discountPct.toStringAsFixed(0)}٪' : null,
+          oldPrice: originalPrice > unitPrice
+              ? _formatCurrency(originalPrice)
+              : null,
+          discount: discountPct > 0
+              ? '${discountPct.toStringAsFixed(0)}٪'
+              : null,
         );
       }).toList();
 
@@ -200,7 +210,8 @@ class OrdersRepository {
           provider: dto.subPlan.creditPlan?.name ?? '',
           planName: dto.subPlan.name,
           priceIncrease: '', // Need clarification on where this comes from
-          validityPeriod: '${dto.subPlan.repaymentDurationMonths} ${S.current.monthUnit}',
+          validityPeriod:
+              '${dto.subPlan.repaymentDurationMonths} ${S.current.monthUnit}',
         ),
         products: products,
         customer: OrderCustomerModel(
