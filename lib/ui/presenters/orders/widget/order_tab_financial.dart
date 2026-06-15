@@ -196,9 +196,9 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           showStep: showSettlement,
                           op:
                               state.settlementOperation ??
-                              const OrderOperationModel(
+                               OrderOperationModel(
                                 step: 2,
-                                title: 'عملیات تسویه',
+                                title: S.current.settlementOperation,
                                 status: '',
                                 isCompleted: false,
                               ),

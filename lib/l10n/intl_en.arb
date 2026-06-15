@@ -115,7 +115,11 @@
   "settlementMethod": "",
   "walletSettlement": "",
   "differenceAmount": "",
-  "walletBalanceSufficient": "",
+  "walletBalanceSufficient": "Balance of {walletName} wallet is sufficient for payment",
+  "walletBalanceInsufficient": "Balance of {walletName} wallet is not sufficient for payment",
+  "paymentLinkSentTo": "Payment link sent to {phoneNumber}",
+  "settlementAmountLabel": "Settlement Amount",
+  "resendPaymentLink": "Resend payment link",
   "payWithWallet": "",
   "selectCreditPlan": "",
   "selectProducts": "",
@@ -285,5 +289,61 @@
   "confirmAndPayButton": "",
   "waitingForClearanceCompletion": "",
   "updateLabel": "",
-  "noSell": ""
+  "noSell": "",
+  "today": "",
+  "lastWeek": "",
+  "previousMonth": "",
+  "threeMonthsAgo": "",
+  "customDate": "",
+  "category": "",
+  "plan": "",
+  "onlyAvailableProducts": "",
+  "editImage": "",
+  "takePhoto": "",
+  "logout": "",
+  "unitCount": "",
+  "outOfStockLabel": "",
+  "sku": "",
+  "customerInfoSubmitError": "",
+  "documentUploadError": "",
+  "preInvoiceSubmitError": "",
+  "status": "",
+  "selectOrderStatusSubtitle": "",
+  "selectCreditPlanSubtitle": "",
+  "settlementOperation": "",
+  "enterTrackingCodeHint": "",
+  "totalCashDiscount": "",
+  "onlinePaymentGateway": "",
+  "sendPaymentLinkToCustomer": "",
+  "uploadDepositReceipt": "",
+  "confirmSelectedMethod": "",
+  "supportNameLabel": "",
+  "financialManagerNameLabel": "",
+  "rejectionReasonLabel": "",
+  "fetchUserSettingsError": "",
+  "fetchOrderDetailsError": "",
+  "initiateClearanceError": "",
+  "documentUploadOrFinalizeError": "",
+  "otpVerifyOrFinalizeError": "",
+  "initiateSettlementError": "",
+  "receiptUploadError": "",
+  "settlementConfirmError": "",
+  "toleranceSettingNotFoundError": "",
+  "upload": "",
+  "selectOptionSubtitle": "{label}",
+  "@selectOptionSubtitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelWithColon": "{label}",
+  "@labelWithColon": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  }
 }

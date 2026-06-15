@@ -217,7 +217,7 @@ class _OrderSettlementOperationsWidgetState
                           child: Row(
                             children: [
                               Text(
-                                "مبلغ تسویه",
+                                S.current.settlementAmountLabel,
                                 style: theme.bodyMedium!.copyWith(
                                   color: AppColors.grayPalette.shade700,
                                 ),
@@ -325,7 +325,7 @@ class _OrderSettlementOperationsWidgetState
                                 ),
                                 const SizedBox(height: 8.0),
                                 OrderSettlementAmountRow(
-                                  label: 'جمع تخفیف نقدی',
+                                  label: S.current.totalCashDiscount,
                                   amount: cashDiscountStr,
                                   amountColor: AppColors.grayPalette.shade900,
                                   warningItem: false,
@@ -354,7 +354,7 @@ class _OrderSettlementOperationsWidgetState
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: Text(
-                              'لینک پرداخت به شماره ${state.settlementMobile ?? ""} ارسال شد.',
+                              S.current.paymentLinkSentTo(state.settlementMobile ?? ""),
                               style: theme.bodyLarge!.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.grayPalette.shade900,
@@ -378,7 +378,7 @@ class _OrderSettlementOperationsWidgetState
                                         onTap: () =>
                                             cubit.resendSettlementLink(),
                                         child: Text(
-                                          "ارسال مجدد لینک پرداخت",
+                                          S.current.resendPaymentLink,
                                           style: theme.labelLarge!.copyWith(
                                             color:
                                                 AppColors.brandPalette.shade600,
@@ -444,8 +444,8 @@ class _OrderSettlementOperationsWidgetState
         ? AppColors.successPalette
         : AppColors.errorPalette;
     final message = isSufficient
-        ? 'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت ما به تفاوت مبلغ کافیست'
-        : 'موجودی کیف پول ${state.walletName ?? ""} شما برای پرداخت این مبلغ کافی نمی‌باشد';
+        ? S.current.walletBalanceSufficient(state.walletName ?? "")
+        : S.current.walletBalanceInsufficient(state.walletName ?? "");
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14.0, 12.0, 14.0, 12.0),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../data/models/product_detail_model.dart';
+import '../../generated/l10n.dart';
 import 'rtc_image.dart';
 
 class RtcProductBadgeList extends StatelessWidget {
@@ -104,7 +105,7 @@ class _BadgeItem extends StatelessWidget {
                 ),
               ),
             Text(
-              isOutOfStock ? badge.label : '${badge.label}: ',
+              isOutOfStock ? badge.label : S.current.labelWithColon(badge.label),
               style: theme.bodyMedium!.copyWith(color: Colors.white),
             ),
             if (!isOutOfStock)

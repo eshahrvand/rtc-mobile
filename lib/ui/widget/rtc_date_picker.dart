@@ -85,7 +85,7 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildPickerColumn(
-                label: 'روز',
+                label: S.current.day,
                 items: days.map((e) => e.toString()).toList(),
                 selectedIndex: selectedDay - 1,
                 onChanged: (index) {
@@ -107,7 +107,7 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
               ),
               const _DotSeparator(),
               _buildPickerColumn(
-                label: 'ماه',
+                label: S.current.month,
                 items: monthNumbers,
                 selectedIndex: selectedMonth,
                 onChanged: (index) {
@@ -125,7 +125,7 @@ class _JalaliDatePickerState extends State<JalaliDatePicker> {
               ),
               const _DotSeparator(),
               _buildPickerColumn(
-                label: 'سال',
+                label: S.current.year,
                 items: years.map((e) => e.toString()).toList(),
                 selectedIndex: years.indexOf(selectedYear),
                 onChanged: (index) {

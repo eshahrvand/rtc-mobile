@@ -23,7 +23,7 @@ class MediaEditScreen extends StatelessWidget {
           hideBottomControls: false,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(title: 'ویرایش تصویر'),
+        IOSUiSettings(title: S.current.editImage),
       ],
     );
 

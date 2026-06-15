@@ -171,11 +171,11 @@ class ProductCubit extends Cubit<ProductState> {
 
   List<ProductChipModel> _createInitialChips() {
     return [
-      ProductChipModel(id: 1, label: 'دسته بندی', opensBottomSheet: true),
-      ProductChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
+      ProductChipModel(id: 1, label: S.current.category, opensBottomSheet: true),
+      ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
       ProductChipModel(
         id: 3,
-        label: 'فقط کالاهای موجود',
+        label: S.current.onlyAvailableProducts,
         opensBottomSheet: false,
       ),
     ];

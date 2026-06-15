@@ -69,7 +69,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           final tol = profile?.tolerance;
           if (tol == null) {
             _cachedToleranceFuture = null;
-            throw 'مقدار تولرانس در تنظیمات یافت نشد';
+            throw S.current.toleranceSettingNotFoundError;
           }
 
           return tol;
@@ -85,7 +85,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           if (!isClosed) {
-            _handleError(e, prefix: 'خطا در دریافت تنظیمات کاربری: ');
+            _handleError(e, prefix: S.current.fetchUserSettingsError);
           }
         });
   }
@@ -152,7 +152,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در بارگذاری جزئیات سفارش: ');
+          _handleError(e, prefix: S.current.fetchOrderDetailsError);
           return null;
         });
   }
@@ -294,7 +294,7 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     if (state.tolerance == null) {
       print("tlorance>>:: ERROR: tolerance is NULL in state");
-      _handleError('تنظیمات تولرانس بارگذاری نشده است');
+      _handleError(S.current.toleranceSettingNotFoundError);
       return Future.value();
     }
 
@@ -378,7 +378,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در شروع عملیات تخلیه: ');
+          _handleError(e, prefix: S.current.initiateClearanceError);
           throw e;
         });
   }
@@ -428,7 +428,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در بارگذاری مدارک یا نهایی‌سازی: ');
+          _handleError(e, prefix: S.current.documentUploadOrFinalizeError);
           throw e;
         });
   }
@@ -451,7 +451,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در تایید کد و نهایی‌سازی: ');
+          _handleError(e, prefix: S.current.otpVerifyOrFinalizeError);
           throw e;
         });
   }
@@ -494,7 +494,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   }) {
     if (state.selectedOrder == null) return;
     if (method == 'wallet' && state.tolerance == null) {
-      _handleError('تنظیمات تولرانس برای پرداخت با کیف پول بارگذاری نشده است');
+      _handleError(S.current.toleranceSettingNotFoundError);
       return;
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
@@ -587,7 +587,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               return null;
             }
           }
-          _handleError(e, prefix: 'خطا در شروع عملیات تسویه: ');
+          _handleError(e, prefix: S.current.initiateSettlementError);
           return null;
         });
   }
@@ -665,12 +665,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           })
           .then((_) => performSettle())
           .catchError((e) {
-            _handleError(e, prefix: 'خطا در بارگذاری فیش: ');
+            _handleError(e, prefix: S.current.receiptUploadError);
             return null;
           });
     } else {
       performSettle().catchError(
-        (e) => _handleError(e, prefix: 'خطا در تایید تسویه: '),
+        (e) => _handleError(e, prefix: S.current.settlementConfirmError),
       );
     }
   }

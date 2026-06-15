@@ -56,7 +56,7 @@ void showLogOutBottomSheet({required BuildContext context}) {
                             height: 20,
                           ),
                           const SizedBox(width: 8),
-                          Text("خروج", style: theme.labelLarge!.copyWith()),
+                          Text(S.current.logout, style: theme.labelLarge!.copyWith()),
                         ],
                       ),
                       GestureDetector(
@@ -84,7 +84,7 @@ void showLogOutBottomSheet({required BuildContext context}) {
                     children: [
                       Expanded(
                         child: RtcButton(
-                          title: "بازگشت",
+                          title: S.current.back,
                           borderColor: AppColors.grayPalette.shade300,
                           backgroundColor: Colors.white,
 
@@ -100,7 +100,7 @@ void showLogOutBottomSheet({required BuildContext context}) {
                       const SizedBox(width: 12),
                       Expanded(
                         child: RtcButton(
-                          title: "خروج",
+                          title: S.current.logout,
                           size: RtcButtonSize.medium,
                           onPressed: () {
                             _performLogOut(context);

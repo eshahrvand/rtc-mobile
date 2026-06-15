@@ -187,7 +187,7 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                         chips: [
                           ProductChipModel(
                             id: 1,
-                            label: 'دسته بندی',
+                            label: S.current.category,
                             opensBottomSheet: true,
                           ),
                         ],

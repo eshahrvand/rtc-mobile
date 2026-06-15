@@ -48,11 +48,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           final chips = [
             PreInvoiceChipModel(
               id: 1,
-              label: 'دسته بندی',
+              label: S.current.category,
               opensBottomSheet: true,
             ),
-            PreInvoiceChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
-            PreInvoiceChipModel(id: 3, label: 'نمایش کالاهای موجود'),
+            PreInvoiceChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
+            PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
           ];
 
           emit(
@@ -470,7 +470,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در ثبت اطلاعات مشتری');
+          _handleError(e, prefix: S.current.customerInfoSubmitError);
           return null;
         });
   }
@@ -573,7 +573,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در بارگذاری مدارک: ');
+          _handleError(e, prefix: S.current.documentUploadError);
           return null;
         });
   }
@@ -624,7 +624,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: 'خطا در ثبت پیش فاکتور: ');
+          _handleError(e, prefix: S.current.preInvoiceSubmitError);
           return null;
         });
   }

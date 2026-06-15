@@ -17,9 +17,13 @@ class OrdersBadgeList extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<OrdersCubit>();
     final chips = [
-      ProductChipModel(id: 1, label: 'وضعیت', opensBottomSheet: true),
-      ProductChipModel(id: 2, label: 'طرح', opensBottomSheet: true),
-      ProductChipModel(id: 3, label: 'تاریخ ثبت', opensBottomSheet: true),
+      ProductChipModel(id: 1, label: S.current.status, opensBottomSheet: true),
+      ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
+      ProductChipModel(
+        id: 3,
+        label: S.current.registrationDate,
+        opensBottomSheet: true,
+      ),
     ];
 
     return RtcChipList(
@@ -77,8 +81,8 @@ class OrdersBadgeList extends StatelessWidget {
 
     FilterBottomSheet.show(
       context,
-      title: 'وضعیت',
-      subtitle: 'وضعیت سفارش را انتخاب کنید',
+      title: S.current.status,
+      subtitle: S.current.selectOrderStatusSubtitle,
       items: statusItems,
       initialSelectedId: state.selectedStatusId,
       onApply: (item) => cubit.onStatusFilterChanged(item?.id),
@@ -97,8 +101,8 @@ class OrdersBadgeList extends StatelessWidget {
 
     FilterBottomSheet.show(
       context,
-      title: 'طرح',
-      subtitle: 'طرح اعتباری را انتخاب کنید',
+      title: S.current.plan,
+      subtitle: S.current.selectCreditPlanSubtitle,
       items: planItems,
       initialSelectedId: state.selectedSubPlanId,
       onApply: (item) => cubit.onSubPlanFilterChanged(item?.id),

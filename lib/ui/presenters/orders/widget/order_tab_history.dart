@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../data/models/order_model.dart';
+import '../../../../generated/l10n.dart';
 import 'order_history_row_widget.dart';
 
 class OrderTabHistory extends StatelessWidget {
@@ -47,13 +48,13 @@ class OrderTabHistory extends StatelessWidget {
               if (order.assignedSalesReviewer != null &&
                   order.assignedSalesReviewer!.isNotEmpty)
                 OrderHistoryRowWidget(
-                  label: 'نام پشتیبان:',
+                  label: S.current.supportNameLabel,
                   value: order.assignedSalesReviewer!,
                 ),
               if (order.assignedFinanceReviewer != null &&
                   order.assignedFinanceReviewer!.isNotEmpty)
                 OrderHistoryRowWidget(
-                  label: 'نام سرپرست مالی:',
+                  label: S.current.financialManagerNameLabel,
                   value: order.assignedFinanceReviewer!,
                 ),
             ],
@@ -65,7 +66,7 @@ class OrderTabHistory extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  'علت رد شدن:',
+                  S.current.rejectionReasonLabel,
                   style: theme.labelMedium!.copyWith(
                     color: AppColors.errorPalette.shade600,
                   ),

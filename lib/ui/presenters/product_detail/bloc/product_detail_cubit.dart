@@ -22,7 +22,7 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
           if (subPlanId != null) {
             badges.add(
               ProductBadgeModel(
-                label: 'طرح',
+                label: S.current.plan,
                 value: subPlanName ?? dto.name,
                 iconPath: null,
               ),
@@ -31,15 +31,23 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
 
           if (dto.stockQty > 0) {
             badges.add(
-              ProductBadgeModel(label: 'موجودی', value: '${dto.stockQty} عدد'),
+              ProductBadgeModel(
+                label: S.current.inventory,
+                value: '${dto.stockQty} ${S.current.unitCount}',
+              ),
             );
           } else {
-            badges.add(ProductBadgeModel(label: 'ناموجود', value: ''));
+            badges.add(
+              ProductBadgeModel(label: S.current.outOfStockLabel, value: ''),
+            );
           }
 
           badges.addAll([
-            ProductBadgeModel(label: 'دسته بندی', value: dto.category.name),
-            ProductBadgeModel(label: 'SKU', value: dto.sku),
+            ProductBadgeModel(
+              label: S.current.category,
+              value: dto.category.name,
+            ),
+            ProductBadgeModel(label: S.current.sku, value: dto.sku),
           ]);
 
           final List<String> imageUrls = [];

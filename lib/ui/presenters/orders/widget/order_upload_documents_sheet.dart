@@ -160,7 +160,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                   hintStyle: theme.bodyLarge!.copyWith(
                     color: AppColors.grayPalette.shade400,
                   ),
-                  hintText: 'کد پیگیری را وارد کنید',
+                  hintText: S.current.enterTrackingCodeHint,
                   keyboardType: TextInputType.number,
                   onChanged: (val) => widget.onTrackingCodeChanged?.call(val),
                 ),

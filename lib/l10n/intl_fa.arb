@@ -117,7 +117,11 @@
   "settlementMethod": "روش تسویه",
   "walletSettlement": "تسویه با کیف پول",
   "differenceAmount": "مبلغ ما به تفاوت",
-  "walletBalanceSufficient": "موجودی کیف پول آپ ۱۲ ماهه شما برای پرداخت ما به تفاوت مبلغ کافیست",
+  "walletBalanceSufficient": "موجودی کیف پول {walletName} شما برای پرداخت ما به تفاوت مبلغ کافیست",
+  "walletBalanceInsufficient": "موجودی کیف پول {walletName} شما برای پرداخت این مبلغ کافی نمی‌باشد",
+  "paymentLinkSentTo": "لینک پرداخت به شماره {phoneNumber} ارسال شد.",
+  "settlementAmountLabel": "مبلغ تسویه",
+  "resendPaymentLink": "ارسال مجدد لینک پرداخت",
   "payWithWallet": "پرداخت با کیف پول",
   "wallet": "کیف پول",
   "selectCreditPlan": "انتخاب طرح اعتباری",
@@ -284,5 +288,61 @@
   "sortSubtitle": "نوع چیدمان کالاها را انتخاب کنید",
   "stockLimitError": "تعداد کالا بیش از موجودی است",
   "outOfStockError": "کالا در انبار موجود نیست",
-  "noSell": "هنوز سفارش تایید شده\u200Cای ندارید"
+  "noSell": "هنوز سفارش تایید شده\u200Cای ندارید",
+  "today": "امروز",
+  "lastWeek": "هفته گذشته",
+  "previousMonth": "ماه قبل",
+  "threeMonthsAgo": "۳ ماه قبل",
+  "customDate": "تاریخ دلخواه",
+  "category": "دسته بندی",
+  "plan": "طرح",
+  "onlyAvailableProducts": "فقط کالاهای موجود",
+  "editImage": "ویرایش تصویر",
+  "takePhoto": "گرفتن عکس",
+  "logout": "خروج",
+  "unitCount": "عدد",
+  "outOfStockLabel": "ناموجود",
+  "sku": "SKU",
+  "customerInfoSubmitError": "خطا در ثبت اطلاعات مشتری",
+  "documentUploadError": "خطا در بارگذاری مدارک: ",
+  "preInvoiceSubmitError": "خطا در ثبت پیش فاکتور: ",
+  "status": "وضعیت",
+  "selectOrderStatusSubtitle": "وضعیت سفارش را انتخاب کنید",
+  "selectCreditPlanSubtitle": "طرح اعتباری را انتخاب کنید",
+  "settlementOperation": "عملیات تسویه",
+  "enterTrackingCodeHint": "کد پیگیری را وارد کنید",
+  "totalCashDiscount": "جمع تخفیف نقدی",
+  "onlinePaymentGateway": "درگاه پرداخت آنلاین",
+  "sendPaymentLinkToCustomer": "ارسال لینک پرداخت به مشتری",
+  "uploadDepositReceipt": "ثبت فیش واریزی",
+  "confirmSelectedMethod": "تایید روش انتخاب شده",
+  "supportNameLabel": "نام پشتیبان:",
+  "financialManagerNameLabel": "نام سرپرست مالی:",
+  "rejectionReasonLabel": "علت رد شدن:",
+  "fetchUserSettingsError": "خطا در دریافت تنظیمات کاربری: ",
+  "fetchOrderDetailsError": "خطا در بارگذاری جزئیات سفارش: ",
+  "initiateClearanceError": "خطا در شروع عملیات تخلیه: ",
+  "documentUploadOrFinalizeError": "خطا در بارگذاری مدارک یا نهایی‌سازی: ",
+  "otpVerifyOrFinalizeError": "خطا در تایید کد و نهایی‌سازی: ",
+  "initiateSettlementError": "خطا در شروع عملیات تسویه: ",
+  "receiptUploadError": "خطا در بارگذاری فیش: ",
+  "settlementConfirmError": "خطا در تایید تسویه: ",
+  "toleranceSettingNotFoundError": "مقدار تولرانس در تنظیمات یافت نشد",
+  "upload": "بارگذاری",
+  "selectOptionSubtitle": "{label} مورد نظر را انتخاب کنید",
+  "@selectOptionSubtitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelWithColon": "{label}: ",
+  "@labelWithColon": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  }
 }

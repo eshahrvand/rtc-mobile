@@ -77,22 +77,22 @@ class _FilterDateBottomSheetState extends State<FilterDateBottomSheet> {
   final List<FilterDateOption> _options = [
     FilterDateOption(
       id: 'today',
-      title: 'امروز',
+      title: S.current.today,
       getDateRange: () => Jalali.now(),
     ),
     FilterDateOption(
       id: 'last_week',
-      title: 'هفته گذشته',
+      title: S.current.lastWeek,
       getDateRange: () => Jalali.now().addDays(-7),
     ),
     FilterDateOption(
       id: 'last_month',
-      title: 'ماه قبل',
+      title: S.current.previousMonth,
       getDateRange: () => Jalali.now().addMonths(-1),
     ),
     FilterDateOption(
       id: '3_months_ago',
-      title: '۳ ماه قبل',
+      title: S.current.threeMonthsAgo,
       getDateRange: () => Jalali.now().addMonths(-3),
     ),
   ];
@@ -227,7 +227,7 @@ class _FilterDateBottomSheetState extends State<FilterDateBottomSheet> {
           ),
         ),
         FilterOptionItem(
-          title: 'تاریخ دلخواه',
+          title: S.current.customDate,
           isSelected: _selectedOptionId == 'custom',
           onTap: () {
             setState(() {

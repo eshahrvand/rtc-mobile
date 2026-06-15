@@ -174,7 +174,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
               left: 20,
               right: 20,
               child: RtcButton(
-                title: 'گرفتن عکس',
+                title: S.current.takePhoto,
                 isLoading: _isCapturing,
                 onPressed: _takePicture,
                 width: double.infinity,

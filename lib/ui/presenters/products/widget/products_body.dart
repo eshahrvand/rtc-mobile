@@ -24,7 +24,7 @@ class ProductsBody extends StatelessWidget {
       FilterBottomSheet.show(
         context,
         title: chip.label,
-        subtitle: '${chip.label} مورد نظر را انتخاب کنید',
+        subtitle: S.current.selectOptionSubtitle(chip.label),
         items: state.availableCategories
             .map((c) => FilterItem(id: c.id, title: c.name))
             .toList(),
@@ -41,7 +41,7 @@ class ProductsBody extends StatelessWidget {
       FilterBottomSheet.show(
         context,
         title: chip.label,
-        subtitle: '${chip.label} مورد نظر را انتخاب کنید',
+        subtitle: S.current.selectOptionSubtitle(chip.label),
         items: state.availableSubPlans
             .map((s) => FilterItem(id: s.id, title: s.name))
             .toList(),

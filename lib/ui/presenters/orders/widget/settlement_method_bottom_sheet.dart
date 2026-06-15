@@ -45,9 +45,9 @@ class _SettlementMethodBottomSheetState
 
   final List<FilterItem> _methods = [
     FilterItem(id: 'wallet_debit', title: S.current.walletSettlement),
-    const FilterItem(id: 'ipg', title: 'درگاه پرداخت آنلاین'),
-    const FilterItem(id: 'link', title: 'ارسال لینک پرداخت به مشتری'),
-    const FilterItem(id: 'card_to_card', title: 'ثبت فیش واریزی'),
+    FilterItem(id: 'ipg', title: S.current.onlinePaymentGateway),
+    FilterItem(id: 'link', title: S.current.sendPaymentLinkToCustomer),
+    FilterItem(id: 'card_to_card', title: S.current.uploadDepositReceipt),
   ];
 
   @override
@@ -146,7 +146,7 @@ class _SettlementMethodBottomSheetState
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 16),
       child: RtcButton(
-        title: 'تایید روش انتخاب شده',
+        title: S.current.confirmSelectedMethod,
         width: double.infinity,
         onPressed: () {
           if (_selectedId != null) {
