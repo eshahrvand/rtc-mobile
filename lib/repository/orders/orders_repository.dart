@@ -136,11 +136,13 @@ class OrdersRepository {
         ),
       ];
 
-      if (dto.status == 'expired' && dto.updatedAt != null) {
+      if (dto.status == 'expired') {
         history.add(
           OrderHistoryModel(
             label: S.current.expireDateLabel,
-            value: _formatJalaliDateTime(dto.updatedAt!),
+            value: dto.updatedAt != null
+                ? _formatJalaliDateTime(dto.updatedAt!)
+                : dateStr,
           ),
         );
       }
