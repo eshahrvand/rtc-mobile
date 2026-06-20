@@ -78,6 +78,7 @@ class OrdersBadgeList extends StatelessWidget {
         id: 'awaiting_settlement',
         title: OrderStatus.awaitingSettlement.toDisplayString(),
       ),
+      FilterItem(id: 'expired', title: OrderStatus.expired.toDisplayString()),
     ];
 
     FilterBottomSheet.show(
