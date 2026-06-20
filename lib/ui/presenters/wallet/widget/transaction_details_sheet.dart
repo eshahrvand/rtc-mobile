@@ -136,7 +136,7 @@ class TransactionDetailsSheet extends StatelessWidget {
         const RtcDivider(),
         _DetailRow(
           label: S.current.registrationDate,
-          value: '${transaction.date} - ${transaction.time}',
+          value: '${transaction.time} - ${transaction.date}',
         ),
         const RtcDivider(),
         _DetailRow(
@@ -152,11 +152,11 @@ class TransactionDetailsSheet extends StatelessWidget {
         ),
         const RtcDivider(),
         _DetailRow(label: S.current.depositTo, value: transaction.toAccount),
-        const RtcDivider(),
-        _DetailRow(
-          label: S.current.trackingNumber,
-          value: transaction.trackingNumber,
-        ),
+        // const RtcDivider(),
+        // _DetailRow(
+        //   label: S.current.trackingNumber,
+        //   value: transaction.trackingNumber,
+        // ),
       ],
     );
   }
@@ -200,11 +200,11 @@ class TransactionDetailsSheet extends StatelessWidget {
         ),
         const RtcDivider(),
         _DetailRow(label: S.current.depositTo, value: transaction.toAccount),
-        const RtcDivider(),
-        _DetailRow(
-          label: S.current.trackingNumber,
-          value: transaction.trackingNumber,
-        ),
+        // const RtcDivider(),
+        // _DetailRow(
+        //   label: S.current.trackingNumber,
+        //   value: transaction.trackingNumber,
+        // ),
       ],
     );
   }

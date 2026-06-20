@@ -20,7 +20,7 @@ class WalletRepository {
         pockets: dto.pockets
             .map(
               (p) => PocketModel(
-                id: p.id,
+                id: p.subPlan.id,
                 bankName: p.subPlan.creditPlan?.name ?? S.current.unknown,
                 planName: p.subPlan.name,
                 balance: _formatCurrency(p.balance),
@@ -69,7 +69,7 @@ class WalletRepository {
                   ? '${dto.customer!.firstName} ${dto.customer!.lastName}'
                   : 'نامشخص',
               toAccount: dto.subPlan?.name ?? 'نامشخص',
-              trackingNumber: dto.orderId ?? '-',
+              // trackingNumber: dto.orderId ?? '-',
             );
           }).toList(),
         );

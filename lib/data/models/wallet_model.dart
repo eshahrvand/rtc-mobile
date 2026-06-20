@@ -37,14 +37,14 @@ class PocketModel with _$PocketModel {
 class TransactionModel with _$TransactionModel {
   const factory TransactionModel({
     required String id,
-    required String type, // e.g., 'واریز', 'برداشت'
+    required String type,
     required String amount,
     required String date,
     required String time,
-    required bool isCredit, // true for deposit, false for withdrawal
+    required bool isCredit,
     required String fromAccount,
     required String toAccount,
-    required String trackingNumber,
+    // required String trackingNumber,
   }) = _TransactionModel;
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) =>
