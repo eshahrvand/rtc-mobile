@@ -119,13 +119,13 @@ class DashboardCubit extends Cubit<DashboardState> {
       ),
       QuickAccessItemModel(
         title: S.current.walletBalance,
-        value: s.walletBalance.toStringAsFixed(0).formatCurrency,
+        value: s.walletBalance.formatCurrency,
         currency: "assets/images/rial.svg",
         iconPath: 'assets/images/wallet.svg',
       ),
       QuickAccessItemModel(
         title: S.current.cashCommission,
-        value: c?.commissionAmountCash.toStringAsFixed(0).formatCurrency ?? '0',
+        value: c?.commissionAmountCash.formatCurrency ?? '0',
         currency: "assets/images/rial.svg",
         iconPath: 'assets/images/trend-up.svg',
       ),
@@ -257,7 +257,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   String _formatCommissionMessage(CommissionDtoModel c) {
-    final distance = c.distanceToNextTier.toStringAsFixed(0).formatCurrency;
+    final distance = c.distanceToNextTier.formatCurrency;
     final nextRateCash = c.nextTierRateCash.toString();
     final nextRateProduct = c.nextTierRateProduct.toString();
     return S.current.commissionMessage(distance, nextRateCash, nextRateProduct);

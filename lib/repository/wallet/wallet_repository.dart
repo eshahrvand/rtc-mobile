@@ -1,5 +1,5 @@
-import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_time_utils.dart';
 import '../../data/models/wallet_model.dart';
 import '../../data_source/remote/wallet/wallet_service.dart';
@@ -13,17 +13,17 @@ class WalletRepository {
   Future<WalletSummaryModel> getWallet() {
     return _service.getWallet().then(
       (dto) => WalletSummaryModel(
-        totalBalance: _formatCurrency(dto.balance),
+        totalBalance: CurrencyFormatter.format(dto.balance),
         totalBalanceRaw: dto.balance,
-        totalCredit: _formatCurrency(dto.creditLimit),
-        remainingCredit: _formatCurrency(dto.remainingCredit),
+        totalCredit: CurrencyFormatter.format(dto.creditLimit),
+        remainingCredit: CurrencyFormatter.format(dto.remainingCredit),
         pockets: dto.pockets
             .map(
               (p) => PocketModel(
                 id: p.subPlan.id,
                 bankName: p.subPlan.creditPlan?.name ?? S.current.unknown,
                 planName: p.subPlan.name,
-                balance: _formatCurrency(p.balance),
+                balance: CurrencyFormatter.format(p.balance),
                 balanceRaw: p.balance,
                 logoPath:
                     p.subPlan.creditPlan?.image?.file ??
@@ -61,7 +61,7 @@ class WalletRepository {
             return TransactionModel(
               id: dto.id,
               type: dto.transactionType == 'credit' ? 'واریز' : 'برداشت',
-              amount: _formatCurrency(double.tryParse(dto.amount) ?? 0.0),
+              amount: CurrencyFormatter.format(double.tryParse(dto.amount) ?? 0.0),
               date: dateStr,
               time: timeStr,
               isCredit: dto.transactionType == 'credit',
@@ -75,9 +75,4 @@ class WalletRepository {
         );
   }
 
-  String _formatCurrency(double value) {
-    final formatter = NumberFormat('#,###', 'en_US');
-    String formatted = formatter.format(value.abs().toInt());
-    return value < 0 ? '\u200E-$formatted' : formatted;
-  }
 }

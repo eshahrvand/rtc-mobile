@@ -1,5 +1,5 @@
-import 'package:intl/intl.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
+import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_time_utils.dart';
 import '../../data/models/customer_model.dart';
 import '../../data/models/order_model.dart';
@@ -92,7 +92,7 @@ class OrdersRepository {
               itemCount: S.current.itemCount(totalQuantity),
               status: dto.status,
               dateTime: dateStr,
-              amount: _formatCurrency(dto.total),
+              amount: CurrencyFormatter.format(dto.total),
             );
           }).toList();
         });
@@ -105,7 +105,7 @@ class OrdersRepository {
 
         return CustomerOrderItemModel(
           orderId: dto.id,
-          amount: _formatCurrency(dto.total),
+          amount: CurrencyFormatter.format(dto.total),
           date: dateStr,
           status: dto.status,
         );
@@ -196,11 +196,11 @@ class OrdersRepository {
 
         return OrderProductModel(
           name: line.product.name,
-          price: _formatCurrency(unitPrice),
+          price: CurrencyFormatter.format(unitPrice),
           quantity: line.quantity.toString(),
           imageUrl: line.product.featuredImage?.file ?? '',
           oldPrice: originalPrice > unitPrice
-              ? _formatCurrency(originalPrice)
+              ? CurrencyFormatter.format(originalPrice)
               : null,
           discount: discountPct > 0
               ? '${discountPct.toStringAsFixed(0)}٪'
@@ -253,15 +253,15 @@ class OrdersRepository {
           );
         }).toList(),
         financialSummary: FinancialSummaryModel(
-          basePrice: _formatCurrency(totalBasePrice),
-          totalDiscount: _formatCurrency(totalDiscountAmount),
-          finalAmount: _formatCurrency(dto.total),
+          basePrice: CurrencyFormatter.format(totalBasePrice),
+          totalDiscount: CurrencyFormatter.format(totalDiscountAmount),
+          finalAmount: CurrencyFormatter.format(dto.total),
         ),
         payments: (dto.payments ?? []).map((p) {
           final pDateStr = DateTimeUtils.formatToJalaliDate(p.createdAt ?? '');
 
           return OrderPaymentModel(
-            amount: _formatCurrency(p.amount),
+            amount: CurrencyFormatter.format(p.amount),
             type: p.paymentType ?? '',
             date: pDateStr,
             trackingCode: p.trackingCode,
@@ -273,7 +273,7 @@ class OrdersRepository {
         disbursementRecords: (dto.disbursementRecords ?? []).map((r) {
           return DisbursementRecordModel(
             gateway: r.gateway ?? '',
-            amount: _formatCurrency(r.amount),
+            amount: CurrencyFormatter.format(r.amount),
             reference: r.reference ?? '',
             status: r.status ?? '',
             createdAt: r.createdAt ?? '',
@@ -282,7 +282,7 @@ class OrdersRepository {
         settlementRecords: (dto.settlementRecords ?? []).map((s) {
           return SettlementRecordModel(
             id: s.id ?? '',
-            amount: _formatCurrency(s.amount),
+            amount: CurrencyFormatter.format(s.amount),
             paymentType: s.paymentType ?? s.gateway ?? '',
             status: s.status ?? '',
             createdAt: s.createdAt ?? '',
@@ -309,10 +309,5 @@ class OrdersRepository {
       default:
         return type;
     }
-  }
-
-  String _formatCurrency(double value) {
-    final formatter = NumberFormat('#,###', 'en_US');
-    return formatter.format(value.abs().toInt());
   }
 }
