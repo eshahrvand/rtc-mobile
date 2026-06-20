@@ -5,6 +5,7 @@ import '../../../../core/utils/network_helper.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
+import '../../orders/mapper/order_mapper.dart';
 import 'customers_state.dart';
 
 class CustomersCubit extends Cubit<CustomersState> {
@@ -60,7 +61,11 @@ class CustomersCubit extends Cubit<CustomersState> {
     _customersRepo
         .getCustomerDetail(customer.id)
         .then((dto) {
-          return _ordersRepo.getCustomerOrders(dto.id).then((orders) {
+          return _ordersRepo.getCustomerOrders(dto.id).then((response) {
+            final orders = response.results
+                .map((orderDto) => OrderMapper.mapToCustomerOrderItem(orderDto))
+                .toList();
+
             final detail = CustomerDetailModel(
               id: dto.id,
               name: '${dto.firstName} ${dto.lastName}',

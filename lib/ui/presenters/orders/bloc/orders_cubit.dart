@@ -16,6 +16,7 @@ import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
+import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
 
 class OrdersCubit extends Cubit<OrdersState> {
@@ -106,7 +107,8 @@ class OrdersCubit extends Cubit<OrdersState> {
           createdBefore: createdBefore,
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
         )
-        .then((orders) {
+        .then((response) {
+          final orders = response.results.map((dto) => OrderMapper.mapToSummary(dto)).toList();
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
@@ -127,7 +129,8 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _ordersRepo
         .getOrderDetails(orderId)
-        .then((detail) {
+        .then((dto) {
+          final detail = OrderMapper.mapToDetail(dto);
           final isSettled = detail.settlementRecords.any(
             (r) => r.status == 'موفق' || r.status == 'success',
           );
@@ -285,15 +288,9 @@ class OrdersCubit extends Cubit<OrdersState> {
   // ─── Clearance Flow ───────────────────────────────────────────────
 
   Future<void> initiateClearance(String amountStr) {
-    print("tlorance>>:: initiateClearance CALLED with input: '$amountStr'");
-
-    if (state.selectedOrder == null) {
-      print("tlorance>>:: ERROR: selectedOrder is NULL");
-      return Future.value();
-    }
+    if (state.selectedOrder == null) return Future.value();
 
     if (state.tolerance == null) {
-      print("tlorance>>:: ERROR: tolerance is NULL in state");
       _handleError(S.current.toleranceSettingNotFoundError);
       return Future.value();
     }
@@ -305,17 +302,11 @@ class OrdersCubit extends Cubit<OrdersState> {
         .replaceAll(',', '');
     final orderAmountVal = double.tryParse(rawOrderAmountStr) ?? 0;
 
-
-
-    // ─── Range Calculation (Before API Call) ───
-    // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
     final tolerancePercent = state.tolerance! / 100;
     final minAllowed = orderAmountVal * (1 - tolerancePercent);
     final maxAllowed = orderAmountVal * (1 + tolerancePercent);
 
-
     if (amount < minAllowed || amount > maxAllowed) {
-
       emit(
         state.copyWith(
           status: OrdersRequestStatus.success,
@@ -329,7 +320,6 @@ class OrdersCubit extends Cubit<OrdersState> {
       return Future.value();
     }
 
-    // ─── If in range, proceed with loading and API ───
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _ordersRepo
@@ -369,7 +359,6 @@ class OrdersCubit extends Cubit<OrdersState> {
             ),
           );
 
-          // Auto-launch browser if redirect
           if (type == 'redirect' && redirectUrl != null) {
             launchUrl(
               Uri.parse(redirectUrl),
