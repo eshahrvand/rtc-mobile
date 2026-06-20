@@ -236,9 +236,10 @@ class _OrderSettlementOperationsWidgetState
                                   ),
                                   const SizedBox(width: 4.0),
                                   RtcImage(
-                                    image: "$baseImage/toman.svg",
-                                    width: 24.0,
-                                    height: 24.0,
+                                    image: "$baseImage/rial.svg",
+                                    width: 20,
+                                    height: 20,
+                                    boxFit: BoxFit.contain,
                                   ),
                                 ],
                               ),

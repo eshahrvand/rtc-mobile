@@ -127,9 +127,10 @@ class RtcProductItem extends StatelessWidget {
                                         ),
 
                                         RtcImage(
-                                          image: "assets/images/toman.svg",
+                                          image: "assets/images/rial.svg",
                                           width: 24,
                                           height: 24,
+                                          boxFit: BoxFit.contain,
                                         ),
                                       ],
                                     ),

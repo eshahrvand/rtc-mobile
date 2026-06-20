@@ -63,9 +63,10 @@ class OrderPaymentHistoryWidget extends StatelessWidget {
                         ),
                         const SizedBox(width: 2.0),
                         RtcImage(
-                          image: "$baseImage/toman.svg",
+                          image: "$baseImage/rial.svg",
                           width: 24.0,
                           height: 24.0,
+                          boxFit: BoxFit.contain,
                         ),
                       ],
                     ),

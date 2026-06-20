@@ -76,11 +76,11 @@ class PreInvoiceStep5InfoRow extends StatelessWidget {
                 const SizedBox(width: 4),
                 RtcImage(
                   image: isFinalPrice
-                      ? "$baseImage/toman_blue.svg"
-                      : "$baseImage/toman.svg",
+                      ? "$baseImage/rial_blue.svg"
+                      : "$baseImage/rial.svg",
                   width: 16,
                   height: 16,
-                  boxFit: BoxFit.fill,
+                  boxFit: BoxFit.contain,
                 ),
               ],
             ],
@@ -228,10 +228,10 @@ class PreInvoiceStep5ProductItem extends StatelessWidget {
                                 ),
                               ),
                               RtcImage(
-                                image: "$baseImage/toman.svg",
+                                image: "$baseImage/rial.svg",
                                 width: 18,
                                 height: 18,
-                                boxFit: BoxFit.fill,
+                                boxFit: BoxFit.contain,
                               ),
                             ],
                           ),

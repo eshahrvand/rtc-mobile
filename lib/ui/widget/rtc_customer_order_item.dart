@@ -62,9 +62,10 @@ class RtcCustomerOrderItem extends StatelessWidget {
                       ),
                     ),
                     RtcImage(
-                      image: "$baseImage/toman.svg",
+                      image: "$baseImage/rial.svg",
                       width: 24,
                       height: 24,
+                      boxFit: BoxFit.contain,
                     ),
                   ],
                 ),

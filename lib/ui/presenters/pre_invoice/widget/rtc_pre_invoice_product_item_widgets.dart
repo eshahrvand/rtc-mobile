@@ -134,9 +134,10 @@ class RtcPreInvoiceProductPriceAndActions extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       RtcImage(
-                        image: "$baseImage/toman.svg",
+                        image: "$baseImage/rial.svg",
                         width: 24,
                         height: 24,
+                        boxFit: BoxFit.contain,
                       ),
                     ],
                   ),

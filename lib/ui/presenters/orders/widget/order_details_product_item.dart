@@ -93,9 +93,10 @@ class OrderDetailsProductItem extends StatelessWidget {
                       ),
                     ),
                     RtcImage(
-                      image: "assets/images/toman.svg",
-                      width: 24,
-                      height: 24,
+                      image: "assets/images/rial.svg",
+                      width: 18,
+                      height: 18,
+                      boxFit: BoxFit.contain,
                     ),
                     const Spacer(),
                     Container(

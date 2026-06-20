@@ -193,7 +193,7 @@ class _WalletView extends StatelessWidget {
                     style: theme.titleLarge!.copyWith(color: Colors.white),
                   ),
                   RtcImage(
-                    image: "$baseImage/toman_white.svg",
+                    image: "$baseImage/rial_white.svg.svg",
                     width: 16,
                     height: 16,
                     boxFit: BoxFit.fill,
@@ -255,7 +255,7 @@ class _HeaderInfoItem extends StatelessWidget {
               ),
             ),
             RtcImage(
-              image: "$baseImage/toman_white.svg",
+              image: "$baseImage/rial_white.svg.svg",
               width: 16,
               height: 16,
               boxFit: BoxFit.fill,
@@ -362,10 +362,10 @@ class _PocketCard extends StatelessWidget {
                         ),
                       ),
                       RtcImage(
-                        image: "$baseImage/toman.svg",
+                        image: "$baseImage/rial.svg",
                         width: 16,
                         height: 16,
-                        boxFit: BoxFit.fill,
+                        boxFit: BoxFit.contain,
                       ),
                     ],
                   ),

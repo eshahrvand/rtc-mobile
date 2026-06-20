@@ -142,7 +142,7 @@ class TransactionDetailsSheet extends StatelessWidget {
         _DetailRow(
           label: S.current.amount,
           value: transaction.amount,
-          unit: RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
+          unit: RtcImage(image: "$baseImage/rial.svg",boxFit: BoxFit.contain, width: 24, height: 24),
           isBold: true,
         ),
         RtcDivider(color: AppColors.grayPalette.shade300, height: 1),
@@ -190,7 +190,7 @@ class TransactionDetailsSheet extends StatelessWidget {
         _DetailRow(
           label: S.current.amount,
           value: transaction.amount,
-          unit: RtcImage(image: "$baseImage/toman.svg", width: 24, height: 24),
+          unit: RtcImage(image: "$baseImage/rial.svg", boxFit: BoxFit.contain,width: 24, height: 24),
           isBold: true,
         ),
         RtcDivider(color: AppColors.grayPalette.shade300, height: 1),

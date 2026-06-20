@@ -54,9 +54,10 @@ class RtcDashboardOrderItem extends StatelessWidget {
                   ),
                   SizedBox(width: 2),
                   RtcImage(
-                    image: "$baseImage/toman.svg",
-                    width: 24,
-                    height: 24,
+                    image: "$baseImage/rial.svg",
+                    width: 20,
+                    height: 20,
+                    boxFit: BoxFit.contain,
                   ),
                 ],
               ),

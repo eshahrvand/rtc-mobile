@@ -95,9 +95,10 @@ class _OrderClearanceAmountSheetState extends State<OrderClearanceAmountSheet> {
                       ),
                       const SizedBox(width: 4),
                       RtcImage(
-                        image: "$baseImage/toman.svg",
+                        image: "$baseImage/rial.svg",
                         width: 24,
                         height: 24,
+                        boxFit: BoxFit.contain,
                       ),
                     ],
                   ),
@@ -135,9 +136,10 @@ class _OrderClearanceAmountSheetState extends State<OrderClearanceAmountSheet> {
                       suffix: Padding(
                         padding: const EdgeInsets.fromLTRB(14, 12, 0, 12),
                         child: RtcImage(
-                          image: "$baseImage/toman.svg",
+                          image: "$baseImage/rial.svg",
                           width: 24,
                           height: 24,
+                          boxFit: BoxFit.contain,
                         ),
                       ),
                       textStyle: theme.bodyLarge!.copyWith(

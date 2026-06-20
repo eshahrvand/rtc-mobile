@@ -115,7 +115,7 @@ class RtcQuickAccessItem extends StatelessWidget {
                   ),
 
                   if (currency.isNotEmpty)
-                    RtcImage(image: currency, width: 24, height: 24),
+                    RtcImage(image: currency, width: 24, height: 24 , boxFit: BoxFit.contain,),
                 ],
               ),
             ],

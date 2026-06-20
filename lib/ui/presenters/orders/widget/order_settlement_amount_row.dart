@@ -42,12 +42,11 @@ class OrderSettlementAmountRow extends StatelessWidget {
               ),
             ),
             RtcImage(
-              image: warningItem
-                  ? "$baseImage/toman_warning.svg"
-                  : "$baseImage/toman.svg",
-              width: 16.0,
-              height: 16.0,
-              boxFit: BoxFit.fill,
+              image: "$baseImage/rial.svg",
+              color: warningItem ? AppColors.warningPalette.shade600 : null,
+              width: 20,
+              height: 20,
+              boxFit: BoxFit.contain,
             ),
           ],
         ),

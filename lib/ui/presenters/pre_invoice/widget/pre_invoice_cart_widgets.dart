@@ -118,9 +118,10 @@ class PreInvoiceCartItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       RtcImage(
-                        image: "$baseImage/toman.svg",
-                        width: 24,
-                        height: 24,
+                        image: "$baseImage/rial.svg",
+                        width: 20,
+                        height: 20,
+                        boxFit: BoxFit.contain,
                       ),
                       const Spacer(),
                       if (item.discount != null && item.discount != "0%")
@@ -221,11 +222,11 @@ class PreInvoiceCartSummaryRow extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             RtcImage(
-              image: "$baseImage/toman.svg",
+              image: "$baseImage/rial.svg",
               width: 16,
               height: 16,
               color: color,
-              boxFit: BoxFit.fill,
+              boxFit: BoxFit.contain,
             ),
           ],
         ),

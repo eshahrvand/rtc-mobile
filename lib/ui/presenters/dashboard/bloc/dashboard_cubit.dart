@@ -109,7 +109,7 @@ class DashboardCubit extends Cubit<DashboardState> {
       QuickAccessItemModel(
         title: S.current.monthlySales,
         value: s.totalSalesAmount.toStringAsFixed(0),
-        currency: "assets/images/toman.svg",
+        currency: "assets/images/rial.svg",
         iconPath: 'assets/images/dollar.svg',
         percentage: formatDelta(s.totalSalesDeltaPct),
       ),
@@ -125,13 +125,13 @@ class DashboardCubit extends Cubit<DashboardState> {
       QuickAccessItemModel(
         title: S.current.walletBalance,
         value: s.walletBalance.toStringAsFixed(0).formatCurrency,
-        currency: "assets/images/toman.svg",
+        currency: "assets/images/rial.svg",
         iconPath: 'assets/images/wallet.svg',
       ),
       QuickAccessItemModel(
         title: S.current.cashCommission,
         value: c?.commissionAmountCash.toStringAsFixed(0).formatCurrency ?? '0',
-        currency: "assets/images/toman.svg",
+        currency: "assets/images/rial.svg",
         iconPath: 'assets/images/trend-up.svg',
       ),
     ];
