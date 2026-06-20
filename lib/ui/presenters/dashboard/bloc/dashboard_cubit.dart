@@ -18,14 +18,12 @@ import 'dashboard_state.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../core/utils/network_helper.dart';
 
-
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit({int initialIndex = 0})
     : super(DashboardState(selectedNavIndex: initialIndex));
 
   final _dashboardRepo = sl<DashboardRepository>();
   final _ordersRepo = sl<OrdersRepository>();
-
 
   void init() {
     emit(state.copyWith(status: DashboardRequestStatus.loading));
@@ -42,11 +40,9 @@ class DashboardCubit extends Cubit<DashboardState> {
         });
   }
 
-
   void onNavItemSelected(int index) {
     emit(state.copyWith(selectedNavIndex: index));
   }
-
 
   void _loadDashboardData() {
     Future.wait([
@@ -87,7 +83,6 @@ class DashboardCubit extends Cubit<DashboardState> {
         })
         .catchError((e) => _handleError(e));
   }
-
 
   List<QuickAccessItemModel> _mapQuickAccessItems(
     DashboardSummaryDtoModel s,
@@ -137,7 +132,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     ];
   }
 
-
   LineChartDataModel _mapLineChartData(List<DailyChartDtoModel> dailyChart) {
     final now = Jalali.now();
     final List<FlSpot> currentMonthSpots = [];
@@ -167,12 +161,10 @@ class DashboardCubit extends Cubit<DashboardState> {
     );
   }
 
-
   List<PieChartItemModel> _mapOrderStatusChart(List<OrderStatusDtoModel> list) {
     if (list.isEmpty) {
       return [];
     }
-
 
     final orderWeights = {
       OrderStatus.approved: 1,
@@ -224,7 +216,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     }).toList();
   }
 
-
   List<PieChartItemModel> _mapCategoryChart(List<CategoryChartDtoModel> list) {
     if (list.isEmpty) {
       return [];
@@ -255,7 +246,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     }).toList();
   }
 
-
   List<BarChartItemModel> _mapSubPlanChart(List<SubPlanChartDtoModel> list) {
     if (list.isEmpty) {
       return [];
@@ -266,14 +256,12 @@ class DashboardCubit extends Cubit<DashboardState> {
     }).toList();
   }
 
-
   String _formatCommissionMessage(CommissionDtoModel c) {
     final distance = c.distanceToNextTier.toStringAsFixed(0).formatCurrency;
-    final nextRateCash = c.nextTierRateCash;
-    final nextRateProduct = c.nextTierRateProduct;
-    return "با فروش $distance تومان دیگر پورسانت شما به $nextRateCash٪ نقدی و یا $nextRateProduct٪ کالایی افزایش می‌یابد.";
+    final nextRateCash = c.nextTierRateCash.toString();
+    final nextRateProduct = c.nextTierRateProduct.toString();
+    return S.current.commissionMessage(distance, nextRateCash, nextRateProduct);
   }
-
 
   void _handleError(Object e) {
     if (isClosed) return;

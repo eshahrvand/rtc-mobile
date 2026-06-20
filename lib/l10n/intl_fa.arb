@@ -87,7 +87,7 @@
   "postalCode": "کد پستی",
   "search": "جستجو",
   "customerDetails": "جزئیات مشتری",
-  "toman": "تومان",
+
   "preInvoice": "پیش فاکتور",
   "productDetail": "جزئیات محصول",
   "technicalSpecs": "مشخصات فنی",
@@ -342,6 +342,20 @@
   "@labelWithColon": {
     "placeholders": {
       "label": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionMessage": "با فروش {distance} ریال دیگر پورسانت شما به {nextRateCash}٪ نقدی و یا {nextRateProduct}٪ کالایی افزایش می‌یابد.",
+  "@commissionMessage": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "nextRateCash": {
+        "type": "String"
+      },
+      "nextRateProduct": {
         "type": "String"
       }
     }

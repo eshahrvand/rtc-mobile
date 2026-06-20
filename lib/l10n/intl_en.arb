@@ -87,7 +87,6 @@
   "postalCode": "",
   "search": "",
   "customerDetails": "",
-  "toman": "",
   "preInvoice": "",
   "productDetail": "",
   "technicalSpecs": "",
@@ -343,6 +342,20 @@
   "@labelWithColon": {
     "placeholders": {
       "label": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionMessage": "By selling {distance} Rials more, your commission will increase to {nextRateCash}% cash or {nextRateProduct}% goods.",
+  "@commissionMessage": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "nextRateCash": {
+        "type": "String"
+      },
+      "nextRateProduct": {
         "type": "String"
       }
     }
