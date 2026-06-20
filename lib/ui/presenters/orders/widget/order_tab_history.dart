@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import 'order_history_row_widget.dart';
@@ -26,11 +27,16 @@ class OrderTabHistory extends StatelessWidget {
             if (historyLength > 2) ...[
               ...order.history
                   .take(splitIndex)
-                  .map((h) => OrderHistoryRowWidget(label: h.label, value: h.value)),
+                  .map(
+                    (h) =>
+                        OrderHistoryRowWidget(label: h.label, value: h.value),
+                  ),
             ],
             ...order.history
                 .skip(splitIndex)
-                .map((h) => OrderHistoryRowWidget(label: h.label, value: h.value)),
+                .map(
+                  (h) => OrderHistoryRowWidget(label: h.label, value: h.value),
+                ),
 
             if ((order.assignedSalesReviewer != null &&
                     order.assignedSalesReviewer!.isNotEmpty) ||
@@ -39,7 +45,7 @@ class OrderTabHistory extends StatelessWidget {
               const SizedBox(height: 15.0),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Divider(
+                child: RtcDivider(
                   height: 1,
                   color: AppColors.grayPalette.shade200,
                 ),
@@ -58,10 +64,22 @@ class OrderTabHistory extends StatelessWidget {
                   value: order.assignedFinanceReviewer!,
                 ),
             ],
+            if (order.rejectionReason != null &&
+                order.rejectionReason!.isNotEmpty) ...[
+              SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: RtcDivider(
+                  height: 1,
+                  color: AppColors.grayPalette.shade200,
+                ),
+              ),
+            ],
 
             const SizedBox(height: 15.0),
 
-            if (order.rejectionReason != null && order.rejectionReason!.isNotEmpty) ...[
+            if (order.rejectionReason != null &&
+                order.rejectionReason!.isNotEmpty) ...[
               const SizedBox(height: 15.0),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -84,6 +102,7 @@ class OrderTabHistory extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(height: 12),
             ],
           ],
         ),
