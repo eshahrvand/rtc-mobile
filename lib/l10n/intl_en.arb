@@ -231,6 +231,7 @@
   "trackingNumberLabel": "",
   "documentSubmissionDateLabel": "",
   "clearanceDateLabel": "",
+  "expireDateLabel": "",
   "gotItButton": "",
   "monthlySales": "",
   "approvedOrders": "",

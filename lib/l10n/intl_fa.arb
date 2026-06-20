@@ -237,6 +237,7 @@
   "trackingNumberLabel": "شماره پیگیری:",
   "documentSubmissionDateLabel": "تاریخ ارسال مستندات:",
   "clearanceDateLabel": "تاریخ تخلیه:",
+  "expireDateLabel": "تاریخ انقضا:",
   "gotItButton": "متوجه شدم",
   "monthlySales": "فروش ماهانه",
   "approvedOrders": "سفارشات تایید شده",

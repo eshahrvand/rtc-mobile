@@ -29,6 +29,7 @@ class OrderDtoModel with _$OrderDtoModel {
     required String status,
     required double total,
     @JsonKey(name: 'created_at') required String createdAt,
+    @JsonKey(name: 'updated_at') String? updatedAt,
     List<OrderLineDtoModel>? lines,
     List<OrderDocumentDetailDtoModel>? documents,
     @JsonKey(name: 'rejection_note') String? rejectionNote,

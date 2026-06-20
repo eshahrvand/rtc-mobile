@@ -136,6 +136,15 @@ class OrdersRepository {
         ),
       ];
 
+      if (dto.status == 'expired' && dto.updatedAt != null) {
+        history.add(
+          OrderHistoryModel(
+            label: S.current.expireDateLabel,
+            value: _formatJalaliDateTime(dto.updatedAt!),
+          ),
+        );
+      }
+
       // Add clearance date if successful record exists
       final successDisburse = (dto.disbursementRecords ?? []).firstWhere(
         (r) => r.status == 'success' || r.status == S.current.success,
