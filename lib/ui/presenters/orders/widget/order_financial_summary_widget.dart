@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../data/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import 'order_financial_info_row.dart';
@@ -27,6 +29,11 @@ class OrderFinancialSummaryWidget extends StatelessWidget {
             OrderFinancialInfoRow(
               label: S.current.totalDiscounts,
               value: summary.totalDiscount,
+            ),
+            RtcDivider(
+              isDashed: true,
+              color: AppColors.grayPalette.shade200,
+              height: 0.7,
             ),
           ],
           OrderFinancialInfoRow(
