@@ -6,7 +6,8 @@ import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
-import '../../data/models/order_model.dart';
+
+import '../../core/models/order_model.dart';
 
 class RtcDashboardOrderItem extends StatelessWidget {
   final OrderSummaryModel order;

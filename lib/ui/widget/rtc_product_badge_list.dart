@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import '../../../data/models/product_detail_model.dart';
+import '../../core/models/product_detail_model.dart';
 import '../../generated/l10n.dart';
 import 'rtc_image.dart';
 
@@ -13,13 +13,12 @@ class RtcProductBadgeList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (badges.isEmpty) return const SizedBox.shrink();
 
-    // Separate "Availability" (موجودی or ناموجود) from others if present
     final availabilityBadge = badges.firstWhere(
       (b) => b.label.contains('موجودی') || b.label == 'ناموجود',
       orElse: () => badges.first,
     );
 
-    final planBadge = badges.any((b) => b.label.contains('طرح')) 
+    final planBadge = badges.any((b) => b.label.contains('طرح'))
         ? badges.firstWhere((b) => b.label.contains('طرح'))
         : null;
 
@@ -37,7 +36,10 @@ class RtcProductBadgeList extends StatelessWidget {
             children: [
               _BadgeItem(badge: availabilityBadge, isGreen: true),
               if (planBadge != null)
-                _BadgeItem(badge: planBadge, color: AppColors.brandPalette.shade600),
+                _BadgeItem(
+                  badge: planBadge,
+                  color: AppColors.brandPalette.shade600,
+                ),
             ],
           ),
           if (otherBadges.isNotEmpty) ...[
@@ -60,11 +62,7 @@ class _BadgeItem extends StatelessWidget {
   final bool isGreen;
   final Color? color;
 
-  const _BadgeItem({
-    required this.badge, 
-    this.isGreen = false,
-    this.color,
-  });
+  const _BadgeItem({required this.badge, this.isGreen = false, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +103,9 @@ class _BadgeItem extends StatelessWidget {
                 ),
               ),
             Text(
-              isOutOfStock ? badge.label : S.current.labelWithColon(badge.label),
+              isOutOfStock
+                  ? badge.label
+                  : S.current.labelWithColon(badge.label),
               style: theme.bodyMedium!.copyWith(color: Colors.white),
             ),
             if (!isOutOfStock)

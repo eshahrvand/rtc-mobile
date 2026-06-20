@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/enums/order_status.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../generated/l10n.dart';

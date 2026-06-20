@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/models/customer_model.dart';
 import '../../../../core/utils/network_helper.dart';
-import '../../../../data/models/customer_model.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';

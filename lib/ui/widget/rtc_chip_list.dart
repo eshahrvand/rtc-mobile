@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../data/models/product_chip_model.dart';
+import '../../core/models/product_chip_model.dart';
 import '../presenters/products/widget/filter_bottom_sheet.dart';
 import 'rtc_chip_item.dart';
 

@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../data/models/bar_chart_item_model.dart';
+import '../../core/models/bar_chart_item_model.dart';
 import '../theme/colors.dart';
 
 class RtcBarChartCard extends StatelessWidget {

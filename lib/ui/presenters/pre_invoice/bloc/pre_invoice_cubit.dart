@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../../config/config.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
-import '../../../../data/models/pre_invoice_model.dart';
+import '../../../../core/models/pre_invoice_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/plans/plans_repository.dart';

@@ -1,8 +1,9 @@
 import 'package:rtc_mobile/generated/l10n.dart';
+import '../../core/models/customer_model.dart';
+import '../../core/models/order_model.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_time_utils.dart';
-import '../../data/models/customer_model.dart';
-import '../../data/models/order_model.dart';
+
 import '../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../data_source/remote/orders/orders_service.dart';
 

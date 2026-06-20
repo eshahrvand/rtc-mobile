@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../data/models/product_chip_model.dart';
+import '../../../../core/models/product_chip_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../router/app_route.dart';
 import '../../../theme/colors.dart';

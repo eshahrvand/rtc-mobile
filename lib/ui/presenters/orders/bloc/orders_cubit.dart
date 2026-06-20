@@ -6,7 +6,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/enums/order_status.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';

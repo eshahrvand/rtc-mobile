@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/data/models/pre_invoice_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
+import '../../core/models/pre_invoice_model.dart';
 import 'rtc_image.dart';
 
 class RtcCreditPlanItem extends StatelessWidget {

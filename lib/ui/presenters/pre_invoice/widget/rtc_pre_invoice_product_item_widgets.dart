@@ -4,7 +4,8 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_counter_widget.dart';
-import '../../../../data/models/pre_invoice_model.dart';
+
+import '../../../../core/models/pre_invoice_model.dart';
 
 class RtcPreInvoiceProductImage extends StatelessWidget {
   final PreInvoiceProductModel product;

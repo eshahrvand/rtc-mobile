@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../data/models/order_model.dart';
-import '../../../../generated/l10n.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 

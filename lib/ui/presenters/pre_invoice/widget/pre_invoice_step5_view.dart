@@ -6,14 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import '../../../../config/config.dart';
+import '../../../../core/models/pre_invoice_model.dart';
 import '../../../widget/rtc_image.dart';
-import '../../../widget/rtc_counter_widget.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
-import '../../../../data/models/pre_invoice_model.dart';
-import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
-import 'package:rtc_mobile/core/utils/file_utils.dart';
-import 'pre_invoice_document_item.dart';
 import 'pre_invoice_section_widget.dart';
 
 import 'pre_invoice_step5_widgets.dart';

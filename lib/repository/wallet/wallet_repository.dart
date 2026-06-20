@@ -1,7 +1,7 @@
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import '../../core/models/wallet_model.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_time_utils.dart';
-import '../../data/models/wallet_model.dart';
 import '../../data_source/remote/wallet/wallet_service.dart';
 import '../../generated/l10n.dart';
 

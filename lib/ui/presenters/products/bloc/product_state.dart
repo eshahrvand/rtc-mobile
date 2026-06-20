@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../../data/models/product_chip_model.dart';
-import '../../../../../data/models/product_item_model.dart';
 import '../../../../../data_source/remote/catalog/model/category_dto_model.dart';
 import '../../../../../data_source/remote/plans/model/plan_dto_model.dart';
+import '../../../../core/models/product_chip_model.dart';
+import '../../../../core/models/product_item_model.dart';
 
 part 'product_state.freezed.dart';
 

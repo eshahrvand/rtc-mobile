@@ -1,9 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../data/models/quick_access_item_model.dart';
-import '../../../../data/models/pie_chart_item_model.dart';
-import '../../../../data/models/line_chart_data_model.dart';
-import '../../../../data/models/bar_chart_item_model.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/bar_chart_item_model.dart';
+import '../../../../core/models/line_chart_data_model.dart';
+import '../../../../core/models/order_model.dart';
+import '../../../../core/models/pie_chart_item_model.dart';
+import '../../../../core/models/quick_access_item_model.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 

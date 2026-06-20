@@ -6,7 +6,7 @@ import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../config/config.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../router/app_route.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';

@@ -2,10 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import '../../../../data/models/bar_chart_item_model.dart';
-import '../../../../data/models/line_chart_data_model.dart';
-import '../../../../data/models/pie_chart_item_model.dart';
-import '../../../../data/models/quick_access_item_model.dart';
+import '../../../../core/models/bar_chart_item_model.dart';
+import '../../../../core/models/line_chart_data_model.dart';
+import '../../../../core/models/order_model.dart';
+import '../../../../core/models/pie_chart_item_model.dart';
+import '../../../../core/models/quick_access_item_model.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
@@ -15,7 +16,6 @@ import '../../../../generated/l10n.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../theme/colors.dart';
 import 'dashboard_state.dart';
-import '../../../../data/models/order_model.dart';
 import '../../../../core/utils/network_helper.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {

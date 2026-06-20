@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import '../../../data/models/product_item_model.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
+import '../../core/models/product_item_model.dart';
 import 'rtc_image.dart';
 
 class RtcProductItem extends StatelessWidget {

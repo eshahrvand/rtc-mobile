@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/models/product_chip_model.dart';
+import '../../../../core/models/product_item_model.dart';
 import '../../../../core/utils/network_helper.dart';
-import '../../../../data/models/product_chip_model.dart';
-import '../../../../data/models/product_item_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';

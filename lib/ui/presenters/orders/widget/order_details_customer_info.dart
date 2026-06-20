@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import 'order_details_info_row.dart';

@@ -8,9 +8,9 @@ import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_counter_widget.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import 'package:rtc_mobile/core/utils/file_utils.dart';
+import '../../../../core/models/pre_invoice_model.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
-import '../../../../data/models/pre_invoice_model.dart';
 import 'pre_invoice_document_item.dart';
 
 class PreInvoiceEditButton extends StatelessWidget {

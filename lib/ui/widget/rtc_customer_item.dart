@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/config/config.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
-import '../../data/models/customer_model.dart';
+import '../../core/models/customer_model.dart';
 import '../theme/colors.dart';
 
 class RtcCustomerItem extends StatelessWidget {

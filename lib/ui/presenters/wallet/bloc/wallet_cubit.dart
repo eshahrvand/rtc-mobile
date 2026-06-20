@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/models/wallet_model.dart';
 import '../../../../core/utils/network_helper.dart';
-import '../../../../data/models/wallet_model.dart';
 import '../../../../locator.dart';
 import '../../../../repository/wallet/wallet_repository.dart';
 import 'wallet_state.dart';

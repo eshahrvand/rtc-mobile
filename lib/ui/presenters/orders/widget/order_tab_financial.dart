@@ -4,7 +4,7 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/config.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_collapsible_section.dart';
 import '../../../widget/rtc_image.dart';

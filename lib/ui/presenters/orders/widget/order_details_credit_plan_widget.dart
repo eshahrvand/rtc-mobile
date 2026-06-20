@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_collapsible_section.dart';
 import '../../../../config/config.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';

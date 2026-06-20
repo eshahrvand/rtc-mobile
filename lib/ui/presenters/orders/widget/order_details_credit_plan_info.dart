@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../data/models/order_model.dart';
+import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import 'order_details_info_row.dart';
 

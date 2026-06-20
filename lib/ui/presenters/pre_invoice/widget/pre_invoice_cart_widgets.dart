@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/config/config.dart';
-import 'package:rtc_mobile/data/models/pre_invoice_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_counter_widget.dart';
+import '../../../../core/models/pre_invoice_model.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import '../../../../data/models/pre_invoice_model.dart';
+import '../../../../core/models/pre_invoice_model.dart';
 import 'rtc_pre_invoice_product_item_widgets.dart';
 
 class RtcPreInvoiceProductItem extends StatelessWidget {

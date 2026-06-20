@@ -8,7 +8,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
-import '../../../data/models/wallet_model.dart';
+import '../../../core/models/wallet_model.dart';
 import 'bloc/wallet_cubit.dart';
 import 'bloc/wallet_state.dart';
 

@@ -8,7 +8,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
-import '../../../../data/models/product_chip_model.dart';
+import '../../../core/models/product_chip_model.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../products/widget/filter_bottom_sheet.dart';
 import 'bloc/wallet_cubit.dart';

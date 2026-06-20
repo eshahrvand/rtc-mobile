@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../../../data/models/pre_invoice_model.dart';
+
+import '../../../../core/models/pre_invoice_model.dart';
 
 part 'pre_invoice_state.freezed.dart';
 
