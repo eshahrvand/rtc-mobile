@@ -74,7 +74,7 @@ void showLogOutBottomSheet({required BuildContext context}) {
                   ),
                   const SizedBox(height: 40),
                   Text(
-                    "آیا از خروج از حساب کاربری خود اطمینان دارید؟",
+                  S.current.logOutHint,
                     style: theme.bodyLarge!.copyWith(
                       color: AppColors.grayPalette.shade800,
                       fontWeight: FontWeight.w500,

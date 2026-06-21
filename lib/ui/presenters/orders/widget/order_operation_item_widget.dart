@@ -81,7 +81,6 @@ class OrderOperationItemWidget extends StatelessWidget {
                 isOnline: state.gatewayType == GatewayType.online,
                 onAction: () {
                   if (state.gatewayType == GatewayType.online) {
-                    // Trigger OTP flow via cubit
                   } else {
                     context.read<OrdersCubit>().pickClearanceDocument(context);
                   }

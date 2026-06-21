@@ -13,7 +13,6 @@ class AuthCubit extends Cubit<AuthState> {
   Timer? _timer;
 
   void onPhoneChanged(String phoneNumber) {
-    // Basic validation: 11 digits starting with 09
     final bool isValid =
         phoneNumber.length == 11 && phoneNumber.startsWith('09');
     emit(

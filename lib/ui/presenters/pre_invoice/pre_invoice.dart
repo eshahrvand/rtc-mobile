@@ -6,7 +6,6 @@ import '../../../../config/constants.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_cart_bottom_sheet.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
-import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_step_indicator.dart';

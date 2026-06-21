@@ -33,8 +33,6 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   OrdersCubit() : super(const OrdersState());
 
-  // ─── Initialization & Fetching ─────────────────────────────────────
-
   void init() {
     _plansRepo
         .getSubPlans()
@@ -108,7 +106,9 @@ class OrdersCubit extends Cubit<OrdersState> {
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
         )
         .then((response) {
-          final orders = response.results.map((dto) => OrderMapper.mapToSummary(dto)).toList();
+          final orders = response.results
+              .map((dto) => OrderMapper.mapToSummary(dto))
+              .toList();
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
@@ -325,7 +325,6 @@ class OrdersCubit extends Cubit<OrdersState> {
     return _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
-
           final type = (response is Map) ? response['type'] : 'offline';
           final mobile = (response is Map) ? response['mobile'] : null;
           final redirectUrl = (response is Map)
@@ -348,8 +347,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               clearanceStep: type == 'otp'
                   ? ClearanceStep.otpPending
                   : type == 'redirect'
-                  ? ClearanceStep
-                        .amountEntered
+                  ? ClearanceStep.amountEntered
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,

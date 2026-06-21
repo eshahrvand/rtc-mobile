@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../../../generated/l10n.dart';
+
 class DocumentViewerScreen extends StatelessWidget {
   final String url;
   final String title;
@@ -53,13 +55,13 @@ class _ErrorPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return  Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.error, color: Colors.white, size: 48.0),
         SizedBox(height: 16.0),
         Text(
-          'خطا در بارگذاری تصویر',
+         S.current.imageLoadError,
           style: TextStyle(color: Colors.white),
         ),
       ],

@@ -87,7 +87,6 @@
   "postalCode": "کد پستی",
   "search": "جستجو",
   "customerDetails": "جزئیات مشتری",
-
   "preInvoice": "پیش فاکتور",
   "productDetail": "جزئیات محصول",
   "technicalSpecs": "مشخصات فنی",
@@ -327,10 +326,17 @@
   "otpVerifyOrFinalizeError": "خطا در تایید کد و نهایی‌سازی: ",
   "initiateSettlementError": "خطا در شروع عملیات تسویه: ",
   "receiptUploadError": "خطا در بارگذاری فیش: ",
+  "searchInProducts": "جستجو در سفارشات",
+  "logOutHint": "آیا از خروج از حساب کاربری خود اطمینان دارید؟",
+  "imageLoadError": "خطا در بارگذاری تصویر",
+  "orderDetail": "جزییات سفارش",
+  "orderFinancialDetail": "اطلاعات مالی",
+  "history": "تاریخچه",
+  "historyPayment": "تاریخچه پرداخت‌ها",
   "settlementConfirmError": "خطا در تایید تسویه: ",
   "toleranceSettingNotFoundError": "مقدار تولرانس در تنظیمات یافت نشد",
   "upload": "بارگذاری",
-  "inventory":"موجودی",
+  "inventory": "موجودی",
   "selectOptionSubtitle": "{label} مورد نظر را انتخاب کنید",
   "@selectOptionSubtitle": {
     "placeholders": {

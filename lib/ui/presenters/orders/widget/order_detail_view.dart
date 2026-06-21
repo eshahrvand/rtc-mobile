@@ -113,8 +113,6 @@ class _OrderDetailViewState extends State<OrderDetailView> {
               if (_pageController.hasClients) {
                 syncPage();
               } else {
-                // If the builder is still showing the loader, wait for the next frame
-                // when PageView is actually in the widget tree.
                 WidgetsBinding.instance.addPostFrameCallback((_) => syncPage());
               }
             },
@@ -162,10 +160,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           OrdersUiHelpers.resolveValidityHeader(context, order),
 
                           RtcTabBar(
-                            tabs: const [
-                              'جزییات سفارش',
-                              'اطلاعات مالی',
-                              'تاریخچه',
+                            tabs: [
+                              S.current.orderDetail,
+                              S.current.orderFinancialDetail,
+                              S.current.history,
                             ],
                             selectedIndex: state.selectedTabIndex,
                             onTabChanged: (index) => cubit.onTabChanged(index),
@@ -212,9 +210,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
               filePath: filePath,
               isLoading: state.status == OrdersRequestStatus.loading,
               onConfirm: () {
-                cubit.confirmClearanceDocument().then((_) {
-                  if (context.mounted) Navigator.pop(context);
-                }).catchError((_) {});
+                cubit
+                    .confirmClearanceDocument()
+                    .then((_) {
+                      if (context.mounted) Navigator.pop(context);
+                    })
+                    .catchError((_) {});
               },
               onDelete: () {
                 cubit.clearClearanceDocument();
@@ -254,7 +255,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ),
               ),
               const SizedBox(width: 4),
-              RtcImage(image: "$baseImage/rial.svg", boxFit: BoxFit.contain,width: 24, height: 24),
+              RtcImage(
+                image: "$baseImage/rial.svg",
+                boxFit: BoxFit.contain,
+                width: 24,
+                height: 24,
+              ),
             ],
           ),
         ),
@@ -271,7 +277,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ),
               ),
               const SizedBox(width: 4),
-              RtcImage(image: "$baseImage/rial.svg",boxFit: BoxFit.contain, width: 24, height: 24),
+              RtcImage(
+                image: "$baseImage/rial.svg",
+                boxFit: BoxFit.contain,
+                width: 24,
+                height: 24,
+              ),
             ],
           ),
         ),

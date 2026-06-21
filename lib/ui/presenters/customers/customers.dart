@@ -42,9 +42,7 @@ class CustomersView extends StatelessWidget {
                 context.read<CustomersCubit>().backToList();
               }
             },
-            backIconPath: state.step == CustomersStep.customerList 
-                ? '$baseImage/angle-right.svg' 
-                : '$baseImage/angle-right.svg', // Both use back arrow
+            backIconPath: '$baseImage/angle-right.svg',
           ),
           body: state.step == CustomersStep.customerList
               ? const CustomersListView()

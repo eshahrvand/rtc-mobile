@@ -48,7 +48,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
           isSearchActive: ordersState.isSearchActive,
           showShadow: true,
           title: '',
-          searchHint: 'جستجو در سفارشات',
+          searchHint: S.current.searchInProducts,
           onSearchChanged: (value) =>
               context.read<OrdersCubit>().onSearchChanged(value),
           onSearchActivated: () => context.read<OrdersCubit>().activateSearch(),

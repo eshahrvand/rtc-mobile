@@ -14,28 +14,31 @@ class CustomersUiHelpers {
     required TextTheme theme,
   }) {
     return switch (state.status) {
-      CustomersRequestStatus.loading =>
-        const Center(child: CircularProgressIndicator()),
-      _ => state.filteredCustomers.isEmpty
-          ? Center(
-              child: Text(
-                S.current.noItemsFound,
-                style: theme.bodyLarge?.copyWith(
-                  color: AppColors.grayPalette.shade600,
+      CustomersRequestStatus.loading => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      _ =>
+        state.filteredCustomers.isEmpty
+            ? Center(
+                child: Text(
+                  S.current.noItemsFound,
+                  style: theme.bodyLarge?.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                  ),
                 ),
+              )
+            : ListView.builder(
+                itemCount: state.filteredCustomers.length,
+                itemBuilder: (context, index) {
+                  final customer = state.filteredCustomers[index];
+                  return RtcCustomerItem(
+                    customer: customer,
+                    onTap: () => context
+                        .read<CustomersCubit>()
+                        .onCustomerTapped(customer),
+                  );
+                },
               ),
-            )
-          : ListView.builder(
-              itemCount: state.filteredCustomers.length,
-              itemBuilder: (context, index) {
-                final customer = state.filteredCustomers[index];
-                return RtcCustomerItem(
-                  customer: customer,
-                  onTap: () =>
-                      context.read<CustomersCubit>().onCustomerTapped(customer),
-                );
-              },
-            ),
     };
   }
 }
