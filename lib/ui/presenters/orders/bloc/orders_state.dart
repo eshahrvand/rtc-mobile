@@ -14,6 +14,13 @@ enum OrdersRequestStatus {
   error,
 }
 
+enum PrintStatus {
+  initial,
+  loading,
+  success,
+  error,
+}
+
 enum GatewayType {
   online,
   offline,
@@ -82,6 +89,11 @@ class OrdersState with _$OrdersState {
     String? disbursementMobile,
     String? disbursementRedirectUrl,
     String? disbursementGatewayType,
+
+    // Printing
+    @Default(false) bool isPrinting,
+    @Default(PrintStatus.initial) PrintStatus printStatus,
+    String? lastPrintedFilePath,
   }) = _OrdersState;
 }
 

@@ -72,6 +72,10 @@ class OrdersRepository {
     return _service.getOrderById(id);
   }
 
+  Future<String> getPreInvoiceHtml(String id) {
+    return _service.getPreInvoiceHtml(id);
+  }
+
   Future<OrderListResponse> getCustomerOrders(String customerId) {
     return _service.getOrders(customerId: customerId);
   }

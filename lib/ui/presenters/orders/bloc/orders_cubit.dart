@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_html_to_pdf/flutter_native_html_to_pdf.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -283,6 +286,71 @@ class OrdersCubit extends Cubit<OrdersState> {
         isClearanceSectionExpanded: !state.isClearanceSectionExpanded,
       ),
     );
+  }
+
+  // ─── PDF Printing ──────────────────────────────────────────────────
+
+  Future<void> printPreInvoice(String orderId) {
+    emit(
+      state.copyWith(
+        isPrinting: true,
+        printStatus: PrintStatus.loading,
+        lastPrintedFilePath: null,
+      ),
+    );
+
+    return _ordersRepo
+        .getPreInvoiceHtml(orderId)
+        .then((html) async {
+          final tempDir = await getTemporaryDirectory();
+          final displayId = OrderMapper.formatDisplayId(orderId);
+          final targetName = 'pre_invoice_$displayId';
+
+          final converter = HtmlToPdfConverter();
+          final generatedFile = await converter.convertHtmlToPdf(
+            html: html,
+            targetDirectory: tempDir.path,
+            targetName: targetName,
+          );
+
+          if (generatedFile != null) {
+            final bytes = await generatedFile.readAsBytes();
+            final savedPath = await FileSaver.instance.saveFile(
+              name: targetName,
+              bytes: bytes,
+              fileExtension: 'pdf',
+              mimeType: MimeType.pdf,
+            );
+
+            emit(
+              state.copyWith(
+                isPrinting: false,
+                printStatus: PrintStatus.success,
+                lastPrintedFilePath: savedPath,
+              ),
+            );
+          }
+
+          // Reset status after a delay so the listener doesn't trigger again on unrelated changes
+          Future.delayed(const Duration(seconds: 1), () {
+            if (!isClosed)
+              emit(state.copyWith(printStatus: PrintStatus.initial));
+          });
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              isPrinting: false,
+              printStatus: PrintStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+          // Reset status
+          Future.delayed(const Duration(seconds: 1), () {
+            if (!isClosed)
+              emit(state.copyWith(printStatus: PrintStatus.initial));
+          });
+        });
   }
 
   // ─── Clearance Flow ───────────────────────────────────────────────

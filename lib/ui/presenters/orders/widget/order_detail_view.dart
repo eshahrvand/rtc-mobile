@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -88,6 +89,29 @@ class _OrderDetailViewState extends State<OrderDetailView> {
               }
             },
           ),
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) => prev.printStatus != curr.printStatus,
+            listener: (context, state) {
+              if (state.printStatus == PrintStatus.success) {
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.success,
+                  message: 'فایل با موفقیت ذخیره شد',
+                );
+                if (state.lastPrintedFilePath != null) {
+                  Share.shareXFiles([XFile(state.lastPrintedFilePath!)]);
+                }
+              } else if (state.printStatus == PrintStatus.error) {
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.error,
+                  message: state.errorMessage.isNotEmpty
+                      ? state.errorMessage
+                      : 'خطا در تولید یا ذخیره فایل',
+                );
+              }
+            },
+          ),
           // Listener to sync PageView when state.selectedTabIndex changes
           BlocListener<OrdersCubit, OrdersState>(
             listenWhen: (prev, curr) =>
@@ -142,11 +166,21 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 actions: [
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0),
-                    child: RtcImage(
-                      image: '$baseImage/print.svg',
-                      width: 24.0,
-                      height: 24.0,
-                    ),
+                    child:
+                        state.isPrinting
+                            ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : GestureDetector(
+                              onTap: () => cubit.printPreInvoice(order.id),
+                              child: RtcImage(
+                                image: '$baseImage/print.svg',
+                                width: 24.0,
+                                height: 24.0,
+                              ),
+                            ),
                   ),
                 ],
               ),
