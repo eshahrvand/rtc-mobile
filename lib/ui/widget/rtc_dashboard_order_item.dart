@@ -38,12 +38,23 @@ class RtcDashboardOrderItem extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(
-                    '# ${order.orderId}',
-                    style: theme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grayPalette.shade900,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        order.orderId,
+                        style: theme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade900,
+                        ),
+                      ),
+                      Text(
+                        '#',
+                        style: theme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.grayPalette.shade900,
+                        ),
+                      ),
+                    ],
                   ),
                   Spacer(),
                   Text(
@@ -71,7 +82,7 @@ class RtcDashboardOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade700,
                     ),
                   ),
-                  RtcStatusBadge(status: order.status ,   isPrimary: false,),
+                  RtcStatusBadge(status: order.status, isPrimary: false),
                 ],
               ),
             ],

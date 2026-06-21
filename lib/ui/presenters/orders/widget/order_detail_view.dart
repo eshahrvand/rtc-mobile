@@ -12,6 +12,7 @@ import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_tab_bar.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
+import '../mapper/order_mapper.dart';
 import 'order_clearance_receipt_sheet.dart';
 import 'order_upload_documents_sheet.dart';
 import 'order_tab_details.dart';
@@ -236,7 +237,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       fields: [
         ReceiptField(
           label: S.current.proInvoiceNumberLabel,
-          value: state.selectedOrder!.id.substring(0, 8).toUpperCase(),
+          value: OrderMapper.formatDisplayId(state.selectedOrder!.id),
         ),
         ReceiptField(
           label: S.current.customerLabelWithColon,

@@ -33,7 +33,6 @@ class RtcOrderItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 4.0,
                   children: [
                     Text(
                       order.orderId,
@@ -42,6 +41,7 @@ class RtcOrderItem extends StatelessWidget {
                         color: AppColors.grayPalette.shade900,
                       ),
                     ),
+
                     Text(
                       '#',
                       style: theme.labelLarge!.copyWith(

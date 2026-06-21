@@ -8,6 +8,13 @@ import '../../../../core/models/customer_model.dart';
 import '../../../../core/models/order_model.dart';
 
 class OrderMapper {
+  static String formatDisplayId(String id) {
+    if (id.contains('-')) {
+      return id.split('-').first.toUpperCase();
+    }
+    return id.substring(0, id.length > 8 ? 8 : id.length).toUpperCase();
+  }
+
   static OrderSummaryModel mapToSummary(OrderDtoModel dto) {
     final dateStr = DateTimeUtils.formatToJalali(dto.createdAt);
     final totalQuantity = (dto.lines ?? []).fold<int>(
@@ -17,7 +24,7 @@ class OrderMapper {
 
     return OrderSummaryModel(
       id: dto.id,
-      orderId: dto.id.substring(0, 8).toUpperCase(),
+      orderId: formatDisplayId(dto.id),
       customerName: '${dto.customer.firstName} ${dto.customer.lastName}',
       itemCount: S.current.itemCount(totalQuantity),
       status: dto.status,
@@ -199,7 +206,7 @@ class OrderMapper {
 
   static CustomerOrderItemModel mapToCustomerOrderItem(OrderDtoModel dto) {
     return CustomerOrderItemModel(
-      orderId: dto.id,
+      orderId: formatDisplayId(dto.id),
       amount: dto.total.formatCurrency,
       date: DateTimeUtils.formatToJalaliDate(dto.createdAt),
       status: dto.status,
