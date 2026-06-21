@@ -79,7 +79,7 @@ class RtcCreditLimitField extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: RtcImage(
-                  image: "$baseImage/rial_white.svg.svg",
+                  image: "$baseImage/rial_white.svg",
                   width: 20,
                   height: 20,
                   boxFit: BoxFit.fill,

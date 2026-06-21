@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../config/constants.dart';
+import '../../../../core/utils/date_time_utils.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
@@ -59,8 +60,12 @@ class TransactionListScreen extends StatelessWidget {
       initialOptionId: state.selectedDateOptionId,
       onApply: (start, end, optionId) {
         context.read<WalletCubit>().setDateFilter(
-          start?.toDateTime().toIso8601String(),
-          end?.toDateTime().toIso8601String(),
+          start != null
+              ? DateTimeUtils.formatToGregorianDate(start.toDateTime())
+              : null,
+          end != null
+              ? DateTimeUtils.formatToGregorianDate(end.toDateTime())
+              : null,
           optionId: optionId,
         );
       },
@@ -99,10 +104,8 @@ class TransactionListScreen extends StatelessWidget {
                         ),
                       )
                     : ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+
                         itemCount: state.transactions.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 8),
@@ -226,7 +229,7 @@ class _TransactionCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${transaction.date}  |  ${transaction.time}',
+                    '${transaction.time}  |  ${transaction.date}',
                     style: theme.bodyMedium!.copyWith(
                       color: AppColors.grayPalette.shade700,
                     ),
@@ -261,7 +264,7 @@ class _TransactionCard extends StatelessWidget {
                     '...',
                     style: theme.bodyMedium!.copyWith(
                       color: AppColors.grayPalette.shade600,
-                      fontSize: 16
+                      fontSize: 16,
                     ),
                   ),
                 ],

@@ -193,7 +193,7 @@ class _WalletView extends StatelessWidget {
                     style: theme.titleLarge!.copyWith(color: Colors.white),
                   ),
                   RtcImage(
-                    image: "$baseImage/rial_white.svg.svg",
+                    image: "$baseImage/rial_white.svg",
                     width: 16,
                     height: 16,
                     boxFit: BoxFit.fill,
@@ -255,7 +255,7 @@ class _HeaderInfoItem extends StatelessWidget {
               ),
             ),
             RtcImage(
-              image: "$baseImage/rial_white.svg.svg",
+              image: "$baseImage/rial_white.svg",
               width: 16,
               height: 16,
               boxFit: BoxFit.fill,
