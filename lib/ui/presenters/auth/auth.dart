@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-
-import '../../../config/config.dart';
+import '../../../config/constants.dart';
 import '../../../generated/l10n.dart';
 import '../../router/app_route.dart';
 import '../../widget/rtc_image.dart';

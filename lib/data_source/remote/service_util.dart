@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import '../../config/config.dart';
 import '../../config/constants.dart';
 import '../local/prefs/prefs.dart';
 
@@ -8,9 +7,9 @@ class ServiceUtil {
     final dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: AppConstants.connectionTimeout,
-        receiveTimeout: AppConstants.receiveTimeout,
-        sendTimeout: AppConstants.sendTimeout,
+        connectTimeout: connectionTimeout,
+        receiveTimeout: receiveTimeout,
+        sendTimeout: sendTimeout,
       ),
     );
 

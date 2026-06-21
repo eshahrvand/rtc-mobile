@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
 import '../../../../core/models/pre_invoice_model.dart';

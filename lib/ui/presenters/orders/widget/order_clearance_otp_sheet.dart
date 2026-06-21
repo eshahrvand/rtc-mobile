@@ -3,7 +3,7 @@ import 'package:pinput/pinput.dart';
 import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';

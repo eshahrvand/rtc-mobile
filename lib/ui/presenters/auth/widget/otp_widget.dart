@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
 import 'package:rtc_mobile/config/auth_calculations.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../generated/l10n.dart';
-
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_button.dart';

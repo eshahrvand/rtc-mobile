@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import '../theme/colors.dart';
 import 'rtc_text_field.dart';

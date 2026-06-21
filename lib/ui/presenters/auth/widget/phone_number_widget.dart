@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../generated/l10n.dart';
-
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_field.dart';

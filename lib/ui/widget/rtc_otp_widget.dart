@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pinput/pinput.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
-import '../../config/config.dart';
+import '../../config/constants.dart';
 import '../theme/colors.dart';
 
 class OTPIndicator extends StatelessWidget {

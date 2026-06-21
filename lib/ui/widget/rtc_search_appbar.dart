@@ -3,7 +3,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_appbar.dart';
 import 'rtc_image.dart';
 import 'rtc_text_field.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 
 class RtcSearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isSearchActive;

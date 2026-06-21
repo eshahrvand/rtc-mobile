@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../core/models/product_chip_model.dart';
 import 'rtc_image.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 
 class RtcChipItem extends StatelessWidget {
   final ProductChipModel chip;

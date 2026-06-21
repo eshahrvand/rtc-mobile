@@ -6,7 +6,7 @@ import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_icon_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../data_source/local/prefs/prefs.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';

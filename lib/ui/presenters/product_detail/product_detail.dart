@@ -12,7 +12,7 @@ import 'bloc/product_detail_state.dart';
 import '../../widget/rtc_appbar.dart';
 import '../../widget/rtc_product_image_gallery.dart';
 import '../../widget/rtc_product_badge_list.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final String productId;
