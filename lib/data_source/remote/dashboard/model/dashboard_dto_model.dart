@@ -46,6 +46,8 @@ class DailyChartDtoModel with _$DailyChartDtoModel {
   const factory DailyChartDtoModel({
     required String date,
     @JsonKey(name: 'total_sales_amount') required double totalSalesAmount,
+    @JsonKey(name: 'previous_total_sales_amount')
+    required double previousTotalSalesAmount,
   }) = _DailyChartDtoModel;
 
   factory DailyChartDtoModel.fromJson(Map<String, dynamic> json) =>

@@ -62,6 +62,7 @@ class DashboardMapper {
 
   static LineChartDataModel mapLineChartData(List<DailyChartDtoModel> dailyChart) {
     final now = Jalali.now();
+    final List<FlSpot> previousMonthSpots = [];
     final List<FlSpot> currentMonthSpots = [];
 
     for (int i = 1; i <= now.day; i++) {
@@ -77,14 +78,18 @@ class DashboardMapper {
         }
       });
 
-      final amount = dailyData.isNotEmpty
-          ? dailyData.first.totalSalesAmount
-          : 0.0;
-      currentMonthSpots.add(FlSpot(i.toDouble(), amount));
+      if (dailyData.isNotEmpty) {
+        final item = dailyData.first;
+        currentMonthSpots.add(FlSpot(i.toDouble(), item.totalSalesAmount));
+        previousMonthSpots.add(FlSpot(i.toDouble(), item.previousTotalSalesAmount));
+      } else {
+        currentMonthSpots.add(FlSpot(i.toDouble(), 0));
+        previousMonthSpots.add(FlSpot(i.toDouble(), 0));
+      }
     }
 
     return LineChartDataModel(
-      line1Data: const [],
+      line1Data: previousMonthSpots,
       line2Data: currentMonthSpots,
     );
   }
