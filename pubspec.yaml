@@ -66,12 +66,10 @@ dependencies:
   photo_manager: ^3.7.1
   custom_refresh_indicator: ^4.0.1
   flutter_markdown_plus: ^1.0.7
-  share_plus: ^13.1.0
   screenshot: ^3.0.0
-  printing: ^5.13.0
-  pdf: ^3.11.1
-  flutter_native_html_to_pdf: ^3.1.0
-  file_saver: ^0.4.0
+  share_plus: ^12.0.0
+  file_saver: 0.4.0
+  flutter_native_html_to_pdf: 3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -136,4 +134,3 @@ flutter:
         - asset: assets/fonts/IRANYekanXFaNum-Regular.ttf
           weight: 400
           style: normal
-
