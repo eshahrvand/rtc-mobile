@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -18,7 +17,7 @@ import '../../../../repository/media/media_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
-import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
 
@@ -66,7 +65,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
@@ -119,7 +121,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
@@ -332,43 +337,30 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         .catchError((e) {
           if (isClosed) return;
 
-          NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-            if (isClosed) return;
-
-            if (networkMessage != null) {
-              _handleError(e);
-              emit(state.copyWith(customerSearchLoading: false));
-              return;
-            }
-
-            bool isNotFound = false;
-            if (e is DioException) {
-              if (e.response?.statusCode == 404) {
-                isNotFound = true;
-              }
-            }
-
-            if (isNotFound) {
-              emit(
-                state.copyWith(
-                  customerSearchLoading: false,
-                  customerInfo: CustomerInfoModel(
-                    firstName: '',
-                    lastName: '',
-                    nationalId: state.customerIdQuery,
-                    phoneNumber: '',
-                    postalCode: '',
-                    address: '',
-                  ),
-                  originalCustomerInfo: null,
-                  isExistingCustomer: false,
+          final apiError = ErrorHandler.getApiError(e);
+          if (apiError?.statusCode == 404) {
+            emit(
+              state.copyWith(
+                customerSearchLoading: false,
+                customerInfo: CustomerInfoModel(
+                  firstName: '',
+                  lastName: '',
+                  nationalId: state.customerIdQuery,
+                  phoneNumber: '',
+                  postalCode: '',
+                  address: '',
                 ),
-              );
-            } else {
-              _handleError(e);
-              emit(state.copyWith(customerSearchLoading: false));
-            }
-          });
+                originalCustomerInfo: null,
+                isExistingCustomer: false,
+              ),
+            );
+          } else {
+            emit(state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              customerSearchLoading: false,
+            ));
+          }
         });
   }
 
@@ -480,7 +472,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.customerInfoSubmitError);
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isSubmittingCustomerInfo: false,
+          ));
           return null;
         });
   }
@@ -583,7 +579,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.documentUploadError);
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isUploadingDocuments: false,
+          ));
           return null;
         });
   }
@@ -634,7 +634,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.preInvoiceSubmitError);
+          emit(state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isSubmittingPreInvoice: false,
+            isSubmittingAndClearing: false,
+          ));
           return null;
         });
   }
@@ -751,32 +756,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       );
     }
     return documents;
-  }
-
-  void _handleError(Object e, {String prefix = ''}) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then<void>((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage =
-          networkMessage ??
-          (prefix.isEmpty ? e.toString() : '$prefix: ${e.toString()}');
-
-      emit(state.copyWith(status: PreInvoiceRequestStatus.initial));
-
-      emit(
-        state.copyWith(
-          status: PreInvoiceRequestStatus.error,
-          errorMessage: finalMessage,
-          isUploadingDocuments: false,
-          isSubmittingCustomerInfo: false,
-          isSubmittingPreInvoice: false,
-          isSubmittingAndClearing: false,
-          customerSearchLoading: false,
-        ),
-      );
-    });
   }
 
   @override

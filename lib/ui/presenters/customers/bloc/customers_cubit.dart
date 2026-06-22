@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/models/customer_model.dart';
 import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
@@ -34,7 +35,10 @@ class CustomersCubit extends Cubit<CustomersState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: CustomersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
         });
   }
 
@@ -86,7 +90,10 @@ class CustomersCubit extends Cubit<CustomersState> {
             );
           });
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: CustomersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            )));
   }
 
   void onTabChanged(int index) {
@@ -106,23 +113,6 @@ class CustomersCubit extends Cubit<CustomersState> {
       phoneNumber: dto.mobile,
       city: "",
     );
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(
-        state.copyWith(
-          status: CustomersRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
   }
 
   @override

@@ -5,7 +5,7 @@ import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
 import '../../../../generated/l10n.dart';
-import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../mapper/dashboard_mapper.dart';
 import '../../orders/mapper/order_mapper.dart';
 import 'dashboard_state.dart';
@@ -28,7 +28,10 @@ class DashboardCubit extends Cubit<DashboardState> {
         })
         .catchError((Object e) {
           _loadDashboardData();
-          _handleError(e);
+          emit(state.copyWith(
+            status: DashboardRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
         });
   }
 
@@ -73,23 +76,9 @@ class DashboardCubit extends Cubit<DashboardState> {
             ),
           );
         })
-        .catchError((e) => _handleError(e));
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(
-        state.copyWith(
-          status: DashboardRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
+        .catchError((e) => emit(state.copyWith(
+              status: DashboardRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            )));
   }
 }

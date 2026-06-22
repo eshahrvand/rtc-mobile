@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:developer' as dev;
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_html_to_pdf/flutter_native_html_to_pdf.dart';
@@ -10,6 +9,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
@@ -19,7 +19,6 @@ import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
-import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
 import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
@@ -104,7 +103,10 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           if (!isClosed) {
-            _handleError(e, prefix: S.current.fetchUserSettingsError);
+            emit(state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ));
           }
         });
   }
@@ -138,7 +140,13 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          _handleError(e, rollbackState: rollbackState);
+          final orders = state.allOrders;
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            allOrders: orders,
+            filteredOrders: orders,
+          ));
           return null;
         });
   }
@@ -175,7 +183,10 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.fetchOrderDetailsError);
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
@@ -399,7 +410,10 @@ class OrdersCubit extends Cubit<OrdersState> {
     if (state.selectedOrder == null) return Future.value();
 
     if (state.tolerance == null) {
-      _handleError(S.current.toleranceSettingNotFoundError);
+      emit(state.copyWith(
+        status: OrdersRequestStatus.error,
+        errorMessage: S.current.toleranceSettingNotFoundError,
+      ));
       return Future.value();
     }
 
@@ -473,7 +487,10 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.initiateClearanceError);
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           throw e;
         });
   }
@@ -523,7 +540,10 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.documentUploadOrFinalizeError);
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           throw e;
         });
   }
@@ -546,7 +566,10 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.otpVerifyOrFinalizeError);
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           throw e;
         });
   }
@@ -589,7 +612,10 @@ class OrdersCubit extends Cubit<OrdersState> {
   }) {
     if (state.selectedOrder == null) return;
     if (method == 'wallet' && state.tolerance == null) {
-      _handleError(S.current.toleranceSettingNotFoundError);
+      emit(state.copyWith(
+        status: OrdersRequestStatus.error,
+        errorMessage: S.current.toleranceSettingNotFoundError,
+      ));
       return;
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
@@ -664,13 +690,8 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           if (method == 'wallet_debit' || method == 'wallet') {
-            bool isBalanceError = false;
-            if (e is DioException) {
-              if (e.response?.statusCode == 400) {
-                isBalanceError = true;
-              }
-            }
-            if (isBalanceError) {
+            final apiError = ErrorHandler.getApiError(e);
+            if (apiError?.statusCode == 400) {
               emit(
                 state.copyWith(
                   status: OrdersRequestStatus.success,
@@ -682,7 +703,10 @@ class OrdersCubit extends Cubit<OrdersState> {
               return null;
             }
           }
-          _handleError(e, prefix: S.current.initiateSettlementError);
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
@@ -760,12 +784,18 @@ class OrdersCubit extends Cubit<OrdersState> {
           })
           .then((_) => performSettle())
           .catchError((e) {
-            _handleError(e, prefix: S.current.receiptUploadError);
-            return null;
-          });
+          emit(state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
+          return null;
+        });
     } else {
       performSettle().catchError(
-        (e) => _handleError(e, prefix: S.current.settlementConfirmError),
+        (e) => emit(state.copyWith(
+          status: OrdersRequestStatus.error,
+          errorMessage: ErrorHandler.getMessage(e),
+        )),
       );
     }
   }
@@ -873,35 +903,6 @@ class OrdersCubit extends Cubit<OrdersState> {
       default:
         return method;
     }
-  }
-
-  void _handleError(
-    Object e, {
-    String prefix = '',
-    OrdersState? rollbackState,
-  }) {
-    if (isClosed) {
-      return;
-    }
-
-    NetworkHelper.getNetworkErrorMessage().then<void>((networkMessage) {
-      if (isClosed) {
-        return;
-      }
-
-      final finalMessage = networkMessage ?? '$prefix${e.toString()}';
-
-      final baseState = rollbackState ?? state;
-
-      emit(baseState.copyWith(status: OrdersRequestStatus.initial));
-
-      emit(
-        baseState.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
   }
 
   @override

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../locator.dart';
 import '../../../../repository/auth/auth_repository.dart';
 import 'auth_state.dart';
@@ -39,7 +40,11 @@ class AuthCubit extends Cubit<AuthState> {
           );
           _startTimer();
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: AuthRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isLoading: false,
+            )));
   }
 
   void onOtpChanged(String otpCode) {
@@ -56,7 +61,11 @@ class AuthCubit extends Cubit<AuthState> {
             state.copyWith(status: AuthRequestStatus.success, isLoading: false),
           );
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: AuthRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isLoading: false,
+            )));
   }
 
   void resendOtp() {
@@ -75,7 +84,11 @@ class AuthCubit extends Cubit<AuthState> {
           );
           _startTimer();
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: AuthRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isLoading: false,
+            )));
   }
 
   void sendViaRubika() {
@@ -88,7 +101,11 @@ class AuthCubit extends Cubit<AuthState> {
             state.copyWith(status: AuthRequestStatus.otpSent, isLoading: false),
           );
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: AuthRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isLoading: false,
+            )));
   }
 
   void editPhoneNumber() {
@@ -118,24 +135,6 @@ class AuthCubit extends Cubit<AuthState> {
         _timer?.cancel();
         emit(state.copyWith(isTimerExpired: true));
       }
-    });
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(
-        state.copyWith(
-          status: AuthRequestStatus.error,
-          errorMessage: finalMessage,
-          isLoading: false,
-        ),
-      );
     });
   }
 

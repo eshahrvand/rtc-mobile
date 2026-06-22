@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../core/models/product_item_model.dart';
 import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
@@ -39,7 +40,10 @@ class ProductCubit extends Cubit<ProductState> {
           _fetchProducts();
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: ProductRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
@@ -173,7 +177,10 @@ class ProductCubit extends Cubit<ProductState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: ProductRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
@@ -225,23 +232,6 @@ class ProductCubit extends Cubit<ProductState> {
           ? '${dto.discountPct}٪'
           : null,
     );
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(
-        state.copyWith(
-          status: ProductRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
   }
 
   @override

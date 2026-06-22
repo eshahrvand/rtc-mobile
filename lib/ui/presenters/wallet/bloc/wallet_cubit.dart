@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/models/wallet_model.dart';
 import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../locator.dart';
 import '../../../../repository/wallet/wallet_repository.dart';
 import 'wallet_state.dart';
@@ -20,7 +21,10 @@ class WalletCubit extends Cubit<WalletState> {
             walletSummary: summary,
           ));
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: WalletRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            )));
   }
 
   void selectPocket(PocketModel pocket) {
@@ -51,7 +55,10 @@ class WalletCubit extends Cubit<WalletState> {
         status: WalletRequestStatus.success,
         transactions: transactions,
       ));
-    }).catchError(_handleError);
+    }).catchError((e) => emit(state.copyWith(
+              status: WalletRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            )));
   }
 
   void setTypeFilter(String? type) {
@@ -75,20 +82,5 @@ class WalletCubit extends Cubit<WalletState> {
 
   void selectTransaction(TransactionModel transaction) {
     emit(state.copyWith(selectedTransaction: transaction));
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(state.copyWith(
-        status: WalletRequestStatus.error,
-        errorMessage: finalMessage,
-      ));
-    });
   }
 }
