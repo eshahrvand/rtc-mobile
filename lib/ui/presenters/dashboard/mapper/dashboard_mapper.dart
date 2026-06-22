@@ -60,7 +60,9 @@ class DashboardMapper {
     ];
   }
 
-  static LineChartDataModel mapLineChartData(List<DailyChartDtoModel> dailyChart) {
+  static LineChartDataModel mapLineChartData(
+    List<DailyChartDtoModel> dailyChart,
+  ) {
     final now = Jalali.now();
     final List<FlSpot> previousMonthSpots = [];
     final List<FlSpot> currentMonthSpots = [];
@@ -81,7 +83,9 @@ class DashboardMapper {
       if (dailyData.isNotEmpty) {
         final item = dailyData.first;
         currentMonthSpots.add(FlSpot(i.toDouble(), item.totalSalesAmount));
-        previousMonthSpots.add(FlSpot(i.toDouble(), item.previousTotalSalesAmount));
+        previousMonthSpots.add(
+          FlSpot(i.toDouble(), item.previousTotalSalesAmount),
+        );
       } else {
         currentMonthSpots.add(FlSpot(i.toDouble(), 0));
         previousMonthSpots.add(FlSpot(i.toDouble(), 0));
@@ -94,7 +98,9 @@ class DashboardMapper {
     );
   }
 
-  static List<PieChartItemModel> mapOrderStatusChart(List<OrderStatusDtoModel> list) {
+  static List<PieChartItemModel> mapOrderStatusChart(
+    List<OrderStatusDtoModel> list,
+  ) {
     if (list.isEmpty) return [];
 
     final orderWeights = {
@@ -117,26 +123,27 @@ class DashboardMapper {
       String label = s.status;
       Color color = AppColors.grayPalette.shade400;
 
-      final orderStatus = s.orderStatus;
-
-      if (orderStatus == OrderStatus.approved) {
-        label = S.current.statusApproved;
-        color = AppColors.successPalette.shade400;
-      } else if (orderStatus == OrderStatus.rejected) {
-        label = S.current.statusRejected;
-        color = AppColors.errorPalette.shade400;
-      } else if (orderStatus == OrderStatus.underReview) {
-        label = S.current.statusPending;
-        color = AppColors.warningPalette.shade400;
-      } else if (orderStatus == OrderStatus.preInvoice) {
-        label = S.current.preInvoice;
-        color = AppColors.brandPalette.shade400;
-      } else if (orderStatus == OrderStatus.expired) {
-        label = S.current.statusExpired;
-        color = AppColors.grayPalette.shade400;
-      } else if (orderStatus == OrderStatus.awaitingSettlement) {
-        label = S.current.statusWaitingSettlement;
-        color = AppColors.blueGrayPalette.shade400;
+      switch (s.orderStatus) {
+        case OrderStatus.approved:
+          label = S.current.statusApproved;
+          color = AppColors.successPalette.shade400;
+        case OrderStatus.rejected:
+          label = S.current.statusRejected;
+          color = AppColors.errorPalette.shade400;
+        case OrderStatus.underReview:
+          label = S.current.statusPending;
+          color = AppColors.warningPalette.shade400;
+        case OrderStatus.preInvoice:
+          label = S.current.preInvoice;
+          color = AppColors.brandPalette.shade400;
+        case OrderStatus.expired:
+          label = S.current.statusExpired;
+          color = AppColors.grayPalette.shade400;
+        case OrderStatus.awaitingSettlement:
+          label = S.current.statusWaitingSettlement;
+          color = AppColors.blueGrayPalette.shade400;
+        case OrderStatus.unknown:
+          break;
       }
 
       return PieChartItemModel(
@@ -147,7 +154,9 @@ class DashboardMapper {
     }).toList();
   }
 
-  static List<PieChartItemModel> mapCategoryChart(List<CategoryChartDtoModel> list) {
+  static List<PieChartItemModel> mapCategoryChart(
+    List<CategoryChartDtoModel> list,
+  ) {
     if (list.isEmpty) return [];
 
     final sortedList = List<CategoryChartDtoModel>.from(list);
@@ -175,7 +184,9 @@ class DashboardMapper {
     }).toList();
   }
 
-  static List<BarChartItemModel> mapSubPlanChart(List<SubPlanChartDtoModel> list) {
+  static List<BarChartItemModel> mapSubPlanChart(
+    List<SubPlanChartDtoModel> list,
+  ) {
     if (list.isEmpty) return [];
 
     return list.map((s) {
