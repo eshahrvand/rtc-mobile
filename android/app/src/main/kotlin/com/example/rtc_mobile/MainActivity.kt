@@ -22,7 +22,7 @@ class MainActivity : FlutterActivity() {
         ).setMethodCallHandler { call, result ->
             if (call.method == "saveToDownloads") {
                 val fileName = call.argument<String>("fileName") ?: ""
-                val bytes   = call.argument<ByteArray>("bytes") ?: byteArrayOf()
+                val bytes = call.argument<ByteArray>("bytes") ?: byteArrayOf()
                 try {
                     val path = saveFileToDownloads(fileName, bytes)
                     result.success(path)
@@ -56,7 +56,7 @@ class MainActivity : FlutterActivity() {
 
             "/storage/emulated/0/Download/$fileName.pdf"
         } else {
-            val dir  = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             val file = File(dir, "$fileName.pdf")
             FileOutputStream(file).use { it.write(bytes) }
             file.absolutePath
