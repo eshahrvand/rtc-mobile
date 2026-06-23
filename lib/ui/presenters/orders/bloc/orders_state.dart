@@ -69,6 +69,10 @@ class OrdersState with _$OrdersState {
     @Default(60) int settlementCountdown,
     @Default(false) bool isSettlementTimerActive,
 
+    // Clearance OTP Timer
+    @Default(120) int clearanceOtpCountdown,
+    @Default(false) bool isClearanceOtpTimerActive,
+
     // Settlement Extras
     String? settlementMobile,
 
@@ -141,10 +145,8 @@ extension OrdersStateX on OrdersState {
         return S.current.uploaded;
       }
       return S.current.statusDone;
-    } else if (last.status == 'failed' || last.status == 'ناموفق') {
-      return S.current.statusFailed;
     }
-    return last.status;
+    return null;
   }
 
   String? get lastSettlementStatusDisplay {

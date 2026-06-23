@@ -47,6 +47,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   static Future<double>? _cachedToleranceFuture;
   Timer? _searchTimer;
   Timer? _settlementTimer;
+  Timer? _clearanceOtpTimer;
   final _appLinks = AppLinks();
   StreamSubscription? _linkSubscription;
 
@@ -487,6 +488,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             ),
           );
 
+          if (type == 'otp') {
+            _startClearanceOtpTimer();
+          }
+
           if (type == 'redirect' && redirectUrl != null) {
             launchUrl(
               Uri.parse(redirectUrl),
@@ -745,6 +750,29 @@ class OrdersCubit extends Cubit<OrdersState> {
     });
   }
 
+  void _startClearanceOtpTimer() {
+    _clearanceOtpTimer?.cancel();
+    emit(
+      state.copyWith(
+        clearanceOtpCountdown: 120,
+        isClearanceOtpTimerActive: true,
+      ),
+    );
+
+    _clearanceOtpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state.clearanceOtpCountdown > 0) {
+        emit(
+          state.copyWith(
+            clearanceOtpCountdown: state.clearanceOtpCountdown - 1,
+          ),
+        );
+      } else {
+        _clearanceOtpTimer?.cancel();
+        emit(state.copyWith(isClearanceOtpTimerActive: false));
+      }
+    });
+  }
+
   void resendSettlementLink() {
     if (state.selectedOrder == null || state.settlementMethod != 'ipg_sms') return;
     initiateSettlement('ipg_sms');
@@ -929,6 +957,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   Future<void> close() {
     _searchTimer?.cancel();
     _settlementTimer?.cancel();
+    _clearanceOtpTimer?.cancel();
     _linkSubscription?.cancel();
     return super.close();
   }

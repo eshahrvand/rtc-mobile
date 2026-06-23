@@ -51,6 +51,7 @@ class ServiceUtil {
             final refreshToken = prefs.refreshToken;
             if (refreshToken != null) {
               print('>> REFRESH TOKEN: $refreshToken');
+              String? newAccess;
               try {
                 // Separate Dio for refresh to avoid cycles
                 final refreshDio = Dio(
@@ -61,23 +62,37 @@ class ServiceUtil {
                   data: {'refresh': refreshToken},
                 );
 
-                final newAccess = response.data['access'];
-                final newRefresh = response.data['refresh'];
+                final String? access = response.data['access'];
+                final String? refresh = response.data['refresh'];
+
+                if (access == null || refresh == null) {
+                  throw Exception('Invalid refresh response');
+                }
+
+                newAccess = access;
 
                 print('>> NEW ACCESS TOKEN: $newAccess');
-                print('>> NEW REFRESH TOKEN: $newRefresh');
+                print('>> NEW REFRESH TOKEN: $refresh');
 
-                await prefs.saveTokens(access: newAccess, refresh: newRefresh);
-
-                // Retry original request
-                e.requestOptions.headers['Authorization'] = 'Bearer $newAccess';
-                final clonedRequest = await dio.fetch(e.requestOptions);
-                return handler.resolve(clonedRequest);
+                await prefs.saveTokens(access: newAccess, refresh: refresh);
               } catch (refreshError) {
                 print('>> [SESSION] Refresh failed: $refreshError');
                 await prefs.clearTokens();
                 router.go(AppRoutes.auth);
                 return handler.next(e);
+              }
+
+              if (newAccess != null) {
+                try {
+                  // Retry original request
+                  e.requestOptions.headers['Authorization'] =
+                      'Bearer $newAccess';
+                  final clonedRequest = await dio.fetch(e.requestOptions);
+                  return handler.resolve(clonedRequest);
+                } on DioException catch (retryError) {
+                  // Propagate retry error without logging out
+                  return handler.next(retryError);
+                }
               }
             } else {
               print('>> [SESSION] No refresh token available');

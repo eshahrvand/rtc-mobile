@@ -151,6 +151,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                                         isLoading:
                                             state.status ==
                                             OrdersRequestStatus.loading,
+                                        remainingSeconds: state.clearanceOtpCountdown,
                                         onConfirm: (otp) {
                                           cubit
                                               .confirmClearanceOtp(otp)
