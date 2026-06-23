@@ -103,10 +103,12 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           if (!isClosed) {
-            emit(state.copyWith(
-              status: OrdersRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-            ));
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e),
+              ),
+            );
           }
         });
   }
@@ -141,12 +143,14 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           final orders = state.allOrders;
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-            allOrders: orders,
-            filteredOrders: orders,
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              allOrders: orders,
+              filteredOrders: orders,
+            ),
+          );
           return null;
         });
   }
@@ -183,10 +187,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -410,10 +416,12 @@ class OrdersCubit extends Cubit<OrdersState> {
     if (state.selectedOrder == null) return Future.value();
 
     if (state.tolerance == null) {
-      emit(state.copyWith(
-        status: OrdersRequestStatus.error,
-        errorMessage: S.current.toleranceSettingNotFoundError,
-      ));
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.error,
+          errorMessage: S.current.toleranceSettingNotFoundError,
+        ),
+      );
       return Future.value();
     }
 
@@ -487,10 +495,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           throw e;
         });
   }
@@ -540,10 +550,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           throw e;
         });
   }
@@ -566,10 +578,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           throw e;
         });
   }
@@ -612,10 +626,12 @@ class OrdersCubit extends Cubit<OrdersState> {
   }) {
     if (state.selectedOrder == null) return;
     if (method == 'wallet' && state.tolerance == null) {
-      emit(state.copyWith(
-        status: OrdersRequestStatus.error,
-        errorMessage: S.current.toleranceSettingNotFoundError,
-      ));
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.error,
+          errorMessage: S.current.toleranceSettingNotFoundError,
+        ),
+      );
       return;
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
@@ -678,7 +694,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               confirmSettlement();
             }
 
-            if (method == 'link') {
+            if (method == 'ipg_sms') {
               _startSettlementTimer();
               confirmSettlement();
             }
@@ -703,10 +719,12 @@ class OrdersCubit extends Cubit<OrdersState> {
               return null;
             }
           }
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -730,8 +748,8 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void resendSettlementLink() {
-    if (state.selectedOrder == null || state.settlementMethod != 'link') return;
-    initiateSettlement('link');
+    if (state.selectedOrder == null || state.settlementMethod != 'ipg_sms') return;
+    initiateSettlement('ipg_sms');
   }
 
   void selectSettlementMethod(String method) {
@@ -784,18 +802,22 @@ class OrdersCubit extends Cubit<OrdersState> {
           })
           .then((_) => performSettle())
           .catchError((e) {
-          emit(state.copyWith(
-            status: OrdersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
-          return null;
-        });
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e),
+              ),
+            );
+            return null;
+          });
     } else {
       performSettle().catchError(
-        (e) => emit(state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: ErrorHandler.getMessage(e),
-        )),
+        (e) => emit(
+          state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ),
+        ),
       );
     }
   }
@@ -895,7 +917,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       case 'online':
         return 'ipg';
       case 'cash':
-        return 'link';
+        return 'ipg_sms';
       case 'wallet':
         return 'wallet_debit';
       case 'offline':

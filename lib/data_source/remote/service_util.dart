@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
 import '../../config/constants.dart';
+
+import '../../ui/router/app_route.dart';
+import '../../ui/router/router.dart';
 import '../local/prefs/prefs.dart';
 
 class ServiceUtil {
@@ -71,9 +74,17 @@ class ServiceUtil {
                 final clonedRequest = await dio.fetch(e.requestOptions);
                 return handler.resolve(clonedRequest);
               } catch (refreshError) {
+                print('>> [SESSION] Refresh failed: $refreshError');
                 await prefs.clearTokens();
+                router.go(AppRoutes.auth);
                 return handler.next(e);
               }
+            } else {
+              print('>> [SESSION] No refresh token available');
+              await prefs.clearTokens();
+
+              router.go(AppRoutes.auth);
+              return handler.next(e);
             }
           }
           return handler.next(e);

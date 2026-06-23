@@ -351,7 +351,7 @@ class _OrderSettlementOperationsWidgetState
                             ],
                           ),
                         ),
-                        if (state.settlementMethod == 'link' &&
+                        if (state.settlementMethod == 'ipg_sms' &&
                             !isPartial &&
                             state.settlementStep != SettlementStep.initial)
                           Padding(
@@ -369,7 +369,7 @@ class _OrderSettlementOperationsWidgetState
                           if (state.settlementMethod == 'wallet_debit')
                             _buildWalletBalanceStatus(state, theme),
                           const SizedBox(height: 12.0),
-                          if (state.settlementMethod == 'link' &&
+                          if (state.settlementMethod == 'ipg_sms' &&
                               !isPartial &&
                               state.settlementStep != SettlementStep.initial)
                             Padding(

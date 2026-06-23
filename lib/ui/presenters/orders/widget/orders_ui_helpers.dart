@@ -95,7 +95,7 @@ class OrdersUiHelpers {
     return switch (method) {
       'wallet_debit' => S.current.walletSettlement,
       'ipg' => S.current.ipgSettlementTitle,
-      'link' => S.current.linkSettlementTitle,
+      'ipg_sms' => S.current.linkSettlementTitle,
       'card_to_card' => S.current.cardToCardSettlementTitle,
       _ => S.current.selectSettlementMethodTitle,
     };
@@ -106,7 +106,7 @@ class OrdersUiHelpers {
     return switch (method) {
       'wallet_debit' => S.current.payWithWalletButton,
       'ipg' => S.current.goToShaparakButton,
-      'link' => S.current.sendPaymentLinkButton,
+      'ipg_sms' => S.current.sendPaymentLinkButton,
       'card_to_card' => S.current.cardToCardSettlementTitle,
       _ => S.current.confirmAndPayButton,
     };
@@ -177,7 +177,7 @@ class OrdersUiHelpers {
       );
     }
 
-    if (state.settlementMethod == 'link' &&
+    if (state.settlementMethod == 'ipg_sms' &&
         state.settlementStep != SettlementStep.initial) {
       return Align(
         alignment: AlignmentDirectional.centerEnd,
