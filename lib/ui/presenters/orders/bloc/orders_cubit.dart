@@ -691,12 +691,10 @@ class OrdersCubit extends Cubit<OrdersState> {
                 Uri.parse(redirectUrl),
                 mode: LaunchMode.externalApplication,
               );
-              confirmSettlement();
             }
 
             if (method == 'ipg_sms') {
               _startSettlementTimer();
-              confirmSettlement();
             }
 
             if (method == 'card_to_card' || method == 'offline') {
