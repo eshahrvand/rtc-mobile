@@ -150,6 +150,9 @@ class _OrderSettlementOperationsWidgetState
                           _isExpanded = !_isExpanded;
                         });
                       }
+                    : ((state.settlementMethod == 'ipg_sms') &&
+                          state.settlementStep != SettlementStep.initial)
+                    ? () => cubit.confirmSettlement()
                     : null,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -357,7 +360,9 @@ class _OrderSettlementOperationsWidgetState
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: Text(
-                              S.current.paymentLinkSentTo(state.settlementMobile ?? ""),
+                              S.current.paymentLinkSentTo(
+                                state.settlementMobile ?? "",
+                              ),
                               style: theme.bodyLarge!.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.grayPalette.shade900,
@@ -419,7 +424,9 @@ class _OrderSettlementOperationsWidgetState
                                     fontWeight: FontWeight.w600,
                                   ),
                                   width: 160.0,
-                                  isLoading: state.status == OrdersRequestStatus.loading,
+                                  isLoading:
+                                      state.status ==
+                                      OrdersRequestStatus.loading,
                                   onPressed: () => _handleSettlement(
                                     context,
                                     cubit,
