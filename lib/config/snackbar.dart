@@ -99,7 +99,6 @@ void rtcSnackBar({
 
   overlay.insert(entry);
 
-  // حذف خودکار بعد از مدت مشخص
   Future.delayed(duration, () {
     if (entry.mounted) {
       entry.remove();
