@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:rtc_mobile/config/auth_calculations.dart';
 import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
@@ -12,11 +13,13 @@ class OrderClearanceOtpSheet extends StatefulWidget {
   final String phoneNumber;
   final Function(String) onConfirm;
   final bool isLoading;
+  final int remainingSeconds;
 
   const OrderClearanceOtpSheet({
     super.key,
     required this.phoneNumber,
     required this.onConfirm,
+    required this.remainingSeconds,
     this.isLoading = false,
   });
 
@@ -38,175 +41,189 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
 
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 24.0),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 31.0,
-                height: 2.0,
-                decoration: BoxDecoration(
-                  color: AppColors.brandPalette.shade600,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(0, 10.0, 0, 24.0),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag handle
+              Center(
+                child: Container(
+                  width: 31.0,
+                  height: 2.0,
+                  decoration: BoxDecoration(
+                    color: AppColors.brandPalette.shade600,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
 
-            // Header Row
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
+              // Header Row
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Row(
+                  children: [
+                    Text(
+                      S.current.clearanceOtpTitle,
+                      style: theme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grayPalette.shade900,
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: RtcImage(
+                        image: "$baseImage/close.svg",
+                        width: 20.0,
+                        height: 20.0,
+                        color: AppColors.grayPalette.shade800,
+                        boxFit: BoxFit.fill,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
+              RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
+
+              // Prompt Text
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 20.0,
+                  top: 20.0,
+                  bottom: 24.0,
+                ),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    S.current.otpSentToPhone(
+                      OrderCalculations.maskPhoneNumber(widget.phoneNumber),
+                    ),
+                    textAlign: TextAlign.right,
+                    style: theme.bodyLarge!.copyWith(
+                      color: AppColors.grayPalette.shade900,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+
+              // OTP Input
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Pinput(
+                    length: 5,
+                    controller: _otpController,
+                    onChanged: (value) {
+                      setState(() {
+                        _isComplete = value.length == 5;
+                      });
+                    },
+                    defaultPinTheme: PinTheme(
+                      width: 56.0,
+                      height: 56.0,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.grayPalette.shade200,
+                        ),
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      textStyle: theme.displaySmall!.copyWith(
+                        color: AppColors.grayPalette.shade900,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    focusedPinTheme: PinTheme(
+                      width: 56.0,
+                      height: 56.0,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.brandPalette.shade600,
+                        ),
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      textStyle: theme.displaySmall!.copyWith(
+                        color: AppColors.grayPalette.shade900,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12.0),
+
+              // Timer Row
+              Row(
+                spacing: 8.0,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    S.current.clearanceOtpTitle,
+                    AuthCalculations.formatRemainingTime(
+                      widget.remainingSeconds,
+                    ),
                     style: theme.labelLarge!.copyWith(
+                      color: AppColors.grayPalette.shade600,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.grayPalette.shade900,
                     ),
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: RtcImage(
-                      image: "$baseImage/close.svg",
-                      width: 20.0,
-                      height: 20.0,
-                      color: AppColors.grayPalette.shade800,
-                      boxFit: BoxFit.fill,
-                    ),
+                  RtcImage(
+                    image: "$baseImage/clock.svg",
+                    height: 20.0,
+                    width: 20.0,
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16.0),
+              const SizedBox(height: 32.0),
 
-            RtcDivider(color: AppColors.grayPalette.shade200, height: 0.5),
-
-            // Prompt Text
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                right: 20.0,
-                top: 20.0,
-                bottom: 24.0,
-              ),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  S.current.otpSentToPhone(
-                    OrderCalculations.maskPhoneNumber(widget.phoneNumber),
-                  ),
-                  textAlign: TextAlign.right,
-                  style: theme.bodyLarge!.copyWith(
-                    color: AppColors.grayPalette.shade900,
-                    fontWeight: FontWeight.w500,
-                  ),
+              // Buttons Row
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: RtcButton(
+                        title: S.current.cancel,
+                        backgroundColor: Colors.white,
+                        borderColor: AppColors.grayPalette.shade300,
+                        styleBtn: theme.labelLarge!.copyWith(
+                          color: AppColors.grayPalette.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    const SizedBox(width: 12.0),
+                    Expanded(
+                      child: RtcButton(
+                        title: S.current.confirmAndClearance,
+                        styleBtn: theme.labelLarge!.copyWith(
+                          color: AppColors.grayPalette.shade300,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        isActive: _isComplete,
+                        isLoading: widget.isLoading,
+                        onPressed: () => widget.onConfirm(_otpController.text),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-
-            // OTP Input
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: Pinput(
-                  length: 5,
-                  controller: _otpController,
-                  onChanged: (value) {
-                    setState(() {
-                      _isComplete = value.length == 5;
-                    });
-                  },
-                  defaultPinTheme: PinTheme(
-                    width: 56.0,
-                    height: 56.0,
-                    decoration: BoxDecoration(
-                      border:
-                          Border.all(color: AppColors.grayPalette.shade200),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    textStyle: theme.titleLarge!.copyWith(
-                      color: AppColors.grayPalette.shade900,
-                    ),
-                  ),
-                  focusedPinTheme: PinTheme(
-                    width: 56.0,
-                    height: 56.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.brandPalette.shade600,
-                      ),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    textStyle: theme.titleLarge!.copyWith(
-                      color: AppColors.grayPalette.shade900,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12.0),
-
-            // Timer Row
-            Row(
-              spacing: 8.0,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${(60).toString().padLeft(2, '0')}:${(60).toString().padLeft(2, '0')}',
-                  style: theme.labelLarge!.copyWith(
-                    color: AppColors.grayPalette.shade500,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                RtcImage(image: "$baseImage/clock.svg", height: 20.0, width: 20.0),
-              ],
-            ),
-            const SizedBox(height: 32.0),
-
-            // Buttons Row
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RtcButton(
-                      title: S.current.cancel,
-                      backgroundColor: Colors.white,
-                      borderColor: AppColors.grayPalette.shade300,
-                      styleBtn: theme.labelLarge!.copyWith(
-                        color: AppColors.grayPalette.shade700,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: RtcButton(
-                      title: S.current.confirmAndClearance,
-                      styleBtn: theme.labelLarge!.copyWith(
-                        color: AppColors.grayPalette.shade300,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      isActive: _isComplete,
-                      isLoading: widget.isLoading,
-                      onPressed: () => widget.onConfirm(_otpController.text),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

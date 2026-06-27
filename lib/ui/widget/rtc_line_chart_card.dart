@@ -167,17 +167,24 @@ class RtcLineChartCard extends StatelessWidget {
                       ],
                       lineTouchData: LineTouchData(
                         touchTooltipData: LineTouchTooltipData(
-                          getTooltipColor: (spot) =>
-                              AppColors.brandPalette.shade600,
+                          getTooltipColor: (spot) => Colors.white,
                           tooltipRoundedRadius: 8,
+                          tooltipBorder: BorderSide(
+                            color: AppColors.grayPalette.shade200,
+                            width: 1,
+                          ),
                           getTooltipItems: (touchedSpots) {
                             final formatter = NumberFormat('#,###');
                             return touchedSpots.map((spot) {
+                              final isCurrentMonth = spot.barIndex == 1;
+                              final color = isCurrentMonth
+                                  ? AppColors.brandPalette.shade600
+                                  : AppColors.successPalette.shade400;
                               return LineTooltipItem(
                                 formatter.format(spot.y.toInt()),
                                 theme.bodySmall!.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
+                                  color: color,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               );
                             }).toList();

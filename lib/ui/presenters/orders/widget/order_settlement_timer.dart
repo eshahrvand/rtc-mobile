@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/orders_state.dart';

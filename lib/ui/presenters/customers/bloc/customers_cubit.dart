@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/models/customer_model.dart';
 import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../locator.dart';
+import '../../orders/mapper/order_mapper.dart';
 import 'customers_state.dart';
 
 class CustomersCubit extends Cubit<CustomersState> {
@@ -33,7 +35,10 @@ class CustomersCubit extends Cubit<CustomersState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: CustomersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
         });
   }
 
@@ -60,7 +65,11 @@ class CustomersCubit extends Cubit<CustomersState> {
     _customersRepo
         .getCustomerDetail(customer.id)
         .then((dto) {
-          return _ordersRepo.getCustomerOrders(dto.id).then((orders) {
+          return _ordersRepo.getCustomerOrders(dto.id).then((response) {
+            final orders = response.results
+                .map((orderDto) => OrderMapper.mapToCustomerOrderItem(orderDto))
+                .toList();
+
             final detail = CustomerDetailModel(
               id: dto.id,
               name: '${dto.firstName} ${dto.lastName}',
@@ -81,7 +90,10 @@ class CustomersCubit extends Cubit<CustomersState> {
             );
           });
         })
-        .catchError(_handleError);
+        .catchError((e) => emit(state.copyWith(
+              status: CustomersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            )));
   }
 
   void onTabChanged(int index) {
@@ -101,23 +113,6 @@ class CustomersCubit extends Cubit<CustomersState> {
       phoneNumber: dto.mobile,
       city: "",
     );
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(
-        state.copyWith(
-          status: CustomersRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
   }
 
   @override

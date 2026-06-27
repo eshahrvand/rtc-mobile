@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
@@ -30,17 +30,16 @@ class RtcCustomerOrderItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 4,
                   children: [
+
                     Text(
-                      order.orderId.substring(0, 8),
+                      order.orderId,
                       style: theme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.w500,
                         color: AppColors.grayPalette.shade900,
                       ),
                       // maxLines: 2,
                     ),
-
                     Text(
                       '#',
                       style: theme.bodyLarge!.copyWith(

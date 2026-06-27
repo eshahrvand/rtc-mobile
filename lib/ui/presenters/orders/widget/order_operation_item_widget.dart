@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
@@ -81,7 +81,6 @@ class OrderOperationItemWidget extends StatelessWidget {
                 isOnline: state.gatewayType == GatewayType.online,
                 onAction: () {
                   if (state.gatewayType == GatewayType.online) {
-                    // Trigger OTP flow via cubit
                   } else {
                     context.read<OrdersCubit>().pickClearanceDocument(context);
                   }

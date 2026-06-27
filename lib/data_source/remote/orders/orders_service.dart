@@ -25,6 +25,9 @@ abstract class OrdersService {
   @GET('orders/orders/{id}')
   Future<OrderDtoModel> getOrderById(@Path('id') String id);
 
+  @GET('orders/orders/{id}/pre-invoice')
+  Future<String> getPreInvoiceHtml(@Path('id') String id);
+
   @POST('orders/orders')
   Future<OrderDtoModel> createOrder(@Body() Map<String, dynamic> request);
 

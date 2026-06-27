@@ -63,23 +63,27 @@ class OrdersBadgeList extends StatelessWidget {
     OrdersCubit cubit,
     OrdersState state,
   ) {
+    // Derive filter items from OrderStatus enum to remove hardcoded strings
     final statusItems = [
-      FilterItem(
-        id: 'pre_invoice',
-        title: OrderStatus.preInvoice.toDisplayString(),
-      ),
-      FilterItem(
-        id: 'under_review',
-        title: OrderStatus.underReview.toDisplayString(),
-      ),
-      FilterItem(id: 'approved', title: OrderStatus.approved.toDisplayString()),
-      FilterItem(id: 'rejected', title: OrderStatus.rejected.toDisplayString()),
-      FilterItem(
-        id: 'awaiting_settlement',
-        title: OrderStatus.awaitingSettlement.toDisplayString(),
-      ),
-      FilterItem(id: 'expired', title: OrderStatus.expired.toDisplayString()),
-    ];
+      OrderStatus.preInvoice,
+      OrderStatus.underReview,
+      OrderStatus.approved,
+      OrderStatus.rejected,
+      OrderStatus.awaitingSettlement,
+      OrderStatus.expired,
+    ].map((status) {
+      String id = '';
+      switch (status) {
+        case OrderStatus.preInvoice: id = 'pre_invoice'; break;
+        case OrderStatus.underReview: id = 'under_review'; break;
+        case OrderStatus.approved: id = 'approved'; break;
+        case OrderStatus.rejected: id = 'rejected'; break;
+        case OrderStatus.awaitingSettlement: id = 'awaiting_settlement'; break;
+        case OrderStatus.expired: id = 'expired'; break;
+        default: id = '';
+      }
+      return FilterItem(id: id, title: status.toDisplayString());
+    }).toList();
 
     FilterBottomSheet.show(
       context,

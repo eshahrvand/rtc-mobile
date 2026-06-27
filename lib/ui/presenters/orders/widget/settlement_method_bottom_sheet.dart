@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
@@ -46,7 +46,7 @@ class _SettlementMethodBottomSheetState
   final List<FilterItem> _methods = [
     FilterItem(id: 'wallet_debit', title: S.current.walletSettlement),
     FilterItem(id: 'ipg', title: S.current.onlinePaymentGateway),
-    FilterItem(id: 'link', title: S.current.sendPaymentLinkToCustomer),
+    FilterItem(id: 'ipg_sms', title: S.current.sendPaymentLinkToCustomer),
     FilterItem(id: 'card_to_card', title: S.current.uploadDepositReceipt),
   ];
 

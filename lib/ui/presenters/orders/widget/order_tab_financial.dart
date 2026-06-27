@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_collapsible_section.dart';
@@ -151,6 +151,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                                         isLoading:
                                             state.status ==
                                             OrdersRequestStatus.loading,
+                                        remainingSeconds: state.clearanceOtpCountdown,
                                         onConfirm: (otp) {
                                           cubit
                                               .confirmClearanceOtp(otp)

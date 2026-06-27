@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../theme/colors.dart';
 
@@ -79,7 +79,7 @@ class RtcCreditLimitField extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: RtcImage(
-                  image: "$baseImage/rial_white.svg.svg",
+                  image: "$baseImage/rial_white.svg",
                   width: 20,
                   height: 20,
                   boxFit: BoxFit.fill,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/core/utils/thousands_separator_input_formatter.dart';
 import '../../../theme/colors.dart';

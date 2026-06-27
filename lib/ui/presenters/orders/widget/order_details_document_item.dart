@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
@@ -89,8 +89,8 @@ class OrderDetailsDocumentItem extends StatelessWidget {
                       },
                       child: RtcImage(
                         image: '$baseImage/eye-document.svg',
-                        width: 20.0,
-                        height: 20.0,
+                        width: 20,
+                        height: 20,
                       ),
                     ),
                     if (onDelete != null)
@@ -98,8 +98,8 @@ class OrderDetailsDocumentItem extends StatelessWidget {
                         onTap: onDelete,
                         child: RtcImage(
                           image: '$baseImage/delete.svg',
-                          width: 20.0,
-                          height: 20.0,
+                          width: 20,
+                          height: 20,
                           color: AppColors.errorPalette.shade600,
                         ),
                       ),

@@ -7,17 +7,11 @@ import '../../../../generated/l10n.dart';
 
 part 'orders_state.freezed.dart';
 
-enum OrdersRequestStatus {
-  initial,
-  loading,
-  success,
-  error,
-}
+enum OrdersRequestStatus { initial, loading, success, error }
 
-enum GatewayType {
-  online,
-  offline,
-}
+enum PrintStatus { initial, loading, success, error }
+
+enum GatewayType { online, offline }
 
 @freezed
 class OrdersState with _$OrdersState {
@@ -61,7 +55,7 @@ class OrdersState with _$OrdersState {
     // Settlement Flow
     @Default(SettlementStep.initial) SettlementStep settlementStep,
     OrderOperationModel? settlementOperation,
-    @Default('link') String? settlementMethod,
+    @Default('ipg_sms') String? settlementMethod,
     String? settlementRedirectUrl,
     double? settlementReservedAmount,
     String? settlementBankAccount,
@@ -75,6 +69,10 @@ class OrdersState with _$OrdersState {
     @Default(60) int settlementCountdown,
     @Default(false) bool isSettlementTimerActive,
 
+    // Clearance OTP Timer
+    @Default(120) int clearanceOtpCountdown,
+    @Default(false) bool isClearanceOtpTimerActive,
+
     // Settlement Extras
     String? settlementMobile,
 
@@ -82,11 +80,17 @@ class OrdersState with _$OrdersState {
     String? disbursementMobile,
     String? disbursementRedirectUrl,
     String? disbursementGatewayType,
+
+    // Printing
+    @Default(false) bool isPrinting,
+    @Default(PrintStatus.initial) PrintStatus printStatus,
+    String? lastPrintedFilePath,
   }) = _OrdersState;
 }
 
 extension OrdersStateX on OrdersState {
   bool get isPreInvoice => selectedOrder?.orderStatus == OrderStatus.preInvoice;
+
   bool get isWaitingSettlement =>
       selectedOrder?.orderStatus == OrderStatus.awaitingSettlement;
 
@@ -119,9 +123,9 @@ extension OrdersStateX on OrdersState {
             double.tryParse(last.amount.replaceAll(',', '')) ?? 0;
         final orderVal =
             double.tryParse(
-                  selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
-                ) ??
-                0;
+              selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
+            ) ??
+            0;
         if (disbursedVal > orderVal) {
           return (disbursedVal - orderVal).toStringAsFixed(0);
         }
@@ -141,10 +145,8 @@ extension OrdersStateX on OrdersState {
         return S.current.uploaded;
       }
       return S.current.statusDone;
-    } else if (last.status == 'failed' || last.status == 'ناموفق') {
-      return S.current.statusFailed;
     }
-    return last.status;
+    return null;
   }
 
   String? get lastSettlementStatusDisplay {
@@ -200,7 +202,8 @@ extension OrdersStateX on OrdersState {
   double get settlementDifferenceValue {
     if (selectedOrder == null) return 0;
 
-    final orderTotal = double.tryParse(
+    final orderTotal =
+        double.tryParse(
           selectedOrder!.financialSummary.finalAmount.replaceAll(',', ''),
         ) ??
         0;
@@ -239,9 +242,4 @@ enum ClearanceStep {
   success,
 }
 
-enum SettlementStep {
-  initial,
-  methodSelected,
-  awaitingConfirmation,
-  success,
-}
+enum SettlementStep { initial, methodSelected, awaitingConfirmation, success }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_image.dart';

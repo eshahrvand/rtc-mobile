@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/ui/widget/rtc_button.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 
@@ -95,6 +95,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
         'screenWidth': screenSize.width,
         'screenHeight': screenSize.height,
         'tempPath': tempPath,
+        'showOverlay': widget.showOverlay,
       });
 
       if (mounted && resultPath != null) {
@@ -217,6 +218,7 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
     final double screenWidth = params['screenWidth'];
     final double screenHeight = params['screenHeight'];
     final String tempPath = params['tempPath'];
+    final bool showOverlay = params['showOverlay'] ?? true;
 
     img.Image? image = img.decodeImage(bytes);
     if (image == null) return null;
@@ -227,56 +229,58 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       image = img.copyRotate(image, angle: 90);
     }
 
-    // Calculate the scale to match the 'cover' behavior of the preview
-    final double scale =
-        (screenWidth / image.width > screenHeight / image.height)
-        ? screenWidth / image.width
-        : screenHeight / image.height;
+    if (showOverlay) {
+      // Calculate the scale to match the 'cover' behavior of the preview
+      final double scale =
+          (screenWidth / image.width > screenHeight / image.height)
+          ? screenWidth / image.width
+          : screenHeight / image.height;
 
-    final double visibleWidth = screenWidth / scale;
-    final double visibleHeight = screenHeight / scale;
+      final double visibleWidth = screenWidth / scale;
+      final double visibleHeight = screenHeight / scale;
 
-    final double offsetX = (image.width - visibleWidth) / 2;
-    final double offsetY = (image.height - visibleHeight) / 2;
+      final double offsetX = (image.width - visibleWidth) / 2;
+      final double offsetY = (image.height - visibleHeight) / 2;
 
-    // Overlay dimensions in screen (logical) pixels (MUST MATCH UI)
-    final double rectWidth = screenWidth - (26 * 2);
-    final double rectHeight = 206;
-    final double rectLeft = 26;
-    final double rectTop = (screenHeight - rectHeight) / 2;
+      // Overlay dimensions in screen (logical) pixels (MUST MATCH UI)
+      final double rectWidth = screenWidth - (26 * 2);
+      final double rectHeight = 206;
+      final double rectLeft = 26;
+      final double rectTop = (screenHeight - rectHeight) / 2;
 
-    // Map screen rect to image pixels
-    final int pixelX = (offsetX + (rectLeft / scale)).toInt();
-    final int pixelY = (offsetY + (rectTop / scale)).toInt();
-    final int pixelWidth = (rectWidth / scale).toInt();
-    final int pixelHeight = (rectHeight / scale).toInt();
+      // Map screen rect to image pixels
+      final int pixelX = (offsetX + (rectLeft / scale)).toInt();
+      final int pixelY = (offsetY + (rectTop / scale)).toInt();
+      final int pixelWidth = (rectWidth / scale).toInt();
+      final int pixelHeight = (rectHeight / scale).toInt();
 
-    // Ensure we don't crop outside image bounds
-    final int safeX = pixelX.clamp(0, image.width - 1);
-    final int safeY = pixelY.clamp(0, image.height - 1);
-    final int safeWidth = pixelWidth.clamp(1, image.width - safeX);
-    final int safeHeight = pixelHeight.clamp(1, image.height - safeY);
+      // Ensure we don't crop outside image bounds
+      final int safeX = pixelX.clamp(0, image.width - 1);
+      final int safeY = pixelY.clamp(0, image.height - 1);
+      final int safeWidth = pixelWidth.clamp(1, image.width - safeX);
+      final int safeHeight = pixelHeight.clamp(1, image.height - safeY);
 
-    img.Image cropped = img.copyCrop(
-      image,
-      x: safeX,
-      y: safeY,
-      width: safeWidth,
-      height: safeHeight,
-    );
+      image = img.copyCrop(
+        image,
+        x: safeX,
+        y: safeY,
+        width: safeWidth,
+        height: safeHeight,
+      );
+    }
 
-    // Downscale if the cropped image is still too large
-    if (cropped.width > 2000 || cropped.height > 2000) {
-      cropped = img.copyResize(
-        cropped,
-        width: cropped.width > cropped.height ? 2000 : null,
-        height: cropped.height >= cropped.width ? 2000 : null,
+    // Downscale if the image is still too large
+    if (image.width > 2000 || image.height > 2000) {
+      image = img.copyResize(
+        image,
+        width: image.width > image.height ? 2000 : null,
+        height: image.height >= image.width ? 2000 : null,
         interpolation: img.Interpolation.linear,
       );
     }
 
     final resultFile = File(tempPath);
-    await resultFile.writeAsBytes(img.encodeJpg(cropped, quality: 40));
+    await resultFile.writeAsBytes(img.encodeJpg(image, quality: 40));
 
     return tempPath;
   } catch (e) {

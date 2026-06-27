@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/models/product_detail_model.dart';
 import '../../../../core/utils/network_helper.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
@@ -106,29 +107,15 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
           );
         })
         .catchError((e) {
-          _handleError(e);
+          emit(state.copyWith(
+            status: ProductDetailRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ));
           return null;
         });
   }
 
   void onImageSelected(int index) {
     emit(state.copyWith(selectedImageIndex: index));
-  }
-
-  void _handleError(Object e) {
-    if (isClosed) return;
-
-    NetworkHelper.getNetworkErrorMessage().then((networkMessage) {
-      if (isClosed) return;
-
-      final finalMessage = networkMessage ?? e.toString();
-
-      emit(
-        state.copyWith(
-          status: ProductDetailRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
   }
 }

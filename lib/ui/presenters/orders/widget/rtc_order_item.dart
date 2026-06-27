@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
@@ -33,7 +33,6 @@ class RtcOrderItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 4.0,
                   children: [
                     Text(
                       order.orderId,
@@ -42,6 +41,7 @@ class RtcOrderItem extends StatelessWidget {
                         color: AppColors.grayPalette.shade900,
                       ),
                     ),
+
                     Text(
                       '#',
                       style: theme.labelLarge!.copyWith(

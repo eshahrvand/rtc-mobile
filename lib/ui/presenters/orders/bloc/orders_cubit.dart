@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:developer' as dev;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_html_to_pdf/flutter_native_html_to_pdf.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
+import '../../../../config/errorhandler.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
@@ -14,9 +19,24 @@ import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
-import '../../../../core/utils/network_helper.dart';
 import '../../media_picker/media_picker.dart';
+import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
+
+const _downloadsChannel = MethodChannel('com.rtc_mobile/downloads');
+
+Future<String?> _saveToDownloads(String fileName, Uint8List bytes) async {
+  try {
+    final path = await _downloadsChannel.invokeMethod<String>(
+      'saveToDownloads',
+      {'fileName': fileName, 'bytes': bytes},
+    );
+    return path;
+  } on PlatformException catch (e) {
+    debugPrint('>> [PDF] MethodChannel error: ${e.message}');
+    return null;
+  }
+}
 
 class OrdersCubit extends Cubit<OrdersState> {
   final _ordersRepo = sl<OrdersRepository>();
@@ -27,12 +47,11 @@ class OrdersCubit extends Cubit<OrdersState> {
   static Future<double>? _cachedToleranceFuture;
   Timer? _searchTimer;
   Timer? _settlementTimer;
+  Timer? _clearanceOtpTimer;
   final _appLinks = AppLinks();
   StreamSubscription? _linkSubscription;
 
   OrdersCubit() : super(const OrdersState());
-
-  // ─── Initialization & Fetching ─────────────────────────────────────
 
   void init() {
     _plansRepo
@@ -85,7 +104,12 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           if (!isClosed) {
-            _handleError(e, prefix: S.current.fetchUserSettingsError);
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e),
+              ),
+            );
           }
         });
   }
@@ -106,7 +130,10 @@ class OrdersCubit extends Cubit<OrdersState> {
           createdBefore: createdBefore,
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
         )
-        .then((orders) {
+        .then((response) {
+          final orders = response.results
+              .map((dto) => OrderMapper.mapToSummary(dto))
+              .toList();
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
@@ -116,7 +143,15 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          _handleError(e, rollbackState: rollbackState);
+          final orders = state.allOrders;
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              allOrders: orders,
+              filteredOrders: orders,
+            ),
+          );
           return null;
         });
   }
@@ -127,7 +162,8 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _ordersRepo
         .getOrderDetails(orderId)
-        .then((detail) {
+        .then((dto) {
+          final detail = OrderMapper.mapToDetail(dto);
           final isSettled = detail.settlementRecords.any(
             (r) => r.status == 'موفق' || r.status == 'success',
           );
@@ -152,7 +188,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.fetchOrderDetailsError);
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -282,19 +323,106 @@ class OrdersCubit extends Cubit<OrdersState> {
     );
   }
 
+  // ─── PDF Printing ──────────────────────────────────────────────────
+
+  Future<void> printPreInvoice(String orderId) {
+    emit(
+      state.copyWith(
+        isPrinting: true,
+        printStatus: PrintStatus.loading,
+        lastPrintedFilePath: null,
+      ),
+    );
+
+    return _ordersRepo
+        .getPreInvoiceHtml(orderId)
+        .then((html) async {
+          final tempDir = await getTemporaryDirectory();
+          final displayId = OrderMapper.formatDisplayId(orderId);
+          final targetName = 'pre_invoice_$displayId';
+
+          debugPrint('>> [PDF] Starting generation for Order: $orderId');
+          dev.log('Starting PDF generation', name: 'PDF_DEBUG');
+
+          final converter = HtmlToPdfConverter();
+          final generatedFile = await converter.convertHtmlToPdf(
+            html: html,
+            targetDirectory: tempDir.path,
+            targetName: targetName,
+          );
+
+          if (generatedFile != null) {
+            final bytes = await generatedFile.readAsBytes();
+            debugPrint('>> [PDF] Generated bytes length: ${bytes.length}');
+            debugPrint('>> [PDF] Temp file path: ${generatedFile.path}');
+
+            // Saves directly to public Downloads folder:
+            // - Android < 10  → Environment.DIRECTORY_DOWNLOADS (direct write)
+            // - Android 10+   → MediaStore.Downloads (no storage permission needed)
+            // No picker dialog is shown.
+            final savedPath = await _saveToDownloads(targetName, bytes);
+
+            debugPrint('>> [PDF] saveToDownloads result: $savedPath');
+            dev.log('File saved at: $savedPath', name: 'PDF_DEBUG');
+
+            if (savedPath != null && savedPath.isNotEmpty) {
+              emit(
+                state.copyWith(
+                  isPrinting: false,
+                  printStatus: PrintStatus.success,
+                  lastPrintedFilePath: generatedFile.path,
+                ),
+              );
+            } else {
+              emit(
+                state.copyWith(
+                  isPrinting: false,
+                  printStatus: PrintStatus.error,
+                  errorMessage: 'Failed to save file to Downloads.',
+                ),
+              );
+            }
+          } else {
+            debugPrint('>> [PDF] ERROR: generatedFile was null');
+            dev.log(
+              'PDF generation failed',
+              name: 'PDF_DEBUG',
+              error: 'generatedFile is null',
+            );
+          }
+
+          Future.delayed(const Duration(seconds: 1), () {
+            if (!isClosed)
+              emit(state.copyWith(printStatus: PrintStatus.initial));
+          });
+        })
+        .catchError((e) {
+          emit(
+            state.copyWith(
+              isPrinting: false,
+              printStatus: PrintStatus.error,
+              errorMessage: e.toString(),
+            ),
+          );
+          Future.delayed(const Duration(seconds: 1), () {
+            if (!isClosed)
+              emit(state.copyWith(printStatus: PrintStatus.initial));
+          });
+        });
+  }
+
   // ─── Clearance Flow ───────────────────────────────────────────────
 
   Future<void> initiateClearance(String amountStr) {
-    print("tlorance>>:: initiateClearance CALLED with input: '$amountStr'");
-
-    if (state.selectedOrder == null) {
-      print("tlorance>>:: ERROR: selectedOrder is NULL");
-      return Future.value();
-    }
+    if (state.selectedOrder == null) return Future.value();
 
     if (state.tolerance == null) {
-      print("tlorance>>:: ERROR: tolerance is NULL in state");
-      _handleError(S.current.toleranceSettingNotFoundError);
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.error,
+          errorMessage: S.current.toleranceSettingNotFoundError,
+        ),
+      );
       return Future.value();
     }
 
@@ -305,17 +433,11 @@ class OrdersCubit extends Cubit<OrdersState> {
         .replaceAll(',', '');
     final orderAmountVal = double.tryParse(rawOrderAmountStr) ?? 0;
 
-
-
-    // ─── Range Calculation (Before API Call) ───
-    // Server returns percentage as a whole number (e.g. 12.0 for 12%), convert to decimal
     final tolerancePercent = state.tolerance! / 100;
     final minAllowed = orderAmountVal * (1 - tolerancePercent);
     final maxAllowed = orderAmountVal * (1 + tolerancePercent);
 
-
     if (amount < minAllowed || amount > maxAllowed) {
-
       emit(
         state.copyWith(
           status: OrdersRequestStatus.success,
@@ -329,13 +451,11 @@ class OrdersCubit extends Cubit<OrdersState> {
       return Future.value();
     }
 
-    // ─── If in range, proceed with loading and API ───
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _ordersRepo
         .disburseInitiate(state.selectedOrder!.id, amount)
         .then((response) {
-
           final type = (response is Map) ? response['type'] : 'offline';
           final mobile = (response is Map) ? response['mobile'] : null;
           final redirectUrl = (response is Map)
@@ -358,8 +478,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               clearanceStep: type == 'otp'
                   ? ClearanceStep.otpPending
                   : type == 'redirect'
-                  ? ClearanceStep
-                        .amountEntered
+                  ? ClearanceStep.amountEntered
                   : ClearanceStep.documentsPending,
               clearanceAmount: amountStr,
               orderAmount: state.selectedOrder!.financialSummary.finalAmount,
@@ -369,7 +488,10 @@ class OrdersCubit extends Cubit<OrdersState> {
             ),
           );
 
-          // Auto-launch browser if redirect
+          if (type == 'otp') {
+            _startClearanceOtpTimer();
+          }
+
           if (type == 'redirect' && redirectUrl != null) {
             launchUrl(
               Uri.parse(redirectUrl),
@@ -378,7 +500,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.initiateClearanceError);
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           throw e;
         });
   }
@@ -428,7 +555,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.documentUploadOrFinalizeError);
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           throw e;
         });
   }
@@ -451,7 +583,12 @@ class OrdersCubit extends Cubit<OrdersState> {
           }
         })
         .catchError((e) {
-          _handleError(e, prefix: S.current.otpVerifyOrFinalizeError);
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           throw e;
         });
   }
@@ -494,7 +631,12 @@ class OrdersCubit extends Cubit<OrdersState> {
   }) {
     if (state.selectedOrder == null) return;
     if (method == 'wallet' && state.tolerance == null) {
-      _handleError(S.current.toleranceSettingNotFoundError);
+      emit(
+        state.copyWith(
+          status: OrdersRequestStatus.error,
+          errorMessage: S.current.toleranceSettingNotFoundError,
+        ),
+      );
       return;
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
@@ -554,12 +696,10 @@ class OrdersCubit extends Cubit<OrdersState> {
                 Uri.parse(redirectUrl),
                 mode: LaunchMode.externalApplication,
               );
-              confirmSettlement();
             }
 
-            if (method == 'link') {
+            if (method == 'ipg_sms') {
               _startSettlementTimer();
-              confirmSettlement();
             }
 
             if (method == 'card_to_card' || method == 'offline') {
@@ -569,13 +709,8 @@ class OrdersCubit extends Cubit<OrdersState> {
         })
         .catchError((e) {
           if (method == 'wallet_debit' || method == 'wallet') {
-            bool isBalanceError = false;
-            if (e is DioException) {
-              if (e.response?.statusCode == 400) {
-                isBalanceError = true;
-              }
-            }
-            if (isBalanceError) {
+            final apiError = ErrorHandler.getApiError(e);
+            if (apiError?.statusCode == 400) {
               emit(
                 state.copyWith(
                   status: OrdersRequestStatus.success,
@@ -587,7 +722,12 @@ class OrdersCubit extends Cubit<OrdersState> {
               return null;
             }
           }
-          _handleError(e, prefix: S.current.initiateSettlementError);
+          emit(
+            state.copyWith(
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -610,9 +750,32 @@ class OrdersCubit extends Cubit<OrdersState> {
     });
   }
 
+  void _startClearanceOtpTimer() {
+    _clearanceOtpTimer?.cancel();
+    emit(
+      state.copyWith(
+        clearanceOtpCountdown: 120,
+        isClearanceOtpTimerActive: true,
+      ),
+    );
+
+    _clearanceOtpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state.clearanceOtpCountdown > 0) {
+        emit(
+          state.copyWith(
+            clearanceOtpCountdown: state.clearanceOtpCountdown - 1,
+          ),
+        );
+      } else {
+        _clearanceOtpTimer?.cancel();
+        emit(state.copyWith(isClearanceOtpTimerActive: false));
+      }
+    });
+  }
+
   void resendSettlementLink() {
-    if (state.selectedOrder == null || state.settlementMethod != 'link') return;
-    initiateSettlement('link');
+    if (state.selectedOrder == null || state.settlementMethod != 'ipg_sms') return;
+    initiateSettlement('ipg_sms');
   }
 
   void selectSettlementMethod(String method) {
@@ -665,12 +828,22 @@ class OrdersCubit extends Cubit<OrdersState> {
           })
           .then((_) => performSettle())
           .catchError((e) {
-            _handleError(e, prefix: S.current.receiptUploadError);
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e),
+              ),
+            );
             return null;
           });
     } else {
       performSettle().catchError(
-        (e) => _handleError(e, prefix: S.current.settlementConfirmError),
+        (e) => emit(
+          state.copyWith(
+            status: OrdersRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+          ),
+        ),
       );
     }
   }
@@ -770,7 +943,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       case 'online':
         return 'ipg';
       case 'cash':
-        return 'link';
+        return 'ipg_sms';
       case 'wallet':
         return 'wallet_debit';
       case 'offline':
@@ -780,39 +953,11 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void _handleError(
-    Object e, {
-    String prefix = '',
-    OrdersState? rollbackState,
-  }) {
-    if (isClosed) {
-      return;
-    }
-
-    NetworkHelper.getNetworkErrorMessage().then<void>((networkMessage) {
-      if (isClosed) {
-        return;
-      }
-
-      final finalMessage = networkMessage ?? '$prefix${e.toString()}';
-
-      final baseState = rollbackState ?? state;
-
-      emit(baseState.copyWith(status: OrdersRequestStatus.initial));
-
-      emit(
-        baseState.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: finalMessage,
-        ),
-      );
-    });
-  }
-
   @override
   Future<void> close() {
     _searchTimer?.cancel();
     _settlementTimer?.cancel();
+    _clearanceOtpTimer?.cancel();
     _linkSubscription?.cancel();
     return super.close();
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
+import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
@@ -18,7 +19,7 @@ class OrderPaymentHistoryWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 12.0),
           child: Text(
-            'تاریخچه پرداخت‌ها',
+            S.current.historyPayment,
             style: theme.labelLarge!.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.grayPalette.shade900,
@@ -74,7 +75,7 @@ class OrderPaymentHistoryWidget extends StatelessWidget {
                       Text(
                         p.status!,
                         style: theme.labelSmall!.copyWith(
-                          color: p.status == 'موفق'
+                          color: p.status == S.current.success
                               ? AppColors.successPalette.shade600
                               : AppColors.errorPalette.shade600,
                         ),

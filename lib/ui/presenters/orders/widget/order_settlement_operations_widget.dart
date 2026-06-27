@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
@@ -150,6 +150,9 @@ class _OrderSettlementOperationsWidgetState
                           _isExpanded = !_isExpanded;
                         });
                       }
+                    : ((state.settlementMethod == 'ipg_sms') &&
+                          state.settlementStep != SettlementStep.initial)
+                    ? () => cubit.confirmSettlement()
                     : null,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -351,13 +354,15 @@ class _OrderSettlementOperationsWidgetState
                             ],
                           ),
                         ),
-                        if (state.settlementMethod == 'link' &&
+                        if (state.settlementMethod == 'ipg_sms' &&
                             !isPartial &&
                             state.settlementStep != SettlementStep.initial)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: Text(
-                              S.current.paymentLinkSentTo(state.settlementMobile ?? ""),
+                              S.current.paymentLinkSentTo(
+                                state.settlementMobile ?? "",
+                              ),
                               style: theme.bodyLarge!.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.grayPalette.shade900,
@@ -369,7 +374,7 @@ class _OrderSettlementOperationsWidgetState
                           if (state.settlementMethod == 'wallet_debit')
                             _buildWalletBalanceStatus(state, theme),
                           const SizedBox(height: 12.0),
-                          if (state.settlementMethod == 'link' &&
+                          if (state.settlementMethod == 'ipg_sms' &&
                               !isPartial &&
                               state.settlementStep != SettlementStep.initial)
                             Padding(
@@ -419,7 +424,9 @@ class _OrderSettlementOperationsWidgetState
                                     fontWeight: FontWeight.w600,
                                   ),
                                   width: 160.0,
-                                  isLoading: state.status == OrdersRequestStatus.loading,
+                                  isLoading:
+                                      state.status ==
+                                      OrdersRequestStatus.loading,
                                   onPressed: () => _handleSettlement(
                                     context,
                                     cubit,

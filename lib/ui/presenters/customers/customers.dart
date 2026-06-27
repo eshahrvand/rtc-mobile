@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../widget/rtc_appbar.dart';
@@ -42,9 +42,7 @@ class CustomersView extends StatelessWidget {
                 context.read<CustomersCubit>().backToList();
               }
             },
-            backIconPath: state.step == CustomersStep.customerList 
-                ? '$baseImage/angle-right.svg' 
-                : '$baseImage/angle-right.svg', // Both use back arrow
+            backIconPath: '$baseImage/angle-right.svg',
           ),
           body: state.step == CustomersStep.customerList
               ? const CustomersListView()

@@ -66,6 +66,7 @@ class _RtcPieChartCardState extends State<RtcPieChartCard> {
                             image: widget.emptyImage!,
                             width: 143,
                             height: 124,
+                            boxFit: BoxFit.fill,
                           ),
                         ),
                       Text(

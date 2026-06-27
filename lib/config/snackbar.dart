@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../ui/theme/colors.dart';
 import '../ui/widget/rtc_image.dart';
-import 'config.dart';
+import 'constants.dart';
 
 //
 enum SnackBarType { success, warning, error }
@@ -99,7 +99,6 @@ void rtcSnackBar({
 
   overlay.insert(entry);
 
-  // حذف خودکار بعد از مدت مشخص
   Future.delayed(duration, () {
     if (entry.mounted) {
       entry.remove();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
@@ -193,7 +193,7 @@ class _WalletView extends StatelessWidget {
                     style: theme.titleLarge!.copyWith(color: Colors.white),
                   ),
                   RtcImage(
-                    image: "$baseImage/rial_white.svg.svg",
+                    image: "$baseImage/rial_white.svg",
                     width: 16,
                     height: 16,
                     boxFit: BoxFit.fill,
@@ -255,7 +255,7 @@ class _HeaderInfoItem extends StatelessWidget {
               ),
             ),
             RtcImage(
-              image: "$baseImage/rial_white.svg.svg",
+              image: "$baseImage/rial_white.svg",
               width: 16,
               height: 16,
               boxFit: BoxFit.fill,

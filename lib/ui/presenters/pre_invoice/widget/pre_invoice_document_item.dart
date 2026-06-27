@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../config/config.dart';
+import '../../../../config/constants.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 
@@ -25,11 +25,13 @@ class PreInvoiceDocumentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
+
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.grayPalette.shade200, width: 0.5),
         borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
       ),
       child: Row(
         spacing: 14,
@@ -69,7 +71,7 @@ class PreInvoiceDocumentItem extends StatelessWidget {
               ],
             ),
           ),
-          // Actions on the left (last in RTL Row)
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -81,25 +83,27 @@ class PreInvoiceDocumentItem extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Row(
-                spacing: 12,
+                spacing: 8,
                 children: [
-                  if (showDeleteButton)
-                    GestureDetector(
-                      onTap: onDelete,
-                      child: RtcImage(
-                        image: '$baseImage/delete.svg',
-                        width: 18,
-                        height: 18,
-                      ),
-                    ),
                   GestureDetector(
                     onTap: onView,
                     child: RtcImage(
                       image: '$baseImage/eye-document.svg',
-                      width: 18,
-                      height: 18,
+                      width: 20,
+                      height: 20,
+                      boxFit: BoxFit.fill,
                     ),
                   ),
+                  if (showDeleteButton)
+                    GestureDetector(
+                      onTap: onDelete,
+                      child: RtcImage(
+                        image: '$baseImage/delete-image.svg',
+                        width: 20,
+                        height: 20,
+                        boxFit: BoxFit.fill,
+                      ),
+                    ),
                 ],
               ),
             ],

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:rtc_mobile/config/config.dart';
+import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
@@ -38,27 +38,19 @@ class PreInvoiceStep4UploadPlaceholderContent extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 14),
-        RtcImage(
-          image: "$baseImage/featured-icon.svg",
-          width: 32,
-          height: 32,
-        ),
+        RtcImage(image: "$baseImage/featured-icon.svg", width: 32, height: 32),
         const SizedBox(height: 12),
         Text.rich(
           TextSpan(
             children: [
-              TextSpan(
-                text: S.current.clickToUpload.split('بارگذاری عکس')[0],
-              ),
+              TextSpan(text: S.current.clickToUpload.split('بارگذاری عکس')[0]),
               TextSpan(
                 text: 'بارگذاری عکس ',
                 style: theme.labelMedium!.copyWith(
                   color: AppColors.brandPalette.shade600,
                 ),
               ),
-              TextSpan(
-                text: S.current.clickToUpload.split('بارگذاری عکس')[1],
-              ),
+              TextSpan(text: S.current.clickToUpload.split('بارگذاری عکس')[1]),
             ],
             style: theme.bodyMedium!.copyWith(
               fontWeight: FontWeight.w500,
