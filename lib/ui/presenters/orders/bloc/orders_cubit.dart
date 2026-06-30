@@ -570,7 +570,9 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _ordersRepo
-        .disburse(state.selectedOrder!.id, {'otp': otp})
+        .disburse(state.selectedOrder!.id, {
+          'payload': {'otp': otp}
+        })
         .then((_) {
           emit(
             state.copyWith(

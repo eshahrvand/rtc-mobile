@@ -211,7 +211,9 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                       child: RtcButton(
                         title: S.current.confirmAndClearance,
                         styleBtn: theme.labelLarge!.copyWith(
-                          color: AppColors.grayPalette.shade300,
+                          color: _isComplete
+                              ? Colors.white
+                              : AppColors.grayPalette.shade300,
                           fontWeight: FontWeight.w600,
                         ),
                         isActive: _isComplete,
