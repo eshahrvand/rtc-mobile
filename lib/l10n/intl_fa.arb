@@ -233,7 +233,7 @@
   "clearanceAmountLabelWithColon": "مبلغ تخلیه:",
   "orderAmountLabel": "مبلغ سفارش:",
   "gatewayLabel": "درگاه:",
-  "trackingNumberLabel": "شماره پیگیری:",
+  "trackingNumberLabel": "کد پیگیری:",
   "documentSubmissionDateLabel": "تاریخ ارسال مستندات:",
   "clearanceDateLabel": "تاریخ تخلیه:",
   "expireDateLabel": "تاریخ انقضا:",

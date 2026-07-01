@@ -187,6 +187,7 @@ class OrderMapper {
           reference: r.reference ?? '',
           status: r.status ?? '',
           createdAt: r.createdAt ?? '',
+          gatewayMetadata: r.gatewayMetadata,
         );
       }).toList(),
       settlementRecords: (dto.settlementRecords ?? []).map((s) {

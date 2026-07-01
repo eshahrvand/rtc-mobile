@@ -58,6 +58,7 @@ class DisbursementRecordDtoModel with _$DisbursementRecordDtoModel {
     String? reference,
     String? status,
     @JsonKey(name: 'created_at') String? createdAt,
+    @JsonKey(name: 'gateway_metadata') Map<String, dynamic>? gatewayMetadata,
   }) = _DisbursementRecordDtoModel;
 
   factory DisbursementRecordDtoModel.fromJson(Map<String, dynamic> json) =>

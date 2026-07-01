@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/constants.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'rtc_image.dart';
@@ -18,22 +19,29 @@ class RtcProductImageGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveImages = imageUrls.isEmpty
+        ? ['$baseImage/package_check_gray.svg']
+        : imageUrls;
+
     return Column(
       children: [
         SizedBox(
           height: 270,
           child: PageView.builder(
-            itemCount: imageUrls.length,
+            itemCount: effectiveImages.length,
             onPageChanged: onImageChanged,
             itemBuilder: (context, index) {
+              final img = effectiveImages[index];
+              final displayImage = img.isNotEmpty
+                  ? img
+                  : '$baseImage/package_check_gray.svg';
+
               return GestureDetector(
-                onTap: () => RtcImagePreview.show(context, imageUrls, index),
+                onTap: () =>
+                    RtcImagePreview.show(context, effectiveImages, index),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RtcImage(
-                    image: imageUrls[index],
-                    boxFit: BoxFit.contain,
-                  ),
+                  child: RtcImage(image: displayImage, boxFit: BoxFit.contain),
                 ),
               );
             },
@@ -42,7 +50,7 @@ class RtcProductImageGallery extends StatelessWidget {
         const SizedBox(height: 10),
         AnimatedSmoothIndicator(
           activeIndex: selectedIndex,
-          count: imageUrls.length,
+          count: effectiveImages.length,
           effect: ExpandingDotsEffect(
             dotHeight: 6,
             dotWidth: 6,
