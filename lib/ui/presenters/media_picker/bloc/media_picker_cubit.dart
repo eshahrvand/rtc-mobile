@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -224,6 +225,23 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
     final media = await captureFromCamera();
     if (media != null) {
       addEditedMedia(media);
+    }
+  }
+
+  Future<void> pickFile() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        final media = MediaItem(file: file, type: MediaType.pdf);
+        addEditedMedia(media);
+      }
+    } catch (e) {
+      emit(state.copyWith(error: 'خطا در انتخاب فایل: $e'));
     }
   }
 

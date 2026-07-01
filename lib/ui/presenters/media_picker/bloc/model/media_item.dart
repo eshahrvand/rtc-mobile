@@ -6,6 +6,7 @@ part 'media_item.freezed.dart';
 
 enum MediaType {
   image,
+  pdf,
 }
 
 @freezed

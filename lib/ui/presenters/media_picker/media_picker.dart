@@ -166,11 +166,12 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
         crossAxisSpacing: 2,
         mainAxisSpacing: 2,
       ),
-      itemCount: state.loadedAssetIds.length + 1,
+      itemCount: state.loadedAssetIds.length + 2,
       itemBuilder: (context, index) {
         if (index == 0) return _buildCameraItem(context);
+        if (index == 1) return _buildFileItem(context);
 
-        final assetId = state.loadedAssetIds[index - 1];
+        final assetId = state.loadedAssetIds[index - 2];
         return KeyedSubtree(
           key: ValueKey(assetId),
           child: FutureBuilder<AssetEntity?>(
@@ -185,6 +186,20 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFileItem(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.read<MediaPickerCubit>().pickFile(),
+      child: Container(
+        color: AppColors.grayPalette.shade100,
+        child: Icon(
+          Icons.attach_file,
+          size: 32,
+          color: AppColors.grayPalette.shade600,
+        ),
+      ),
     );
   }
 
