@@ -238,7 +238,13 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
         final media = MediaItem(file: file, type: MediaType.pdf);
-        addEditedMedia(media);
+        
+        final List<MediaItem> updatedList = state.isMultiSelection
+            ? (List<MediaItem>.from(state.selectedMedia)..add(media))
+            : [media];
+
+        emit(state.copyWith(selectedMedia: updatedList));
+        confirmSelection(); // Auto-confirm file selection regardless of multiSelection mode
       }
     } catch (e) {
       emit(state.copyWith(error: 'خطا در انتخاب فایل: $e'));

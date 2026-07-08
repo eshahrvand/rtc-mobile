@@ -8,6 +8,7 @@ import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_counter_widget.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import 'package:rtc_mobile/core/utils/file_utils.dart';
+import 'package:rtc_mobile/ui/presenters/orders/widget/document_viewer_screen.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -201,11 +202,13 @@ class PreInvoiceStep5ProductItem extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                               ],
-                              if (product.discount != null && product.discount != "0%")
+                              if (product.discount != null &&
+                                  product.discount != "0%")
                                 RtcDiscountBadge(
-                                  backgroundColor: AppColors.errorPalette.shade50,
+                                  backgroundColor:
+                                      AppColors.errorPalette.shade50,
                                   textStyle: theme.bodyMedium!.copyWith(
-                                      color: AppColors.errorPalette.shade700
+                                    color: AppColors.errorPalette.shade700,
                                   ),
                                   discount: product.discount!,
                                   padding: const EdgeInsets.symmetric(
@@ -362,18 +365,10 @@ class PreInvoiceStep5DocItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Scaffold(
-              backgroundColor: Colors.black,
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                iconTheme: const IconThemeData(color: Colors.white),
-              ),
-              body: Center(
-                child: InteractiveViewer(
-                  child: Image.file(File(path), fit: BoxFit.contain),
-                ),
-              ),
+            builder: (context) => DocumentViewerScreen(
+              url: path,
+              title: title,
+              isLocalFile: true,
             ),
           ),
         );

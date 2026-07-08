@@ -9,6 +9,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
 import 'package:rtc_mobile/core/utils/file_utils.dart';
+import 'package:rtc_mobile/ui/presenters/orders/widget/document_viewer_screen.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'pre_invoice_document_item.dart';
@@ -93,23 +94,10 @@ class PreInvoiceStep4View extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Scaffold(
-                                backgroundColor: Colors.black,
-                                appBar: AppBar(
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                  iconTheme: const IconThemeData(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                body: Center(
-                                  child: InteractiveViewer(
-                                    child: Image.file(
-                                      File(path),
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
+                              builder: (context) => DocumentViewerScreen(
+                                url: path,
+                                title: S.current.otherDocumentsLabel(index + 1),
+                                isLocalFile: true,
                               ),
                             ),
                           );
