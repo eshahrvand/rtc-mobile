@@ -8,7 +8,8 @@ import '../../../../core/models/order_model.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_text_field.dart';
-import 'order_details_document_item.dart';
+import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_document_item.dart';
+import 'document_viewer_screen.dart';
 
 class OrderUploadDocumentsSheet extends StatefulWidget {
   final String filePath;
@@ -138,19 +139,24 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
               const SizedBox(height: 12),
 
               // File Card
-              OrderDetailsDocumentItem(
-                isLocalFile: true,
-                onDelete: () {
-                  widget.onDelete();
+              PreInvoiceDocumentItem(
+                title: S.current.paymentDocuments,
+                fileName: fileName,
+                fileSize: sizeStr,
+                onDelete: widget.onDelete,
+                onView: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DocumentViewerScreen(
+                        url: widget.filePath,
+                        title: S.current.paymentDocuments,
+                        isLocalFile: true,
+                      ),
+                    ),
+                  );
                 },
-                doc: OrderDocumentModel(
-                  title: S.current.paymentDocuments,
-                  fileName: fileName,
-                  fileSize: sizeStr,
-                  url: widget.filePath,
-                  // Locally for preview
-                  iconPath: '$baseImage/featured-icon.svg',
-                ),
+                showDeleteButton: true,
               ),
               if (widget.showTrackingField) ...[
                 const SizedBox(height: 12),
