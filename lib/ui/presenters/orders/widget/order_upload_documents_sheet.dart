@@ -18,6 +18,7 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
   final bool showTrackingField;
   final Function(String)? onTrackingCodeChanged;
   final bool isLoading;
+  final bool hideDocumentItem;
 
   const OrderUploadDocumentsSheet({
     super.key,
@@ -27,6 +28,7 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
     this.showTrackingField = false,
     this.onTrackingCodeChanged,
     this.isLoading = false,
+    this.hideDocumentItem = false,
   });
 
   @override
@@ -139,25 +141,26 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
               const SizedBox(height: 12),
 
               // File Card
-              PreInvoiceDocumentItem(
-                title: S.current.paymentDocuments,
-                fileName: fileName,
-                fileSize: sizeStr,
-                onDelete: widget.onDelete,
-                onView: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DocumentViewerScreen(
-                        url: widget.filePath,
-                        title: S.current.paymentDocuments,
-                        isLocalFile: true,
+              if (!widget.hideDocumentItem)
+                PreInvoiceDocumentItem(
+                  title: S.current.paymentDocuments,
+                  fileName: fileName,
+                  fileSize: sizeStr,
+                  onDelete: widget.onDelete,
+                  onView: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DocumentViewerScreen(
+                          url: widget.filePath,
+                          title: S.current.paymentDocuments,
+                          isLocalFile: true,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                showDeleteButton: true,
-              ),
+                    );
+                  },
+                  showDeleteButton: true,
+                ),
               if (widget.showTrackingField) ...[
                 const SizedBox(height: 12),
                 RtcTextField(

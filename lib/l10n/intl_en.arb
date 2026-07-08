@@ -328,6 +328,7 @@
   "financialManagerNameLabel": "",
   "rejectionReasonLabel": "",
   "fetchUserSettingsError": "",
+  "transactionDoc": "",
   "fetchOrderDetailsError": "",
   "initiateClearanceError": "",
   "documentUploadOrFinalizeError": "",

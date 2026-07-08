@@ -62,6 +62,7 @@ class OrdersState with _$OrdersState {
     String? settlementBankName,
     String? settlementAccountHolder,
     String? settlementTrackingCode,
+    @Default([]) List<String> settlementDocPaths,
     @Default(true) bool isWalletBalanceSufficient,
     @Default(false) bool isSettlementCompleted,
 

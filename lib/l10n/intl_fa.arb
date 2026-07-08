@@ -336,6 +336,7 @@
   "settlementConfirmError": "خطا در تایید تسویه: ",
   "toleranceSettingNotFoundError": "مقدار تولرانس در تنظیمات یافت نشد",
   "upload": "بارگذاری",
+  "transactionDoc": "مدارک واریزی",
   "inventory": "موجودی",
   "selectOptionSubtitle": "{label} مورد نظر را انتخاب کنید",
   "@selectOptionSubtitle": {

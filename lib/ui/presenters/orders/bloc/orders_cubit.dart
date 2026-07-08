@@ -615,16 +615,38 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void clearClearanceDocument() {
+  Future<void> clearClearanceDocument() {
     emit(
       state.copyWith(
         uploadedClearanceDocPath: null,
         uploadedClearanceDocId: null,
       ),
     );
+    return Future.value();
   }
 
   // ─── Settlement Flow ───────────────────────────────────────────────
+
+  Future<void> pickSettlementDoc(dynamic context) async {
+    final result = await MediaPickerBottomSheet.show(
+      context,
+      isMultiSelection: true,
+      showCameraOverlay: false,
+    );
+    if (result != null && result.isNotEmpty) {
+      final paths = result.map((m) => m.file.path).toList();
+      emit(
+        state.copyWith(
+          settlementDocPaths: [...state.settlementDocPaths, ...paths],
+        ),
+      );
+    }
+  }
+
+  void removeSettlementDoc(int index) {
+    final updated = List<String>.from(state.settlementDocPaths)..removeAt(index);
+    emit(state.copyWith(settlementDocPaths: updated));
+  }
 
   void initiateSettlement(
     String method, {
@@ -816,15 +838,27 @@ class OrdersCubit extends Cubit<OrdersState> {
           });
     }
 
-    if (state.settlementMethod == 'card_to_card' && imagePath != null) {
-      _mediaRepo
-          .uploadOrderDocument(File(imagePath))
-          .then((media) {
-            return _ordersRepo.addOrderDocument(
-              state.selectedOrder!.id,
-              OrderDocumentRequest(
-                documentType: 'deposit_receipt',
-                fileId: media.id,
+    final docsToUpload =
+        imagePath != null
+            ? [imagePath]
+            : (state.settlementMethod == 'card_to_card'
+                ? state.settlementDocPaths
+                : []);
+
+    if (docsToUpload.isNotEmpty) {
+      Future.wait(
+        docsToUpload.map((path) => _mediaRepo.uploadOrderDocument(File(path))),
+      )
+          .then((mediaList) {
+            return Future.wait(
+              mediaList.map(
+                (media) => _ordersRepo.addOrderDocument(
+                  state.selectedOrder!.id,
+                  OrderDocumentRequest(
+                    documentType: 'deposit_receipt',
+                    fileId: media.id,
+                  ),
+                ),
               ),
             );
           })
@@ -861,6 +895,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         settlementBankName: null,
         settlementAccountHolder: null,
         settlementTrackingCode: null,
+        settlementDocPaths: [],
       ),
     );
   }
