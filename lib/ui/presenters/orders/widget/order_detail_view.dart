@@ -63,6 +63,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   type: SnackBarType.error,
                   message: state.errorMessage,
                 );
+              } else if (state.status == OrdersRequestStatus.settlementSuccess) {
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.success,
+                  message: "درخواست با موفقیت ثبت شد",
+                );
               }
             },
           ),

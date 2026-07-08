@@ -7,7 +7,7 @@ import '../../../../generated/l10n.dart';
 
 part 'orders_state.freezed.dart';
 
-enum OrdersRequestStatus { initial, loading, success, error }
+enum OrdersRequestStatus { initial, loading, success, error, settlementSuccess }
 
 enum PrintStatus { initial, loading, success, error }
 

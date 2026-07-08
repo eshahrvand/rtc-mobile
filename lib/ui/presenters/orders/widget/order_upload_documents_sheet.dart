@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../config/constants.dart';
-import '../../../../core/models/order_model.dart';
+import '../../../../core/utils/file_utils.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_text_field.dart';
@@ -62,17 +60,8 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    final file = File(widget.filePath);
     final fileName = widget.filePath.split('/').last;
-    final sizeInBytes = file.existsSync() ? file.lengthSync() : 0;
-    String sizeStr;
-    if (sizeInBytes < 1024) {
-      sizeStr = 'KB 0';
-    } else if (sizeInBytes < 1024 * 1024) {
-      sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(1)}';
-    } else {
-      sizeStr = 'MB ${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)}';
-    }
+    final sizeStr = FileUtils.getFileSizeString(widget.filePath);
 
     return SafeArea(
       child: Padding(

@@ -648,12 +648,12 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(settlementDocPaths: updated));
   }
 
-  void initiateSettlement(
+  Future<void> initiateSettlement(
     String method, {
     double? amount,
     String? trackingCode,
   }) {
-    if (state.selectedOrder == null) return;
+    if (state.selectedOrder == null) return Future.value();
     if (method == 'wallet' && state.tolerance == null) {
       emit(
         state.copyWith(
@@ -661,7 +661,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           errorMessage: S.current.toleranceSettingNotFoundError,
         ),
       );
-      return;
+      return Future.value();
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
@@ -669,7 +669,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     final finalAmount =
         amount ?? _calculateRemainingSettlement(state.selectedOrder!);
 
-    _ordersRepo
+    return _ordersRepo
         .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
         .then((response) {
           final type = response['type'];
@@ -727,7 +727,7 @@ class OrdersCubit extends Cubit<OrdersState> {
             }
 
             if (method == 'card_to_card' || method == 'offline') {
-              confirmSettlement(trackingCode: trackingCode);
+              return confirmSettlement(trackingCode: trackingCode);
             }
           }
         })
@@ -752,7 +752,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               errorMessage: ErrorHandler.getMessage(e),
             ),
           );
-          return null;
+          throw e;
         });
   }
 
@@ -814,8 +814,10 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void confirmSettlement({String? trackingCode, String? imagePath}) {
-    if (state.selectedOrder == null || state.settlementMethod == null) return;
+  Future<void> confirmSettlement({String? trackingCode, String? imagePath}) {
+    if (state.selectedOrder == null || state.settlementMethod == null) {
+      return Future.value();
+    }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final apiMethod = _mapSettlementMethodToApi(state.settlementMethod!);
@@ -830,7 +832,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           .then((_) {
             emit(
               state.copyWith(
-                status: OrdersRequestStatus.success,
+                status: OrdersRequestStatus.settlementSuccess,
                 settlementStep: SettlementStep.success,
               ),
             );
@@ -846,7 +848,7 @@ class OrdersCubit extends Cubit<OrdersState> {
                 : []);
 
     if (docsToUpload.isNotEmpty) {
-      Future.wait(
+      return Future.wait(
         docsToUpload.map((path) => _mediaRepo.uploadOrderDocument(File(path))),
       )
           .then((mediaList) {
@@ -870,17 +872,18 @@ class OrdersCubit extends Cubit<OrdersState> {
                 errorMessage: ErrorHandler.getMessage(e),
               ),
             );
-            return null;
+            throw e;
           });
     } else {
-      performSettle().catchError(
-        (e) => emit(
+      return performSettle().catchError((e) {
+        emit(
           state.copyWith(
             status: OrdersRequestStatus.error,
             errorMessage: ErrorHandler.getMessage(e),
           ),
-        ),
-      );
+        );
+        throw e;
+      });
     }
   }
 
