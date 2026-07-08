@@ -81,13 +81,14 @@ class RtcDrawer extends StatelessWidget {
                 return Center(
                   child: Text(
                     'نسخه (${state.buildNumber}) ${state.appVersion}',
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: AppColors.grayPalette.shade600,
                     ),
                   ),
                 );
               },
             ),
+            SizedBox(height: 12),
 
             _buildFooter(context),
           ],
