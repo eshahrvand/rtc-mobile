@@ -74,6 +74,21 @@ class RtcDrawer extends StatelessWidget {
                 ),
               ),
             ),
+
+            BlocBuilder<DashboardCubit, DashboardState>(
+              builder: (context, state) {
+                if (state.appVersion.isEmpty) return const SizedBox.shrink();
+                return Center(
+                  child: Text(
+                    'نسخه (${state.buildNumber}) ${state.appVersion}',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                    ),
+                  ),
+                );
+              },
+            ),
+
             _buildFooter(context),
           ],
         ),
@@ -118,7 +133,7 @@ class RtcDrawer extends StatelessWidget {
           children: [
             const RtcDivider(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 25, 24, 25),
+              padding: const EdgeInsets.fromLTRB(24, 25, 24, 12),
               child: Row(
                 children: [
                   GestureDetector(

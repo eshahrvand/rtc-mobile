@@ -46,5 +46,9 @@ class DashboardState with _$DashboardState {
 
     // Commission
     CommissionDtoModel? commission,
+
+    // App Info
+    @Default('') String appVersion,
+    @Default('') String buildNumber,
   }) = _DashboardState;
 }
