@@ -225,7 +225,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                 onPressed: () => _showAmountSheet(context, cubit),
               ),
             if (state.settlementMethod == 'card_to_card' &&
-                state.settlementDocPaths.isNotEmpty)
+                state.settlementDocPaths.isNotEmpty &&
+                !state.isSettlementCompleted)
               OrderFinancialActionButton(
                 title: S.current.submitRequest,
                 isLoading: state.status == OrdersRequestStatus.loading,
