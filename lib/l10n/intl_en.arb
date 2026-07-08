@@ -325,6 +325,7 @@
   "uploadDepositReceipt": "",
   "confirmSelectedMethod": "",
   "supportNameLabel": "",
+  "submitRequest": "Submit Request",
   "financialManagerNameLabel": "",
   "rejectionReasonLabel": "",
   "fetchUserSettingsError": "",

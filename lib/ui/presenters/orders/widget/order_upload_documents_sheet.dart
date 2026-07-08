@@ -198,7 +198,12 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                           ? _isTrackingCodeNotEmpty
                           : true,
                       styleBtn: theme.labelLarge!.copyWith(
-                        color: Colors.white,
+                        color:
+                            (widget.showTrackingField
+                                ? _isTrackingCodeNotEmpty
+                                : true)
+                            ? Colors.white
+                            : AppColors.grayPalette.shade300,
                         fontWeight: FontWeight.w600,
                       ),
                       isLoading: widget.isLoading,

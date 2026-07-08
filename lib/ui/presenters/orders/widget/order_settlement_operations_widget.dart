@@ -19,7 +19,6 @@ import 'order_upload_documents_sheet.dart';
 import 'order_settlement_amount_row.dart';
 import 'order_settlement_timer.dart';
 import 'orders_ui_helpers.dart';
-import '../../media_picker/media_picker.dart';
 
 class OrderSettlementOperationsWidget extends StatefulWidget {
   final OrderOperationModel op;
@@ -453,7 +452,7 @@ class _OrderSettlementOperationsWidgetState
                                       ),
                               ),
                             )
-                          else
+                          else if (state.settlementDocPaths.isEmpty)
                             Row(
                               children: [
                                 const Spacer(),
