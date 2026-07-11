@@ -22,7 +22,7 @@ class CustomersOrdersTab extends StatelessWidget {
             return RtcCustomerOrderItem(
               order: order,
               onTap: () {
-                context.push(AppRoutes.orderDetail, extra: order.orderId);
+                context.push(AppRoutes.orderDetail, extra: order.id);
               },
             );
           },

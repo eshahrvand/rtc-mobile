@@ -74,6 +74,7 @@
   "legalAgent": "نماینده حقوقی",
   "email": "ایمیل",
   "agencyCode": "کد نمایندگی",
+  "storeName": "نام فروشگاه *",
   "workshopCode": "کد کارگاهی بیمه",
   "province": "استان",
   "city": "شهر",

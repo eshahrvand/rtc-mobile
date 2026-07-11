@@ -198,6 +198,7 @@ class OrderMapper {
 
   static CustomerOrderItemModel mapToCustomerOrderItem(OrderDtoModel dto) {
     return CustomerOrderItemModel(
+      id: dto.id,
       orderId: formatDisplayId(dto.id),
       amount: dto.total.formatCurrency,
       date: DateTimeUtils.formatToJalaliDate(dto.createdAt),

@@ -74,6 +74,7 @@
   "legalAgent": "",
   "email": "",
   "agencyCode": "",
+  "storeName": "Store Name *",
   "workshopCode": "",
   "province": "",
   "city": "",

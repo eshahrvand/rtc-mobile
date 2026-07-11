@@ -100,6 +100,18 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     RtcTextField(
+                      labelText: S.current.storeName,
+                      labelStyle: theme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grayPalette.shade700,
+                      ),
+                      readOnly: true,
+                      isSetReadOnlyColor :true,
+                      controller: TextEditingController(
+                        text: userProfile?.storeName ?? '',
+                      ),
+                    ),
+                    RtcTextField(
                       labelText: S.current.workshopCode,
                       labelStyle: theme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w500,
