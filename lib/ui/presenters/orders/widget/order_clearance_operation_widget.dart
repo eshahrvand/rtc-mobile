@@ -13,6 +13,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
   final String? orderAmount;
   final String? excessAmount;
   final String? walletName;
+  final String? gatewayType;
   final VoidCallback onAction;
   final VoidCallback? onEdit;
   final bool isOnline;
@@ -27,6 +28,7 @@ class OrderClearanceOperationWidget extends StatefulWidget {
     this.orderAmount,
     this.excessAmount,
     this.walletName,
+    this.gatewayType,
     required this.onAction,
     this.onEdit,
     this.isOnline = false,
@@ -307,9 +309,11 @@ class _OrderClearanceOperationWidgetState
                     Align(
                       alignment: Alignment.centerLeft,
                       child: RtcButton(
-                        title: widget.isOnline
-                            ? S.current.requestCodeButton
-                            : S.current.uploadClearanceDocuments,
+                        title: widget.gatewayType == 'redirect'
+                            ? S.current.goToShaparakButton
+                            : widget.isOnline
+                                ? S.current.requestCodeButton
+                                : S.current.uploadClearanceDocuments,
                         styleBtn: theme.labelLarge!.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

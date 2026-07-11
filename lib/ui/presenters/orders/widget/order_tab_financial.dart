@@ -129,6 +129,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                               widget.order.financialSummary.finalAmount,
                           excessAmount: excessAmount,
                           walletName: walletName,
+                          gatewayType: state.disbursementGatewayType,
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
                           showStep: showSettlement,

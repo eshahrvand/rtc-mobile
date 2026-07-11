@@ -31,6 +31,15 @@ class OrderDetailView extends StatefulWidget {
 class _OrderDetailViewState extends State<OrderDetailView> {
   late PageController _pageController;
 
+  void _handleBackNavigation(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +55,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBackNavigation(context);
+      },
       child: MultiBlocListener(
         listeners: [
           BlocListener<OrdersCubit, OrdersState>(
@@ -157,7 +170,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
             return Scaffold(
               appBar: RtcAppBar(
-                onBack: () => context.pop(),
+                onBack: () => _handleBackNavigation(context),
                 backIconPath: '$baseImage/angle-right.svg',
                 actions: [
                   Padding(
