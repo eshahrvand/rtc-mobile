@@ -46,12 +46,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
-      },
+      canPop: true,
       child: MultiBlocListener(
         listeners: [
           BlocListener<OrdersCubit, OrdersState>(
@@ -162,12 +157,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
             return Scaffold(
               appBar: RtcAppBar(
-                onBack: () {
-                  final timestamp = DateTime.now().millisecondsSinceEpoch;
-                  context.go(
-                    '${AppRoutes.dashboard}?index=2&refresh=$timestamp',
-                  );
-                },
+                onBack: () => context.pop(),
                 backIconPath: '$baseImage/angle-right.svg',
                 actions: [
                   Padding(

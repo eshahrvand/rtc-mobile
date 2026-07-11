@@ -35,7 +35,6 @@ final router = GoRouter(
         final indexStr = state.uri.queryParameters['index'];
         final index = int.tryParse(indexStr ?? '0') ?? 0;
         return DashboardScreen(
-          key: ValueKey(state.uri.toString()),
           initialIndex: index,
         );
       },

@@ -148,6 +148,7 @@ class _ReviewersSection extends StatelessWidget {
             label: S.current.financialManagerNameLabel,
             value: order.assignedFinanceReviewer!,
           ),
+        if (hasSalesReviewer || hasFinanceReviewer) const SizedBox(height: 12),
       ],
     );
   }
