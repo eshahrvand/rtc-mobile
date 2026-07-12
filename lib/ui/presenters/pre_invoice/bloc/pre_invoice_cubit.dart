@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
@@ -28,7 +26,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _customerRepo = sl<CustomersRepository>();
   final _mediaRepo = sl<MediaRepository>();
   final _ordersRepo = sl<OrdersRepository>();
-  final ImagePicker _picker = ImagePicker();
   Timer? _debounce;
 
   PreInvoiceCubit() : super(const PreInvoiceState());
@@ -66,10 +63,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -82,7 +81,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       _submitCustomerInfo();
       return;
     }
-    if (step == PreInvoiceStep.review && state.mandatoryDocPath != null) {
+    if (step == PreInvoiceStep.review && state.mandatoryDoc != null) {
       _uploadDocuments();
       return;
     }
@@ -122,10 +121,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -356,11 +357,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               ),
             );
           } else {
-            emit(state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-              customerSearchLoading: false,
-            ));
+            emit(
+              state.copyWith(
+                status: PreInvoiceRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e),
+                customerSearchLoading: false,
+              ),
+            );
           }
         });
   }
@@ -473,11 +476,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-            isSubmittingCustomerInfo: false,
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isSubmittingCustomerInfo: false,
+            ),
+          );
           return null;
         });
   }
@@ -491,12 +496,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       showCameraOverlay: true,
     );
     if (result != null && result.isNotEmpty) {
-      emit(state.copyWith(mandatoryDocPath: result.first.file.path));
+      emit(state.copyWith(mandatoryDoc: result.first.xFile));
     }
   }
 
   Future<void> pickOptionalDoc(dynamic context) async {
-    if (state.optionalDocPaths.length >= 5) {
+    if (state.optionalDocs.length >= 5) {
       emit(
         state.copyWith(
           status: PreInvoiceRequestStatus.error,
@@ -511,15 +516,15 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       showCameraOverlay: false,
     );
     if (result != null && result.isNotEmpty) {
-      final availableSlots = 5 - state.optionalDocPaths.length;
-      final newPaths = result
+      final availableSlots = 5 - state.optionalDocs.length;
+      final newDocs = result
           .take(availableSlots)
-          .map((m) => m.file.path)
+          .map((m) => m.xFile)
           .toList();
 
-      final updatedPaths = List<String>.from(state.optionalDocPaths)
-        ..addAll(newPaths);
-      emit(state.copyWith(optionalDocPaths: updatedPaths));
+      final updatedDocs = List<XFile>.from(state.optionalDocs)
+        ..addAll(newDocs);
+      emit(state.copyWith(optionalDocs: updatedDocs));
 
       if (result.length > availableSlots) {
         emit(
@@ -534,13 +539,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void removeMandatoryDoc() {
-    emit(state.copyWith(mandatoryDocPath: null));
+    emit(state.copyWith(mandatoryDoc: null));
   }
 
   void removeOptionalDoc(int index) {
-    final updatedPaths = List<String>.from(state.optionalDocPaths)
+    final updatedDocs = List<XFile>.from(state.optionalDocs)
       ..removeAt(index);
-    emit(state.copyWith(optionalDocPaths: updatedPaths));
+    emit(state.copyWith(optionalDocs: updatedDocs));
   }
 
   void _uploadDocuments() {
@@ -551,22 +556,23 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       ),
     );
 
-    final mandatoryFile = File(state.mandatoryDocPath!);
     final uploadTasks = <Future<String>>[];
 
     // Upload mandatory
-    uploadTasks.add(
-      kIsWeb
-          ? _mediaRepo.uploadOrderDocumentWeb(state.mandatoryDocPath!).then((m) => m.id)
-          : _mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id),
-    );
+    if (state.mandatoryDoc != null) {
+      uploadTasks.add(
+        _mediaRepo
+            .uploadMedia(category: 'order_document', xFile: state.mandatoryDoc!)
+            .then((m) => m.id),
+      );
+    }
 
     // Upload optionals
-    for (final path in state.optionalDocPaths) {
+    for (final doc in state.optionalDocs) {
       uploadTasks.add(
-        kIsWeb
-            ? _mediaRepo.uploadOrderDocumentWeb(path).then((m) => m.id)
-            : _mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id),
+        _mediaRepo
+            .uploadMedia(category: 'order_document', xFile: doc)
+            .then((m) => m.id),
       );
     }
 
@@ -584,11 +590,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-            isUploadingDocuments: false,
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isUploadingDocuments: false,
+            ),
+          );
           return null;
         });
   }
@@ -639,12 +647,14 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-            isSubmittingPreInvoice: false,
-            isSubmittingAndClearing: false,
-          ));
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+              isSubmittingPreInvoice: false,
+              isSubmittingAndClearing: false,
+            ),
+          );
           return null;
         });
   }

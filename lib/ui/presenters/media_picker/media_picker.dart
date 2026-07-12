@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'dart:typed_data';
@@ -227,7 +228,7 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
     );
     if (croppedFile != null && context.mounted) {
       final media = MediaItem(
-        file: croppedFile,
+        xFile: XFile(croppedFile.path),
         type: MediaType.image,
         thumbnail: kIsWeb ? null : await croppedFile.readAsBytes(),
         fileName: croppedFile.path.split('/').last,

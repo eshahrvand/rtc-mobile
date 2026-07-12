@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class MediaEditScreen extends StatelessWidget {
 
   static Future<MediaItem?> crop(BuildContext context, MediaItem item, {bool showOverlay = false}) async {
     final croppedFile = await ImageCropper().cropImage(
-      sourcePath: item.file.path,
+      sourcePath: item.xFile.path,
       compressQuality: 80,
       maxWidth: 2000,
       maxHeight: 2000,
@@ -47,7 +48,7 @@ class MediaEditScreen extends StatelessWidget {
     );
 
     if (croppedFile != null) {
-      return item.copyWith(file: File(croppedFile.path));
+      return item.copyWith(xFile: XFile(croppedFile.path));
     }
     return null;
   }
@@ -71,9 +72,9 @@ class MediaEditScreen extends StatelessWidget {
               height: MediaQuery.sizeOf(context).height,
               child: InteractiveViewer(
                 child: Center(
-                  child: kIsWeb 
-                      ? Image.network(mediaItem.file.path, fit: BoxFit.contain)
-                      : Image.file(mediaItem.file, fit: BoxFit.contain),
+                  child: kIsWeb
+                      ? Image.network(mediaItem.xFile.path, fit: BoxFit.contain)
+                      : Image.file(File(mediaItem.xFile.path), fit: BoxFit.contain),
                 ),
               ),
             );

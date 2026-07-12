@@ -1,7 +1,17 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:cross_file/cross_file.dart';
 
 class FileUtils {
+  static Future<String> getXFileSizeString(XFile xFile) async {
+    try {
+      int bytes = await xFile.length();
+      return formatFileSize(bytes);
+    } catch (e) {
+      return '0 B';
+    }
+  }
+
   static String getFileSizeString(String filePath) {
     try {
       final file = File(filePath);

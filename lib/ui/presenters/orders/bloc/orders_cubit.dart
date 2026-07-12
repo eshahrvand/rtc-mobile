@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:developer' as dev;
@@ -19,6 +20,7 @@ import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
+import '../../media_picker/bloc/model/media_item.dart';
 import '../../media_picker/media_picker.dart';
 import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
@@ -517,20 +519,18 @@ class OrdersCubit extends Cubit<OrdersState> {
       showCameraOverlay: false,
     );
     if (result != null && result.isNotEmpty) {
-      final filePath = result.first.file.path;
-      emit(state.copyWith(uploadedClearanceDocPath: null));
-      emit(state.copyWith(uploadedClearanceDocPath: filePath));
+      emit(state.copyWith(uploadedClearanceDoc: result.first.xFile));
     }
   }
 
   Future<void> confirmClearanceDocument() {
-    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) {
+    if (state.selectedOrder == null || state.uploadedClearanceDoc == null) {
       return Future.value();
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _mediaRepo
-        .uploadOrderDocument(File(state.uploadedClearanceDocPath!))
+        .uploadMedia(category: 'order_document', xFile: state.uploadedClearanceDoc!)
         .then((media) {
           return _ordersRepo.addOrderDocument(
             state.selectedOrder!.id,
@@ -599,7 +599,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(
       state.copyWith(
         clearanceStep: ClearanceStep.initial,
-        uploadedClearanceDocPath: null,
+        uploadedClearanceDoc: null,
         uploadedClearanceDocId: null,
         clearanceAmount: '',
         excessAmount: null,
@@ -618,7 +618,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   Future<void> clearClearanceDocument() {
     emit(
       state.copyWith(
-        uploadedClearanceDocPath: null,
+        uploadedClearanceDoc: null,
         uploadedClearanceDocId: null,
       ),
     );
@@ -634,18 +634,18 @@ class OrdersCubit extends Cubit<OrdersState> {
       showCameraOverlay: false,
     );
     if (result != null && result.isNotEmpty) {
-      final paths = result.map((m) => m.file.path).toList();
+      final newDocs = result.map((m) => m.xFile).toList();
       emit(
         state.copyWith(
-          settlementDocPaths: [...state.settlementDocPaths, ...paths],
+          settlementDocs: [...state.settlementDocs, ...newDocs],
         ),
       );
     }
   }
 
   void removeSettlementDoc(int index) {
-    final updated = List<String>.from(state.settlementDocPaths)..removeAt(index);
-    emit(state.copyWith(settlementDocPaths: updated));
+    final updated = List<XFile>.from(state.settlementDocs)..removeAt(index);
+    emit(state.copyWith(settlementDocs: updated));
   }
 
   Future<void> initiateSettlement(
@@ -842,18 +842,14 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     final docsToUpload =
         imagePath != null
-            ? [imagePath]
+            ? [XFile(imagePath)]
             : (state.settlementMethod == 'card_to_card'
-                ? state.settlementDocPaths
-                : []);
+                ? state.settlementDocs
+                : <XFile>[]);
 
     if (docsToUpload.isNotEmpty) {
-      final uploadTasks = docsToUpload.map((path) {
-        if (kIsWeb) {
-          return _mediaRepo.uploadOrderDocumentWeb(path);
-        } else {
-          return _mediaRepo.uploadOrderDocument(File(path));
-        }
+      final uploadTasks = docsToUpload.map((xFile) {
+        return _mediaRepo.uploadMedia(category: 'order_settlement', xFile: xFile);
       });
 
       return Future.wait(uploadTasks)
@@ -904,7 +900,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         settlementBankName: null,
         settlementAccountHolder: null,
         settlementTrackingCode: null,
-        settlementDocPaths: [],
+        settlementDocs: [],
       ),
     );
   }

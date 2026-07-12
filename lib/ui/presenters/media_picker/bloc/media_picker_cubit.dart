@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'dart:typed_data';
@@ -155,7 +156,7 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       Uint8List? thumb = await getThumb(asset);
 
       return MediaItem(
-        file: file,
+        xFile: XFile(file.path),
         type: MediaType.image,
         thumbnail: thumb,
         assetId: asset.id,
@@ -205,10 +206,9 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
         return null;
       }
 
-      final file = File(result.path);
       final bytes = await result.readAsBytes();
       final newMedia = MediaItem(
-        file: file,
+        xFile: result,
         type: MediaType.image,
         thumbnail: bytes,
       );
@@ -242,7 +242,7 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
 
       if (result != null) {
         final media = MediaItem(
-          file: File(result.path),
+          xFile: result,
           type: MediaType.image,
           fileName: result.name,
         );
@@ -264,14 +264,19 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
+        withData: kIsWeb,
       );
 
-      if (result != null && result.files.single.path != null) {
-        final file = File(result.files.single.path!);
+      if (result != null && result.files.single.path != null || (kIsWeb && result?.files.single.bytes != null)) {
+        final platformFile = result!.files.single;
+        final xFile = kIsWeb 
+            ? XFile.fromData(platformFile.bytes!, name: platformFile.name)
+            : XFile(platformFile.path!);
+
         final media = MediaItem(
-          file: file,
+          xFile: xFile,
           type: MediaType.pdf,
-          fileName: result.files.single.name,
+          fileName: platformFile.name,
         );
         
         final List<MediaItem> updatedList = state.isMultiSelection

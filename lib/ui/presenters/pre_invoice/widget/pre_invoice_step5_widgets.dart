@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../../config/constants.dart';
@@ -319,19 +320,15 @@ class PreInvoiceStep5Documents extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          if (state.mandatoryDocPath != null)
+          if (state.mandatoryDoc != null)
             PreInvoiceStep5DocItem(
               title: S.current.nationalCardFront,
-              size: FileUtils.getFileSizeString(state.mandatoryDocPath!),
-              fileName: state.mandatoryDocPath!.split('/').last,
-              path: state.mandatoryDocPath!,
+              xFile: state.mandatoryDoc!,
             ),
-          ...state.optionalDocPaths.asMap().entries.map((entry) {
+          ...state.optionalDocs.asMap().entries.map((entry) {
             return PreInvoiceStep5DocItem(
               title: S.current.otherDocumentsLabel(entry.key + 1),
-              size: FileUtils.getFileSizeString(entry.value),
-              fileName: entry.value.split('/').last,
-              path: entry.value,
+              xFile: entry.value,
             );
           }),
         ],
@@ -340,34 +337,52 @@ class PreInvoiceStep5Documents extends StatelessWidget {
   }
 }
 
-class PreInvoiceStep5DocItem extends StatelessWidget {
+class PreInvoiceStep5DocItem extends StatefulWidget {
   final String title;
-  final String size;
-  final String fileName;
-  final String path;
+  final XFile xFile;
 
   const PreInvoiceStep5DocItem({
     super.key,
     required this.title,
-    required this.size,
-    required this.fileName,
-    required this.path,
+    required this.xFile,
   });
+
+  @override
+  State<PreInvoiceStep5DocItem> createState() => _PreInvoiceStep5DocItemState();
+}
+
+class _PreInvoiceStep5DocItemState extends State<PreInvoiceStep5DocItem> {
+  String _size = '...';
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateSize();
+  }
+
+  Future<void> _calculateSize() async {
+    final s = await FileUtils.getXFileSizeString(widget.xFile);
+    if (mounted) {
+      setState(() {
+        _size = s;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return PreInvoiceDocumentItem(
-      title: title,
-      fileName: fileName,
-      fileSize: size,
+      title: widget.title,
+      fileName: widget.xFile.name,
+      fileSize: _size,
       onDelete: () {},
       onView: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DocumentViewerScreen(
-              url: path,
-              title: title,
+              url: widget.xFile.path,
+              title: widget.title,
               isLocalFile: true,
             ),
           ),

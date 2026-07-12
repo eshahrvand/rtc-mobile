@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
@@ -46,7 +47,7 @@ class OrdersState with _$OrdersState {
     String? excessAmount,
     GatewayType? gatewayType,
     String? walletName,
-    String? uploadedClearanceDocPath,
+    XFile? uploadedClearanceDoc,
     String? uploadedClearanceDocId,
     String? orderAmount,
     @Default(false) bool isOutOfTolerance,
@@ -62,7 +63,7 @@ class OrdersState with _$OrdersState {
     String? settlementBankName,
     String? settlementAccountHolder,
     String? settlementTrackingCode,
-    @Default([]) List<String> settlementDocPaths,
+    @Default([]) List<XFile> settlementDocs,
     @Default(true) bool isWalletBalanceSufficient,
     @Default(false) bool isSettlementCompleted,
 

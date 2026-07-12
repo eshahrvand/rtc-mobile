@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'dart:io' show File;
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
@@ -73,13 +74,13 @@ class PreInvoiceStep4UploadPlaceholderContent extends StatelessWidget {
 }
 
 class PreInvoiceStep4UploadBox extends StatelessWidget {
-  final String? path;
+  final XFile? xFile;
   final VoidCallback onTap;
   final VoidCallback onRemove;
 
   const PreInvoiceStep4UploadBox({
     super.key,
-    this.path,
+    this.xFile,
     required this.onTap,
     required this.onRemove,
   });
@@ -87,7 +88,7 @@ class PreInvoiceStep4UploadBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: path == null ? onTap : null,
+      onTap: xFile == null ? onTap : null,
       child: Container(
         height: 140,
         width: double.infinity,
@@ -96,7 +97,7 @@ class PreInvoiceStep4UploadBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColors.grayPalette.shade200, width: 1),
         ),
-        child: path == null
+        child: xFile == null
             ? const PreInvoiceStep4UploadPlaceholderContent()
             : Stack(
                 children: [
@@ -104,7 +105,7 @@ class PreInvoiceStep4UploadBox extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: kIsWeb
                         ? Image.network(
-                            path!,
+                            xFile!.path,
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.contain,
@@ -118,7 +119,7 @@ class PreInvoiceStep4UploadBox extends StatelessWidget {
                                 ),
                           )
                         : Image.file(
-                            File(path!),
+                            File(xFile!.path),
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.contain,

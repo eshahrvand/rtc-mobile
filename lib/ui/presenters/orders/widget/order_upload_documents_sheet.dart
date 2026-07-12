@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
@@ -10,7 +11,7 @@ import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_document
 import 'document_viewer_screen.dart';
 
 class OrderUploadDocumentsSheet extends StatefulWidget {
-  final String filePath;
+  final XFile xFile;
   final VoidCallback onConfirm;
   final VoidCallback onDelete;
   final bool showTrackingField;
@@ -20,7 +21,7 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
 
   const OrderUploadDocumentsSheet({
     super.key,
-    required this.filePath,
+    required this.xFile,
     required this.onConfirm,
     required this.onDelete,
     this.showTrackingField = false,
@@ -37,11 +38,22 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
 class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
   final _trackingController = TextEditingController();
   bool _isTrackingCodeNotEmpty = false;
+  String _fileSize = '...';
 
   @override
   void initState() {
     super.initState();
     _trackingController.addListener(_onTrackingChanged);
+    _calculateFileSize();
+  }
+
+  Future<void> _calculateFileSize() async {
+    final size = await FileUtils.getXFileSizeString(widget.xFile);
+    if (mounted) {
+      setState(() {
+        _fileSize = size;
+      });
+    }
   }
 
   void _onTrackingChanged() {
@@ -60,8 +72,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    final fileName = widget.filePath.split('/').last;
-    final sizeStr = FileUtils.getFileSizeString(widget.filePath);
+    final fileName = widget.xFile.name;
 
     return SafeArea(
       child: Padding(
@@ -134,14 +145,14 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                 PreInvoiceDocumentItem(
                   title: S.current.paymentDocuments,
                   fileName: fileName,
-                  fileSize: sizeStr,
+                  fileSize: _fileSize,
                   onDelete: widget.onDelete,
                   onView: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => DocumentViewerScreen(
-                          url: widget.filePath,
+                          url: widget.xFile.path,
                           title: S.current.paymentDocuments,
                           isLocalFile: true,
                         ),

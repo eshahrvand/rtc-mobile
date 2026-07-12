@@ -1,18 +1,44 @@
-import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:dio/dio.dart' as dio;
 import 'model/media_dto_model.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-part 'media_service.g.dart';
+class MediaService {
+  final dio.Dio _dio;
 
-@RestApi()
-abstract class MediaService {
-  factory MediaService(Dio dio, {String baseUrl}) = _MediaService;
+  MediaService(this._dio);
 
-  @POST('media/files')
-  @MultiPart()
   Future<MediaDtoModel> uploadMedia({
-    @Part(name: 'category') required String category,
-    @Part(name: 'file') required File file,
-  });
+    required String category,
+    required XFile xFile,
+  }) async {
+    final formData = dio.FormData();
+    formData.fields.add(MapEntry('category', category));
+
+    if (kIsWeb) {
+      final bytes = await xFile.readAsBytes();
+      formData.files.add(MapEntry(
+        'file',
+        dio.MultipartFile.fromBytes(
+          bytes,
+          filename: xFile.name,
+        ),
+      ));
+    } else {
+      formData.files.add(MapEntry(
+        'file',
+        await dio.MultipartFile.fromFile(
+          xFile.path,
+          filename: xFile.name,
+        ),
+      ));
+    }
+
+    final response = await _dio.post(
+      'media/files',
+      data: formData,
+    );
+
+    return MediaDtoModel.fromJson(response.data);
+  }
 }

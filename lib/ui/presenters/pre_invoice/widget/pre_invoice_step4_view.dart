@@ -51,7 +51,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     PreInvoiceStep4UploadBox(
-                      path: state.mandatoryDocPath,
+                      xFile: state.mandatoryDoc,
                       onTap: () => cubit.pickMandatoryDoc(context),
                       onRemove: () => cubit.removeMandatoryDoc(),
                     ),
@@ -66,7 +66,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (state.optionalDocPaths.isNotEmpty)
+                        if (state.optionalDocs.isNotEmpty)
                           RtcTextButton(
                             onPressed: () => cubit.pickOptionalDoc(context),
                             title: S.current.add,
@@ -82,20 +82,20 @@ class PreInvoiceStep4View extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    ...state.optionalDocPaths.asMap().entries.map((entry) {
+                    ...state.optionalDocs.asMap().entries.map((entry) {
                       int index = entry.key;
-                      String path = entry.value;
+                      final doc = entry.value;
                       return PreInvoiceDocumentItem(
                         title: S.current.otherDocumentsLabel(index + 1),
-                        fileName: path.split('/').last,
-                        fileSize: FileUtils.getFileSizeString(path),
+                        fileName: doc.name,
+                        fileSize: '...', // We can't easily do async here without a widget change
                         onDelete: () => cubit.removeOptionalDoc(index),
                         onView: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => DocumentViewerScreen(
-                                url: path,
+                                url: doc.path,
                                 title: S.current.otherDocumentsLabel(index + 1),
                                 isLocalFile: true,
                               ),
@@ -104,7 +104,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                         },
                       );
                     }),
-                    if (state.optionalDocPaths.isEmpty)
+                    if (state.optionalDocs.isEmpty)
                       PreInvoiceStep4UploadPlaceholder(
                         onTap: () => cubit.pickOptionalDoc(context),
                       ),

@@ -226,7 +226,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                 onPressed: () => _showAmountSheet(context, cubit),
               ),
             if (state.settlementMethod == 'card_to_card' &&
-                state.settlementDocPaths.isNotEmpty &&
+                state.settlementDocs.isNotEmpty &&
                 !state.isSettlementCompleted)
               OrderFinancialActionButton(
                 title: S.current.submitRequest,
@@ -242,7 +242,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                         bottom: MediaQuery.of(context).viewInsets.bottom,
                       ),
                       child: OrderUploadDocumentsSheet(
-                        filePath: state.settlementDocPaths.first,
+                        xFile: state.settlementDocs.first,
                         showTrackingField: true,
                         hideDocumentItem: true,
                         onTrackingCodeChanged: (val) => trackingCode = val,

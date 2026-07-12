@@ -63,7 +63,7 @@ class _OrderSettlementOperationsWidgetState
 
     if (method == 'card_to_card') {
       final state = cubit.state;
-      if (state.settlementDocPaths.isEmpty) {
+      if (state.settlementDocs.isEmpty) {
         cubit.pickSettlementDoc(context);
       } else {
         String trackingCode = '';
@@ -76,7 +76,7 @@ class _OrderSettlementOperationsWidgetState
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: OrderUploadDocumentsSheet(
-              filePath: state.settlementDocPaths.first,
+              xFile: state.settlementDocs.first,
               showTrackingField: true,
               hideDocumentItem: true,
               onTrackingCodeChanged: (val) => trackingCode = val,
@@ -352,7 +352,7 @@ class _OrderSettlementOperationsWidgetState
                           ),
                         ),
                         if (state.settlementMethod == 'card_to_card' &&
-                            state.settlementDocPaths.isNotEmpty) ...[
+                            state.settlementDocs.isNotEmpty) ...[
                           const SizedBox(height: 12.0),
                           RtcDivider(
                             height: 0.5,
@@ -384,26 +384,22 @@ class _OrderSettlementOperationsWidgetState
                             ],
                           ),
                           const SizedBox(height: 12),
-                          ...state.settlementDocPaths.asMap().entries.map((
+                          ...state.settlementDocs.asMap().entries.map((
                             entry,
                           ) {
                             int index = entry.key;
-                            String path = entry.value;
-                            String fileName = path.split('/').last;
-                            if (kIsWeb && fileName.startsWith('blob:')) {
-                               fileName = S.current.otherDocumentsLabel(index + 1);
-                            }
+                            final doc = entry.value;
                             return PreInvoiceDocumentItem(
                               title: S.current.otherDocumentsLabel(index + 1),
-                              fileName: fileName,
-                              fileSize: FileUtils.getFileSizeString(path),
+                              fileName: doc.name,
+                              fileSize: '...',
                               onDelete: () => cubit.removeSettlementDoc(index),
                               onView: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DocumentViewerScreen(
-                                      url: path,
+                                      url: doc.path,
                                       title: S.current.otherDocumentsLabel(
                                         index + 1,
                                       ),
@@ -457,7 +453,7 @@ class _OrderSettlementOperationsWidgetState
                                       ),
                               ),
                             )
-                          else if (state.settlementDocPaths.isEmpty)
+                          else if (state.settlementDocs.isEmpty)
                             Row(
                               children: [
                                 const Spacer(),
