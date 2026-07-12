@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as img;
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../../config/constants.dart';
 import 'package:rtc_mobile/ui/widget/rtc_button.dart';
@@ -13,12 +12,18 @@ import '../../../../generated/l10n.dart';
 
 class RtcCameraScreen extends StatefulWidget {
   final bool showOverlay;
+
   const RtcCameraScreen({super.key, this.showOverlay = true});
 
-  static Future<File?> open(BuildContext context, {bool showOverlay = true}) async {
-    return await Navigator.of(
-      context,
-    ).push<File>(MaterialPageRoute(builder: (_) => RtcCameraScreen(showOverlay: showOverlay)));
+  static Future<File?> open(
+    BuildContext context, {
+    bool showOverlay = true,
+  }) async {
+    return await Navigator.of(context).push<File>(
+      MaterialPageRoute(
+        builder: (_) => RtcCameraScreen(showOverlay: showOverlay),
+      ),
+    );
   }
 
   @override
@@ -26,24 +31,17 @@ class RtcCameraScreen extends StatefulWidget {
 }
 
 class _RtcCameraScreenState extends State<RtcCameraScreen> {
-  // Mobile Camera
   CameraController? _controller;
   bool _isInitialized = false;
-  
-  // Web Camera
-  final MobileScannerController _webController = MobileScannerController();
-  
   bool _isCapturing = false;
 
   @override
   void initState() {
     super.initState();
-    if (!kIsWeb) {
-      _initializeMobileCamera();
-    }
+    _initializeCamera();
   }
 
-  Future<void> _initializeMobileCamera() async {
+  Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     if (cameras.isEmpty) return;
 
@@ -74,20 +72,60 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
   @override
   void dispose() {
     _controller?.dispose();
-    _webController.dispose();
     super.dispose();
   }
 
   Future<void> _takePicture() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+
     setState(() {
       _isCapturing = true;
     });
 
     try {
+      final XFile photo = await _controller!.takePicture();
+      final bytes = await photo.readAsBytes();
+      
+      final mediaQuery = MediaQuery.of(context);
+      final double safeWidth = mediaQuery.size.width - mediaQuery.padding.left - mediaQuery.padding.right;
+      final double safeHeight = mediaQuery.size.height - mediaQuery.padding.top - mediaQuery.padding.bottom;
+
+      final Uint8List? processedBytes = await compute(_processImageBytes, {
+        'bytes': bytes,
+        'screenWidth': safeWidth,
+        'screenHeight': safeHeight,
+        'showOverlay': widget.showOverlay,
+      });
+
+      if (processedBytes == null) {
+        if (mounted) {
+          setState(() {
+            _isCapturing = false;
+          });
+        }
+        return;
+      }
+
       if (kIsWeb) {
-        await _takeWebPicture();
+        // On Web, return a File object pointing to the Blob URL
+        final blobUrl = XFile.fromData(
+          processedBytes,
+          mimeType: 'image/jpeg',
+          name: 'cropped_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        ).path;
+        if (mounted) {
+          Navigator.of(context).pop(File(blobUrl));
+        }
       } else {
-        await _takeMobilePicture();
+        // Mobile: Save to temp file
+        final directory = await getTemporaryDirectory();
+        final tempPath = '${directory.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final resultFile = File(tempPath);
+        await resultFile.writeAsBytes(processedBytes);
+        
+        if (mounted) {
+          Navigator.of(context).pop(resultFile);
+        }
       }
     } catch (e) {
       debugPrint('Error taking picture: $e');
@@ -99,62 +137,6 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
     }
   }
 
-  Future<void> _takeWebPicture() async {
-    // NOTE: mobile_scanner on web usually works via analyzeImage or custom capture.
-    // For RTC Web, if mobile_scanner doesn't provide a direct capture, we use the image_cropper flow.
-    // However, the user wants the photo to go to the edit screen for cropping.
-    
-    // As a fallback for Web, we rely on the MediaEditScreen to handle the cropping precision.
-    // If mobile_scanner capture is not straightforward on web, we might need a workaround or
-    // use the standard image_picker for web camera if precision is the goal.
-    
-    // But per instructions: "photo should go to the edit screen for cropping instead"
-    // We will capture the frame and pass it to MediaEditScreen.
-    
-    // For now, let's assume we capture the current frame.
-    // If mobile_scanner doesn't support capture on web directly, we might use a canvas-based capture.
-    
-    // To keep it simple and robust for web:
-    // If we can't capture easily with mobile_scanner, we will use image_picker.camera for web as a fallback
-    // but the user wants the custom screen with overlay.
-    
-    // Actually, mobile_scanner is primarily for QR. For just camera, the 'camera' package or 'image_picker' is better.
-    // BUT user said: "i want use mobile scaaner package for web"
-    
-    // We'll proceed with the UI implementation using MobileScanner for the preview.
-    setState(() {
-      _isCapturing = false;
-    });
-    // TODO: Implement actual frame capture for web using MobileScannerController if possible,
-    // or fall back to native web capture.
-  }
-
-  Future<void> _takeMobilePicture() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
-    
-    final screenSize = MediaQuery.of(context).size;
-    final XFile photo = await _controller!.takePicture();
-    final bytes = await photo.readAsBytes();
-    final directory = await getTemporaryDirectory();
-    final tempPath = '${directory.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-    final String? resultPath = await compute(_processImage, {
-      'bytes': bytes,
-      'screenWidth': screenSize.width,
-      'screenHeight': screenSize.height,
-      'tempPath': tempPath,
-      'showOverlay': widget.showOverlay,
-    });
-
-    if (mounted && resultPath != null) {
-      Navigator.of(context).pop(File(resultPath));
-    } else if (mounted) {
-      setState(() {
-        _isCapturing = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,25 +144,22 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Camera Preview
+            // Camera Preview (Same for Mobile and Web)
             Positioned.fill(
-              child: kIsWeb 
-                ? MobileScanner(
-                    controller: _webController,
-                    fit: BoxFit.cover,
-                  )
-                : (_isInitialized && _controller != null
-                    ? FittedBox(
-                        fit: BoxFit.cover,
-                        child: SizedBox(
-                          width: _controller!.value.previewSize?.height ?? 1,
-                          height: _controller!.value.previewSize?.width ?? 1,
-                          child: CameraPreview(_controller!),
-                        ),
-                      )
-                    : const Center(child: CircularProgressIndicator(color: Colors.white))),
+              child: (_isInitialized && _controller != null
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _controller!.value.previewSize?.height ?? 1,
+                        height: _controller!.value.previewSize?.width ?? 1,
+                        child: CameraPreview(_controller!),
+                      ),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    )),
             ),
-        
+
             // Overlay
             if (widget.showOverlay)
               Center(
@@ -194,7 +173,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                   ),
                 ),
               ),
-        
+
             // Top Controls
             Positioned(
               top: 10,
@@ -210,7 +189,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                 ),
               ),
             ),
-        
+
             // Bottom Controls
             Positioned(
               bottom: 16,
@@ -227,7 +206,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                 ),
               ),
             ),
-        
+
             // Instruction Text
             if (widget.showOverlay)
               Positioned(
@@ -252,26 +231,22 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
 }
 
 /// Top-level function for background image processing
-Future<String?> _processImage(Map<String, dynamic> params) async {
+Future<Uint8List?> _processImageBytes(Map<String, dynamic> params) async {
   try {
     final Uint8List bytes = params['bytes'];
     final double screenWidth = params['screenWidth'];
     final double screenHeight = params['screenHeight'];
-    final String tempPath = params['tempPath'];
     final bool showOverlay = params['showOverlay'] ?? true;
 
     img.Image? image = img.decodeImage(bytes);
     if (image == null) return null;
 
-    if (screenHeight > screenWidth && image.width > image.height) {
-      image = img.copyRotate(image, angle: 90);
-    }
-
     if (showOverlay) {
+      // Calculate scale factor for BoxFit.cover
       final double scale =
           (screenWidth / image.width > screenHeight / image.height)
-          ? screenWidth / image.width
-          : screenHeight / image.height;
+              ? screenWidth / image.width
+              : screenHeight / image.height;
 
       final double visibleWidth = screenWidth / scale;
       final double visibleHeight = screenHeight / scale;
@@ -279,6 +254,7 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       final double offsetX = (image.width - visibleWidth) / 2;
       final double offsetY = (image.height - visibleHeight) / 2;
 
+      // Overlay UI values (matching RtcCameraScreen layout)
       final double rectWidth = screenWidth - (26 * 2);
       final double rectHeight = 206;
       final double rectLeft = 26;
@@ -303,6 +279,7 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       );
     }
 
+    // Resize if too large to save memory/bandwidth
     if (image.width > 2000 || image.height > 2000) {
       image = img.copyResize(
         image,
@@ -312,12 +289,9 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       );
     }
 
-    final resultFile = File(tempPath);
-    await resultFile.writeAsBytes(img.encodeJpg(image, quality: 40));
-
-    return tempPath;
+    return Uint8List.fromList(img.encodeJpg(image, quality: 40));
   } catch (e) {
-    debugPrint('Error in _processImage: $e');
+    debugPrint('Error in _processImageBytes: $e');
     return null;
   }
 }
