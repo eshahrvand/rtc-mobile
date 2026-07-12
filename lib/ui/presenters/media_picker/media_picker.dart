@@ -230,6 +230,7 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
         file: croppedFile,
         type: MediaType.image,
         thumbnail: kIsWeb ? null : await croppedFile.readAsBytes(),
+        fileName: croppedFile.path.split('/').last,
       );
       cubit.addEditedMedia(media);
     }

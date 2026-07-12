@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -555,13 +556,17 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     // Upload mandatory
     uploadTasks.add(
-      _mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id),
+      kIsWeb
+          ? _mediaRepo.uploadOrderDocumentWeb(state.mandatoryDocPath!).then((m) => m.id)
+          : _mediaRepo.uploadOrderDocument(mandatoryFile).then((m) => m.id),
     );
 
     // Upload optionals
     for (final path in state.optionalDocPaths) {
       uploadTasks.add(
-        _mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id),
+        kIsWeb
+            ? _mediaRepo.uploadOrderDocumentWeb(path).then((m) => m.id)
+            : _mediaRepo.uploadOrderDocument(File(path)).then((m) => m.id),
       );
     }
 

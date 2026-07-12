@@ -16,5 +16,6 @@ class MediaItem with _$MediaItem {
     required MediaType type,
     Uint8List? thumbnail,
     String? assetId,
+    String? fileName,
   }) = _MediaItem;
 }

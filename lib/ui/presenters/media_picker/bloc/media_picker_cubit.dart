@@ -206,10 +206,11 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
       }
 
       final file = File(result.path);
+      final bytes = await result.readAsBytes();
       final newMedia = MediaItem(
         file: file,
         type: MediaType.image,
-        thumbnail: await file.readAsBytes(),
+        thumbnail: bytes,
       );
 
       emit(state.copyWith(isOpeningCamera: false));
@@ -243,6 +244,7 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
         final media = MediaItem(
           file: File(result.path),
           type: MediaType.image,
+          fileName: result.name,
         );
         
         if (context.mounted) {
@@ -266,7 +268,11 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
 
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
-        final media = MediaItem(file: file, type: MediaType.pdf);
+        final media = MediaItem(
+          file: file,
+          type: MediaType.pdf,
+          fileName: result.files.single.name,
+        );
         
         final List<MediaItem> updatedList = state.isMultiSelection
             ? (List<MediaItem>.from(state.selectedMedia)..add(media))

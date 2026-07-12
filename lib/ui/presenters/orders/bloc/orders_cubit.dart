@@ -848,9 +848,15 @@ class OrdersCubit extends Cubit<OrdersState> {
                 : []);
 
     if (docsToUpload.isNotEmpty) {
-      return Future.wait(
-        docsToUpload.map((path) => _mediaRepo.uploadOrderDocument(File(path))),
-      )
+      final uploadTasks = docsToUpload.map((path) {
+        if (kIsWeb) {
+          return _mediaRepo.uploadOrderDocumentWeb(path);
+        } else {
+          return _mediaRepo.uploadOrderDocument(File(path));
+        }
+      });
+
+      return Future.wait(uploadTasks)
           .then((mediaList) {
             return Future.wait(
               mediaList.map(

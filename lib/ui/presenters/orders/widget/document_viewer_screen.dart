@@ -1,4 +1,5 @@
 import 'dart:io' show File;
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -39,7 +40,17 @@ class DocumentViewerScreen extends StatelessWidget {
         child: _isPdf(url)
             ? (isLocalFile
                 ? (kIsWeb
-                    ? SfPdfViewer.network(url)
+                    ? FutureBuilder<Uint8List>(
+                        future: Dio()
+                            .get(url, options: Options(responseType: ResponseType.bytes))
+                            .then((r) => r.data as Uint8List),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return SfPdfViewer.memory(snapshot.data!);
+                          }
+                          return const CircularProgressIndicator(color: Colors.white);
+                        },
+                      )
                     : SfPdfViewer.file(File(url)))
                 : SfPdfViewer.network(url))
             : InteractiveViewer(

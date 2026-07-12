@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
@@ -388,9 +389,13 @@ class _OrderSettlementOperationsWidgetState
                           ) {
                             int index = entry.key;
                             String path = entry.value;
+                            String fileName = path.split('/').last;
+                            if (kIsWeb && fileName.startsWith('blob:')) {
+                               fileName = S.current.otherDocumentsLabel(index + 1);
+                            }
                             return PreInvoiceDocumentItem(
                               title: S.current.otherDocumentsLabel(index + 1),
-                              fileName: path.split('/').last,
+                              fileName: fileName,
                               fileSize: FileUtils.getFileSizeString(path),
                               onDelete: () => cubit.removeSettlementDoc(index),
                               onView: () {
