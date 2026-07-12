@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:io' show File;
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
@@ -101,20 +102,35 @@ class PreInvoiceStep4UploadBox extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      File(path!),
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Center(
-                            child: Icon(
-                              Icons.image,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
+                    child: kIsWeb
+                        ? Image.network(
+                            path!,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Center(
+                                  child: Icon(
+                                    Icons.image,
+                                    size: 50,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                          )
+                        : Image.file(
+                            File(path!),
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Center(
+                                  child: Icon(
+                                    Icons.image,
+                                    size: 50,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                           ),
-                    ),
                   ),
                   Positioned(
                     bottom: 0,

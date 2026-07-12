@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -92,7 +93,11 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
       builder: (context, state) {
         return SafeArea(
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.85,
+            height: kIsWeb
+                ? (widget.isMultiSelection && state.selectedMedia.isNotEmpty
+                      ? 400
+                      : 340)
+                : MediaQuery.of(context).size.height * 0.85,
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -166,12 +171,20 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
         crossAxisSpacing: 2,
         mainAxisSpacing: 2,
       ),
-      itemCount: state.loadedAssetIds.length + 2,
+      itemCount: state.loadedAssetIds.length + (kIsWeb ? 3 : 2),
       itemBuilder: (context, index) {
-        if (index == 0) return _buildCameraItem(context);
-        if (index == 1) return _buildFileItem(context);
+        if (kIsWeb) {
+          // Web: Camera (0), Gallery (1), File (2)
+          if (index == 0) return _buildCameraItem(context);
+          if (index == 1) return _buildWebGalleryItem(context);
+          if (index == 2) return _buildFileItem(context);
+        } else {
+          // Mobile: Camera (0), File (1)
+          if (index == 0) return _buildCameraItem(context);
+          if (index == 1) return _buildFileItem(context);
+        }
 
-        final assetId = state.loadedAssetIds[index - 2];
+        final assetId = state.loadedAssetIds[index - (kIsWeb ? 3 : 2)];
         return KeyedSubtree(
           key: ValueKey(assetId),
           child: FutureBuilder<AssetEntity?>(
@@ -187,6 +200,39 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
         );
       },
     );
+  }
+
+  Widget _buildWebGalleryItem(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.read<MediaPickerCubit>().pickFromGalleryWeb(
+        context,
+        widget.showCameraOverlay,
+      ),
+      child: Container(
+        color: AppColors.grayPalette.shade100,
+        child: Icon(
+          Icons.photo_library,
+          size: 32,
+          color: AppColors.grayPalette.shade600,
+        ),
+      ),
+    );
+  }
+
+  void _handleCameraTap(BuildContext context) async {
+    final cubit = context.read<MediaPickerCubit>();
+    final File? croppedFile = await RtcCameraScreen.open(
+      context,
+      showOverlay: widget.showCameraOverlay,
+    );
+    if (croppedFile != null && context.mounted) {
+      final media = MediaItem(
+        file: croppedFile,
+        type: MediaType.image,
+        thumbnail: kIsWeb ? null : await croppedFile.readAsBytes(),
+      );
+      cubit.addEditedMedia(media);
+    }
   }
 
   Widget _buildFileItem(BuildContext context) {
@@ -205,21 +251,7 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
 
   Widget _buildCameraItem(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        final cubit = context.read<MediaPickerCubit>();
-        final File? croppedFile = await RtcCameraScreen.open(
-          context,
-          showOverlay: widget.showCameraOverlay,
-        );
-        if (croppedFile != null && context.mounted) {
-          final media = MediaItem(
-            file: croppedFile,
-            type: MediaType.image,
-            thumbnail: await croppedFile.readAsBytes(),
-          );
-          cubit.addEditedMedia(media);
-        }
-      },
+      onTap: () => _handleCameraTap(context),
       child: Container(
         color: AppColors.grayPalette.shade100,
         child: Icon(
@@ -246,7 +278,11 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
             final cubit = context.read<MediaPickerCubit>();
             final media = await cubit.getMediaFromAsset(asset);
             if (media != null && context.mounted) {
-              final edited = await MediaEditScreen.crop(context, media);
+              final edited = await MediaEditScreen.crop(
+                context,
+                media,
+                showOverlay: widget.showCameraOverlay,
+              );
               if (edited != null) {
                 cubit.addEditedMedia(edited);
               }
@@ -274,7 +310,11 @@ class _MediaPickerBottomSheetState extends State<MediaPickerBottomSheet> {
                 } else {
                   final media = await cubit.getMediaFromAsset(asset);
                   if (media != null && context.mounted) {
-                    final edited = await MediaEditScreen.crop(context, media);
+                    final edited = await MediaEditScreen.crop(
+                      context,
+                      media,
+                      showOverlay: widget.showCameraOverlay,
+                    );
                     if (edited != null) {
                       cubit.addEditedMedia(edited);
                     }

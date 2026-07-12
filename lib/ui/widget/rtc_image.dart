@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:io' show File;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -146,6 +147,26 @@ class RtcImage extends StatelessWidget {
     }
 
     if (isFile ?? false) {
+      if (kIsWeb) {
+        if (width != null || height != null) {
+          return Image.network(
+            image ?? "",
+            width: width,
+            height: height,
+            fit: boxFit!,
+            color: color,
+            errorBuilder: (context, error, stackTrace) => getPlaceHolder(),
+          );
+        } else {
+          return Image.network(
+            image ?? "",
+            fit: boxFit!,
+            color: color,
+            errorBuilder: (context, error, stackTrace) => getPlaceHolder(),
+          );
+        }
+      }
+
       if (width != null || height != null) {
         if (color != null) {
           return Image.file(

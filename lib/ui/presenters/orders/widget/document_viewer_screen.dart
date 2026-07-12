@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -37,21 +38,25 @@ class DocumentViewerScreen extends StatelessWidget {
       body: Center(
         child: _isPdf(url)
             ? (isLocalFile
-                ? SfPdfViewer.file(
-                    File(url),
-                  )
-                : SfPdfViewer.network(
-                    url,
-                  ))
+                ? (kIsWeb
+                    ? SfPdfViewer.network(url)
+                    : SfPdfViewer.file(File(url)))
+                : SfPdfViewer.network(url))
             : InteractiveViewer(
                 minScale: 0.5,
                 maxScale: 4.0,
                 child: isLocalFile
-                    ? Image.file(
-                        File(url),
-                        errorBuilder: (context, error, stackTrace) =>
-                            const _ErrorPlaceholder(),
-                      )
+                    ? (kIsWeb
+                        ? Image.network(
+                            url,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const _ErrorPlaceholder(),
+                          )
+                        : Image.file(
+                            File(url),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const _ErrorPlaceholder(),
+                          ))
                     : CachedNetworkImage(
                         imageUrl: url,
                         placeholder: (context, url) =>

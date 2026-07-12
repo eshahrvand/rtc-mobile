@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -10,21 +11,38 @@ class MediaEditScreen extends StatelessWidget {
 
   const MediaEditScreen({super.key, required this.mediaItem});
 
-  static Future<MediaItem?> crop(BuildContext context, MediaItem item) async {
+  static Future<MediaItem?> crop(BuildContext context, MediaItem item, {bool showOverlay = false}) async {
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: item.file.path,
       compressQuality: 80,
       maxWidth: 2000,
       maxHeight: 2000,
+      aspectRatio: showOverlay ? const CropAspectRatio(ratioX: 85.6, ratioY: 53.98) : null,
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'ویرایش تصویر',
           toolbarWidgetColor: AppColors.grayPalette.shade800,
           toolbarColor: Colors.white,
           hideBottomControls: false,
-          lockAspectRatio: false,
+          lockAspectRatio: showOverlay,
         ),
         IOSUiSettings(title: S.current.editImage),
+        WebUiSettings(
+          context: context,
+          presentStyle: WebPresentStyle.page,
+          size: const CropperSize(width: 480, height: 480),
+          zoomable: true,
+          scalable: true,
+          rotatable: true,
+          initialAspectRatio: showOverlay ? 85.6 / 53.98 : null,
+          translations: WebTranslations(
+            title: S.current.editImage,
+            rotateLeftTooltip: 'چرخش به چپ',
+            rotateRightTooltip: 'چرخش به راست',
+            cancelButton: 'انصراف',
+            cropButton: 'تایید',
+          ),
+        ),
       ],
     );
 
@@ -53,7 +71,9 @@ class MediaEditScreen extends StatelessWidget {
               height: MediaQuery.sizeOf(context).height,
               child: InteractiveViewer(
                 child: Center(
-                  child: Image.file(mediaItem.file, fit: BoxFit.contain),
+                  child: kIsWeb 
+                      ? Image.network(mediaItem.file.path, fit: BoxFit.contain)
+                      : Image.file(mediaItem.file, fit: BoxFit.contain),
                 ),
               ),
             );

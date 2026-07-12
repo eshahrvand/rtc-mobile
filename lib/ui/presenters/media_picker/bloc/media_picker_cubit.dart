@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
+import '../widget/media_edit_screen.dart';
 import 'media_picker_state.dart';
 import 'model/media_item.dart';
 
@@ -28,6 +31,7 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
   }
 
   Future<void> loadInitialGallery() async {
+    if (kIsWeb) return;
     emit(
       state.copyWith(
         isLoadingGallery: true,
@@ -225,6 +229,31 @@ class MediaPickerCubit extends Cubit<MediaPickerState> {
     final media = await captureFromCamera();
     if (media != null) {
       addEditedMedia(media);
+    }
+  }
+
+  Future<void> pickFromGalleryWeb(BuildContext context, bool showOverlay) async {
+    try {
+      final XFile? result = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+
+      if (result != null) {
+        final media = MediaItem(
+          file: File(result.path),
+          type: MediaType.image,
+        );
+        
+        if (context.mounted) {
+          final edited = await MediaEditScreen.crop(context, media, showOverlay: showOverlay);
+          if (edited != null) {
+            addEditedMedia(edited);
+          }
+        }
+      }
+    } catch (e) {
+      emit(state.copyWith(error: 'خطا در انتخاب تصویر از گالری: $e'));
     }
   }
 
