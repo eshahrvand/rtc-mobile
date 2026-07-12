@@ -8,6 +8,10 @@ class MediaService {
 
   MediaService(this._dio);
 
+  /// Uploads a file to the server.
+  /// 
+  /// The [xFile] name is preserved if present, otherwise a defensive fallback
+  /// name is generated based on the mime type to ensure server compatibility.
   Future<MediaDtoModel> uploadMedia({
     required String category,
     required XFile xFile,
@@ -15,28 +19,10 @@ class MediaService {
     final formData = dio.FormData();
     formData.fields.add(MapEntry('category', category));
 
-    final safeName = xFile.name.isNotEmpty
-        ? xFile.name
-        : 'upload_${DateTime.now().millisecondsSinceEpoch}${_extensionFromMime(xFile.mimeType)}';
-
-    if (kIsWeb) {
-      final bytes = await xFile.readAsBytes();
-      formData.files.add(MapEntry(
-        'file',
-        dio.MultipartFile.fromBytes(
-          bytes,
-          filename: safeName,
-        ),
-      ));
-    } else {
-      formData.files.add(MapEntry(
-        'file',
-        await dio.MultipartFile.fromFile(
-          xFile.path,
-          filename: safeName,
-        ),
-      ));
-    }
+    final filename = _getSafeFileName(xFile);
+    final filePart = await _createMultipartFile(xFile, filename);
+    
+    formData.files.add(MapEntry('file', filePart));
 
     final response = await _dio.post(
       'media/files',
@@ -44,6 +30,39 @@ class MediaService {
     );
 
     return MediaDtoModel.fromJson(response.data);
+  }
+
+  /// Creates a [dio.MultipartFile] from the given [xFile] and [filename].
+  /// 
+  /// Uses [fromBytes] for Web to handle Blob URLs correctly, 
+  /// and [fromFile] for Mobile to benefit from streaming large files.
+  Future<dio.MultipartFile> _createMultipartFile(XFile xFile, String filename) async {
+    if (kIsWeb) {
+      final bytes = await xFile.readAsBytes();
+      return dio.MultipartFile.fromBytes(
+        bytes,
+        filename: filename,
+      );
+    } else {
+      return await dio.MultipartFile.fromFile(
+        xFile.path,
+        filename: filename,
+      );
+    }
+  }
+
+  /// Returns a safe filename for the given [xFile].
+  /// 
+  /// This is a defensive fallback to ensure the multipart request has a 
+  /// non-empty 'filename', which is required by many servers (like Django).
+  String _getSafeFileName(XFile xFile) {
+    if (xFile.name.isNotEmpty) {
+      return xFile.name;
+    }
+    
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final extension = _extensionFromMime(xFile.mimeType);
+    return 'upload_$timestamp$extension';
   }
 
   String _extensionFromMime(String? mime) {

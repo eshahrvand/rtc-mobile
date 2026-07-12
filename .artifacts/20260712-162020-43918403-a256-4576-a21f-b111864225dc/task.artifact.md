@@ -1,21 +1,19 @@
-# Task: Fix Empty `filename` on Cropped Images for Web
+# Task: Clean Up Media Picker / Repository / Service Code
 
-Investigate and fix the issue where cropped images on Web have an empty filename, causing server validation errors during upload.
+Refactor media-related code to remove debug artifacts, reduce duplication, and improve readability without changing behavior.
 
 ## Progress
-- [x] Task 1: Investigation
-    - [x] Trace `XFile.name` from picking (`ImagePicker`, `FilePicker`)
-    - [x] Trace `XFile.name` through `MediaEditScreen.crop`
-    - [x] Trace `XFile.name` before `MediaService.uploadMedia`
-    - [x] Report root cause
-- [x] Task 2: Fix Preservation of Filename
-    - [x] Update `MediaEditScreen.crop` to preserve `name` and `mimeType`
-- [x] Task 3: Defensive Fallback in `MediaService`
-    - [x] Add `safeName` and `_extensionFromMime` in `MediaService`
-- [x] Verification
+- [x] Task 1: Research and Planning
+- [x] Task 2: UI & Presenter Cleanup
+    - [x] Remove prints from `MediaPickerCubit`
+    - [x] Clean up imports in `MediaPickerCubit` and `MediaEditScreen`
+- [x] Task 3: Data Layer Refactor
+    - [x] Refactor `MediaService.uploadMedia`
+    - [x] Extract helpers for safe filename and multipart file creation
+    - [x] Add defensive comments
+- [x] Task 4: Verification
     - [x] Run `flutter analyze`
-    - [x] Verify non-empty `filename` in multipart request (browser DevTools)
-    - [x] Confirm successful upload on Web
+    - [x] Create walkthrough
 
 ## Completed
-All tasks successfully finished and confirmed by the user.
+Cleanup is finished. No behavior was changed, and code hygiene has been improved.
