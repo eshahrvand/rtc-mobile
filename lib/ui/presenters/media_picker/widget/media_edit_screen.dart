@@ -48,7 +48,12 @@ class MediaEditScreen extends StatelessWidget {
     );
 
     if (croppedFile != null) {
-      return item.copyWith(xFile: XFile(croppedFile.path));
+      final resultXFile = XFile(
+        croppedFile.path,
+        name: item.xFile.name,
+        mimeType: item.xFile.mimeType,
+      );
+      return item.copyWith(xFile: resultXFile);
     }
     return null;
   }

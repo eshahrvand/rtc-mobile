@@ -1,26 +1,21 @@
-# Task: Cross-Platform Media Handling with cross_file
+# Task: Fix Empty `filename` on Cropped Images for Web
 
-Refactor media picking and uploading to use `XFile` for compatibility across Android, iOS, and Web.
+Investigate and fix the issue where cropped images on Web have an empty filename, causing server validation errors during upload.
 
 ## Progress
-- [/] Layer 0: Models
-    - [/] Update `MediaItem` to use `XFile`
-- [ ] Layer 1: Media Picker & Cubits
-    - [ ] Update `MediaPickerCubit` methods
-    - [ ] Update `PreInvoiceCubit` and its state
-    - [ ] Update `OrdersCubit` and its state
-- [ ] Layer 2: Repository Layer
-    - [ ] Update `MediaRepository` signature
-- [ ] Layer 3: Service Layer
-    - [ ] Refactor `MediaService` to use raw `Dio` and `XFile`
-- [ ] UI Components
-    - [ ] Update `MediaEditScreen` display logic
-    - [ ] Update `OrderUploadDocumentsSheet` and other UI components
-- [ ] Verification
-    - [ ] Run `build_runner`
-    - [ ] Run `flutter analyze`
-    - [ ] Manual verification (if possible)
+- [x] Task 1: Investigation
+    - [x] Trace `XFile.name` from picking (`ImagePicker`, `FilePicker`)
+    - [x] Trace `XFile.name` through `MediaEditScreen.crop`
+    - [x] Trace `XFile.name` before `MediaService.uploadMedia`
+    - [x] Report root cause
+- [x] Task 2: Fix Preservation of Filename
+    - [x] Update `MediaEditScreen.crop` to preserve `name` and `mimeType`
+- [x] Task 3: Defensive Fallback in `MediaService`
+    - [x] Add `safeName` and `_extensionFromMime` in `MediaService`
+- [x] Verification
+    - [x] Run `flutter analyze`
+    - [x] Verify non-empty `filename` in multipart request (browser DevTools)
+    - [x] Confirm successful upload on Web
 
-## Next Steps
-- Finish updating `MediaItem`.
-- Update `MediaPickerCubit`.
+## Completed
+All tasks successfully finished and confirmed by the user.

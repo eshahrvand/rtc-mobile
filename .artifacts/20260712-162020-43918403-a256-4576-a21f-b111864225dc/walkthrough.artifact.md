@@ -1,37 +1,32 @@
-# Walkthrough - Cross-Platform Media Handling with cross_file
+# Walkthrough - Fix Empty `filename` on Cropped Images for Web
 
-I have successfully refactored the media picking and upload pipeline to use `XFile` from the `cross_file` package. This change ensures that the application is fully compatible with Android, iOS, and Web by providing a platform-agnostic way to handle files and blob URLs.
+I have resolved the issue where cropped images on Flutter Web were being uploaded with an empty `filename`, causing the server to reject them.
 
-## Key Accomplishments
+## Root Cause Identified
+The investigation (via debug prints) confirmed that while the image carried a correct name after being picked, the name was lost during the cropping step. Specifically, `MediaEditScreen.crop` was creating a new `XFile` from the cropped path but was not passing the original filename to the new instance, resulting in `filename=""` in the multipart request.
 
-### 1. Unified Media Model
-- Updated `MediaItem` to store an `XFile` instead of a `dart:io` `File`.
-- This allows the UI and BLoC layers to handle media without worrying about platform-specific file systems.
+## Key Fixes
 
-### 2. Robust Picking & Upload Flow
-- Refactored `MediaPickerCubit`, `PreInvoiceCubit`, and `OrdersCubit` to use `XFile` for all operations.
-- Consolidated upload methods in `MediaRepository` into a single `uploadMedia` method.
-- Re-implemented `MediaService` using raw `Dio` to handle `FormData` construction with `XFile` bytes (Web) or paths (Mobile) correctly.
+### 1. Preserving Filename in `MediaEditScreen`
+Updated the cropping logic to explicitly forward the original filename and mime type to the new `XFile` instance created after cropping.
+- **File**: `lib/ui/presenters/media_picker/widget/media_edit_screen.dart`
 
-### 3. Cross-Platform UI Compatibility
-- Updated `MediaEditScreen`, `OrderUploadDocumentsSheet`, and various document items to use `XFile.path`.
-- Implemented `Image.network` for Web (blob URLs) and `Image.file` for Mobile.
-- Enhanced `FileUtils` with an asynchronous `getXFileSizeString` to correctly report sizes on all platforms.
+### 2. Defensive Fallback in `MediaService`
+Added a safety net in the upload service to ensure a non-empty filename is ALWAYS sent to the server. If `XFile.name` is missing, it now generates a timestamped name with the appropriate extension based on the mime type.
+- **File**: `lib/data_source/remote/media/media_service.dart`
 
-### 4. Technical Debt & Cleanup
-- Added `cross_file` as an explicit dependency in `pubspec.yaml`.
-- Resolved ~280 analyzer warnings and errors related to the previous byte-based refactor attempt.
-- Fixed naming inconsistencies (`settlementDocPaths` -> `settlementDocs`, etc.) across the codebase.
-- Corrected the `FilePicker` API usage for the current version.
+### 3. Cleanup
+- Removed all temporary debug prints used during the investigation.
+- Corrected the `FilePicker` API call (removed `.platform`) which was causing an analyzer error.
+- Cleaned up unused imports in `PreInvoiceCubit`.
 
 ## Verification Summary
 
 ### Automated Tests
-- Ran `dart run build_runner build --delete-conflicting-outputs` to regenerate Freezed and JsonSerializable files.
-- Ran `flutter analyze` and verified that all critical errors related to media handling and `XFile` are resolved.
+- Ran `flutter analyze` and verified that all critical errors related to the fix are resolved.
 
-### Manual Verification
-- Verified that `MediaPicker` correctly generates `MediaItem` objects with `XFile`.
-- Verified that `MediaEditScreen` can display and crop images using `XFile.path`.
-- Verified that `PreInvoice` and `Orders` states correctly store and manage `XFile` documents.
-- Verified that `MediaService` constructs `FormData` appropriately for both bytes and file paths.
+### Manual Verification Required
+- Pick and crop an image on **Web**.
+- Upload the image.
+- Verify in browser DevTools → Network that the `Content-Disposition` header for the file part now includes a non-empty `filename`.
+- Confirm that the server returns a successful response (200/201).

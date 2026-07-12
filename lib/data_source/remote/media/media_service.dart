@@ -15,13 +15,17 @@ class MediaService {
     final formData = dio.FormData();
     formData.fields.add(MapEntry('category', category));
 
+    final safeName = xFile.name.isNotEmpty
+        ? xFile.name
+        : 'upload_${DateTime.now().millisecondsSinceEpoch}${_extensionFromMime(xFile.mimeType)}';
+
     if (kIsWeb) {
       final bytes = await xFile.readAsBytes();
       formData.files.add(MapEntry(
         'file',
         dio.MultipartFile.fromBytes(
           bytes,
-          filename: xFile.name,
+          filename: safeName,
         ),
       ));
     } else {
@@ -29,7 +33,7 @@ class MediaService {
         'file',
         await dio.MultipartFile.fromFile(
           xFile.path,
-          filename: xFile.name,
+          filename: safeName,
         ),
       ));
     }
@@ -40,5 +44,18 @@ class MediaService {
     );
 
     return MediaDtoModel.fromJson(response.data);
+  }
+
+  String _extensionFromMime(String? mime) {
+    switch (mime) {
+      case 'image/png':
+        return '.png';
+      case 'image/jpeg':
+        return '.jpg';
+      case 'application/pdf':
+        return '.pdf';
+      default:
+        return '';
+    }
   }
 }
