@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'config/constants.dart';
 // TODO: firebase - Uncomment after setting up Firebase
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:rtc_mobile/ui/presenters/rtc_app/rtc_app.dart';
@@ -7,13 +10,23 @@ import 'locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // TODO: firebase - Uncomment after setting up Firebase
-  // await Firebase.initializeApp();
-  await initLocator();
 
-  printAppSignature();
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = sentryDsn;
+      options.tracesSampleRate = 1.0;
+      options.environment = kReleaseMode ? 'production' : 'development';
+    },
+    appRunner: () async {
+      // TODO: firebase - Uncomment after setting up Firebase
+      // await Firebase.initializeApp();
+      await initLocator();
 
-  runApp(const RtcApp());
+      printAppSignature();
+
+      runApp(const RtcApp());
+    },
+  );
 }
 
 void printAppSignature() async {

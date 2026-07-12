@@ -35,6 +35,7 @@ dependencies:
   intl: ^0.20.2
   firebase_core: ^3.11.0
   firebase_analytics: ^11.4.1
+  sentry_flutter: ^9.24.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -92,6 +93,7 @@ dev_dependencies:
   retrofit_generator: 9.2.0
   intl_utils: ^2.8.2
   flutter_launcher_icons: ^0.13.1
+  sentry_dart_plugin: ^3.4.0
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -99,6 +101,15 @@ flutter_launcher_icons:
   image_path: "assets/images/rtc_app_logo.png"
   min_sdk_android: 21 # android min sdk min:21, default 21
   remove_alpha_ios: true
+
+sentry:
+  upload_source_maps: true
+  upload_sources: true
+  project: rtc-mobile-web # TODO: replace with the actual Sentry project slug
+  org: your-sentry-org # TODO: replace with the actual Sentry org slug
+  web_build_path: build/web
+  # NOTE: SENTRY_AUTH_TOKEN must be set in the environment (locally or in CI secrets)
+  # Run AFTER build: flutter build web --release && dart run sentry_dart_plugin
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
