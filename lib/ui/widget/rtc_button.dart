@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
+import '../../../locator.dart';
+import '../../../core/service/analytics_service.dart';
 import '../theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -23,6 +25,7 @@ class RtcButton extends StatefulWidget {
   final double? width;
   final RtcButtonSize size;
   final Color? borderColor;
+  final String? analyticsId;
 
   const RtcButton({
     super.key,
@@ -42,6 +45,7 @@ class RtcButton extends StatefulWidget {
     this.rightIconColor,
     this.size = RtcButtonSize.medium,
     this.borderColor,
+    this.analyticsId,
   });
 
   @override
@@ -149,6 +153,9 @@ class _RtcButtonState extends State<RtcButton> {
         child: ElevatedButton(
           onPressed: (active && !isLoading!)
               ? () {
+                  sl<AnalyticsService>().logButtonTap(
+                    widget.analyticsId ?? widget.title ?? 'RtcButton',
+                  );
                   widget.onPressed!();
                 }
               : null,
