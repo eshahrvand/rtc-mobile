@@ -12,6 +12,7 @@ import 'data_source/remote/orders/orders_service.dart';
 import 'data_source/remote/plans/plans_service.dart';
 import 'data_source/remote/service_util.dart';
 import 'data_source/remote/wallet/wallet_service.dart';
+import 'core/service/analytics_service.dart';
 import 'repository/customers/customers_repository.dart';
 import 'repository/dashboard/dashboard_repository.dart';
 import 'repository/orders/orders_repository.dart';
@@ -31,6 +32,9 @@ Future<void> initLocator() async {
 
   // Network
   sl.registerLazySingleton(() => ServiceUtil.createDio(sl()));
+
+  // Analytics
+  sl.registerLazySingleton(() => AnalyticsService());
 
   // Services
   sl.registerLazySingleton(() => AuthService(sl()));
