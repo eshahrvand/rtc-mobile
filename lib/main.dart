@@ -4,6 +4,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'config/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:rtc_mobile/core/service/notification_service.dart';
 import 'package:rtc_mobile/ui/presenters/rtc_app/rtc_app.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'locator.dart';
@@ -22,6 +23,9 @@ void main() async {
         options: DefaultFirebaseOptions.currentPlatform,
       );
       await initLocator();
+
+      // Initialize notifications
+      sl<NotificationService>().init();
 
       printAppSignature();
 

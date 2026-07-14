@@ -1,4 +1,8 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:rtc_mobile/core/service/notification_service.dart';
 import 'package:rtc_mobile/repository/auth/auth_repository.dart';
 import 'package:rtc_mobile/repository/media/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,7 +38,15 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => ServiceUtil.createDio(sl()));
 
   // Analytics
-  sl.registerLazySingleton(() => AnalyticsService());
+  sl.registerLazySingleton(() => AnalyticsService(FirebaseAnalytics.instance));
+
+  // Notifications
+  sl.registerLazySingleton(
+    () => NotificationService(
+      FirebaseMessaging.instance,
+      FlutterLocalNotificationsPlugin(),
+    ),
+  );
 
   // Services
   sl.registerLazySingleton(() => AuthService(sl()));

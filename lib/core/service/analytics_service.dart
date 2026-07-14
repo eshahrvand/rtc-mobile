@@ -1,35 +1,31 @@
-// TODO: firebase - Uncomment these imports after setting up Firebase
-// import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 
 class AnalyticsService {
-  // TODO: firebase - Uncomment after setting up Firebase
-  // AnalyticsService(this._analytics);
-  // final FirebaseAnalytics _analytics;
+  AnalyticsService(this._analytics);
+  final FirebaseAnalytics _analytics;
 
-  // TODO: firebase - Uncomment after setting up Firebase
-  // FirebaseAnalyticsObserver get observer =>
-  //     FirebaseAnalyticsObserver(analytics: _analytics);
+  FirebaseAnalyticsObserver get observer =>
+      FirebaseAnalyticsObserver(analytics: _analytics);
 
   void logScreenView(String screenName) {
-    // TODO: firebase - Uncomment after setting up Firebase
-    // _analytics.logScreenView(screenName: screenName);
-    debugPrint('Analytics: Screen View - $screenName');
+    _analytics
+        .logScreenView(screenName: screenName)
+        .then((_) => debugPrint('Analytics: Screen View - $screenName'))
+        .catchError((e) => debugPrint('Analytics Error: Screen View - $e'));
   }
 
   void logButtonTap(String buttonName, {Map<String, Object>? params}) {
-    // TODO: firebase - Uncomment after setting up Firebase
-    // _analytics.logEvent(
-    //   name: 'button_tap',
-    //   parameters: {
-    //     'button_name': buttonName,
-    //     if (params != null) ...params,
-    //   },
-    // );
-    debugPrint('Analytics: Button Tap - $buttonName ${params ?? ''}');
+    _analytics.logEvent(
+      name: 'button_tap',
+      parameters: {
+        'button_name': buttonName,
+        if (params != null) ...params,
+      },
+    ).then((_) {
+      debugPrint('Analytics: Button Tap - $buttonName ${params ?? ''}');
+    }).catchError((e) {
+      debugPrint('Analytics Error: Button Tap - $e');
+    });
   }
-}
-
-// Temporary debugPrint replacement if not imported
-void debugPrint(String message) {
-  print(message);
 }

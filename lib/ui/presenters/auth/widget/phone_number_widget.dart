@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/constants.dart';
 import '../../../../generated/l10n.dart';
+import '../../../../core/service/analytics_service.dart';
+import '../../../../locator.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_field.dart';
@@ -111,7 +113,10 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
                       : AppColors.grayPalette.shade400,
                 ),
                 isLoading: state.isLoading,
-                onPressed: () => context.read<AuthCubit>().submitPhone(),
+                onPressed: () {
+                  sl<AnalyticsService>().logButtonTap('get_otp_code');
+                  context.read<AuthCubit>().submitPhone();
+                },
               ),
             ),
           ],

@@ -22,10 +22,9 @@ import 'app_route.dart';
 // GoRouter configuration
 final router = GoRouter(
   initialLocation: AppRoutes.splash,
-  // TODO: firebase - Uncomment after setting up Firebase
-  // navigatorObservers: [
-  //   sl<AnalyticsService>().observer,
-  // ],
+  observers: [
+    sl<AnalyticsService>().observer,
+  ],
   routes: [
     GoRoute(
       path: AppRoutes.splash,
