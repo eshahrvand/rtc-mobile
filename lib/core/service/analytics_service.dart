@@ -15,15 +15,22 @@ class AnalyticsService {
         .catchError((e) => debugPrint('Analytics Error: Screen View - $e'));
   }
 
-  void logButtonTap(String buttonName, {Map<String, Object>? params}) {
+  void logButtonTap(
+    String buttonName, {
+    String? screenName,
+    Map<String, Object>? params,
+  }) {
     _analytics.logEvent(
       name: 'button_tap',
       parameters: {
         'button_name': buttonName,
+        if (screenName != null) 'screen_name': screenName,
         if (params != null) ...params,
       },
     ).then((_) {
-      debugPrint('Analytics: Button Tap - $buttonName ${params ?? ''}');
+      debugPrint(
+        'Analytics: Button Tap - $buttonName ${screenName != null ? 'on $screenName' : ''} ${params ?? ''}',
+      );
     }).catchError((e) {
       debugPrint('Analytics Error: Button Tap - $e');
     });
