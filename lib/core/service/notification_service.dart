@@ -23,7 +23,7 @@ class NotificationService {
 
   void init() {
     _requestNotificationPermission();
-    _printFcmToken();
+    // _printFcmToken();
     if (!kIsWeb) {
       _initLocalNotifications();
     }
