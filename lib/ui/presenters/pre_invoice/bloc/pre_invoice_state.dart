@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:cross_file/cross_file.dart';
 
 import '../../../../core/models/pre_invoice_model.dart';
 
@@ -65,9 +66,9 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(false) bool isExistingCustomer,
 
     // Step 4 — Documents
-    String? mandatoryDocPath,
+    XFile? mandatoryDoc,
     String? mandatoryDocId,
-    @Default([]) List<String> optionalDocPaths,
+    @Default([]) List<XFile> optionalDocs,
     @Default([]) List<String> optionalDocIds,
 
     String? createdOrderId,
@@ -96,7 +97,7 @@ extension PreInvoiceStateX on PreInvoiceState {
         customerInfo!.postalCode.isNotEmpty &&
         isPostalCodeValid &&
         customerInfo!.address.isNotEmpty,
-    PreInvoiceStep.documents => mandatoryDocPath != null,
+    PreInvoiceStep.documents => mandatoryDoc != null,
     PreInvoiceStep.review => true,
   };
 

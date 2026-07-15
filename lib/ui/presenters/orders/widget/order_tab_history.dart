@@ -12,21 +12,50 @@ class OrderTabHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasMetadata = _hasMetadata(order);
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Container(
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 2.0),
-            _HistoryList(history: order.history),
-            _ReviewersSection(order: order),
-            _RejectionSection(order: order),
+      padding: const EdgeInsets.only(top: 8.0, bottom: 32.0),
+      child: Column(
+        children: [
+          Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 2.0),
+                _HistoryList(history: order.history),
+                _ReviewersSection(order: order),
+                _RejectionSection(order: order),
+              ],
+            ),
+          ),
+          if (hasMetadata) ...[
+            const SizedBox(height: 8.0),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.only(bottom: 15.0),
+              child: _GatewayMetadataSection(order: order),
+            ),
           ],
-        ),
+        ],
       ),
     );
+  }
+
+  bool _hasMetadata(OrderDetailModel order) {
+    if (order.disbursementRecords.isEmpty) return false;
+    final record = order.disbursementRecords.lastWhere(
+      (r) => r.gatewayMetadata != null,
+      orElse: () => order.disbursementRecords.first,
+    );
+    final metadata = record.gatewayMetadata;
+    if (metadata == null) return false;
+    final creditInfo = metadata['creditInfo'] as Map<String, dynamic>?;
+    final creditName = creditInfo?['creditName'] as String?;
+    final referenceNumber =
+        (metadata['referenceNumber'] ?? metadata['transactionId'])?.toString();
+    return creditName != null || referenceNumber != null;
   }
 }
 
@@ -49,6 +78,43 @@ class _HistoryList extends StatelessWidget {
   }
 }
 
+class _GatewayMetadataSection extends StatelessWidget {
+  final OrderDetailModel order;
+
+  const _GatewayMetadataSection({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    // Find the last record that has gateway metadata
+    final recordWithMetadata = order.disbursementRecords.lastWhere(
+      (r) => r.gatewayMetadata != null,
+      orElse: () => order.disbursementRecords.first,
+    );
+
+    final metadata = recordWithMetadata.gatewayMetadata!;
+    final creditInfo = metadata['creditInfo'] as Map<String, dynamic>?;
+    final creditName = creditInfo?['creditName'] as String?;
+    final referenceNumber =
+        (metadata['referenceNumber'] ?? metadata['transactionId'])?.toString();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (creditName != null)
+          OrderHistoryRowWidget(
+            label: '${S.current.planNameLabel}:',
+            value: creditName,
+          ),
+        if (referenceNumber != null)
+          OrderHistoryRowWidget(
+            label: S.current.trackingNumberLabel,
+            value: referenceNumber,
+          ),
+      ],
+    );
+  }
+}
+
 class _ReviewersSection extends StatelessWidget {
   final OrderDetailModel order;
 
@@ -63,15 +129,15 @@ class _ReviewersSection extends StatelessWidget {
         order.assignedFinanceReviewer != null &&
         order.assignedFinanceReviewer!.isNotEmpty;
 
-    if (!hasSalesReviewer && !hasFinanceReviewer)
+    if (!hasSalesReviewer && !hasFinanceReviewer) {
       return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 15.0),
         const _SectionDivider(),
-
         if (hasSalesReviewer)
           OrderHistoryRowWidget(
             label: S.current.supportNameLabel,
@@ -82,6 +148,7 @@ class _ReviewersSection extends StatelessWidget {
             label: S.current.financialManagerNameLabel,
             value: order.assignedFinanceReviewer!,
           ),
+        if (hasSalesReviewer || hasFinanceReviewer) const SizedBox(height: 12),
       ],
     );
   }

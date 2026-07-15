@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
@@ -19,6 +20,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   void init() {
     emit(state.copyWith(status: DashboardRequestStatus.loading));
+    _loadAppInfo();
 
     _dashboardRepo
         .getMyProfile()
@@ -33,6 +35,17 @@ class DashboardCubit extends Cubit<DashboardState> {
             errorMessage: ErrorHandler.getMessage(e),
           ));
         });
+  }
+
+  void _loadAppInfo() {
+    PackageInfo.fromPlatform().then((info) {
+      if (!isClosed) {
+        emit(state.copyWith(
+          appVersion: info.version,
+          buildNumber: info.buildNumber,
+        ));
+      }
+    }).catchError((_) {});
   }
 
   void onNavItemSelected(int index) {

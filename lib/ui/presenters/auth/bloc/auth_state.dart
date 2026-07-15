@@ -30,5 +30,6 @@ class AuthState with _$AuthState {
     @Default(AuthRequestStatus.initial) AuthRequestStatus status,
     @Default('') String errorMessage,
     @Default(false) bool showPhoneError,
+    @Default(false) bool isAutoFill,
   }) = _AuthState;
 }

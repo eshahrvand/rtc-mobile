@@ -35,6 +35,7 @@ class CustomerDetailModel {
 }
 
 class CustomerOrderItemModel {
+  final String id;
   final String orderId;
   final String amount;
   final String date;
@@ -44,6 +45,7 @@ class CustomerOrderItemModel {
   OrderStatus get orderStatus => OrderStatus.fromString(status);
 
   CustomerOrderItemModel({
+    required this.id,
     required this.orderId,
     required this.amount,
     required this.date,

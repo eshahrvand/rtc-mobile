@@ -1,31 +1,33 @@
-import 'dart:io';
-
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../config/constants.dart';
-import '../../../../core/models/order_model.dart';
+import '../../../../core/utils/file_utils.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_text_field.dart';
-import 'order_details_document_item.dart';
+import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_document_item.dart';
+import 'document_viewer_screen.dart';
 
 class OrderUploadDocumentsSheet extends StatefulWidget {
-  final String filePath;
+  final XFile xFile;
   final VoidCallback onConfirm;
   final VoidCallback onDelete;
   final bool showTrackingField;
   final Function(String)? onTrackingCodeChanged;
   final bool isLoading;
+  final bool hideDocumentItem;
 
   const OrderUploadDocumentsSheet({
     super.key,
-    required this.filePath,
+    required this.xFile,
     required this.onConfirm,
     required this.onDelete,
     this.showTrackingField = false,
     this.onTrackingCodeChanged,
     this.isLoading = false,
+    this.hideDocumentItem = false,
   });
 
   @override
@@ -36,11 +38,22 @@ class OrderUploadDocumentsSheet extends StatefulWidget {
 class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
   final _trackingController = TextEditingController();
   bool _isTrackingCodeNotEmpty = false;
+  String _fileSize = '...';
 
   @override
   void initState() {
     super.initState();
     _trackingController.addListener(_onTrackingChanged);
+    _calculateFileSize();
+  }
+
+  Future<void> _calculateFileSize() async {
+    final size = await FileUtils.getXFileSizeString(widget.xFile);
+    if (mounted) {
+      setState(() {
+        _fileSize = size;
+      });
+    }
   }
 
   void _onTrackingChanged() {
@@ -59,17 +72,7 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
-    final file = File(widget.filePath);
-    final fileName = widget.filePath.split('/').last;
-    final sizeInBytes = file.existsSync() ? file.lengthSync() : 0;
-    String sizeStr;
-    if (sizeInBytes < 1024) {
-      sizeStr = 'KB 0';
-    } else if (sizeInBytes < 1024 * 1024) {
-      sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(1)}';
-    } else {
-      sizeStr = 'MB ${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)}';
-    }
+    final fileName = widget.xFile.name;
 
     return SafeArea(
       child: Padding(
@@ -138,20 +141,26 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
               const SizedBox(height: 12),
 
               // File Card
-              OrderDetailsDocumentItem(
-                isLocalFile: true,
-                onDelete: () {
-                  widget.onDelete();
-                },
-                doc: OrderDocumentModel(
+              if (!widget.hideDocumentItem)
+                PreInvoiceDocumentItem(
                   title: S.current.paymentDocuments,
                   fileName: fileName,
-                  fileSize: sizeStr,
-                  url: widget.filePath,
-                  // Locally for preview
-                  iconPath: '$baseImage/featured-icon.svg',
+                  fileSize: _fileSize,
+                  onDelete: widget.onDelete,
+                  onView: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DocumentViewerScreen(
+                          url: widget.xFile.path,
+                          title: S.current.paymentDocuments,
+                          isLocalFile: true,
+                        ),
+                      ),
+                    );
+                  },
+                  showDeleteButton: true,
                 ),
-              ),
               if (widget.showTrackingField) ...[
                 const SizedBox(height: 12),
                 RtcTextField(
@@ -189,7 +198,12 @@ class _OrderUploadDocumentsSheetState extends State<OrderUploadDocumentsSheet> {
                           ? _isTrackingCodeNotEmpty
                           : true,
                       styleBtn: theme.labelLarge!.copyWith(
-                        color: Colors.white,
+                        color:
+                            (widget.showTrackingField
+                                ? _isTrackingCodeNotEmpty
+                                : true)
+                            ? Colors.white
+                            : AppColors.grayPalette.shade300,
                         fontWeight: FontWeight.w600,
                       ),
                       isLoading: widget.isLoading,

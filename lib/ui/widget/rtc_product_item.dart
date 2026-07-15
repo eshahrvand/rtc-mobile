@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rtc_mobile/config/constants.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_discount_badge.dart';
 import '../../core/models/product_item_model.dart';
@@ -35,7 +36,9 @@ class RtcProductItem extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: RtcImage(
-                  image: product.imageUrl,
+                  image: product.imageUrl.isNotEmpty
+                      ? product.imageUrl
+                      : '$baseImage/package_check_gray.svg',
                   width: 104,
                   height: 104,
                   boxFit: BoxFit.contain,

@@ -9,6 +9,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
 import 'package:rtc_mobile/core/utils/file_utils.dart';
+import 'package:rtc_mobile/ui/presenters/orders/widget/document_viewer_screen.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'pre_invoice_document_item.dart';
@@ -50,7 +51,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     PreInvoiceStep4UploadBox(
-                      path: state.mandatoryDocPath,
+                      xFile: state.mandatoryDoc,
                       onTap: () => cubit.pickMandatoryDoc(context),
                       onRemove: () => cubit.removeMandatoryDoc(),
                     ),
@@ -65,7 +66,7 @@ class PreInvoiceStep4View extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (state.optionalDocPaths.isNotEmpty)
+                        if (state.optionalDocs.isNotEmpty)
                           RtcTextButton(
                             onPressed: () => cubit.pickOptionalDoc(context),
                             title: S.current.add,
@@ -81,42 +82,29 @@ class PreInvoiceStep4View extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    ...state.optionalDocPaths.asMap().entries.map((entry) {
+                    ...state.optionalDocs.asMap().entries.map((entry) {
                       int index = entry.key;
-                      String path = entry.value;
+                      final doc = entry.value;
                       return PreInvoiceDocumentItem(
                         title: S.current.otherDocumentsLabel(index + 1),
-                        fileName: path.split('/').last,
-                        fileSize: FileUtils.getFileSizeString(path),
+                        fileName: doc.name,
+                        fileSize: '...', // We can't easily do async here without a widget change
                         onDelete: () => cubit.removeOptionalDoc(index),
                         onView: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Scaffold(
-                                backgroundColor: Colors.black,
-                                appBar: AppBar(
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0,
-                                  iconTheme: const IconThemeData(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                body: Center(
-                                  child: InteractiveViewer(
-                                    child: Image.file(
-                                      File(path),
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
+                              builder: (context) => DocumentViewerScreen(
+                                url: doc.path,
+                                title: S.current.otherDocumentsLabel(index + 1),
+                                isLocalFile: true,
                               ),
                             ),
                           );
                         },
                       );
                     }),
-                    if (state.optionalDocPaths.isEmpty)
+                    if (state.optionalDocs.isEmpty)
                       PreInvoiceStep4UploadPlaceholder(
                         onTap: () => cubit.pickOptionalDoc(context),
                       ),

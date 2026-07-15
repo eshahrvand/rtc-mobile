@@ -25,7 +25,6 @@ class PreInvoiceDocumentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
-
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       decoration: BoxDecoration(
@@ -41,10 +40,12 @@ class PreInvoiceDocumentItem extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: AppColors.brandPalette.shade50,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(100),
             ),
             child: RtcImage(
-              image: '$baseImage/featured-icon.svg',
+              image: fileName.toLowerCase().endsWith('.pdf')
+                  ? '$baseImage/file_document.svg'
+                  : '$baseImage/featured-icon.svg',
               width: 32,
               height: 32,
             ),

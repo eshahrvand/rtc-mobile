@@ -10,7 +10,8 @@ import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'order_details_credit_plan_widget.dart';
 import 'order_details_customer_info.dart';
-import 'order_details_document_item.dart';
+import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_document_item.dart';
+import 'document_viewer_screen.dart';
 import 'order_details_products_widget.dart';
 
 class OrderTabDetails extends StatelessWidget {
@@ -77,7 +78,25 @@ class OrderTabDetails extends StatelessWidget {
                       .map(
                         (d) => Padding(
                           padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: OrderDetailsDocumentItem(doc: d),
+                          child: PreInvoiceDocumentItem(
+                            title: d.title,
+                            fileName: d.fileName,
+                            fileSize: d.fileSize,
+                            onDelete: () {}, // Order details doesn't allow delete
+                            onView: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DocumentViewerScreen(
+                                    url: d.url ?? '',
+                                    title: d.title,
+                                    isLocalFile: false,
+                                  ),
+                                ),
+                              );
+                            },
+                            showDeleteButton: false,
+                          ),
                         ),
                       )
                       .toList(),

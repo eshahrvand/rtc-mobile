@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.avat.rtc_mobile",
+      "sha256_cert_fingerprints": [
+        "94:74:EA:48:64:26:92:ED:6C:CE:07:54:19:E2:0E:79:D8:3B:26:CD:F9:F9:C5:21:A8:1D:A0:4A:14:06:AB:EB"
+      ]
+    }
+  }
+]

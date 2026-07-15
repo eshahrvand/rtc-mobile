@@ -1,13 +1,18 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
+import '../../../../core/utils/file_utils.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
 import '../../../widget/rtc_image.dart';
+import '../../../widget/rtc_text_button.dart';
+import '../../pre_invoice/widget/pre_invoice_document_item.dart';
+import 'document_viewer_screen.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'settlement_method_bottom_sheet.dart';
@@ -15,7 +20,6 @@ import 'order_upload_documents_sheet.dart';
 import 'order_settlement_amount_row.dart';
 import 'order_settlement_timer.dart';
 import 'orders_ui_helpers.dart';
-import '../../media_picker/media_picker.dart';
 
 class OrderSettlementOperationsWidget extends StatefulWidget {
   final OrderOperationModel op;
@@ -58,41 +62,34 @@ class _OrderSettlementOperationsWidgetState
     if (method == null) return;
 
     if (method == 'card_to_card') {
-      final result = await MediaPickerBottomSheet.show(
-        context,
-        isMultiSelection: false,
-        showCameraOverlay: false,
-      );
-      if (result != null && result.isNotEmpty) {
-        final imagePath = result.first.file.path;
+      final state = cubit.state;
+      if (state.settlementDocs.isEmpty) {
+        cubit.pickSettlementDoc(context);
+      } else {
         String trackingCode = '';
-        if (context.mounted) {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: OrderUploadDocumentsSheet(
-                filePath: imagePath,
-                showTrackingField: true,
-                onTrackingCodeChanged: (val) => trackingCode = val,
-                onConfirm: () {
-                  if (trackingCode.isNotEmpty) {
-                    cubit.initiateSettlement(
-                      method,
-                      trackingCode: trackingCode,
-                    );
-                    Navigator.pop(context);
-                  }
-                },
-                onDelete: () => Navigator.pop(context),
-              ),
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-          );
-        }
+            child: OrderUploadDocumentsSheet(
+              xFile: state.settlementDocs.first,
+              showTrackingField: true,
+              hideDocumentItem: true,
+              onTrackingCodeChanged: (val) => trackingCode = val,
+              onConfirm: () {
+                if (trackingCode.isNotEmpty) {
+                  cubit.initiateSettlement(method, trackingCode: trackingCode);
+                  Navigator.pop(context);
+                }
+              },
+              onDelete: () => Navigator.pop(context),
+            ),
+          ),
+        );
       }
     } else if (method == 'wallet_debit') {
       cubit.confirmSettlement();
@@ -354,6 +351,66 @@ class _OrderSettlementOperationsWidgetState
                             ],
                           ),
                         ),
+                        if (state.settlementMethod == 'card_to_card' &&
+                            state.settlementDocs.isNotEmpty) ...[
+                          const SizedBox(height: 12.0),
+                          RtcDivider(
+                            height: 0.5,
+                            color: AppColors.grayPalette.shade300,
+                            isDashed: true,
+                          ),
+                          const SizedBox(height: 12.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                S.current.transactionDoc,
+                                style: theme.labelLarge!.copyWith(
+                                  color: AppColors.grayPalette.shade900,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              RtcTextButton(
+                                onPressed: () =>
+                                    cubit.pickSettlementDoc(context),
+                                title: S.current.add,
+                                leftIcon: "$baseImage/plus.svg",
+                                leftIconColor: AppColors.brandPalette.shade600,
+                                styleBtn: theme.labelLarge!.copyWith(
+                                  color: AppColors.brandPalette.shade600,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ...state.settlementDocs.asMap().entries.map((
+                            entry,
+                          ) {
+                            int index = entry.key;
+                            final doc = entry.value;
+                            return PreInvoiceDocumentItem(
+                              title: S.current.otherDocumentsLabel(index + 1),
+                              fileName: doc.name,
+                              fileSize: '...',
+                              onDelete: () => cubit.removeSettlementDoc(index),
+                              onView: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DocumentViewerScreen(
+                                      url: doc.path,
+                                      title: S.current.otherDocumentsLabel(
+                                        index + 1,
+                                      ),
+                                      isLocalFile: true,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }),
+                        ],
                         if (state.settlementMethod == 'ipg_sms' &&
                             !isPartial &&
                             state.settlementStep != SettlementStep.initial)
@@ -396,7 +453,7 @@ class _OrderSettlementOperationsWidgetState
                                       ),
                               ),
                             )
-                          else
+                          else if (state.settlementDocs.isEmpty)
                             Row(
                               children: [
                                 const Spacer(),

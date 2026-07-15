@@ -5,7 +5,6 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
-import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_collapsible_section.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/orders_cubit.dart';
@@ -17,6 +16,8 @@ import 'order_financial_summary_widget.dart';
 import 'order_operation_item_widget.dart';
 import 'order_payment_history_widget.dart';
 import 'order_settlement_operations_widget.dart';
+import 'order_upload_documents_sheet.dart';
+import 'order_financial_action_button.dart';
 
 class OrderTabFinancial extends StatefulWidget {
   final OrderDetailModel order;
@@ -75,7 +76,6 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
         final cubit = context.read<OrdersCubit>();
@@ -129,6 +129,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                               widget.order.financialSummary.finalAmount,
                           excessAmount: excessAmount,
                           walletName: walletName,
+                          gatewayType: state.disbursementGatewayType,
                           isOutOfTolerance: state.isOutOfTolerance,
                           isOnline: state.gatewayType == GatewayType.online,
                           showStep: showSettlement,
@@ -151,7 +152,8 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                                         isLoading:
                                             state.status ==
                                             OrdersRequestStatus.loading,
-                                        remainingSeconds: state.clearanceOtpCountdown,
+                                        remainingSeconds:
+                                            state.clearanceOtpCountdown,
                                         onConfirm: (otp) {
                                           cubit
                                               .confirmClearanceOtp(otp)
@@ -197,7 +199,7 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
                           showStep: showSettlement,
                           op:
                               state.settlementOperation ??
-                               OrderOperationModel(
+                              OrderOperationModel(
                                 step: 2,
                                 title: S.current.settlementOperation,
                                 status: '',
@@ -219,16 +221,45 @@ class _OrderTabFinancialState extends State<OrderTabFinancial> {
             ),
             if (state.isPreInvoice &&
                 state.clearanceStep == ClearanceStep.initial)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
-                child: RtcButton(
-                  styleBtn: theme.labelLarge!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  title: S.current.dischargeAndSettlement,
-                  onPressed: () => _showAmountSheet(context, cubit),
-                ),
+              OrderFinancialActionButton(
+                title: S.current.dischargeAndSettlement,
+                onPressed: () => _showAmountSheet(context, cubit),
+              ),
+            if (state.settlementMethod == 'card_to_card' &&
+                state.settlementDocs.isNotEmpty &&
+                !state.isSettlementCompleted)
+              OrderFinancialActionButton(
+                title: S.current.submitRequest,
+                isLoading: state.status == OrdersRequestStatus.loading,
+                onPressed: () {
+                  String trackingCode = '';
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: OrderUploadDocumentsSheet(
+                        xFile: state.settlementDocs.first,
+                        showTrackingField: true,
+                        hideDocumentItem: true,
+                        onTrackingCodeChanged: (val) => trackingCode = val,
+                        onConfirm: () {
+                          if (trackingCode.isNotEmpty) {
+                            cubit.initiateSettlement(
+                              state.settlementMethod!,
+                              trackingCode: trackingCode,
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                        onDelete: () => Navigator.pop(context),
+                      ),
+                    ),
+                  );
+                },
               ),
           ],
         );

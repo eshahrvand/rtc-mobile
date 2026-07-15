@@ -75,6 +75,7 @@ class DisbursementRecordModel {
   final String reference;
   final String status;
   final String createdAt;
+  final Map<String, dynamic>? gatewayMetadata;
 
   DisbursementRecordModel({
     required this.gateway,
@@ -82,6 +83,7 @@ class DisbursementRecordModel {
     required this.reference,
     required this.status,
     required this.createdAt,
+    this.gatewayMetadata,
   });
 }
 

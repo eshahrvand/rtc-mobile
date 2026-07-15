@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
-import '../../../../core/utils/network_helper.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../locator.dart';
 import '../../../../repository/auth/auth_repository.dart';
@@ -12,6 +12,17 @@ class AuthCubit extends Cubit<AuthState> {
 
   final _repo = sl<AuthRepository>();
   Timer? _timer;
+  final SmsAutoFill _sms = SmsAutoFill();
+
+  void listenOtp() async {
+    await _sms.listenForCode(
+      smsCodeRegexPattern: r'\b\d{5}\b',
+    );
+  }
+
+  void updateAutoFillState() {
+    emit(state.copyWith(isAutoFill: true));
+  }
 
   void onPhoneChanged(String phoneNumber) {
     final bool isValid =
@@ -38,13 +49,16 @@ class AuthCubit extends Cubit<AuthState> {
               isLoading: false,
             ),
           );
+          listenOtp();
           _startTimer();
         })
-        .catchError((e) => emit(state.copyWith(
-              status: AuthRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-              isLoading: false,
-            )));
+        .catchError((e) {
+          emit(state.copyWith(
+            status: AuthRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isLoading: false,
+          ));
+        });
   }
 
   void onOtpChanged(String otpCode) {
@@ -61,11 +75,13 @@ class AuthCubit extends Cubit<AuthState> {
             state.copyWith(status: AuthRequestStatus.success, isLoading: false),
           );
         })
-        .catchError((e) => emit(state.copyWith(
-              status: AuthRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-              isLoading: false,
-            )));
+        .catchError((e) {
+          emit(state.copyWith(
+            status: AuthRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isLoading: false,
+          ));
+        });
   }
 
   void resendOtp() {
@@ -82,13 +98,16 @@ class AuthCubit extends Cubit<AuthState> {
               isLoading: false,
             ),
           );
+          listenOtp();
           _startTimer();
         })
-        .catchError((e) => emit(state.copyWith(
-              status: AuthRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-              isLoading: false,
-            )));
+        .catchError((e) {
+          emit(state.copyWith(
+            status: AuthRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isLoading: false,
+          ));
+        });
   }
 
   void sendViaRubika() {
@@ -101,11 +120,13 @@ class AuthCubit extends Cubit<AuthState> {
             state.copyWith(status: AuthRequestStatus.otpSent, isLoading: false),
           );
         })
-        .catchError((e) => emit(state.copyWith(
-              status: AuthRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-              isLoading: false,
-            )));
+        .catchError((e) {
+          emit(state.copyWith(
+            status: AuthRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e),
+            isLoading: false,
+          ));
+        });
   }
 
   void editPhoneNumber() {

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 import '../../data_source/remote/media/media_service.dart';
 import '../../data_source/remote/media/model/media_dto_model.dart';
 
@@ -7,10 +7,13 @@ class MediaRepository {
 
   MediaRepository(this._mediaService);
 
-  Future<MediaDtoModel> uploadOrderDocument(File file) async {
+  Future<MediaDtoModel> uploadMedia({
+    required String category,
+    required XFile xFile,
+  }) async {
     return await _mediaService.uploadMedia(
-      category: 'order_document',
-      file: file,
+      category: category,
+      xFile: xFile,
     );
   }
 }

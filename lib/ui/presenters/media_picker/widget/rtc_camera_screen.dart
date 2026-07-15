@@ -12,12 +12,18 @@ import '../../../../generated/l10n.dart';
 
 class RtcCameraScreen extends StatefulWidget {
   final bool showOverlay;
+
   const RtcCameraScreen({super.key, this.showOverlay = true});
 
-  static Future<File?> open(BuildContext context, {bool showOverlay = true}) async {
-    return await Navigator.of(
-      context,
-    ).push<File>(MaterialPageRoute(builder: (_) => RtcCameraScreen(showOverlay: showOverlay)));
+  static Future<File?> open(
+    BuildContext context, {
+    bool showOverlay = true,
+  }) async {
+    return await Navigator.of(context).push<File>(
+      MaterialPageRoute(
+        builder: (_) => RtcCameraScreen(showOverlay: showOverlay),
+      ),
+    );
   }
 
   @override
@@ -39,7 +45,6 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
     final cameras = await availableCameras();
     if (cameras.isEmpty) return;
 
-    // Use the first back camera
     final backCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.back,
       orElse: () => cameras.first,
@@ -71,39 +76,56 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
   }
 
   Future<void> _takePicture() async {
-    if (_controller == null ||
-        !_controller!.value.isInitialized ||
-        _isCapturing) {
-      return;
-    }
+    if (_controller == null || !_controller!.value.isInitialized) return;
 
     setState(() {
       _isCapturing = true;
     });
 
     try {
-      final screenSize = MediaQuery.of(context).size;
       final XFile photo = await _controller!.takePicture();
       final bytes = await photo.readAsBytes();
-      final directory = await getTemporaryDirectory();
-      final tempPath =
-          '${directory.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      
+      final mediaQuery = MediaQuery.of(context);
+      final double safeWidth = mediaQuery.size.width - mediaQuery.padding.left - mediaQuery.padding.right;
+      final double safeHeight = mediaQuery.size.height - mediaQuery.padding.top - mediaQuery.padding.bottom;
 
-      // Offload image processing to a background isolate to keep UI responsive
-      final String? resultPath = await compute(_processImage, {
+      final Uint8List? processedBytes = await compute(_processImageBytes, {
         'bytes': bytes,
-        'screenWidth': screenSize.width,
-        'screenHeight': screenSize.height,
-        'tempPath': tempPath,
+        'screenWidth': safeWidth,
+        'screenHeight': safeHeight,
         'showOverlay': widget.showOverlay,
       });
 
-      if (mounted && resultPath != null) {
-        Navigator.of(context).pop(File(resultPath));
-      } else if (mounted) {
-        setState(() {
-          _isCapturing = false;
-        });
+      if (processedBytes == null) {
+        if (mounted) {
+          setState(() {
+            _isCapturing = false;
+          });
+        }
+        return;
+      }
+
+      if (kIsWeb) {
+        // On Web, return a File object pointing to the Blob URL
+        final blobUrl = XFile.fromData(
+          processedBytes,
+          mimeType: 'image/jpeg',
+          name: 'cropped_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        ).path;
+        if (mounted) {
+          Navigator.of(context).pop(File(blobUrl));
+        }
+      } else {
+        // Mobile: Save to temp file
+        final directory = await getTemporaryDirectory();
+        final tempPath = '${directory.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final resultFile = File(tempPath);
+        await resultFile.writeAsBytes(processedBytes);
+        
+        if (mounted) {
+          Navigator.of(context).pop(resultFile);
+        }
       }
     } catch (e) {
       debugPrint('Error taking picture: $e');
@@ -117,30 +139,27 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized || _controller == null) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
           children: [
-            // Camera Preview
+            // Camera Preview (Same for Mobile and Web)
             Positioned.fill(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _controller!.value.previewSize?.height ?? 1,
-                  height: _controller!.value.previewSize?.width ?? 1,
-                  child: CameraPreview(_controller!),
-                ),
-              ),
+              child: (_isInitialized && _controller != null
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _controller!.value.previewSize?.height ?? 1,
+                        height: _controller!.value.previewSize?.width ?? 1,
+                        child: CameraPreview(_controller!),
+                      ),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    )),
             ),
-        
+
             // Overlay
             if (widget.showOverlay)
               Center(
@@ -154,7 +173,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                   ),
                 ),
               ),
-        
+
             // Top Controls
             Positioned(
               top: 10,
@@ -170,7 +189,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                 ),
               ),
             ),
-        
+
             // Bottom Controls
             Positioned(
               bottom: 16,
@@ -187,7 +206,7 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
                 ),
               ),
             ),
-        
+
             // Instruction Text
             if (widget.showOverlay)
               Positioned(
@@ -212,29 +231,22 @@ class _RtcCameraScreenState extends State<RtcCameraScreen> {
 }
 
 /// Top-level function for background image processing
-Future<String?> _processImage(Map<String, dynamic> params) async {
+Future<Uint8List?> _processImageBytes(Map<String, dynamic> params) async {
   try {
     final Uint8List bytes = params['bytes'];
     final double screenWidth = params['screenWidth'];
     final double screenHeight = params['screenHeight'];
-    final String tempPath = params['tempPath'];
     final bool showOverlay = params['showOverlay'] ?? true;
 
     img.Image? image = img.decodeImage(bytes);
     if (image == null) return null;
 
-    // Handle orientation.
-    // If screen is portrait and image is landscape, rotate it.
-    if (screenHeight > screenWidth && image.width > image.height) {
-      image = img.copyRotate(image, angle: 90);
-    }
-
     if (showOverlay) {
-      // Calculate the scale to match the 'cover' behavior of the preview
+      // Calculate scale factor for BoxFit.cover
       final double scale =
           (screenWidth / image.width > screenHeight / image.height)
-          ? screenWidth / image.width
-          : screenHeight / image.height;
+              ? screenWidth / image.width
+              : screenHeight / image.height;
 
       final double visibleWidth = screenWidth / scale;
       final double visibleHeight = screenHeight / scale;
@@ -242,19 +254,17 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       final double offsetX = (image.width - visibleWidth) / 2;
       final double offsetY = (image.height - visibleHeight) / 2;
 
-      // Overlay dimensions in screen (logical) pixels (MUST MATCH UI)
+      // Overlay UI values (matching RtcCameraScreen layout)
       final double rectWidth = screenWidth - (26 * 2);
       final double rectHeight = 206;
       final double rectLeft = 26;
       final double rectTop = (screenHeight - rectHeight) / 2;
 
-      // Map screen rect to image pixels
       final int pixelX = (offsetX + (rectLeft / scale)).toInt();
       final int pixelY = (offsetY + (rectTop / scale)).toInt();
       final int pixelWidth = (rectWidth / scale).toInt();
       final int pixelHeight = (rectHeight / scale).toInt();
 
-      // Ensure we don't crop outside image bounds
       final int safeX = pixelX.clamp(0, image.width - 1);
       final int safeY = pixelY.clamp(0, image.height - 1);
       final int safeWidth = pixelWidth.clamp(1, image.width - safeX);
@@ -269,7 +279,7 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       );
     }
 
-    // Downscale if the image is still too large
+    // Resize if too large to save memory/bandwidth
     if (image.width > 2000 || image.height > 2000) {
       image = img.copyResize(
         image,
@@ -279,12 +289,9 @@ Future<String?> _processImage(Map<String, dynamic> params) async {
       );
     }
 
-    final resultFile = File(tempPath);
-    await resultFile.writeAsBytes(img.encodeJpg(image, quality: 40));
-
-    return tempPath;
+    return Uint8List.fromList(img.encodeJpg(image, quality: 40));
   } catch (e) {
-    debugPrint('Error in _processImage: $e');
+    debugPrint('Error in _processImageBytes: $e');
     return null;
   }
 }

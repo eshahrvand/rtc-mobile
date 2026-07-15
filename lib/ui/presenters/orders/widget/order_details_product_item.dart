@@ -20,7 +20,12 @@ class OrderDetailsProductItem extends StatelessWidget {
             width: 80,
             height: 80,
             padding: const EdgeInsets.all(8),
-            child: RtcImage(image: product.imageUrl, boxFit: BoxFit.contain),
+            child: RtcImage(
+              image: product.imageUrl.isNotEmpty
+                  ? product.imageUrl
+                  : 'assets/images/package_check_gray.svg',
+              boxFit: BoxFit.contain,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(

@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:developer' as dev;
@@ -19,6 +20,7 @@ import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
+import '../../media_picker/bloc/model/media_item.dart';
 import '../../media_picker/media_picker.dart';
 import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
@@ -517,20 +519,18 @@ class OrdersCubit extends Cubit<OrdersState> {
       showCameraOverlay: false,
     );
     if (result != null && result.isNotEmpty) {
-      final filePath = result.first.file.path;
-      emit(state.copyWith(uploadedClearanceDocPath: null));
-      emit(state.copyWith(uploadedClearanceDocPath: filePath));
+      emit(state.copyWith(uploadedClearanceDoc: result.first.xFile));
     }
   }
 
   Future<void> confirmClearanceDocument() {
-    if (state.selectedOrder == null || state.uploadedClearanceDocPath == null) {
+    if (state.selectedOrder == null || state.uploadedClearanceDoc == null) {
       return Future.value();
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _mediaRepo
-        .uploadOrderDocument(File(state.uploadedClearanceDocPath!))
+        .uploadMedia(category: 'order_document', xFile: state.uploadedClearanceDoc!)
         .then((media) {
           return _ordersRepo.addOrderDocument(
             state.selectedOrder!.id,
@@ -570,7 +570,9 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _ordersRepo
-        .disburse(state.selectedOrder!.id, {'otp': otp})
+        .disburse(state.selectedOrder!.id, {
+          'payload': {'otp': otp}
+        })
         .then((_) {
           emit(
             state.copyWith(
@@ -597,7 +599,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(
       state.copyWith(
         clearanceStep: ClearanceStep.initial,
-        uploadedClearanceDocPath: null,
+        uploadedClearanceDoc: null,
         uploadedClearanceDocId: null,
         clearanceAmount: '',
         excessAmount: null,
@@ -613,23 +615,45 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void clearClearanceDocument() {
+  Future<void> clearClearanceDocument() {
     emit(
       state.copyWith(
-        uploadedClearanceDocPath: null,
+        uploadedClearanceDoc: null,
         uploadedClearanceDocId: null,
       ),
     );
+    return Future.value();
   }
 
   // ─── Settlement Flow ───────────────────────────────────────────────
 
-  void initiateSettlement(
+  Future<void> pickSettlementDoc(dynamic context) async {
+    final result = await MediaPickerBottomSheet.show(
+      context,
+      isMultiSelection: true,
+      showCameraOverlay: false,
+    );
+    if (result != null && result.isNotEmpty) {
+      final newDocs = result.map((m) => m.xFile).toList();
+      emit(
+        state.copyWith(
+          settlementDocs: [...state.settlementDocs, ...newDocs],
+        ),
+      );
+    }
+  }
+
+  void removeSettlementDoc(int index) {
+    final updated = List<XFile>.from(state.settlementDocs)..removeAt(index);
+    emit(state.copyWith(settlementDocs: updated));
+  }
+
+  Future<void> initiateSettlement(
     String method, {
     double? amount,
     String? trackingCode,
   }) {
-    if (state.selectedOrder == null) return;
+    if (state.selectedOrder == null) return Future.value();
     if (method == 'wallet' && state.tolerance == null) {
       emit(
         state.copyWith(
@@ -637,7 +661,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           errorMessage: S.current.toleranceSettingNotFoundError,
         ),
       );
-      return;
+      return Future.value();
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
@@ -645,7 +669,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     final finalAmount =
         amount ?? _calculateRemainingSettlement(state.selectedOrder!);
 
-    _ordersRepo
+    return _ordersRepo
         .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
         .then((response) {
           final type = response['type'];
@@ -703,7 +727,7 @@ class OrdersCubit extends Cubit<OrdersState> {
             }
 
             if (method == 'card_to_card' || method == 'offline') {
-              confirmSettlement(trackingCode: trackingCode);
+              return confirmSettlement(trackingCode: trackingCode);
             }
           }
         })
@@ -728,7 +752,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               errorMessage: ErrorHandler.getMessage(e),
             ),
           );
-          return null;
+          throw e;
         });
   }
 
@@ -790,8 +814,10 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  void confirmSettlement({String? trackingCode, String? imagePath}) {
-    if (state.selectedOrder == null || state.settlementMethod == null) return;
+  Future<void> confirmSettlement({String? trackingCode, String? imagePath}) {
+    if (state.selectedOrder == null || state.settlementMethod == null) {
+      return Future.value();
+    }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final apiMethod = _mapSettlementMethodToApi(state.settlementMethod!);
@@ -806,7 +832,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           .then((_) {
             emit(
               state.copyWith(
-                status: OrdersRequestStatus.success,
+                status: OrdersRequestStatus.settlementSuccess,
                 settlementStep: SettlementStep.success,
               ),
             );
@@ -814,15 +840,29 @@ class OrdersCubit extends Cubit<OrdersState> {
           });
     }
 
-    if (state.settlementMethod == 'card_to_card' && imagePath != null) {
-      _mediaRepo
-          .uploadOrderDocument(File(imagePath))
-          .then((media) {
-            return _ordersRepo.addOrderDocument(
-              state.selectedOrder!.id,
-              OrderDocumentRequest(
-                documentType: 'deposit_receipt',
-                fileId: media.id,
+    final docsToUpload =
+        imagePath != null
+            ? [XFile(imagePath)]
+            : (state.settlementMethod == 'card_to_card'
+                ? state.settlementDocs
+                : <XFile>[]);
+
+    if (docsToUpload.isNotEmpty) {
+      final uploadTasks = docsToUpload.map((xFile) {
+        return _mediaRepo.uploadMedia(category: 'order_settlement', xFile: xFile);
+      });
+
+      return Future.wait(uploadTasks)
+          .then((mediaList) {
+            return Future.wait(
+              mediaList.map(
+                (media) => _ordersRepo.addOrderDocument(
+                  state.selectedOrder!.id,
+                  OrderDocumentRequest(
+                    documentType: 'deposit_receipt',
+                    fileId: media.id,
+                  ),
+                ),
               ),
             );
           })
@@ -834,17 +874,18 @@ class OrdersCubit extends Cubit<OrdersState> {
                 errorMessage: ErrorHandler.getMessage(e),
               ),
             );
-            return null;
+            throw e;
           });
     } else {
-      performSettle().catchError(
-        (e) => emit(
+      return performSettle().catchError((e) {
+        emit(
           state.copyWith(
             status: OrdersRequestStatus.error,
             errorMessage: ErrorHandler.getMessage(e),
           ),
-        ),
-      );
+        );
+        throw e;
+      });
     }
   }
 
@@ -859,6 +900,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         settlementBankName: null,
         settlementAccountHolder: null,
         settlementTrackingCode: null,
+        settlementDocs: [],
       ),
     );
   }

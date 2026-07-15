@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
+import '../../../locator.dart';
+import '../../../core/service/analytics_service.dart';
 import '../theme/colors.dart';
 import 'rtc_image.dart';
 
@@ -17,6 +19,7 @@ class RtcTextButton extends StatefulWidget {
   final EdgeInsets? padding;
   final double? height;
   final double? width;
+  final String? analyticsId;
 
   const RtcTextButton({
     super.key,
@@ -32,6 +35,7 @@ class RtcTextButton extends StatefulWidget {
     this.width,
     this.leftIconColor,
     this.rightIconColor,
+    this.analyticsId,
   });
 
   @override
@@ -67,6 +71,9 @@ class _RtcTextButtonState extends State<RtcTextButton> {
         child: GestureDetector(
           onTap: () {
             if (isActive! && !isLoading!) {
+              sl<AnalyticsService>().logButtonTap(
+                widget.analyticsId ?? widget.title ?? 'RtcTextButton',
+              );
               widget.onPressed!();
             }
           },

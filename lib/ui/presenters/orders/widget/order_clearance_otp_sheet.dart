@@ -164,29 +164,30 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12.0),
-
-              // Timer Row
-              Row(
-                spacing: 8.0,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AuthCalculations.formatRemainingTime(
-                      widget.remainingSeconds,
+              if (widget.remainingSeconds > 0) ...[
+                const SizedBox(height: 24.0),
+                // Timer Row
+                Row(
+                  spacing: 8.0,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      AuthCalculations.formatRemainingTime(
+                        widget.remainingSeconds,
+                      ),
+                      style: theme.labelLarge!.copyWith(
+                        color: AppColors.grayPalette.shade600,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    style: theme.labelLarge!.copyWith(
-                      color: AppColors.grayPalette.shade600,
-                      fontWeight: FontWeight.w600,
+                    RtcImage(
+                      image: "$baseImage/clock.svg",
+                      height: 20.0,
+                      width: 20.0,
                     ),
-                  ),
-                  RtcImage(
-                    image: "$baseImage/clock.svg",
-                    height: 20.0,
-                    width: 20.0,
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 32.0),
 
               // Buttons Row
@@ -211,7 +212,9 @@ class _OrderClearanceOtpSheetState extends State<OrderClearanceOtpSheet> {
                       child: RtcButton(
                         title: S.current.confirmAndClearance,
                         styleBtn: theme.labelLarge!.copyWith(
-                          color: AppColors.grayPalette.shade300,
+                          color: _isComplete
+                              ? Colors.white
+                              : AppColors.grayPalette.shade300,
                           fontWeight: FontWeight.w600,
                         ),
                         isActive: _isComplete,

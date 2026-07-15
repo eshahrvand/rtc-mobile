@@ -1,6 +1,7 @@
 import 'package:rtc_mobile/core/enums/order_status.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/core/utils/date_time_utils.dart';
+import 'package:rtc_mobile/core/utils/file_utils.dart';
 import 'package:rtc_mobile/data_source/remote/orders/model/order_dto_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 
@@ -144,20 +145,10 @@ class OrderMapper {
         address: dto.customer.address,
       ),
       documents: (dto.documents ?? []).map((doc) {
-        final sizeInBytes = doc.file.sizeBytes ?? 0;
-        String sizeStr;
-        if (sizeInBytes < 1024) {
-          sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(0)}';
-        } else if (sizeInBytes < 1024 * 1024) {
-          sizeStr = 'KB ${(sizeInBytes / 1024).toStringAsFixed(1)}';
-        } else {
-          sizeStr = 'MB ${(sizeInBytes / (1024 * 1024)).toStringAsFixed(1)}';
-        }
-
         return OrderDocumentModel(
           title: _mapDocType(doc.documentType),
           fileName: doc.file.originalName,
-          fileSize: sizeStr,
+          fileSize: FileUtils.formatFileSize(doc.file.sizeBytes ?? 0),
           url: doc.file.file,
           iconPath: 'assets/images/alert.svg',
         );
@@ -187,6 +178,7 @@ class OrderMapper {
           reference: r.reference ?? '',
           status: r.status ?? '',
           createdAt: r.createdAt ?? '',
+          gatewayMetadata: r.gatewayMetadata,
         );
       }).toList(),
       settlementRecords: (dto.settlementRecords ?? []).map((s) {
@@ -206,6 +198,7 @@ class OrderMapper {
 
   static CustomerOrderItemModel mapToCustomerOrderItem(OrderDtoModel dto) {
     return CustomerOrderItemModel(
+      id: dto.id,
       orderId: formatDisplayId(dto.id),
       amount: dto.total.formatCurrency,
       date: DateTimeUtils.formatToJalaliDate(dto.createdAt),

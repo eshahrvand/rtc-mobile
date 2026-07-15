@@ -31,6 +31,15 @@ class OrderDetailView extends StatefulWidget {
 class _OrderDetailViewState extends State<OrderDetailView> {
   late PageController _pageController;
 
+  void _handleBackNavigation(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -49,8 +58,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        context.go('${AppRoutes.dashboard}?index=2&refresh=$timestamp');
+        _handleBackNavigation(context);
       },
       child: MultiBlocListener(
         listeners: [
@@ -63,19 +71,25 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   type: SnackBarType.error,
                   message: state.errorMessage,
                 );
+              } else if (state.status == OrdersRequestStatus.settlementSuccess) {
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.success,
+                  message: "درخواست با موفقیت ثبت شد",
+                );
               }
             },
           ),
           BlocListener<OrdersCubit, OrdersState>(
             listenWhen: (prev, curr) =>
-                prev.uploadedClearanceDocPath != curr.uploadedClearanceDocPath,
+                prev.uploadedClearanceDoc != curr.uploadedClearanceDoc,
             listener: (context, state) {
-              if (state.uploadedClearanceDocPath != null &&
+              if (state.uploadedClearanceDoc != null &&
                   state.clearanceStep == ClearanceStep.documentsPending) {
                 _showUploadConfirmation(
                   context,
                   context.read<OrdersCubit>(),
-                  state.uploadedClearanceDocPath!,
+                  state.uploadedClearanceDoc!,
                 );
               }
             },
@@ -156,12 +170,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
             return Scaffold(
               appBar: RtcAppBar(
-                onBack: () {
-                  final timestamp = DateTime.now().millisecondsSinceEpoch;
-                  context.go(
-                    '${AppRoutes.dashboard}?index=2&refresh=$timestamp',
-                  );
-                },
+                onBack: () => _handleBackNavigation(context),
                 backIconPath: '$baseImage/angle-right.svg',
                 actions: [
                   Padding(
@@ -231,7 +240,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   void _showUploadConfirmation(
     BuildContext context,
     OrdersCubit cubit,
-    String filePath,
+    XFile xFile,
   ) {
     showModalBottomSheet(
       context: context,
@@ -242,7 +251,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         child: BlocBuilder<OrdersCubit, OrdersState>(
           builder: (context, state) {
             return OrderUploadDocumentsSheet(
-              filePath: filePath,
+              xFile: xFile,
               isLoading: state.status == OrdersRequestStatus.loading,
               onConfirm: () {
                 cubit
