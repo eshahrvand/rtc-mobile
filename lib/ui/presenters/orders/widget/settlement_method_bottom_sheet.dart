@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../config/constants.dart';
+import '../../../../core/models/filter_item.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_image.dart';
-import '../../../widget/rtc_text_button.dart';
-import '../../products/widget/filter_bottom_sheet.dart';
 import '../../products/widget/filter_option_item.dart';
 
 class SettlementMethodBottomSheet extends StatefulWidget {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../locator.dart';

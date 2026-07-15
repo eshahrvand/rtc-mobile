@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/models/filter_item.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
@@ -8,19 +9,15 @@ import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_button.dart';
 import 'filter_option_item.dart';
 
-class FilterItem {
-  final String id;
-  final String title;
-
-  const FilterItem({required this.id, required this.title});
-}
-
 class FilterBottomSheet extends StatefulWidget {
   final String title;
   final String subtitle;
   final List<FilterItem> items;
   final String? initialSelectedId;
+  final List<String>? initialSelectedIds;
+  final bool isMultiSelect;
   final ValueChanged<FilterItem?>? onApply;
+  final ValueChanged<List<FilterItem>>? onApplyMulti;
   final VoidCallback? onClear;
   final String? iconPath;
   final String? clearButtonTitle;
@@ -31,7 +28,10 @@ class FilterBottomSheet extends StatefulWidget {
     required this.subtitle,
     required this.items,
     this.initialSelectedId,
+    this.initialSelectedIds,
+    this.isMultiSelect = false,
     this.onApply,
+    this.onApplyMulti,
     this.onClear,
     this.iconPath,
     this.clearButtonTitle,
@@ -43,7 +43,10 @@ class FilterBottomSheet extends StatefulWidget {
     required String subtitle,
     required List<FilterItem> items,
     String? initialSelectedId,
+    List<String>? initialSelectedIds,
+    bool isMultiSelect = false,
     ValueChanged<FilterItem?>? onApply,
+    ValueChanged<List<FilterItem>>? onApplyMulti,
     VoidCallback? onClear,
     String? iconPath,
     String? clearButtonTitle,
@@ -57,7 +60,10 @@ class FilterBottomSheet extends StatefulWidget {
         subtitle: subtitle,
         items: items,
         initialSelectedId: initialSelectedId,
+        initialSelectedIds: initialSelectedIds,
+        isMultiSelect: isMultiSelect,
         onApply: onApply,
+        onApplyMulti: onApplyMulti,
         onClear: onClear,
         iconPath: iconPath,
         clearButtonTitle: clearButtonTitle,
@@ -71,36 +77,58 @@ class FilterBottomSheet extends StatefulWidget {
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedId;
+  late List<String> _selectedIds;
 
   @override
   void initState() {
     super.initState();
     _selectedId = widget.initialSelectedId;
+    _selectedIds = List.from(widget.initialSelectedIds ?? []);
   }
 
-  bool get _hasSelection => _selectedId != null;
+  bool get _hasSelection =>
+      widget.isMultiSelect ? _selectedIds.isNotEmpty : _selectedId != null;
 
   FilterItem? get _selectedItem => _selectedId == null
       ? null
       : widget.items.firstWhere((item) => item.id == _selectedId);
 
+  List<FilterItem> get _selectedItems => widget.items
+      .where((item) => _selectedIds.contains(item.id))
+      .toList();
+
   void _onClear() {
-    setState(() => _selectedId = null);
+    setState(() {
+      _selectedId = null;
+      _selectedIds.clear();
+    });
     widget.onClear?.call();
   }
 
   void _onApply() {
-    widget.onApply?.call(_selectedItem);
+    if (widget.isMultiSelect) {
+      widget.onApplyMulti?.call(_selectedItems);
+    } else {
+      widget.onApply?.call(_selectedItem);
+    }
     Navigator.of(context).pop();
   }
 
   void _onItemTap(String id) {
     setState(() {
-      if (_selectedId == id) {
-        _selectedId = null; // Unselect if already selected
+      if (widget.isMultiSelect) {
+        if (_selectedIds.contains(id)) {
+          _selectedIds.remove(id);
+        } else {
+          _selectedIds.add(id);
+        }
       } else {
-        _selectedId =
-            id; // Select new item (replaces previous in single selection)
+        if (_selectedId == id) {
+          _selectedId = null; // Unselect if already selected
+        } else {
+          _selectedId =
+              id; // Select new item (replaces previous in single selection)
+        }
       }
     });
   }
@@ -213,10 +241,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       itemCount: widget.items.length,
       itemBuilder: (_, index) {
         final item = widget.items[index];
-        final isSelected = _selectedId == item.id;
+        final isSelected = widget.isMultiSelect
+            ? _selectedIds.contains(item.id)
+            : _selectedId == item.id;
         return FilterOptionItem(
           title: item.title,
           isSelected: isSelected,
+          isMultiSelect: widget.isMultiSelect,
           onTap: () => _onItemTap(item.id),
           showDivider: false,
         );

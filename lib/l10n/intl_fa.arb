@@ -334,6 +334,8 @@
   "orderDetail": "جزییات سفارش",
   "orderFinancialDetail": "اطلاعات مالی",
   "history": "تاریخچه",
+  "brand": "برند",
+  "brandFilter": "برند کالای مورد نظر را انتخاب کنید",
   "historyPayment": "تاریخچه پرداخت‌ها",
   "settlementConfirmError": "خطا در تایید تسویه: ",
   "toleranceSettingNotFoundError": "مقدار تولرانس در تنظیمات یافت نشد",

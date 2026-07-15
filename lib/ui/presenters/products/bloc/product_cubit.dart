@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../core/models/product_item_model.dart';
-import '../../../../core/utils/network_helper.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
@@ -23,6 +23,13 @@ class ProductCubit extends Cubit<ProductState> {
     emit(state.copyWith(status: ProductRequestStatus.loading));
 
     final chips = _createInitialChips();
+    final brands = [
+      const FilterItem(id: '1', title: 'Apple'),
+      const FilterItem(id: '2', title: 'سامسونگ'),
+      const FilterItem(id: '3', title: 'شیاومی'),
+      const FilterItem(id: '4', title: 'هواوی'),
+      const FilterItem(id: '5', title: 'نوکیا'),
+    ];
 
     Future.wait([_productRepo.getCategories(), _plansRepo.getSubPlans()])
         .then((results) {
@@ -32,6 +39,7 @@ class ProductCubit extends Cubit<ProductState> {
           emit(
             state.copyWith(
               chips: chips,
+              availableBrands: brands,
               availableCategories: (categoriesResponse as dynamic).results,
               availableSubPlans: (subPlansResponse as dynamic).results,
             ),
@@ -40,10 +48,12 @@ class ProductCubit extends Cubit<ProductState> {
           _fetchProducts();
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: ProductRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -82,6 +92,16 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         selectedCategoryId: categoryId,
         selectedChipIndex: categoryId != null ? 0 : -1,
+      ),
+    );
+    _fetchProducts();
+  }
+
+  void selectBrands(List<String> brandIds) {
+    emit(
+      state.copyWith(
+        selectedBrandIds: brandIds,
+        selectedChipIndex: brandIds.isNotEmpty ? 1 : -1,
       ),
     );
     _fetchProducts();
@@ -127,7 +147,7 @@ class ProductCubit extends Cubit<ProductState> {
     if (chip.id == 1) {
       selectCategory(null);
     } else if (chip.id == 4) {
-      // TODO: selectBrand(null);
+      selectBrands([]);
     } else if (chip.id == 2) {
       selectSubPlan(null);
     } else if (chip.id == 3) {
@@ -146,6 +166,7 @@ class ProductCubit extends Cubit<ProductState> {
         searchQuery: '',
         isSearchActive: false,
         selectedCategoryId: null,
+        selectedBrandIds: [],
         selectedSubPlanId: null,
         selectedSubPlanName: null,
         isOnlyAvailable: false,
@@ -164,6 +185,7 @@ class ProductCubit extends Cubit<ProductState> {
           categoryId: state.selectedCategoryId,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           inStock: state.isOnlyAvailable ? true : null,
+          // TODO: Add brand support to repository when API is ready
         )
         .then((response) {
           final products = response.results
@@ -179,10 +201,12 @@ class ProductCubit extends Cubit<ProductState> {
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: ProductRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -194,11 +218,7 @@ class ProductCubit extends Cubit<ProductState> {
         label: S.current.category,
         opensBottomSheet: true,
       ),
-      ProductChipModel(
-        id: 4,
-        label: "برند",
-        opensBottomSheet: true,
-      ),
+      ProductChipModel(id: 4, label: S.current.brand, opensBottomSheet: true),
       ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
       ProductChipModel(
         id: 3,

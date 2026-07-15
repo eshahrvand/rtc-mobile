@@ -10,6 +10,7 @@ import '../bloc/product_state.dart';
 import '../../../widget/rtc_chip_list.dart';
 import '../../../widget/rtc_product_item.dart';
 import 'filter_bottom_sheet.dart';
+import '../../../../core/models/filter_item.dart';
 
 class ProductsBody extends StatelessWidget {
   const ProductsBody({super.key});
@@ -19,6 +20,7 @@ class ProductsBody extends StatelessWidget {
     ProductChipModel chip,
     ProductState state,
   ) {
+    final cubit = context.read<ProductCubit>();
     if (chip.id == 1) {
       // Category Filter (Single-selection)
       FilterBottomSheet.show(
@@ -30,10 +32,28 @@ class ProductsBody extends StatelessWidget {
             .toList(),
         initialSelectedId: state.selectedCategoryId,
         onApply: (selected) {
-          context.read<ProductCubit>().selectCategory(selected?.id);
+          cubit.selectCategory(selected?.id);
         },
         onClear: () {
-          context.read<ProductCubit>().selectCategory(null);
+          cubit.selectCategory(null);
+        },
+      );
+    } else if (chip.id == 4) {
+      // Brand Filter (Multi-selection)
+      FilterBottomSheet.show(
+        context,
+        title: S.current.brand,
+        subtitle: S.current.brandFilter,
+        items: state.availableBrands,
+        initialSelectedIds: state.selectedBrandIds,
+        isMultiSelect: true,
+        onApplyMulti: (selectedItems) {
+          cubit.selectBrands(
+            selectedItems.map((item) => item.id).toList(),
+          );
+        },
+        onClear: () {
+          cubit.selectBrands([]);
         },
       );
     } else if (chip.id == 2) {
@@ -47,10 +67,10 @@ class ProductsBody extends StatelessWidget {
             .toList(),
         initialSelectedId: state.selectedSubPlanId,
         onApply: (selected) {
-          context.read<ProductCubit>().selectSubPlan(selected?.id);
+          cubit.selectSubPlan(selected?.id);
         },
         onClear: () {
-          context.read<ProductCubit>().selectSubPlan(null);
+          cubit.selectSubPlan(null);
         },
       );
     }
@@ -76,7 +96,7 @@ class ProductsBody extends StatelessWidget {
                 chips: state.chips,
                 isChipSelected: (index, chip) {
                   if (chip.id == 1) return state.selectedCategoryId != null;
-                  if (chip.id == 4) return false; // Brand not implemented yet
+                  if (chip.id == 4) return state.selectedBrandIds.isNotEmpty;
                   if (chip.id == 2) return state.selectedSubPlanId != null;
                   if (chip.id == 3) return state.isOnlyAvailable;
                   return false;

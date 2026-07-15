@@ -38,6 +38,8 @@
   "totalBalance": "",
   "totalCredit": "",
   "remainingCredit": "",
+  "brand": "",
+  "brandFilter": "",
   "myPockets": "",
   "wallet": "",
   "pocketsCount": "{count}",
