@@ -126,7 +126,7 @@ class PreInvoiceStep2AvailabilityToggle extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          "نمایش کالاهای موجود",
+          "کالاهای موجود",
           style: theme.bodyMedium!.copyWith(
             color: AppColors.grayPalette.shade600,
           ),

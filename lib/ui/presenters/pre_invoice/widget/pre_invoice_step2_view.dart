@@ -1,3 +1,5 @@
+import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_step2_widgets.dart';
+
 import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -202,24 +204,11 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                     ),
                     const Spacer(),
 
-                    GestureDetector(
-                      onTap: () => cubit.toggleShowAvailableOnly(),
-                      child: RtcImage(
-                        image: state.showAvailableOnly
-                            ? "$baseImage/toggle_active.svg"
-                            : "$baseImage/toggle_base.svg",
-                        width: 36,
-                        height: 20,
-                      ),
+                    PreInvoiceStep2AvailabilityToggle(
+                      showAvailableOnly: state.showAvailableOnly,
+                      onToggle: () => cubit.toggleShowAvailableOnly(),
                     ),
 
-                    const SizedBox(width: 8),
-                    Text(
-                      "نمایش کالاهای موجود",
-                      style: theme.bodyMedium!.copyWith(
-                        color: AppColors.grayPalette.shade600,
-                      ),
-                    ),
                     SizedBox(width: 16),
                   ],
                 ),
