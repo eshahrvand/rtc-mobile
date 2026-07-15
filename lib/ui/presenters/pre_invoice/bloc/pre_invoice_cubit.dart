@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
+import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
@@ -35,6 +36,14 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
+    final brands = [
+      const FilterItem(id: '1', title: 'Apple'),
+      const FilterItem(id: '2', title: 'سامسونگ'),
+      const FilterItem(id: '3', title: 'شیاومی'),
+      const FilterItem(id: '4', title: 'هواوی'),
+      const FilterItem(id: '5', title: 'نوکیا'),
+    ];
+
     _plansRepo
         .getSubPlans()
         .then<void>((response) {
@@ -44,6 +53,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             PreInvoiceChipModel(
               id: 1,
               label: S.current.category,
+              opensBottomSheet: true,
+            ),
+            PreInvoiceChipModel(
+              id: 4,
+              label: S.current.brand,
               opensBottomSheet: true,
             ),
             PreInvoiceChipModel(
@@ -59,6 +73,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               status: PreInvoiceRequestStatus.success,
               creditPlans: plans,
               filterChips: chips,
+              availableBrands: brands,
             ),
           );
         })
@@ -162,6 +177,11 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void onSortSelected(String? ordering) {
     emit(state.copyWith(selectedSortOrder: ordering));
+    _loadProducts();
+  }
+
+  void selectBrands(List<String> brandIds) {
+    emit(state.copyWith(selectedBrandIds: brandIds));
     _loadProducts();
   }
 

@@ -91,6 +91,27 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     );
   }
 
+  void _showBrandFilter(
+    BuildContext context,
+    PreInvoiceCubit cubit,
+    PreInvoiceState state,
+  ) {
+    FilterBottomSheet.show(
+      context,
+      title: S.current.brand,
+      subtitle: S.current.brandFilter,
+      items: state.availableBrands,
+      initialSelectedIds: state.selectedBrandIds,
+      isMultiSelect: true,
+      onApplyMulti: (selectedItems) {
+        cubit.selectBrands(selectedItems.map((item) => item.id).toList());
+      },
+      onClear: () {
+        cubit.selectBrands([]);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
@@ -185,7 +206,7 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                   children: [
                     SizedBox(
                       height: 32,
-                      width: 140,
+                      width: 200,
                       child: RtcChipList(
                         chips: [
                           ProductChipModel(
@@ -193,13 +214,31 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                             label: S.current.category,
                             opensBottomSheet: true,
                           ),
+                          ProductChipModel(
+                            id: 4,
+                            label: S.current.brand,
+                            opensBottomSheet: true,
+                          ),
                         ],
-                        isChipSelected: (index, chip) =>
-                            state.selectedCategoryId != null,
-                        onChipTap: (index, chip) =>
-                            _showCategoryFilter(context, cubit, state),
-                        onChipClose: (index, chip) =>
-                            cubit.onCategorySelected(null),
+                        isChipSelected: (index, chip) {
+                          if (chip.id == 1) return state.selectedCategoryId != null;
+                          if (chip.id == 4) return state.selectedBrandIds.isNotEmpty;
+                          return false;
+                        },
+                        onChipTap: (index, chip) {
+                          if (chip.id == 1) {
+                            _showCategoryFilter(context, cubit, state);
+                          } else if (chip.id == 4) {
+                            _showBrandFilter(context, cubit, state);
+                          }
+                        },
+                        onChipClose: (index, chip) {
+                          if (chip.id == 1) {
+                            cubit.onCategorySelected(null);
+                          } else if (chip.id == 4) {
+                            cubit.selectBrands([]);
+                          }
+                        },
                       ),
                     ),
                     const Spacer(),
