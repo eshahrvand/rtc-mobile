@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/models/product_detail_model.dart';
-import '../../../../core/utils/network_helper.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../repository/product/product_repository.dart';
@@ -21,6 +20,12 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
         .then((dto) {
           final List<ProductBadgeModel> badges = [];
 
+          badges.add(
+             ProductBadgeModel(
+              label: 'برند',
+              value: 'سامسونگ',
+            ),
+          );
 
           if (subPlanId != null) {
             badges.add(

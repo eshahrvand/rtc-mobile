@@ -33,22 +33,26 @@ class RtcProductBadgeList extends StatelessWidget {
         children: [
           Row(
             spacing: 8,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _BadgeItem(badge: availabilityBadge, isGreen: true),
               if (planBadge != null)
                 _BadgeItem(
                   badge: planBadge,
                   color: AppColors.brandPalette.shade600,
                 ),
+              _BadgeItem(badge: availabilityBadge, isGreen: true),
             ],
           ),
           if (otherBadges.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.end,
-              children: otherBadges.map((b) => _BadgeItem(badge: b)).toList(),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.start,
+                children: otherBadges.map((b) => _BadgeItem(badge: b)).toList(),
+              ),
             ),
           ],
         ],
@@ -84,6 +88,7 @@ class _BadgeItem extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
       ),
+
       child: Directionality(
         textDirection: isSku ? TextDirection.ltr : TextDirection.rtl,
         child: Row(
@@ -106,7 +111,10 @@ class _BadgeItem extends StatelessWidget {
               isOutOfStock
                   ? badge.label
                   : S.current.labelWithColon(badge.label),
-              style: theme.bodyMedium!.copyWith(color: Colors.white),
+              style: theme.bodyMedium!.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             if (!isOutOfStock)
               Text(
