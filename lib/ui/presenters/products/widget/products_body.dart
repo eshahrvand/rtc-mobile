@@ -76,6 +76,7 @@ class ProductsBody extends StatelessWidget {
                 chips: state.chips,
                 isChipSelected: (index, chip) {
                   if (chip.id == 1) return state.selectedCategoryId != null;
+                  if (chip.id == 4) return false; // Brand not implemented yet
                   if (chip.id == 2) return state.selectedSubPlanId != null;
                   if (chip.id == 3) return state.isOnlyAvailable;
                   return false;

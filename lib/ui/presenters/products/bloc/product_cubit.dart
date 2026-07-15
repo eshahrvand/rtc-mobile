@@ -98,7 +98,7 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         selectedSubPlanId: subPlanId,
         selectedSubPlanName: subPlanName,
-        selectedChipIndex: subPlanId != null ? 1 : -1,
+        selectedChipIndex: subPlanId != null ? 2 : -1,
       ),
     );
     _fetchProducts();
@@ -109,7 +109,7 @@ class ProductCubit extends Cubit<ProductState> {
     emit(
       state.copyWith(
         isOnlyAvailable: newValue,
-        selectedChipIndex: newValue ? 2 : -1,
+        selectedChipIndex: newValue ? 3 : -1,
       ),
     );
     _fetchProducts();
@@ -126,6 +126,8 @@ class ProductCubit extends Cubit<ProductState> {
   void onChipClose(ProductChipModel chip) {
     if (chip.id == 1) {
       selectCategory(null);
+    } else if (chip.id == 4) {
+      // TODO: selectBrand(null);
     } else if (chip.id == 2) {
       selectSubPlan(null);
     } else if (chip.id == 3) {
@@ -190,6 +192,11 @@ class ProductCubit extends Cubit<ProductState> {
       ProductChipModel(
         id: 1,
         label: S.current.category,
+        opensBottomSheet: true,
+      ),
+      ProductChipModel(
+        id: 4,
+        label: "برند",
         opensBottomSheet: true,
       ),
       ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
