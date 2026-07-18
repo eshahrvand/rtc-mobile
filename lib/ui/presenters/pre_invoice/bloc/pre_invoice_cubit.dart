@@ -13,6 +13,7 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/media/media_repository.dart';
+import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
@@ -38,46 +39,62 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
     Future.wait([_plansRepo.getSubPlans(), _productRepo.getBrands()])
         .then<void>((results) {
-          final subPlansResponse = results[0];
-          final brandsResponse = results[1];
+          try {
+            final subPlansResponse = results[0] as SubPlanListResponse;
+            final brandsResponse = results[1] as BrandListResponse;
 
-          final plans = (subPlansResponse as dynamic).results
-              .map(_mapToCreditPlanModel)
-              .toList();
+            final plans = subPlansResponse.results
+                .map((dto) => _mapToCreditPlanModel(dto))
+                .toList();
 
-          final chips = [
-            PreInvoiceChipModel(
-              id: 1,
-              label: S.current.category,
-              opensBottomSheet: true,
-            ),
-            PreInvoiceChipModel(
-              id: 4,
-              label: S.current.brand,
-              opensBottomSheet: true,
-            ),
-            PreInvoiceChipModel(
-              id: 2,
-              label: S.current.plan,
-              opensBottomSheet: true,
-            ),
-            PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
-          ];
+            final chips = [
+              PreInvoiceChipModel(
+                id: 1,
+                label: S.current.category,
+                opensBottomSheet: true,
+              ),
+              PreInvoiceChipModel(
+                id: 4,
+                label: S.current.brand,
+                opensBottomSheet: true,
+              ),
+              PreInvoiceChipModel(
+                id: 2,
+                label: S.current.plan,
+                opensBottomSheet: true,
+              ),
+              PreInvoiceChipModel(
+                id: 3,
+                label: S.current.onlyAvailableProducts,
+              ),
+            ];
 
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.success,
-              creditPlans: plans,
-              filterChips: chips,
-              availableBrands: (brandsResponse as dynamic).results,
-            ),
-          );
+            emit(
+              state.copyWith(
+                status: PreInvoiceRequestStatus.success,
+                creditPlans: plans,
+                filterChips: chips,
+                availableBrands: brandsResponse.results,
+              ),
+            );
+          } catch (e, stackTrace) {
+            print('Error in PreInvoiceCubit.init mapping: $e');
+            print(stackTrace);
+            emit(
+              state.copyWith(
+                status: PreInvoiceRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
+              ),
+            );
+          }
         })
-        .catchError((e) {
+        .catchError((e, stackTrace) {
+          print('Error in PreInvoiceCubit.init API: $e');
+          print(stackTrace);
           emit(
             state.copyWith(
               status: PreInvoiceRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
+              errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
             ),
           );
           return null;
@@ -673,13 +690,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   // ─── Private Helpers ───────────────────────────────────────────────
 
-  CreditPlanItemModel _mapToCreditPlanModel(dynamic dto) {
+  CreditPlanItemModel _mapToCreditPlanModel(SubPlanDtoModel dto) {
     return CreditPlanItemModel(
       id: dto.id,
       logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
       providerName: dto.creditPlan.name,
       planName: dto.name,
-      validityDuration: dto.creditPlan.validity_window_days.toString(),
+      validityDuration: dto.creditPlan.validity_window_days?.toString() ?? '',
     );
   }
 

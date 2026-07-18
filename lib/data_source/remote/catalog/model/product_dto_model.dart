@@ -25,6 +25,7 @@ class ProductDtoModel with _$ProductDtoModel {
     String? description,
     @JsonKey(name: 'technical_detail') String? technicalDetail,
     required CategorySummaryDtoModel category,
+    required BrandSummaryDtoModel brand,
     @JsonKey(name: 'base_price') int? basePrice,
     @JsonKey(name: 'plan_price') int? planPrice,
     @JsonKey(name: 'old_price') int? oldPrice,
@@ -46,6 +47,16 @@ class CategorySummaryDtoModel with _$CategorySummaryDtoModel {
   }) = _CategorySummaryDtoModel;
 
   factory CategorySummaryDtoModel.fromJson(Map<String, dynamic> json) => _$CategorySummaryDtoModelFromJson(json);
+}
+
+@freezed
+class BrandSummaryDtoModel with _$BrandSummaryDtoModel {
+  const factory BrandSummaryDtoModel({
+    required String id,
+    required String name,
+  }) = _BrandSummaryDtoModel;
+
+  factory BrandSummaryDtoModel.fromJson(Map<String, dynamic> json) => _$BrandSummaryDtoModelFromJson(json);
 }
 
 @freezed

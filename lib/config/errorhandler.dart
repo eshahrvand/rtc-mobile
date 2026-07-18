@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// Shown when a code is missing or not in the map. Never leaks English `detail`.
 const String genericFallback = 'خطایی رخ داد. لطفاً دوباره تلاش کنید';
@@ -185,7 +186,12 @@ class ErrorHandler {
   ErrorHandler._();
 
   /// Accepts any error and returns a localized Persian message.
-  static String getMessage(dynamic error) {
+  static String getMessage(dynamic error, {StackTrace? stackTrace}) {
+    // Automatically capture unhandled or non-API errors to Sentry
+    if (error is! ApiError) {
+      Sentry.captureException(error, stackTrace: stackTrace);
+    }
+
     if (error is ApiError) {
       return error.message;
     }
@@ -195,6 +201,10 @@ class ErrorHandler {
         error.response?.statusCode ?? 0,
         error.response?.data,
       );
+      // Capture detailed API errors for better debugging if it's a server error
+      if (apiError.statusCode >= 500) {
+        Sentry.captureException(error, stackTrace: stackTrace);
+      }
       return apiError.message;
     }
 

@@ -23,7 +23,7 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
           badges.add(
              ProductBadgeModel(
               label: 'برند',
-              value: 'سامسونگ',
+              value: dto.brand.name,
             ),
           );
 
