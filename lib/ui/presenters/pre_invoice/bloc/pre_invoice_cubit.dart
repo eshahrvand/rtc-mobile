@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
-import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
@@ -14,6 +13,7 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/media/media_repository.dart';
+import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
@@ -36,18 +36,14 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    final brands = [
-      const FilterItem(id: '1', title: 'Apple'),
-      const FilterItem(id: '2', title: 'سامسونگ'),
-      const FilterItem(id: '3', title: 'شیاومی'),
-      const FilterItem(id: '4', title: 'هواوی'),
-      const FilterItem(id: '5', title: 'نوکیا'),
-    ];
+    Future.wait([_plansRepo.getSubPlans(), _productRepo.getBrands()])
+        .then<void>((results) {
+          final subPlansResponse = results[0];
+          final brandsResponse = results[1];
 
-    _plansRepo
-        .getSubPlans()
-        .then<void>((response) {
-          final plans = response.results.map(_mapToCreditPlanModel).toList();
+          final plans = (subPlansResponse as dynamic).results
+              .map(_mapToCreditPlanModel)
+              .toList();
 
           final chips = [
             PreInvoiceChipModel(
@@ -73,7 +69,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               status: PreInvoiceRequestStatus.success,
               creditPlans: plans,
               filterChips: chips,
-              availableBrands: brands,
+              availableBrands: (brandsResponse as dynamic).results,
             ),
           );
         })
@@ -122,6 +118,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           subPlanId: state.selectedCreditPlanId!,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
           inStock: state.showAvailableOnly ? true : null,
           ordering: state.selectedSortOrder,
         )
@@ -180,8 +177,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     _loadProducts();
   }
 
-  void selectBrands(List<String> brandIds) {
-    emit(state.copyWith(selectedBrandIds: brandIds));
+  void selectBrand(String? brandId) {
+    emit(state.copyWith(selectedBrandId: brandId));
     _loadProducts();
   }
 
@@ -537,13 +534,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     );
     if (result != null && result.isNotEmpty) {
       final availableSlots = 5 - state.optionalDocs.length;
-      final newDocs = result
-          .take(availableSlots)
-          .map((m) => m.xFile)
-          .toList();
+      final newDocs = result.take(availableSlots).map((m) => m.xFile).toList();
 
-      final updatedDocs = List<XFile>.from(state.optionalDocs)
-        ..addAll(newDocs);
+      final updatedDocs = List<XFile>.from(state.optionalDocs)..addAll(newDocs);
       emit(state.copyWith(optionalDocs: updatedDocs));
 
       if (result.length > availableSlots) {
@@ -563,8 +556,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void removeOptionalDoc(int index) {
-    final updatedDocs = List<XFile>.from(state.optionalDocs)
-      ..removeAt(index);
+    final updatedDocs = List<XFile>.from(state.optionalDocs)..removeAt(index);
     emit(state.copyWith(optionalDocs: updatedDocs));
   }
 

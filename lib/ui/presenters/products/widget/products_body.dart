@@ -39,21 +39,20 @@ class ProductsBody extends StatelessWidget {
         },
       );
     } else if (chip.id == 4) {
-      // Brand Filter (Multi-selection)
+      // Brand Filter (Single-selection)
       FilterBottomSheet.show(
         context,
         title: S.current.brand,
         subtitle: S.current.brandFilter,
-        items: state.availableBrands,
-        initialSelectedIds: state.selectedBrandIds,
-        isMultiSelect: true,
-        onApplyMulti: (selectedItems) {
-          cubit.selectBrands(
-            selectedItems.map((item) => item.id).toList(),
-          );
+        items: state.availableBrands
+            .map((b) => FilterItem(id: b.id, title: b.name))
+            .toList(),
+        initialSelectedId: state.selectedBrandId,
+        onApply: (selected) {
+          cubit.selectBrand(selected?.id);
         },
         onClear: () {
-          cubit.selectBrands([]);
+          cubit.selectBrand(null);
         },
       );
     } else if (chip.id == 2) {
@@ -96,7 +95,7 @@ class ProductsBody extends StatelessWidget {
                 chips: state.chips,
                 isChipSelected: (index, chip) {
                   if (chip.id == 1) return state.selectedCategoryId != null;
-                  if (chip.id == 4) return state.selectedBrandIds.isNotEmpty;
+                  if (chip.id == 4) return state.selectedBrandId != null;
                   if (chip.id == 2) return state.selectedSubPlanId != null;
                   if (chip.id == 3) return state.isOnlyAvailable;
                   return false;

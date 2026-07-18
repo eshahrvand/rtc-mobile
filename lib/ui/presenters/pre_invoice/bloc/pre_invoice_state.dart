@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:cross_file/cross_file.dart';
+import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 
@@ -48,8 +49,8 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(false) bool isCartVisible,
     String? selectedCategoryId,
     String? selectedSortOrder,
-    @Default([]) List<String> selectedBrandIds,
-    @Default([]) List<FilterItem> availableBrands,
+    String? selectedBrandId,
+    @Default([]) List<BrandDtoModel> availableBrands,
 
     // Summary
     @Default('0') String totalAmount,

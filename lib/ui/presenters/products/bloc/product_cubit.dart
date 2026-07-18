@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/models/filter_item.dart';
@@ -9,6 +10,7 @@ import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
+import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import 'product_state.dart';
 
@@ -23,25 +25,23 @@ class ProductCubit extends Cubit<ProductState> {
     emit(state.copyWith(status: ProductRequestStatus.loading));
 
     final chips = _createInitialChips();
-    final brands = [
-      const FilterItem(id: '1', title: 'Apple'),
-      const FilterItem(id: '2', title: 'سامسونگ'),
-      const FilterItem(id: '3', title: 'شیاومی'),
-      const FilterItem(id: '4', title: 'هواوی'),
-      const FilterItem(id: '5', title: 'نوکیا'),
-    ];
 
-    Future.wait([_productRepo.getCategories(), _plansRepo.getSubPlans()])
+    Future.wait([
+      _productRepo.getCategories(),
+      _plansRepo.getSubPlans(),
+      _productRepo.getBrands(),
+    ])
         .then((results) {
           final categoriesResponse = results[0];
           final subPlansResponse = results[1];
+          final brandsResponse = results[2];
 
           emit(
             state.copyWith(
               chips: chips,
-              availableBrands: brands,
               availableCategories: (categoriesResponse as dynamic).results,
               availableSubPlans: (subPlansResponse as dynamic).results,
+              availableBrands: (brandsResponse as dynamic).results,
             ),
           );
 
@@ -97,11 +97,13 @@ class ProductCubit extends Cubit<ProductState> {
     _fetchProducts();
   }
 
-  void selectBrands(List<String> brandIds) {
+  void selectBrand(String? brandId) {
+    if (state.selectedBrandId == brandId) return;
+
     emit(
       state.copyWith(
-        selectedBrandIds: brandIds,
-        selectedChipIndex: brandIds.isNotEmpty ? 1 : -1,
+        selectedBrandId: brandId,
+        selectedChipIndex: brandId != null ? 1 : -1,
       ),
     );
     _fetchProducts();
@@ -147,7 +149,7 @@ class ProductCubit extends Cubit<ProductState> {
     if (chip.id == 1) {
       selectCategory(null);
     } else if (chip.id == 4) {
-      selectBrands([]);
+      selectBrand(null);
     } else if (chip.id == 2) {
       selectSubPlan(null);
     } else if (chip.id == 3) {
@@ -166,7 +168,7 @@ class ProductCubit extends Cubit<ProductState> {
         searchQuery: '',
         isSearchActive: false,
         selectedCategoryId: null,
-        selectedBrandIds: [],
+        selectedBrandId: null,
         selectedSubPlanId: null,
         selectedSubPlanName: null,
         isOnlyAvailable: false,
@@ -183,9 +185,9 @@ class ProductCubit extends Cubit<ProductState> {
         .getProducts(
           subPlanId: state.selectedSubPlanId,
           categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           inStock: state.isOnlyAvailable ? true : null,
-          // TODO: Add brand support to repository when API is ready
         )
         .then((response) {
           final products = response.results

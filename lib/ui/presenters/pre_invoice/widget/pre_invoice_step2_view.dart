@@ -100,14 +100,15 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
       context,
       title: S.current.brand,
       subtitle: S.current.brandFilter,
-      items: state.availableBrands,
-      initialSelectedIds: state.selectedBrandIds,
-      isMultiSelect: true,
-      onApplyMulti: (selectedItems) {
-        cubit.selectBrands(selectedItems.map((item) => item.id).toList());
+      items: state.availableBrands
+          .map((b) => FilterItem(id: b.id, title: b.name))
+          .toList(),
+      initialSelectedId: state.selectedBrandId,
+      onApply: (selected) {
+        cubit.selectBrand(selected?.id);
       },
       onClear: () {
-        cubit.selectBrands([]);
+        cubit.selectBrand(null);
       },
     );
   }
@@ -221,8 +222,10 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                           ),
                         ],
                         isChipSelected: (index, chip) {
-                          if (chip.id == 1) return state.selectedCategoryId != null;
-                          if (chip.id == 4) return state.selectedBrandIds.isNotEmpty;
+                          if (chip.id == 1)
+                            return state.selectedCategoryId != null;
+                          if (chip.id == 4)
+                            return state.selectedBrandId != null;
                           return false;
                         },
                         onChipTap: (index, chip) {
@@ -236,7 +239,7 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                           if (chip.id == 1) {
                             cubit.onCategorySelected(null);
                           } else if (chip.id == 4) {
-                            cubit.selectBrands([]);
+                            cubit.selectBrand(null);
                           }
                         },
                       ),
