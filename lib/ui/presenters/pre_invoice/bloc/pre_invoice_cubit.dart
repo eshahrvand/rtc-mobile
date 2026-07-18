@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
@@ -37,68 +38,68 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    Future.wait([_plansRepo.getSubPlans(), _productRepo.getBrands()])
-        .then<void>((results) {
-          try {
-            final subPlansResponse = results[0] as SubPlanListResponse;
-            final brandsResponse = results[1] as BrandListResponse;
+    final subPlansFuture = _plansRepo.getSubPlans().catchError((e, stackTrace) {
+      print('Error fetching sub-plans: $e');
+      Sentry.captureException(e, stackTrace: stackTrace);
+      return const SubPlanListResponse(count: 0, results: []);
+    });
 
-            final plans = subPlansResponse.results
-                .map((dto) => _mapToCreditPlanModel(dto))
-                .toList();
+    final brandsFuture = _productRepo.getBrands().catchError((e, stackTrace) {
+      print('Error fetching brands: $e');
+      Sentry.captureException(e, stackTrace: stackTrace);
+      return const BrandListResponse(count: 0, results: []);
+    });
 
-            final chips = [
-              PreInvoiceChipModel(
-                id: 1,
-                label: S.current.category,
-                opensBottomSheet: true,
-              ),
-              PreInvoiceChipModel(
-                id: 4,
-                label: S.current.brand,
-                opensBottomSheet: true,
-              ),
-              PreInvoiceChipModel(
-                id: 2,
-                label: S.current.plan,
-                opensBottomSheet: true,
-              ),
-              PreInvoiceChipModel(
-                id: 3,
-                label: S.current.onlyAvailableProducts,
-              ),
-            ];
+    Future.wait([subPlansFuture, brandsFuture]).then<void>((results) {
+      try {
+        final subPlansResponse = results[0] as SubPlanListResponse;
+        final brandsResponse = results[1] as BrandListResponse;
 
-            emit(
-              state.copyWith(
-                status: PreInvoiceRequestStatus.success,
-                creditPlans: plans,
-                filterChips: chips,
-                availableBrands: brandsResponse.results,
-              ),
-            );
-          } catch (e, stackTrace) {
-            print('Error in PreInvoiceCubit.init mapping: $e');
-            print(stackTrace);
-            emit(
-              state.copyWith(
-                status: PreInvoiceRequestStatus.error,
-                errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
-              ),
-            );
-          }
-        })
-        .catchError((e, stackTrace) {
-          print('Error in PreInvoiceCubit.init API: $e');
-          print(stackTrace);
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
-            ),
-          );
-          return null;
-        });
+        final plans = subPlansResponse.results
+            .map((dto) => _mapToCreditPlanModel(dto))
+            .toList();
+
+        final chips = [
+          PreInvoiceChipModel(
+            id: 1,
+            label: S.current.category,
+            opensBottomSheet: true,
+          ),
+          PreInvoiceChipModel(
+            id: 4,
+            label: S.current.brand,
+            opensBottomSheet: true,
+          ),
+          PreInvoiceChipModel(
+            id: 2,
+            label: S.current.plan,
+            opensBottomSheet: true,
+          ),
+          PreInvoiceChipModel(
+            id: 3,
+            label: S.current.onlyAvailableProducts,
+          ),
+        ];
+
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.success,
+            creditPlans: plans,
+            filterChips: chips,
+            availableBrands: brandsResponse.results,
+          ),
+        );
+      } catch (e, stackTrace) {
+        print('Error in PreInvoiceCubit.init mapping: $e');
+        print(stackTrace);
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
+          ),
+        );
+      }
+    });
   }
 
   void goToStep(PreInvoiceStep step) {

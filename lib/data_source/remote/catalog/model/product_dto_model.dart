@@ -25,7 +25,7 @@ class ProductDtoModel with _$ProductDtoModel {
     String? description,
     @JsonKey(name: 'technical_detail') String? technicalDetail,
     required CategorySummaryDtoModel category,
-    required BrandSummaryDtoModel brand,
+    BrandSummaryDtoModel? brand,
     @JsonKey(name: 'base_price') int? basePrice,
     @JsonKey(name: 'plan_price') int? planPrice,
     @JsonKey(name: 'old_price') int? oldPrice,

@@ -20,12 +20,14 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
         .then((dto) {
           final List<ProductBadgeModel> badges = [];
 
-          badges.add(
-             ProductBadgeModel(
-              label: 'برند',
-              value: dto.brand.name,
-            ),
-          );
+          if (dto.brand != null) {
+            badges.add(
+              ProductBadgeModel(
+                label: 'برند',
+                value: dto.brand!.name,
+              ),
+            );
+          }
 
           if (subPlanId != null) {
             badges.add(
