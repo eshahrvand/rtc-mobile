@@ -32,5 +32,11 @@ class CustomersState with _$CustomersState {
     // Customer Detail
     CustomerDetailModel? selectedCustomer,
     @Default(0) int selectedTabIndex,
+
+    // Pagination
+    @Default(1) int currentPage,
+    @Default(0) int totalCount,
+    @Default(false) bool isPaginationLoading,
+    @Default(true) bool hasMoreData,
   }) = _CustomersState;
 }

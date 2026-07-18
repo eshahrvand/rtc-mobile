@@ -17,6 +17,7 @@ class OrdersUiHelpers {
   static Widget resolveOrdersListBody({
     required BuildContext context,
     required OrdersState state,
+    ScrollController? scrollController,
   }) {
     final theme = Theme.of(context).textTheme;
 
@@ -37,8 +38,16 @@ class OrdersUiHelpers {
     }
 
     return ListView.builder(
-      itemCount: state.filteredOrders.length,
+      controller: scrollController,
+      itemCount: state.filteredOrders.length + (state.isPaginationLoading ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == state.filteredOrders.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
         final OrderSummaryModel order = state.filteredOrders[index];
         return RtcOrderItem(
           order: order,

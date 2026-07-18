@@ -17,11 +17,18 @@ class CustomersCubit extends Cubit<CustomersState> {
   Timer? _debounce;
 
   void init() {
-    emit(state.copyWith(status: CustomersRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: CustomersRequestStatus.loading,
+        currentPage: 1,
+        hasMoreData: true,
+      ),
+    );
 
     _customersRepo
         .getCustomers(
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          page: 1,
         )
         .then((response) {
           final customers = response.results.map(_mapToCustomerItem).toList();
@@ -31,14 +38,56 @@ class CustomersCubit extends Cubit<CustomersState> {
               status: CustomersRequestStatus.success,
               allCustomers: customers,
               filteredCustomers: customers,
+              totalCount: response.count,
+              hasMoreData: response.next != null,
             ),
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: CustomersRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: CustomersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
+        });
+  }
+
+  void fetchNextPage() {
+    if (state.isPaginationLoading ||
+        !state.hasMoreData ||
+        state.status == CustomersRequestStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(isPaginationLoading: true));
+
+    final nextPage = state.currentPage + 1;
+
+    _customersRepo
+        .getCustomers(
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          page: nextPage,
+        )
+        .then((response) {
+          final newCustomers = response.results.map(_mapToCustomerItem).toList();
+
+          final updatedCustomers = [...state.allCustomers, ...newCustomers];
+
+          emit(
+            state.copyWith(
+              isPaginationLoading: false,
+              currentPage: nextPage,
+              allCustomers: updatedCustomers,
+              filteredCustomers: updatedCustomers,
+              hasMoreData: response.next != null,
+              totalCount: response.count,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isPaginationLoading: false));
+          return null;
         });
   }
 

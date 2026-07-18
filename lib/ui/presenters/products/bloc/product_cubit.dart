@@ -92,6 +92,8 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         selectedCategoryId: categoryId,
         selectedChipIndex: categoryId != null ? 0 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -104,6 +106,8 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         selectedBrandId: brandId,
         selectedChipIndex: brandId != null ? 1 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -121,6 +125,8 @@ class ProductCubit extends Cubit<ProductState> {
         selectedSubPlanId: subPlanId,
         selectedSubPlanName: subPlanName,
         selectedChipIndex: subPlanId != null ? 2 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -132,6 +138,8 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         isOnlyAvailable: newValue,
         selectedChipIndex: newValue ? 3 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -173,13 +181,23 @@ class ProductCubit extends Cubit<ProductState> {
         selectedSubPlanName: null,
         isOnlyAvailable: false,
         selectedChipIndex: -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
   }
 
-  void _fetchProducts() {
-    emit(state.copyWith(status: ProductRequestStatus.loading));
+  void fetchNextPage() {
+    if (state.isPaginationLoading ||
+        !state.hasMoreData ||
+        state.status == ProductRequestStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(isPaginationLoading: true));
+
+    final nextPage = state.currentPage + 1;
 
     _productRepo
         .getProducts(
@@ -188,17 +206,53 @@ class ProductCubit extends Cubit<ProductState> {
           brandId: state.selectedBrandId,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           inStock: state.isOnlyAvailable ? true : null,
+          page: nextPage,
         )
         .then((response) {
-          final products = response.results
-              .map(_mapToProductItemModel)
-              .toList();
+          final newProducts =
+              response.results.map(_mapToProductItemModel).toList();
+
+          final updatedProducts = [...state.allProducts, ...newProducts];
+
+          emit(
+            state.copyWith(
+              isPaginationLoading: false,
+              currentPage: nextPage,
+              allProducts: updatedProducts,
+              filteredProducts: updatedProducts,
+              hasMoreData: response.next != null,
+              totalCount: response.count,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void _fetchProducts() {
+    emit(state.copyWith(status: ProductRequestStatus.loading, currentPage: 1));
+
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedSubPlanId,
+          categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          inStock: state.isOnlyAvailable ? true : null,
+          page: 1,
+        )
+        .then((response) {
+          final products = response.results.map(_mapToProductItemModel).toList();
 
           emit(
             state.copyWith(
               status: ProductRequestStatus.success,
               allProducts: products,
               filteredProducts: products,
+              totalCount: response.count,
+              hasMoreData: response.next != null,
             ),
           );
         })

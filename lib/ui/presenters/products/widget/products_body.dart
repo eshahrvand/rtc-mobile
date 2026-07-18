@@ -12,8 +12,35 @@ import '../../../widget/rtc_product_item.dart';
 import 'filter_bottom_sheet.dart';
 import '../../../../core/models/filter_item.dart';
 
-class ProductsBody extends StatelessWidget {
+class ProductsBody extends StatefulWidget {
   const ProductsBody({super.key});
+
+  @override
+  State<ProductsBody> createState() => _ProductsBodyState();
+}
+
+class _ProductsBodyState extends State<ProductsBody> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<ProductCubit>().fetchNextPage();
+    }
+  }
 
   void _showFilterSheet(
     BuildContext context,
@@ -103,21 +130,32 @@ class ProductsBody extends StatelessWidget {
                 onChipTap: (index, chip) => cubit.onChipTap(chip),
                 onChipClose: (index, chip) => cubit.onChipClose(chip),
               ),
-
               Expanded(
-                child: state.status == ProductRequestStatus.loading
+                child: state.status == ProductRequestStatus.loading &&
+                        state.allProducts.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : state.filteredProducts.isEmpty
                     ? Center(
                         child: Text(
                           S.current.noItemsFound,
-                          style: Theme.of(context).textTheme.bodyLarge
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
                               ?.copyWith(color: AppColors.grayPalette.shade600),
                         ),
                       )
                     : ListView.builder(
-                        itemCount: state.filteredProducts.length,
+                        controller: _scrollController,
+                        itemCount: state.filteredProducts.length +
+                            (state.isPaginationLoading ? 1 : 0),
                         itemBuilder: (context, index) {
+                          if (index == state.filteredProducts.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 32),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
                           final product = state.filteredProducts[index];
                           final hasPlan = state.selectedSubPlanId != null;
                           return RtcProductItem(

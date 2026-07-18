@@ -75,10 +75,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
             label: S.current.plan,
             opensBottomSheet: true,
           ),
-          PreInvoiceChipModel(
-            id: 3,
-            label: S.current.onlyAvailableProducts,
-          ),
+          PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
         ];
 
         emit(

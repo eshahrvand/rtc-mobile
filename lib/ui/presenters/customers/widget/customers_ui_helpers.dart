@@ -12,33 +12,45 @@ class CustomersUiHelpers {
     required BuildContext context,
     required CustomersState state,
     required TextTheme theme,
+    ScrollController? scrollController,
   }) {
-    return switch (state.status) {
-      CustomersRequestStatus.loading => const Center(
+    if (state.status == CustomersRequestStatus.loading &&
+        state.allCustomers.isEmpty) {
+      return const Center(
         child: CircularProgressIndicator(),
-      ),
-      _ =>
-        state.filteredCustomers.isEmpty
-            ? Center(
-                child: Text(
-                  S.current.noItemsFound,
-                  style: theme.bodyLarge?.copyWith(
-                    color: AppColors.grayPalette.shade600,
-                  ),
-                ),
-              )
-            : ListView.builder(
-                itemCount: state.filteredCustomers.length,
-                itemBuilder: (context, index) {
-                  final customer = state.filteredCustomers[index];
-                  return RtcCustomerItem(
-                    customer: customer,
-                    onTap: () => context
-                        .read<CustomersCubit>()
-                        .onCustomerTapped(customer),
-                  );
-                },
-              ),
-    };
+      );
+    }
+
+    if (state.filteredCustomers.isEmpty) {
+      return Center(
+        child: Text(
+          S.current.noItemsFound,
+          style: theme.bodyLarge?.copyWith(
+            color: AppColors.grayPalette.shade600,
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      controller: scrollController,
+      itemCount:
+          state.filteredCustomers.length + (state.isPaginationLoading ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == state.filteredCustomers.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final customer = state.filteredCustomers[index];
+        return RtcCustomerItem(
+          customer: customer,
+          onTap: () =>
+              context.read<CustomersCubit>().onCustomerTapped(customer),
+        );
+      },
+    );
   }
 }

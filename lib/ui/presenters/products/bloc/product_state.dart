@@ -43,5 +43,11 @@ class ProductState with _$ProductState {
     // Product List
     @Default([]) List<ProductItemModel> allProducts,
     @Default([]) List<ProductItemModel> filteredProducts,
+
+    // Pagination
+    @Default(1) int currentPage,
+    @Default(0) int totalCount,
+    @Default(false) bool isPaginationLoading,
+    @Default(true) bool hasMoreData,
   }) = _ProductState;
 }

@@ -117,7 +117,13 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void fetchOrders({OrdersState? rollbackState}) {
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: OrdersRequestStatus.loading,
+        currentPage: 1,
+        hasMoreData: true,
+      ),
+    );
 
     final createdAfter = _formatGregorianDate(state.startDate);
     final createdBefore = _formatGregorianDate(state.endDate);
@@ -131,6 +137,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           createdAfter: createdAfter,
           createdBefore: createdBefore,
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: 1,
         )
         .then((response) {
           final orders = response.results
@@ -141,6 +148,8 @@ class OrdersCubit extends Cubit<OrdersState> {
               status: OrdersRequestStatus.success,
               allOrders: orders,
               filteredOrders: orders,
+              totalCount: response.count,
+              hasMoreData: response.next != null,
             ),
           );
         })
@@ -154,6 +163,54 @@ class OrdersCubit extends Cubit<OrdersState> {
               filteredOrders: orders,
             ),
           );
+          return null;
+        });
+  }
+
+  void fetchNextPage() {
+    if (state.isPaginationLoading ||
+        !state.hasMoreData ||
+        state.status == OrdersRequestStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(isPaginationLoading: true));
+
+    final nextPage = state.currentPage + 1;
+    final createdAfter = _formatGregorianDate(state.startDate);
+    final createdBefore = _formatGregorianDate(state.endDate);
+
+    _ordersRepo
+        .getOrders(
+          status: state.selectedStatusId != null
+              ? [state.selectedStatusId!]
+              : null,
+          subPlanId: state.selectedSubPlanId,
+          createdAfter: createdAfter,
+          createdBefore: createdBefore,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: nextPage,
+        )
+        .then((response) {
+          final newOrders = response.results
+              .map((dto) => OrderMapper.mapToSummary(dto))
+              .toList();
+
+          final updatedOrders = [...state.allOrders, ...newOrders];
+
+          emit(
+            state.copyWith(
+              isPaginationLoading: false,
+              currentPage: nextPage,
+              allOrders: updatedOrders,
+              filteredOrders: updatedOrders,
+              hasMoreData: response.next != null,
+              totalCount: response.count,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isPaginationLoading: false));
           return null;
         });
   }

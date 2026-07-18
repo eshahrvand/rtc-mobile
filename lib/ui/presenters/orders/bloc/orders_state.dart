@@ -87,6 +87,12 @@ class OrdersState with _$OrdersState {
     @Default(false) bool isPrinting,
     @Default(PrintStatus.initial) PrintStatus printStatus,
     String? lastPrintedFilePath,
+
+    // Pagination
+    @Default(1) int currentPage,
+    @Default(0) int totalCount,
+    @Default(false) bool isPaginationLoading,
+    @Default(true) bool hasMoreData,
   }) = _OrdersState;
 }
 
