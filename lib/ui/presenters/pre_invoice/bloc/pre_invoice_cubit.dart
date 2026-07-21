@@ -43,7 +43,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       e,
       stackTrace,
     ) {
-      print('>>k100 Error fetching sub-plans: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return const SubPlanListResponse(count: 0, results: []);
     });
@@ -52,7 +51,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       e,
       stackTrace,
     ) {
-      print('>>k100 Error fetching brands: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return const BrandListResponse(count: 0, results: []);
     });
@@ -61,7 +59,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       e,
       stackTrace,
     ) {
-      print('>>k100 Error fetching categories: $e');
       return const CategoryListResponse(count: 0, results: []);
     });
 
@@ -276,9 +273,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void fetchCategoriesNextPage() {
     if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
 
-    print(
-      '>>k100 Fetching next page of categories: ${state.currentCategoryPage + 1}',
-    );
     emit(state.copyWith(isCategoryPaginationLoading: true));
 
     final nextPage = state.currentCategoryPage + 1;
@@ -299,7 +293,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          print('>>k100 Error fetching category next page: $e');
           emit(state.copyWith(isCategoryPaginationLoading: false));
           return null;
         });
@@ -308,7 +301,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void fetchBrandsNextPage() {
     if (state.isBrandPaginationLoading || !state.hasMoreBrands) return;
 
-    print('>>k100 Fetching next page of brands: ${state.currentBrandPage + 1}');
     emit(state.copyWith(isBrandPaginationLoading: true));
 
     final nextPage = state.currentBrandPage + 1;
@@ -326,7 +318,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          print('>>k100 Error fetching brand next page: $e');
           emit(state.copyWith(isBrandPaginationLoading: false));
           return null;
         });
@@ -336,9 +327,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     if (state.isCreditPlanPaginationLoading || !state.hasMoreCreditPlans)
       return;
 
-    print(
-      '>>k100 Fetching next page of sub-plans: ${state.currentCreditPlanPage + 1}',
-    );
     emit(state.copyWith(isCreditPlanPaginationLoading: true));
 
     final nextPage = state.currentCreditPlanPage + 1;
@@ -360,7 +348,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           );
         })
         .catchError((e) {
-          print('>>k100 Error fetching sub-plans next page: $e');
           emit(state.copyWith(isCreditPlanPaginationLoading: false));
           return null;
         });
