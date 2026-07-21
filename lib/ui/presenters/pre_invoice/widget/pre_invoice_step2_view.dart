@@ -27,11 +27,27 @@ class PreInvoiceStep2View extends StatefulWidget {
 
 class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      context.read<PreInvoiceCubit>().fetchProductsNextPage();
+    }
   }
 
   void _showCategoryFilter(
@@ -292,8 +308,17 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                       ),
                     )
                   : ListView.builder(
-                      itemCount: state.filteredProducts.length,
+                      controller: _scrollController,
+                      itemCount: state.filteredProducts.length +
+                          (state.isProductPaginationLoading ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == state.filteredProducts.length) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
                         final product = state.filteredProducts[index];
                         final cartItem = state.cartItems.firstWhere(
                           (item) => item.productId == product.id,

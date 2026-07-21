@@ -1,10 +1,9 @@
-# Task: Fix Filter Pagination Updates
+# Task: Product Pagination in Pre-Invoice Step 2
 
-Fix the issue where `FilterBottomSheet` doesn't update its items list when more pages are fetched via pagination.
+Implement pagination for the product list in Pre-Invoice Step 2.
 
 ## Progress
-- [x] Research and root cause analysis
-- [x] Task 1: Update `FilterBottomSheet.show` to support reactive updates
-- [x] Task 2: Update `PreInvoiceStep2View` call sites
-- [x] Task 3: Update `ProductsBody` call sites
-- [x] Task 4: Verification
+- [ ] Task 1: Update `PreInvoiceState` with pagination fields
+- [ ] Task 2: Implement `fetchProductsNextPage` in `PreInvoiceCubit`
+- [ ] Task 3: Add `ScrollController` and pagination UI to `PreInvoiceStep2View`
+- [ ] Task 4: Verification

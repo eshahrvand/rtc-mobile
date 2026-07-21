@@ -39,24 +39,35 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    final subPlansFuture = _plansRepo.getSubPlans(page: 1).catchError((e, stackTrace) {
+    final subPlansFuture = _plansRepo.getSubPlans(page: 1).catchError((
+      e,
+      stackTrace,
+    ) {
       print('>>k100 Error fetching sub-plans: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return const SubPlanListResponse(count: 0, results: []);
     });
 
-    final brandsFuture = _productRepo.getBrands(page: 1).catchError((e, stackTrace) {
+    final brandsFuture = _productRepo.getBrands(page: 1).catchError((
+      e,
+      stackTrace,
+    ) {
       print('>>k100 Error fetching brands: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return const BrandListResponse(count: 0, results: []);
     });
 
-    final categoriesFuture = _productRepo.getCategories(page: 1).catchError((e, stackTrace) {
+    final categoriesFuture = _productRepo.getCategories(page: 1).catchError((
+      e,
+      stackTrace,
+    ) {
       print('>>k100 Error fetching categories: $e');
       return const CategoryListResponse(count: 0, results: []);
     });
 
-    Future.wait([subPlansFuture, brandsFuture, categoriesFuture]).then<void>((results) {
+    Future.wait([subPlansFuture, brandsFuture, categoriesFuture]).then<void>((
+      results,
+    ) {
       try {
         final subPlansResponse = results[0] as SubPlanListResponse;
         final brandsResponse = results[1] as BrandListResponse;
@@ -140,7 +151,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void _loadProducts() {
     if (state.selectedCreditPlanId == null) return;
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: PreInvoiceRequestStatus.loading,
+        currentProductPage: 1,
+        hasMoreProducts: false,
+      ),
+    );
 
     _productRepo
         .getProducts(
@@ -150,6 +167,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           brandId: state.selectedBrandId,
           inStock: state.showAvailableOnly ? true : null,
           ordering: state.selectedSortOrder,
+          page: 1,
         )
         .then((response) {
           final products = response.results.map(_mapProductDtoToModel).toList();
@@ -158,6 +176,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               status: PreInvoiceRequestStatus.success,
               allProducts: products,
               filteredProducts: products,
+              hasMoreProducts: response.next != null,
             ),
           );
         })
@@ -211,10 +230,55 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     _loadProducts();
   }
 
+  void fetchProductsNextPage() {
+    if (state.isProductPaginationLoading ||
+        !state.hasMoreProducts ||
+        state.status == PreInvoiceRequestStatus.loading ||
+        state.selectedCreditPlanId == null) {
+      return;
+    }
+
+    emit(state.copyWith(isProductPaginationLoading: true));
+
+    final nextPage = state.currentProductPage + 1;
+
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedCreditPlanId!,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
+          inStock: state.showAvailableOnly ? true : null,
+          ordering: state.selectedSortOrder,
+          page: nextPage,
+        )
+        .then((response) {
+          final newProducts = response.results
+              .map(_mapProductDtoToModel)
+              .toList();
+
+          emit(
+            state.copyWith(
+              isProductPaginationLoading: false,
+              currentProductPage: nextPage,
+              allProducts: [...state.allProducts, ...newProducts],
+              filteredProducts: [...state.filteredProducts, ...newProducts],
+              hasMoreProducts: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isProductPaginationLoading: false));
+          return null;
+        });
+  }
+
   void fetchCategoriesNextPage() {
     if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
 
-    print('>>k100 Fetching next page of categories: ${state.currentCategoryPage + 1}');
+    print(
+      '>>k100 Fetching next page of categories: ${state.currentCategoryPage + 1}',
+    );
     emit(state.copyWith(isCategoryPaginationLoading: true));
 
     final nextPage = state.currentCategoryPage + 1;
@@ -269,9 +333,12 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void fetchSubPlansNextPage() {
-    if (state.isCreditPlanPaginationLoading || !state.hasMoreCreditPlans) return;
+    if (state.isCreditPlanPaginationLoading || !state.hasMoreCreditPlans)
+      return;
 
-    print('>>k100 Fetching next page of sub-plans: ${state.currentCreditPlanPage + 1}');
+    print(
+      '>>k100 Fetching next page of sub-plans: ${state.currentCreditPlanPage + 1}',
+    );
     emit(state.copyWith(isCreditPlanPaginationLoading: true));
 
     final nextPage = state.currentCreditPlanPage + 1;
