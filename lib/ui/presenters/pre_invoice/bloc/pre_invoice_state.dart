@@ -3,6 +3,7 @@ import 'package:cross_file/cross_file.dart';
 import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
+import '../../../../data_source/remote/catalog/model/category_dto_model.dart';
 
 part 'pre_invoice_state.freezed.dart';
 
@@ -35,6 +36,9 @@ class PreInvoiceState with _$PreInvoiceState {
 
     // Step 1 — Credit Plan
     @Default([]) List<CreditPlanItemModel> creditPlans,
+    @Default(1) int currentCreditPlanPage,
+    @Default(false) bool hasMoreCreditPlans,
+    @Default(false) bool isCreditPlanPaginationLoading,
     String? selectedCreditPlanId,
 
     // Step 2 — Products
@@ -48,9 +52,17 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default([]) List<CartItemModel> cartItems,
     @Default(false) bool isCartVisible,
     String? selectedCategoryId,
+    @Default([]) List<CategoryDtoModel> availableCategories,
+    @Default(1) int currentCategoryPage,
+    @Default(false) bool hasMoreCategories,
+    @Default(false) bool isCategoryPaginationLoading,
+
     String? selectedSortOrder,
     String? selectedBrandId,
     @Default([]) List<BrandDtoModel> availableBrands,
+    @Default(1) int currentBrandPage,
+    @Default(false) bool hasMoreBrands,
+    @Default(false) bool isBrandPaginationLoading,
 
     // Summary
     @Default('0') String totalAmount,

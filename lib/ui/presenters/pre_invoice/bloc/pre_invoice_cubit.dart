@@ -7,6 +7,7 @@ import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
 import '../../../../core/models/pre_invoice_model.dart';
+import '../../../../data_source/remote/catalog/model/category_dto_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/plans/plans_repository.dart';
@@ -38,22 +39,28 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    final subPlansFuture = _plansRepo.getSubPlans().catchError((e, stackTrace) {
-      print('Error fetching sub-plans: $e');
+    final subPlansFuture = _plansRepo.getSubPlans(page: 1).catchError((e, stackTrace) {
+      print('>>k100 Error fetching sub-plans: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return const SubPlanListResponse(count: 0, results: []);
     });
 
-    final brandsFuture = _productRepo.getBrands().catchError((e, stackTrace) {
-      print('Error fetching brands: $e');
+    final brandsFuture = _productRepo.getBrands(page: 1).catchError((e, stackTrace) {
+      print('>>k100 Error fetching brands: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return const BrandListResponse(count: 0, results: []);
     });
 
-    Future.wait([subPlansFuture, brandsFuture]).then<void>((results) {
+    final categoriesFuture = _productRepo.getCategories(page: 1).catchError((e, stackTrace) {
+      print('>>k100 Error fetching categories: $e');
+      return const CategoryListResponse(count: 0, results: []);
+    });
+
+    Future.wait([subPlansFuture, brandsFuture, categoriesFuture]).then<void>((results) {
       try {
         final subPlansResponse = results[0] as SubPlanListResponse;
         final brandsResponse = results[1] as BrandListResponse;
+        final categoriesResponse = results[2] as CategoryListResponse;
 
         final plans = subPlansResponse.results
             .map((dto) => _mapToCreditPlanModel(dto))
@@ -82,12 +89,19 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           state.copyWith(
             status: PreInvoiceRequestStatus.success,
             creditPlans: plans,
+            hasMoreCreditPlans: subPlansResponse.next != null,
+            currentCreditPlanPage: 1,
             filterChips: chips,
             availableBrands: brandsResponse.results,
+            hasMoreBrands: brandsResponse.next != null,
+            currentBrandPage: 1,
+            availableCategories: categoriesResponse.results,
+            hasMoreCategories: categoriesResponse.next != null,
+            currentCategoryPage: 1,
           ),
         );
       } catch (e, stackTrace) {
-        print('Error in PreInvoiceCubit.init mapping: $e');
+        print('>>k100 Error in PreInvoiceCubit.init mapping: $e');
         print(stackTrace);
         emit(
           state.copyWith(
@@ -195,6 +209,94 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void selectBrand(String? brandId) {
     emit(state.copyWith(selectedBrandId: brandId));
     _loadProducts();
+  }
+
+  void fetchCategoriesNextPage() {
+    if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
+
+    print('>>k100 Fetching next page of categories: ${state.currentCategoryPage + 1}');
+    emit(state.copyWith(isCategoryPaginationLoading: true));
+
+    final nextPage = state.currentCategoryPage + 1;
+
+    _productRepo
+        .getCategories(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isCategoryPaginationLoading: false,
+              currentCategoryPage: nextPage,
+              availableCategories: [
+                ...state.availableCategories,
+                ...response.results,
+              ],
+              hasMoreCategories: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          print('>>k100 Error fetching category next page: $e');
+          emit(state.copyWith(isCategoryPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchBrandsNextPage() {
+    if (state.isBrandPaginationLoading || !state.hasMoreBrands) return;
+
+    print('>>k100 Fetching next page of brands: ${state.currentBrandPage + 1}');
+    emit(state.copyWith(isBrandPaginationLoading: true));
+
+    final nextPage = state.currentBrandPage + 1;
+
+    _productRepo
+        .getBrands(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isBrandPaginationLoading: false,
+              currentBrandPage: nextPage,
+              availableBrands: [...state.availableBrands, ...response.results],
+              hasMoreBrands: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          print('>>k100 Error fetching brand next page: $e');
+          emit(state.copyWith(isBrandPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchSubPlansNextPage() {
+    if (state.isCreditPlanPaginationLoading || !state.hasMoreCreditPlans) return;
+
+    print('>>k100 Fetching next page of sub-plans: ${state.currentCreditPlanPage + 1}');
+    emit(state.copyWith(isCreditPlanPaginationLoading: true));
+
+    final nextPage = state.currentCreditPlanPage + 1;
+
+    _plansRepo
+        .getSubPlans(page: nextPage)
+        .then((response) {
+          final newPlans = response.results
+              .map((dto) => _mapToCreditPlanModel(dto))
+              .toList();
+
+          emit(
+            state.copyWith(
+              isCreditPlanPaginationLoading: false,
+              currentCreditPlanPage: nextPage,
+              creditPlans: [...state.creditPlans, ...newPlans],
+              hasMoreCreditPlans: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          print('>>k100 Error fetching sub-plans next page: $e');
+          emit(state.copyWith(isCreditPlanPaginationLoading: false));
+          return null;
+        });
   }
 
   void onChipSelected(int index) {

@@ -209,17 +209,3 @@ String _fallbackCodeForStatus(int status) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Usage example (with the `dio` package — adapt to your HTTP client):
-//
-//   try {
-//     await dio.post('/orders/$id/disburse', data: payload);
-//   } on DioException catch (e) {
-//     final err = ApiError.fromResponse(e.response?.statusCode ?? 0, e.response?.data);
-//     if (err.fieldErrors != null) {
-//       // map err.fieldErrors onto your form fields
-//     } else {
-//       showSnackBar(err.message); // localized Persian, never err.detail
-//     }
-//   }
-// ---------------------------------------------------------------------------

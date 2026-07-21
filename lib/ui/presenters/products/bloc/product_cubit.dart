@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../core/models/product_item_model.dart';
 import '../../../../config/errorhandler.dart';
@@ -10,7 +8,6 @@ import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
-import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import 'product_state.dart';
 
@@ -27,21 +24,27 @@ class ProductCubit extends Cubit<ProductState> {
     final chips = _createInitialChips();
 
     Future.wait([
-      _productRepo.getCategories(),
-      _plansRepo.getSubPlans(),
-      _productRepo.getBrands(),
+      _productRepo.getCategories(page: 1),
+      _plansRepo.getSubPlans(page: 1),
+      _productRepo.getBrands(page: 1),
     ])
         .then((results) {
-          final categoriesResponse = results[0];
-          final subPlansResponse = results[1];
-          final brandsResponse = results[2];
+          final categoriesResponse = results[0] as dynamic;
+          final subPlansResponse = results[1] as dynamic;
+          final brandsResponse = results[2] as dynamic;
 
           emit(
             state.copyWith(
               chips: chips,
-              availableCategories: (categoriesResponse as dynamic).results,
-              availableSubPlans: (subPlansResponse as dynamic).results,
-              availableBrands: (brandsResponse as dynamic).results,
+              availableCategories: categoriesResponse.results,
+              hasMoreCategories: categoriesResponse.next != null,
+              currentCategoryPage: 1,
+              availableSubPlans: subPlansResponse.results,
+              hasMoreSubPlans: subPlansResponse.next != null,
+              currentSubPlanPage: 1,
+              availableBrands: brandsResponse.results,
+              hasMoreBrands: brandsResponse.next != null,
+              currentBrandPage: 1,
             ),
           );
 
@@ -186,6 +189,87 @@ class ProductCubit extends Cubit<ProductState> {
       ),
     );
     _fetchProducts();
+  }
+
+  void fetchCategoriesNextPage() {
+    if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
+
+    emit(state.copyWith(isCategoryPaginationLoading: true));
+
+    final nextPage = state.currentCategoryPage + 1;
+
+    _productRepo
+        .getCategories(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isCategoryPaginationLoading: false,
+              currentCategoryPage: nextPage,
+              availableCategories: [
+                ...state.availableCategories,
+                ...response.results,
+              ],
+              hasMoreCategories: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isCategoryPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchBrandsNextPage() {
+    if (state.isBrandPaginationLoading || !state.hasMoreBrands) return;
+
+    emit(state.copyWith(isBrandPaginationLoading: true));
+
+    final nextPage = state.currentBrandPage + 1;
+
+    _productRepo
+        .getBrands(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isBrandPaginationLoading: false,
+              currentBrandPage: nextPage,
+              availableBrands: [...state.availableBrands, ...response.results],
+              hasMoreBrands: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isBrandPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchSubPlansNextPage() {
+    if (state.isSubPlanPaginationLoading || !state.hasMoreSubPlans) return;
+
+    emit(state.copyWith(isSubPlanPaginationLoading: true));
+
+    final nextPage = state.currentSubPlanPage + 1;
+
+    _plansRepo
+        .getSubPlans(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isSubPlanPaginationLoading: false,
+              currentSubPlanPage: nextPage,
+              availableSubPlans: [
+                ...state.availableSubPlans,
+                ...response.results,
+              ],
+              hasMoreSubPlans: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isSubPlanPaginationLoading: false));
+          return null;
+        });
   }
 
   void fetchNextPage() {

@@ -1,19 +1,10 @@
-# Task: Clean Up Media Picker / Repository / Service Code
+# Task: Fix Filter Pagination Updates
 
-Refactor media-related code to remove debug artifacts, reduce duplication, and improve readability without changing behavior.
+Fix the issue where `FilterBottomSheet` doesn't update its items list when more pages are fetched via pagination.
 
 ## Progress
-- [x] Task 1: Research and Planning
-- [x] Task 2: UI & Presenter Cleanup
-    - [x] Remove prints from `MediaPickerCubit`
-    - [x] Clean up imports in `MediaPickerCubit` and `MediaEditScreen`
-- [x] Task 3: Data Layer Refactor
-    - [x] Refactor `MediaService.uploadMedia`
-    - [x] Extract helpers for safe filename and multipart file creation
-    - [x] Add defensive comments
+- [x] Research and root cause analysis
+- [x] Task 1: Update `FilterBottomSheet.show` to support reactive updates
+- [x] Task 2: Update `PreInvoiceStep2View` call sites
+- [x] Task 3: Update `ProductsBody` call sites
 - [x] Task 4: Verification
-    - [x] Run `flutter analyze`
-    - [x] Create walkthrough
-
-## Completed
-Cleanup is finished. No behavior was changed, and code hygiene has been improved.

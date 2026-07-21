@@ -39,27 +39,27 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     PreInvoiceCubit cubit,
     PreInvoiceState state,
   ) {
-    sl<ProductRepository>().getCategories().then((response) {
-      final items = response.results
+    FilterBottomSheet.show<PreInvoiceCubit, PreInvoiceState>(
+      context,
+      title: S.current.categoryTitle,
+      subtitle: S.current.categoryFilterSubtitle,
+      items: state.availableCategories
           .map((c) => FilterItem(id: c.id, title: c.name))
-          .toList();
-
-      if (context.mounted) {
-        FilterBottomSheet.show(
-          context,
-          title: S.current.categoryTitle,
-          subtitle: S.current.categoryFilterSubtitle,
-          items: items,
-          initialSelectedId: state.selectedCategoryId,
-          onApply: (selected) {
-            cubit.onCategorySelected(selected?.id);
-          },
-          onClear: () {
-            cubit.onCategorySelected(null);
-          },
-        );
-      }
-    });
+          .toList(),
+      bloc: cubit,
+      itemsSelector: (s) => s.availableCategories
+          .map((c) => FilterItem(id: c.id, title: c.name))
+          .toList(),
+      loadingSelector: (s) => s.isCategoryPaginationLoading,
+      initialSelectedId: state.selectedCategoryId,
+      onLoadMore: () => cubit.fetchCategoriesNextPage(),
+      onApply: (selected) {
+        cubit.onCategorySelected(selected?.id);
+      },
+      onClear: () {
+        cubit.onCategorySelected(null);
+      },
+    );
   }
 
   void _showSortFilter(
@@ -96,14 +96,20 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     PreInvoiceCubit cubit,
     PreInvoiceState state,
   ) {
-    FilterBottomSheet.show(
+    FilterBottomSheet.show<PreInvoiceCubit, PreInvoiceState>(
       context,
       title: S.current.brand,
       subtitle: S.current.brandFilter,
       items: state.availableBrands
           .map((b) => FilterItem(id: b.id, title: b.name))
           .toList(),
+      bloc: cubit,
+      itemsSelector: (s) => s.availableBrands
+          .map((b) => FilterItem(id: b.id, title: b.name))
+          .toList(),
+      loadingSelector: (s) => s.isBrandPaginationLoading,
       initialSelectedId: state.selectedBrandId,
+      onLoadMore: () => cubit.fetchBrandsNextPage(),
       onApply: (selected) {
         cubit.selectBrand(selected?.id);
       },

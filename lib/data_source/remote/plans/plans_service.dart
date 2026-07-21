@@ -9,5 +9,5 @@ abstract class PlansService {
   factory PlansService(Dio dio, {String baseUrl}) = _PlansService;
 
   @GET('plans/sub-plans')
-  Future<SubPlanListResponse> getSubPlans();
+  Future<SubPlanListResponse> getSubPlans(@Query('page') int? page);
 }

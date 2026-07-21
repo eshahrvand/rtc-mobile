@@ -37,8 +37,19 @@ class ProductState with _$ProductState {
 
     // Dynamic Filter Data
     @Default([]) List<CategoryDtoModel> availableCategories,
+    @Default(1) int currentCategoryPage,
+    @Default(false) bool hasMoreCategories,
+    @Default(false) bool isCategoryPaginationLoading,
+
     @Default([]) List<SubPlanDtoModel> availableSubPlans,
+    @Default(1) int currentSubPlanPage,
+    @Default(false) bool hasMoreSubPlans,
+    @Default(false) bool isSubPlanPaginationLoading,
+
     @Default([]) List<BrandDtoModel> availableBrands,
+    @Default(1) int currentBrandPage,
+    @Default(false) bool hasMoreBrands,
+    @Default(false) bool isBrandPaginationLoading,
 
     // Product List
     @Default([]) List<ProductItemModel> allProducts,

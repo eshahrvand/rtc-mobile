@@ -50,14 +50,20 @@ class _ProductsBodyState extends State<ProductsBody> {
     final cubit = context.read<ProductCubit>();
     if (chip.id == 1) {
       // Category Filter (Single-selection)
-      FilterBottomSheet.show(
+      FilterBottomSheet.show<ProductCubit, ProductState>(
         context,
         title: chip.label,
         subtitle: S.current.selectOptionSubtitle(chip.label),
         items: state.availableCategories
             .map((c) => FilterItem(id: c.id, title: c.name))
             .toList(),
+        bloc: cubit,
+        itemsSelector: (s) => s.availableCategories
+            .map((c) => FilterItem(id: c.id, title: c.name))
+            .toList(),
+        loadingSelector: (s) => s.isCategoryPaginationLoading,
         initialSelectedId: state.selectedCategoryId,
+        onLoadMore: () => cubit.fetchCategoriesNextPage(),
         onApply: (selected) {
           cubit.selectCategory(selected?.id);
         },
@@ -67,14 +73,20 @@ class _ProductsBodyState extends State<ProductsBody> {
       );
     } else if (chip.id == 4) {
       // Brand Filter (Single-selection)
-      FilterBottomSheet.show(
+      FilterBottomSheet.show<ProductCubit, ProductState>(
         context,
         title: S.current.brand,
         subtitle: S.current.brandFilter,
         items: state.availableBrands
             .map((b) => FilterItem(id: b.id, title: b.name))
             .toList(),
+        bloc: cubit,
+        itemsSelector: (s) => s.availableBrands
+            .map((b) => FilterItem(id: b.id, title: b.name))
+            .toList(),
+        loadingSelector: (s) => s.isBrandPaginationLoading,
         initialSelectedId: state.selectedBrandId,
+        onLoadMore: () => cubit.fetchBrandsNextPage(),
         onApply: (selected) {
           cubit.selectBrand(selected?.id);
         },
@@ -84,14 +96,20 @@ class _ProductsBodyState extends State<ProductsBody> {
       );
     } else if (chip.id == 2) {
       // Plan Filter
-      FilterBottomSheet.show(
+      FilterBottomSheet.show<ProductCubit, ProductState>(
         context,
         title: chip.label,
         subtitle: S.current.selectOptionSubtitle(chip.label),
         items: state.availableSubPlans
             .map((s) => FilterItem(id: s.id, title: s.name))
             .toList(),
+        bloc: cubit,
+        itemsSelector: (s) => s.availableSubPlans
+            .map((s) => FilterItem(id: s.id, title: s.name))
+            .toList(),
+        loadingSelector: (s) => s.isSubPlanPaginationLoading,
         initialSelectedId: state.selectedSubPlanId,
+        onLoadMore: () => cubit.fetchSubPlansNextPage(),
         onApply: (selected) {
           cubit.selectSubPlan(selected?.id);
         },
@@ -136,6 +154,7 @@ class _ProductsBodyState extends State<ProductsBody> {
                     ? const Center(child: CircularProgressIndicator())
                     : state.filteredProducts.isEmpty
                     ? Center(
+
                         child: Text(
                           S.current.noItemsFound,
                           style: Theme.of(context)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/models/filter_item.dart';
@@ -19,6 +20,8 @@ class FilterBottomSheet extends StatefulWidget {
   final ValueChanged<FilterItem?>? onApply;
   final ValueChanged<List<FilterItem>>? onApplyMulti;
   final VoidCallback? onClear;
+  final VoidCallback? onLoadMore;
+  final bool isLoadingMore;
   final String? iconPath;
   final String? clearButtonTitle;
 
@@ -33,21 +36,28 @@ class FilterBottomSheet extends StatefulWidget {
     this.onApply,
     this.onApplyMulti,
     this.onClear,
+    this.onLoadMore,
+    this.isLoadingMore = false,
     this.iconPath,
     this.clearButtonTitle,
   });
 
-  static Future<void> show(
+  static Future<void> show<B extends StateStreamableSource<STATE>, STATE>(
     BuildContext context, {
     required String title,
     required String subtitle,
     required List<FilterItem> items,
+    B? bloc,
+    List<FilterItem> Function(STATE)? itemsSelector,
+    bool Function(STATE)? loadingSelector,
     String? initialSelectedId,
     List<String>? initialSelectedIds,
     bool isMultiSelect = false,
     ValueChanged<FilterItem?>? onApply,
     ValueChanged<List<FilterItem>>? onApplyMulti,
     VoidCallback? onClear,
+    VoidCallback? onLoadMore,
+    bool isLoadingMore = false,
     String? iconPath,
     String? clearButtonTitle,
   }) {
@@ -55,19 +65,50 @@ class FilterBottomSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => FilterBottomSheet(
-        title: title,
-        subtitle: subtitle,
-        items: items,
-        initialSelectedId: initialSelectedId,
-        initialSelectedIds: initialSelectedIds,
-        isMultiSelect: isMultiSelect,
-        onApply: onApply,
-        onApplyMulti: onApplyMulti,
-        onClear: onClear,
-        iconPath: iconPath,
-        clearButtonTitle: clearButtonTitle,
-      ),
+      builder: (_) {
+        final content = FilterBottomSheet(
+          title: title,
+          subtitle: subtitle,
+          items: items,
+          initialSelectedId: initialSelectedId,
+          initialSelectedIds: initialSelectedIds,
+          isMultiSelect: isMultiSelect,
+          onApply: onApply,
+          onApplyMulti: onApplyMulti,
+          onClear: onClear,
+          onLoadMore: onLoadMore,
+          isLoadingMore: isLoadingMore,
+          iconPath: iconPath,
+          clearButtonTitle: clearButtonTitle,
+        );
+
+        if (bloc != null && itemsSelector != null) {
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocBuilder<B, STATE>(
+              builder: (context, state) {
+                return FilterBottomSheet(
+                  title: title,
+                  subtitle: subtitle,
+                  items: itemsSelector(state),
+                  initialSelectedId: initialSelectedId,
+                  initialSelectedIds: initialSelectedIds,
+                  isMultiSelect: isMultiSelect,
+                  onApply: onApply,
+                  onApplyMulti: onApplyMulti,
+                  onClear: onClear,
+                  onLoadMore: onLoadMore,
+                  isLoadingMore: loadingSelector?.call(state) ?? isLoadingMore,
+                  iconPath: iconPath,
+                  clearButtonTitle: clearButtonTitle,
+                );
+              },
+            ),
+          );
+        }
+
+        return content;
+      },
     );
   }
 
@@ -78,12 +119,29 @@ class FilterBottomSheet extends StatefulWidget {
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedId;
   late List<String> _selectedIds;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _selectedId = widget.initialSelectedId;
     _selectedIds = List.from(widget.initialSelectedIds ?? []);
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (widget.onLoadMore != null &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent * 0.8) {
+      widget.onLoadMore?.call();
+    }
   }
 
   bool get _hasSelection =>
@@ -93,9 +151,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       ? null
       : widget.items.firstWhere((item) => item.id == _selectedId);
 
-  List<FilterItem> get _selectedItems => widget.items
-      .where((item) => _selectedIds.contains(item.id))
-      .toList();
+  List<FilterItem> get _selectedItems =>
+      widget.items.where((item) => _selectedIds.contains(item.id)).toList();
 
   void _onClear() {
     setState(() {
@@ -236,10 +293,24 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   /// ── Scrollable list of FilterOptionItem ──
   Widget _buildItemsList() {
     return ListView.builder(
+      controller: _scrollController,
       shrinkWrap: true,
-      padding: EdgeInsets.zero, // Add the 32px padding here
-      itemCount: widget.items.length,
+      padding: EdgeInsets.zero,
+      itemCount: widget.items.length + (widget.isLoadingMore ? 1 : 0),
       itemBuilder: (_, index) {
+        if (index == widget.items.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+
         final item = widget.items[index];
         final isSelected = widget.isMultiSelect
             ? _selectedIds.contains(item.id)

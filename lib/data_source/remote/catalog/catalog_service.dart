@@ -11,10 +11,10 @@ abstract class CatalogService {
   factory CatalogService(Dio dio, {String baseUrl}) = _CatalogService;
 
   @GET('catalog/categories')
-  Future<CategoryListResponse> getCategories();
+  Future<CategoryListResponse> getCategories(@Query('page') int? page);
 
   @GET('catalog/brands')
-  Future<BrandListResponse> getBrands();
+  Future<BrandListResponse> getBrands(@Query('page') int? page);
 
   // Type 1: General Catalog
   @GET('catalog/products')

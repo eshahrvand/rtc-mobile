@@ -1,29 +1,29 @@
-# Walkthrough - Media Picker / Repository / Service Cleanup
+# Walkthrough - Fixing Filter Pagination Updates
 
-I have performed a comprehensive cleanup of the media picking and upload pipeline. The goal was to remove debug artifacts, reduce code duplication, and improve maintainability without altering existing behavior.
+I have fixed the issue where the `FilterBottomSheet` would not update its list when more items were fetched via pagination. This was caused by the bottom sheet being shown as a static modal route that didn't rebuild when the background state changed.
 
 ## Changes
 
-### UI & Presenter Layer
-- **[media_picker_cubit.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/media_picker/bloc/media_picker_cubit.dart)**:
-    - Removed all `print` statements used for debugging lifecycle, permissions, and asset loading.
-    - Removed unused `dart:io` import.
-- **[media_edit_screen.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/media_picker/widget/media_edit_screen.dart)**:
-    - Verified `dart:io` usage for `Image.file` on mobile.
+### UI Components
 
-### Data Layer
-- **[media_service.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/data_source/remote/media/media_service.dart)**:
-    - **Refactored `uploadMedia`**: Consolidated the logic to avoid duplication between Web and Mobile branches.
-    - **Extracted Helpers**:
-        - `_createMultipartFile`: Handles platform-specific file creation (Bytes for Web, File path for Mobile).
-        - `_getSafeFileName`: Logic for preserving the original filename or generating a defensive fallback.
-    - **Documentation**: Added comments explaining the "defensive" nature of the filename fallback and the rationale for platform-specific implementations.
+#### [FilterBottomSheet](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/products/widget/filter_bottom_sheet.dart)
+- Enhanced the `show` method to support reactive updates using generics and `BlocBuilder`.
+- Added optional `bloc`, `itemsSelector`, and `loadingSelector` parameters.
+- When these parameters are provided, the modal content is wrapped in a `BlocBuilder` that refreshes the items list and loading status automatically as the state updates.
 
-## Verification Summary
+### Feature Integrations
+
+#### [PreInvoiceStep2View](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/pre_invoice/widget/pre_invoice_step2_view.dart)
+- Updated Category and Brand filter calls to use the new reactive parameters.
+
+#### [ProductsBody](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/products/widget/products_body.dart)
+- Updated Category, Brand, and Plan filter calls to use the new reactive parameters.
+
+## Verification Results
 
 ### Automated Tests
-- Ran `flutter analyze` and verified that no new issues were introduced and unused imports in the modified files were resolved.
+- Ran `flutter analyze` and verified that the new generic implementation is type-safe and all call sites are correctly updated.
 
 ### Manual Verification
-- Verified that the upload logic still correctly handles both images and PDFs across platforms by ensuring the underlying `dio.FormData` structure remains unchanged.
-- Confirmed that the `filename` is still correctly preserved in the multipart request, maintaining compatibility with server-side validation.
+- The `FilterBottomSheet` now correctly rebuilds and shows new items fetched via `onLoadMore` without needing to close and reopen the sheet.
+- Selection state is preserved across pagination updates.

@@ -8,12 +8,12 @@ class ProductRepository {
 
   ProductRepository(this._catalogService);
 
-  Future<CategoryListResponse> getCategories() async {
-    return await _catalogService.getCategories();
+  Future<CategoryListResponse> getCategories({int? page}) async {
+    return await _catalogService.getCategories(page);
   }
 
-  Future<BrandListResponse> getBrands() async {
-    return await _catalogService.getBrands();
+  Future<BrandListResponse> getBrands({int? page}) async {
+    return await _catalogService.getBrands(page);
   }
 
   Future<ProductListResponse> getProducts({

@@ -6,7 +6,7 @@ class PlansRepository {
 
   PlansRepository(this._plansService);
 
-  Future<SubPlanListResponse> getSubPlans() async {
-    return await _plansService.getSubPlans();
+  Future<SubPlanListResponse> getSubPlans({int? page}) async {
+    return await _plansService.getSubPlans(page);
   }
 }
