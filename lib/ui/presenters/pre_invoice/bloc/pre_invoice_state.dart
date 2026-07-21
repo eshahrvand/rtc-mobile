@@ -48,6 +48,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(0) int selectedChipIndex,
     @Default([]) List<PreInvoiceProductModel> allProducts,
     @Default([]) List<PreInvoiceProductModel> filteredProducts,
+    @Default(0) int totalProductCount,
     @Default(1) int currentProductPage,
     @Default(false) bool hasMoreProducts,
     @Default(false) bool isProductPaginationLoading,

@@ -84,10 +84,10 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     PreInvoiceState state,
   ) {
     final items = [
-      FilterItem(id: '-price', title: S.current.cheapest),
-      FilterItem(id: 'price', title: S.current.mostExpensive),
-      FilterItem(id: 'date', title: S.current.newest),
-      FilterItem(id: '-date', title: S.current.oldest),
+      FilterItem(id: 'plan_price', title: S.current.cheapest),
+      FilterItem(id: '-plan_price', title: S.current.mostExpensive),
+      FilterItem(id: 'created_at', title: S.current.newest),
+      FilterItem(id: '-created_at', title: S.current.oldest),
     ];
 
     FilterBottomSheet.show(
@@ -283,10 +283,10 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  state.filteredProducts.isEmpty
+                  state.totalProductCount == 0
                       ? SizedBox.shrink()
                       : Text(
-                          '${state.filteredProducts.length} ${S.current.productsFound}',
+                          '${state.totalProductCount} ${S.current.productsFound}',
                           style: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade900,
@@ -309,7 +309,8 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                     )
                   : ListView.builder(
                       controller: _scrollController,
-                      itemCount: state.filteredProducts.length +
+                      itemCount:
+                          state.filteredProducts.length +
                           (state.isProductPaginationLoading ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == state.filteredProducts.length) {

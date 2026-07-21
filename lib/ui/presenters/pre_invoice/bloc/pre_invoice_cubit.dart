@@ -173,6 +173,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               status: PreInvoiceRequestStatus.success,
               allProducts: products,
               filteredProducts: products,
+              totalProductCount: response.count,
               hasMoreProducts: response.next != null,
             ),
           );
@@ -260,6 +261,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               currentProductPage: nextPage,
               allProducts: [...state.allProducts, ...newProducts],
               filteredProducts: [...state.filteredProducts, ...newProducts],
+              totalProductCount: response.count,
               hasMoreProducts: response.next != null,
             ),
           );
