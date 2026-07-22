@@ -34,10 +34,7 @@ class ReportItemWidget extends StatelessWidget {
         ),
         child: Column(
           spacing: 12,
-          children: [
-            _buildHeader(theme),
-            ..._buildContentRows(theme),
-          ],
+          children: [_buildHeader(theme), ..._buildContentRows(theme)],
         ),
       ),
     );
@@ -63,7 +60,9 @@ class ReportItemWidget extends StatelessWidget {
                 Text(
                   item.title,
                   style: theme.bodyLarge!.copyWith(
-                    fontWeight: step == ReportStep.sales ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: step == ReportStep.sales
+                        ? FontWeight.w700
+                        : FontWeight.w500,
                     color: AppColors.grayPalette.shade900,
                   ),
                 ),
@@ -108,7 +107,11 @@ class ReportItemWidget extends StatelessWidget {
         return [
           _buildMiddleRow(theme),
           _buildLabelRow(theme, 'تعداد سفارش', item.quantity),
-          _buildAmountRow(theme, step == ReportStep.plan ? 'مبلغ خرید' : 'مبلغ خرید', item.amount),
+          _buildAmountRow(
+            theme,
+            step == ReportStep.plan ? 'مبلغ خرید' : 'مبلغ خرید',
+            item.amount,
+          ),
         ];
     }
   }
@@ -117,7 +120,8 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (item.secondaryLabel != null || (step == ReportStep.sales && item.quantity != null))
+        if (item.secondaryLabel != null ||
+            (step == ReportStep.sales && item.quantity != null))
           Row(
             spacing: 4,
             children: [
@@ -174,18 +178,18 @@ class ReportItemWidget extends StatelessWidget {
         Row(
           spacing: 4,
           children: [
-            RtcImage(
-              image: "$baseImage/rial.svg",
-              width: 18,
-              height: 18,
-              color: AppColors.grayPalette.shade900,
-            ),
             Text(
               amount.formatCurrency,
               style: theme.bodyLarge!.copyWith(
                 fontWeight: FontWeight.w500,
                 color: AppColors.grayPalette.shade900,
               ),
+            ),
+            RtcImage(
+              image: "$baseImage/rial.svg",
+              width: 18,
+              height: 18,
+              color: AppColors.grayPalette.shade900,
             ),
           ],
         ),
@@ -216,7 +220,12 @@ class ReportItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter(TextTheme theme, String label, String? value, {String? time}) {
+  Widget _buildFooter(
+    TextTheme theme,
+    String label,
+    String? value, {
+    String? time,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -232,7 +241,10 @@ class ReportItemWidget extends StatelessWidget {
                 ),
               ),
             if (time != null) ...[
-              Text('|', style: TextStyle(color: AppColors.grayPalette.shade600)),
+              Text(
+                '|',
+                style: TextStyle(color: AppColors.grayPalette.shade600),
+              ),
               Text(
                 time,
                 style: theme.bodySmall!.copyWith(
@@ -247,18 +259,18 @@ class ReportItemWidget extends StatelessWidget {
           Row(
             spacing: 4,
             children: [
-              RtcImage(
-                image: "$baseImage/rial.svg",
-                width: 20,
-                height: 20,
-                color: AppColors.grayPalette.shade900,
-              ),
               Text(
                 item.amount!.formatCurrency,
                 style: theme.bodyLarge!.copyWith(
                   fontWeight: FontWeight.w500,
                   color: AppColors.grayPalette.shade900,
                 ),
+              ),
+              RtcImage(
+                image: "$baseImage/rial.svg",
+                width: 20,
+                height: 20,
+                color: AppColors.grayPalette.shade900,
               ),
             ],
           ),
