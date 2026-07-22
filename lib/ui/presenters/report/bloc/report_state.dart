@@ -18,7 +18,7 @@ class ReportState with _$ReportState {
     @Default('') String searchQuery,
     @Default(false) bool isSearchActive,
     @Default('') String errorMessage,
-    
+
     // Filters
     String? selectedPlanId,
     String? selectedCategoryId,
@@ -26,11 +26,11 @@ class ReportState with _$ReportState {
     Jalali? startDate,
     Jalali? endDate,
     String? dateOptionId,
-    
+
     // Filter Data
     @Default([]) List<SubPlanDtoModel> subPlans,
     @Default([]) List<CategoryDtoModel> categories,
-    
+
     // Filter Pagination
     @Default(1) int currentCategoryPage,
     @Default(false) bool hasMoreCategories,
@@ -38,7 +38,7 @@ class ReportState with _$ReportState {
     @Default(1) int currentSubPlanPage,
     @Default(false) bool hasMoreSubPlans,
     @Default(false) bool isSubPlanPaginationLoading,
-    
+
     // Pagination
     @Default(1) int currentPage,
     @Default(0) int totalCount,
@@ -47,9 +47,4 @@ class ReportState with _$ReportState {
   }) = _ReportState;
 }
 
-enum ReportRequestStatus {
-  initial,
-  loading,
-  success,
-  error,
-}
+enum ReportRequestStatus { initial, loading, success, error }

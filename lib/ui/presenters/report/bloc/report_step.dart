@@ -1,11 +1,6 @@
 import '../../../../generated/l10n.dart';
 
-enum ReportStep {
-  sales,
-  plan,
-  category,
-  products,
-}
+enum ReportStep { sales, plan, category, products }
 
 extension ReportStepExtension on ReportStep {
   String get title {

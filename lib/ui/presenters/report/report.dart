@@ -17,10 +17,7 @@ import '../../theme/colors.dart';
 class ReportScreen extends StatefulWidget {
   final ReportStep initialStep;
 
-  const ReportScreen({
-    super.key,
-    required this.initialStep,
-  });
+  const ReportScreen({super.key, required this.initialStep});
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -46,19 +43,27 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       _cubit.fetchNextPage();
     }
   }
 
-  void _showPlanFilter(BuildContext context, ReportCubit cubit, ReportState state) {
+  void _showPlanFilter(
+    BuildContext context,
+    ReportCubit cubit,
+    ReportState state,
+  ) {
     FilterBottomSheet.show<ReportCubit, ReportState>(
       context,
       bloc: cubit,
       title: S.current.selectPlanTitle,
       subtitle: S.current.planFilterSubtitle,
-      items: state.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
-      itemsSelector: (s) => s.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
+      items: state.subPlans
+          .map((e) => FilterItem(id: e.id, title: e.name))
+          .toList(),
+      itemsSelector: (s) =>
+          s.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
       loadingSelector: (s) => s.isSubPlanPaginationLoading,
       initialSelectedId: state.selectedPlanId,
       onApply: (selected) => cubit.onPlanSelected(selected?.id),
@@ -67,27 +72,41 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  void _showCategoryFilter(BuildContext context, ReportCubit cubit, ReportState state, bool isParent) {
+  void _showCategoryFilter(
+    BuildContext context,
+    ReportCubit cubit,
+    ReportState state,
+    bool isParent,
+  ) {
     FilterBottomSheet.show<ReportCubit, ReportState>(
       context,
       bloc: cubit,
       title: isParent ? S.current.parentCategoryLabel : S.current.categoryLabel,
       subtitle: S.current.categoryFilterSubtitle,
-      items: state.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
-      itemsSelector: (s) => s.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
+      items: state.categories
+          .map((e) => FilterItem(id: e.id, title: e.name))
+          .toList(),
+      itemsSelector: (s) =>
+          s.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
       loadingSelector: (s) => s.isCategoryPaginationLoading,
-      initialSelectedId: isParent ? state.selectedParentCategoryId : state.selectedCategoryId,
-      onApply: (selected) => isParent 
-          ? cubit.onParentCategorySelected(selected?.id) 
+      initialSelectedId: isParent
+          ? state.selectedParentCategoryId
+          : state.selectedCategoryId,
+      onApply: (selected) => isParent
+          ? cubit.onParentCategorySelected(selected?.id)
           : cubit.onCategorySelected(selected?.id),
-      onClear: () => isParent 
-          ? cubit.onParentCategorySelected(null) 
+      onClear: () => isParent
+          ? cubit.onParentCategorySelected(null)
           : cubit.onCategorySelected(null),
       onLoadMore: cubit.fetchCategoriesNextPage,
     );
   }
 
-  void _showDateFilter(BuildContext context, ReportCubit cubit, ReportState state) {
+  void _showDateFilter(
+    BuildContext context,
+    ReportCubit cubit,
+    ReportState state,
+  ) {
     FilterDateBottomSheet.show(
       context,
       initialStartDate: state.startDate,
@@ -126,8 +145,8 @@ class _ReportScreenState extends State<ReportScreen> {
                   child: state.status == ReportRequestStatus.loading
                       ? const Center(child: CircularProgressIndicator())
                       : state.status == ReportRequestStatus.error
-                          ? Center(child: Text(state.errorMessage))
-                          : _buildReportList(state),
+                      ? Center(child: Text(state.errorMessage))
+                      : _buildReportList(state),
                 ),
               ],
             ),
@@ -137,7 +156,11 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _buildFilterRow(BuildContext context, ReportCubit cubit, ReportState state) {
+  Widget _buildFilterRow(
+    BuildContext context,
+    ReportCubit cubit,
+    ReportState state,
+  ) {
     return Container(
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,13 +174,16 @@ class _ReportScreenState extends State<ReportScreen> {
                 if (chip.id == 1) return state.selectedPlanId != null;
                 if (chip.id == 2) return state.selectedCategoryId != null;
                 if (chip.id == 3) return state.selectedParentCategoryId != null;
-                if (chip.id == 4) return state.dateOptionId != null || state.startDate != null;
+                if (chip.id == 4)
+                  return state.dateOptionId != null || state.startDate != null;
                 return false;
               },
               onChipTap: (index, chip) {
                 if (chip.id == 1) _showPlanFilter(context, cubit, state);
-                if (chip.id == 2) _showCategoryFilter(context, cubit, state, false);
-                if (chip.id == 3) _showCategoryFilter(context, cubit, state, true);
+                if (chip.id == 2)
+                  _showCategoryFilter(context, cubit, state, false);
+                if (chip.id == 3)
+                  _showCategoryFilter(context, cubit, state, true);
                 if (chip.id == 4) _showDateFilter(context, cubit, state);
               },
               onChipClose: (index, chip) => _cubit.onChipClose(chip),
@@ -170,36 +196,54 @@ class _ReportScreenState extends State<ReportScreen> {
 
   List<ProductChipModel> _getFilterChips(ReportStep step) {
     final chips = <ProductChipModel>[];
-    
+
     // Date filter is common for all
-    chips.add(ProductChipModel(id: 4, label: S.current.registrationDate, opensBottomSheet: true));
-    
+    chips.add(
+      ProductChipModel(
+        id: 4,
+        label: S.current.registrationDate,
+        opensBottomSheet: true,
+      ),
+    );
+
     switch (step) {
       case ReportStep.sales:
       case ReportStep.plan:
       case ReportStep.products:
-        chips.add(ProductChipModel(id: 1, label: S.current.plan, opensBottomSheet: true));
+        chips.add(
+          ProductChipModel(
+            id: 1,
+            label: S.current.plan,
+            opensBottomSheet: true,
+          ),
+        );
         break;
       default:
         break;
     }
-    
+
     if (step == ReportStep.category || step == ReportStep.products) {
-      chips.add(ProductChipModel(id: 3, label: S.current.parentCategoryLabel, opensBottomSheet: true));
+      chips.add(
+        ProductChipModel(
+          id: 3,
+          label: S.current.parentCategoryLabel,
+          opensBottomSheet: true,
+        ),
+      );
     }
-    
-    return chips.reversed.toList(); 
+
+    return chips.reversed.toList();
   }
 
   Widget _buildSummaryMetrics(ReportState state) {
     if (state.summaryMetrics.isEmpty) return const SizedBox.shrink();
-    
+
     return SizedBox(
       height: 110,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         scrollDirection: Axis.horizontal,
-        reverse: true, 
+        reverse: true,
         itemCount: state.summaryMetrics.length,
         itemBuilder: (context, index) {
           return Padding(

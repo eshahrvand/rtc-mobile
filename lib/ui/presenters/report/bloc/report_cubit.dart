@@ -21,24 +21,28 @@ class ReportCubit extends Cubit<ReportState> {
 
   void init(ReportStep step) {
     emit(state.copyWith(step: step, status: ReportRequestStatus.loading));
-    
+
     // Fetch filter data in parallel
     Future.wait([
-      _plansRepo.getSubPlans(page: 1),
-      _productRepo.getCategories(page: 1),
-    ]).then((values) {
-      final subPlansResponse = values[0] as dynamic;
-      final categoriesResponse = values[1] as dynamic;
-      
-      emit(state.copyWith(
-        subPlans: subPlansResponse.results,
-        hasMoreSubPlans: subPlansResponse.next != null,
-        currentSubPlanPage: 1,
-        categories: categoriesResponse.results,
-        hasMoreCategories: categoriesResponse.next != null,
-        currentCategoryPage: 1,
-      ));
-    }).catchError((_) {});
+          _plansRepo.getSubPlans(page: 1),
+          _productRepo.getCategories(page: 1),
+        ])
+        .then((values) {
+          final subPlansResponse = values[0] as dynamic;
+          final categoriesResponse = values[1] as dynamic;
+
+          emit(
+            state.copyWith(
+              subPlans: subPlansResponse.results,
+              hasMoreSubPlans: subPlansResponse.next != null,
+              currentSubPlanPage: 1,
+              categories: categoriesResponse.results,
+              hasMoreCategories: categoriesResponse.next != null,
+              currentCategoryPage: 1,
+            ),
+          );
+        })
+        .catchError((_) {});
 
     _fetchData(step);
   }
@@ -94,13 +98,15 @@ class ReportCubit extends Cubit<ReportState> {
   }
 
   void _fetchData(ReportStep step) {
-    emit(state.copyWith(
-      status: ReportRequestStatus.loading,
-      currentPage: 1,
-      hasMoreData: true,
-      items: [],
-      filteredItems: [],
-    ));
+    emit(
+      state.copyWith(
+        status: ReportRequestStatus.loading,
+        currentPage: 1,
+        hasMoreData: true,
+        items: [],
+        filteredItems: [],
+      ),
+    );
 
     final dateFrom = _formatGregorianDate(state.startDate);
     final dateTo = _formatGregorianDate(state.endDate);
@@ -109,26 +115,32 @@ class ReportCubit extends Cubit<ReportState> {
         .then((bundle) {
           final items = _reportRepo.mapToDomain(bundle.response, step);
           final metrics = _reportRepo.mapSummaryToDomain(bundle.summary, step);
-          
-          emit(state.copyWith(
-            status: ReportRequestStatus.success,
-            items: items,
-            filteredItems: items,
-            summaryMetrics: metrics,
-            totalCount: (bundle.response as dynamic).count,
-            hasMoreData: (bundle.response as dynamic).next != null,
-          ));
+
+          emit(
+            state.copyWith(
+              status: ReportRequestStatus.success,
+              items: items,
+              filteredItems: items,
+              summaryMetrics: metrics,
+              totalCount: (bundle.response as dynamic).count,
+              hasMoreData: (bundle.response as dynamic).next != null,
+            ),
+          );
         })
         .catchError((error) {
-          emit(state.copyWith(
-            status: ReportRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(error),
-          ));
+          emit(
+            state.copyWith(
+              status: ReportRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(error),
+            ),
+          );
         });
   }
 
   void fetchNextPage() {
-    if (state.isPaginationLoading || !state.hasMoreData || state.status == ReportRequestStatus.loading) {
+    if (state.isPaginationLoading ||
+        !state.hasMoreData ||
+        state.status == ReportRequestStatus.loading) {
       return;
     }
 
@@ -138,18 +150,26 @@ class ReportCubit extends Cubit<ReportState> {
     final dateFrom = _formatGregorianDate(state.startDate);
     final dateTo = _formatGregorianDate(state.endDate);
 
-    _getReportFuture(state.step, page: nextPage, dateFrom: dateFrom, dateTo: dateTo, includeSummary: false)
+    _getReportFuture(
+          state.step,
+          page: nextPage,
+          dateFrom: dateFrom,
+          dateTo: dateTo,
+          includeSummary: false,
+        )
         .then((bundle) {
           final newItems = _reportRepo.mapToDomain(bundle.response, state.step);
           final updatedItems = [...state.items, ...newItems];
 
-          emit(state.copyWith(
-            isPaginationLoading: false,
-            currentPage: nextPage,
-            items: updatedItems,
-            filteredItems: updatedItems,
-            hasMoreData: (bundle.response as dynamic).next != null,
-          ));
+          emit(
+            state.copyWith(
+              isPaginationLoading: false,
+              currentPage: nextPage,
+              items: updatedItems,
+              filteredItems: updatedItems,
+              hasMoreData: (bundle.response as dynamic).next != null,
+            ),
+          );
         })
         .catchError((error) {
           emit(state.copyWith(isPaginationLoading: false));
@@ -245,23 +265,23 @@ class ReportCubit extends Cubit<ReportState> {
   }
 
   void onDateFilterApplied(Jalali? start, Jalali? end, String? optionId) {
-    emit(state.copyWith(
-      startDate: start,
-      endDate: end,
-      dateOptionId: optionId,
-    ));
+    emit(
+      state.copyWith(startDate: start, endDate: end, dateOptionId: optionId),
+    );
     _fetchData(state.step);
   }
 
   void onClearFilters() {
-    emit(state.copyWith(
-      selectedPlanId: null,
-      selectedCategoryId: null,
-      selectedParentCategoryId: null,
-      startDate: null,
-      endDate: null,
-      dateOptionId: null,
-    ));
+    emit(
+      state.copyWith(
+        selectedPlanId: null,
+        selectedCategoryId: null,
+        selectedParentCategoryId: null,
+        startDate: null,
+        endDate: null,
+        dateOptionId: null,
+      ),
+    );
     _fetchData(state.step);
   }
 

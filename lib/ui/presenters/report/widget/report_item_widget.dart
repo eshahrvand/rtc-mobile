@@ -113,7 +113,11 @@ class ReportItemWidget extends StatelessWidget {
           _buildAmountRow(theme, S.current.basePriceLabel, item.amount),
           _buildLabelRow(theme, S.current.orderCountLabel, item.quantity),
           RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
-          _buildAmountRow(theme, S.current.totalSalesAmountLabel, item.secondaryAmount),
+          _buildAmountRow(
+            theme,
+            S.current.totalSalesAmountLabel,
+            item.secondaryAmount,
+          ),
         ];
       case ReportStep.plan:
       case ReportStep.category:
@@ -121,11 +125,7 @@ class ReportItemWidget extends StatelessWidget {
           _buildMiddleRow(theme),
           _buildLabelRow(theme, S.current.orderCountLabel, item.quantity),
           RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
-          _buildAmountRow(
-            theme,
-            S.current.purchaseAmountLabel,
-            item.amount,
-          ),
+          _buildAmountRow(theme, S.current.purchaseAmountLabel, item.amount),
         ];
     }
   }
