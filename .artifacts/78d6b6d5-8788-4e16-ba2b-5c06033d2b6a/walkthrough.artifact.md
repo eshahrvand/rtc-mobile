@@ -1,29 +1,24 @@
-# Walkthrough: Final Report UI Overflow Fixes
+# Walkthrough: Report Flow Localization
 
-I have resolved the remaining vertical and horizontal overflow issues in the Report flow by optimizing internal spacing and adding flexible constraints to data-driven widgets.
+I have successfully localized all hardcoded strings in the Report flow, following the project's localization guidelines.
 
 ## Changes Made
 
-### Report Summary UI
+### Localization Source Files
+- **[intl_fa.arb](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/l10n/intl_fa.arb):** Added all strings used in the Report flow (titles, filter labels, item rows, summary metrics) with their Persian values.
+- **[intl_en.arb](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/l10n/intl_en.arb):** Added the same keys with empty strings as values, as requested.
 
-#### [ReportSummaryCard](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_summary_card.dart)
-- **Vertical Overflow Fix:** Reduced vertical padding of the card from `12` to `8`.
-- **Spacing Optimization:** Reduced the spacer height between the label and the value from `8` to `4`.
-- **Constraint Safety:** Set `mainAxisSize: MainAxisSize.min` in the main `Column`.
-- These changes recover approximately 12 pixels of vertical space, successfully resolving the 5-pixel overflow reported without impacting the parent container's layout.
+### UI & Logic Integration
+- **[ReportStep](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/bloc/report_step.dart):** Updated the `title` getter to use `S.current` keys for different report types.
+- **[ReportScreen](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/report.dart):** Replaced hardcoded strings in search hints, filter bottom sheet titles/subtitles, result count labels, and empty state messages.
+- **[ReportItemWidget](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_item_widget.dart):** Externalized row labels (e.g., 'تاریخ', 'قیمت پایه') and units.
+- **[ReportRepository](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/repository/report/report_repository.dart):** Updated the mapping logic to use localized strings for summary metric labels and item secondary labels.
 
-### Report Item UI
+## Verification
+- Ran `flutter pub run intl_utils:generate` to ensure the `S` class is correctly updated.
+- All Persian strings are now managed centrally in the ARB files, making the codebase cleaner and ready for any future localization needs.
 
-#### [ReportItemWidget](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_item_widget.dart)
-- **Horizontal Overflow Fix:** Wrapped the label and value sections of `_buildAmountRow`, `_buildLabelRow`, and `_buildFooter` in `Expanded` and `Flexible` widgets.
-- **Data Protection:** Added `TextOverflow.ellipsis` to all currency and quantity text fields.
-- This ensures that even if a currency amount is exceptionally long (e.g., billions or trillions), it will be truncated with an ellipsis instead of pushing other UI elements off-screen or causing a `RenderFlex` overflow.
-
-## Verification Results
-
-### Summary
-- No more "A RenderFlex overflowed" errors are being triggered in the rendering library during list scrolling or dashboard initialization.
-- UI elements remain aligned even with long Persian strings and large numeric data.
-
-render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_summary_card.dart)
+render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/l10n/intl_fa.arb)
+render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/report.dart)
 render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_item_widget.dart)
+render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/repository/report/report_repository.dart)

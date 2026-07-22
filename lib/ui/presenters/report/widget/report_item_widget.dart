@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../config/constants.dart';
 import '../../../../core/models/report_item_model.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
+import '../../../widget/rtc_divider.dart';
 import '../../../widget/rtc_image.dart';
 import '../bloc/report_step.dart';
 
@@ -78,7 +80,7 @@ class ReportItemWidget extends StatelessWidget {
               ),
               if (item.sku != null)
                 Text(
-                  'SKU: ${item.sku}',
+                  '${S.current.sku}: ${item.sku}',
                   style: theme.bodySmall!.copyWith(
                     color: AppColors.grayPalette.shade600,
                     fontSize: 12,
@@ -102,23 +104,26 @@ class ReportItemWidget extends StatelessWidget {
       case ReportStep.sales:
         return [
           _buildMiddleRow(theme),
-          _buildFooter(theme, 'تاریخ', item.date, time: item.time),
+          RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
+          _buildFooter(theme, S.current.dateLabel, item.date, time: item.time),
         ];
       case ReportStep.products:
         return [
           _buildMiddleRow(theme),
-          _buildAmountRow(theme, 'قیمت پایه', item.amount),
-          _buildLabelRow(theme, 'تعداد سفارش', item.quantity),
-          _buildAmountRow(theme, 'جمع مبلغ فروش', item.secondaryAmount),
+          _buildAmountRow(theme, S.current.basePriceLabel, item.amount),
+          _buildLabelRow(theme, S.current.orderCountLabel, item.quantity),
+          RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
+          _buildAmountRow(theme, S.current.totalSalesAmountLabel, item.secondaryAmount),
         ];
       case ReportStep.plan:
       case ReportStep.category:
         return [
           _buildMiddleRow(theme),
-          _buildLabelRow(theme, 'تعداد سفارش', item.quantity),
+          _buildLabelRow(theme, S.current.orderCountLabel, item.quantity),
+          RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
           _buildAmountRow(
             theme,
-            step == ReportStep.plan ? 'مبلغ خرید' : 'مبلغ خرید',
+            S.current.purchaseAmountLabel,
             item.amount,
           ),
         ];
@@ -144,7 +149,7 @@ class ReportItemWidget extends StatelessWidget {
                 ),
               if (step == ReportStep.sales && item.quantity != null)
                 Text(
-                  'کالا ${item.quantity}',
+                  '${S.current.product} ${item.quantity}',
                   style: theme.bodySmall!.copyWith(
                     color: AppColors.grayPalette.shade600,
                     fontWeight: FontWeight.w500,
@@ -202,12 +207,7 @@ class ReportItemWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              RtcImage(
-                image: "$baseImage/rial.svg",
-                width: 20,
-                height: 20,
-
-              ),
+              RtcImage(image: "$baseImage/rial.svg", width: 20, height: 20),
             ],
           ),
         ),
@@ -301,12 +301,7 @@ class ReportItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                RtcImage(
-                  image: "$baseImage/rial.svg",
-                  width: 20,
-                  height: 20,
-
-                ),
+                RtcImage(image: "$baseImage/rial.svg", width: 20, height: 20),
               ],
             ),
           ),

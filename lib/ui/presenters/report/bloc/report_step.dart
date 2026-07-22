@@ -1,3 +1,5 @@
+import '../../../../generated/l10n.dart';
+
 enum ReportStep {
   sales,
   plan,
@@ -9,13 +11,13 @@ extension ReportStepExtension on ReportStep {
   String get title {
     switch (this) {
       case ReportStep.sales:
-        return 'گزارش فروش';
+        return S.current.salesReportTitle;
       case ReportStep.plan:
-        return 'گزارش طرح‌ها';
+        return S.current.planReportTitle;
       case ReportStep.category:
-        return 'گزارش دسته‌بندی کالاها';
+        return S.current.categoryReportTitle;
       case ReportStep.products:
-        return 'گزارش محصولات';
+        return S.current.productReportTitle;
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../generated/l10n.dart';
 import 'bloc/report_cubit.dart';
 import 'bloc/report_state.dart';
 import 'bloc/report_step.dart';
@@ -54,8 +55,8 @@ class _ReportScreenState extends State<ReportScreen> {
     FilterBottomSheet.show<ReportCubit, ReportState>(
       context,
       bloc: cubit,
-      title: 'انتخاب طرح',
-      subtitle: 'طرح مورد نظر را انتخاب کنید',
+      title: S.current.selectPlanTitle,
+      subtitle: S.current.planFilterSubtitle,
       items: state.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
       itemsSelector: (s) => s.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
       loadingSelector: (s) => s.isSubPlanPaginationLoading,
@@ -70,8 +71,8 @@ class _ReportScreenState extends State<ReportScreen> {
     FilterBottomSheet.show<ReportCubit, ReportState>(
       context,
       bloc: cubit,
-      title: isParent ? 'دسته‌بندی والد' : 'دسته‌بندی کالا',
-      subtitle: 'دسته‌بندی مورد نظر را انتخاب کنید',
+      title: isParent ? S.current.parentCategoryLabel : S.current.categoryLabel,
+      subtitle: S.current.categoryFilterSubtitle,
       items: state.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
       itemsSelector: (s) => s.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
       loadingSelector: (s) => s.isCategoryPaginationLoading,
@@ -113,7 +114,7 @@ class _ReportScreenState extends State<ReportScreen> {
               onSearchActivated: _cubit.activateSearch,
               onSearchDeactivated: _cubit.deactivateSearch,
               scaffoldKey: _scaffoldKey,
-              searchHint: 'جستجو در گزارش...',
+              searchHint: S.current.reportSearchHint,
               showDrawerIcon: false,
             ),
             body: Column(
@@ -171,20 +172,20 @@ class _ReportScreenState extends State<ReportScreen> {
     final chips = <ProductChipModel>[];
     
     // Date filter is common for all
-    chips.add(ProductChipModel(id: 4, label: 'تاریخ', opensBottomSheet: true));
+    chips.add(ProductChipModel(id: 4, label: S.current.registrationDate, opensBottomSheet: true));
     
     switch (step) {
       case ReportStep.sales:
       case ReportStep.plan:
       case ReportStep.products:
-        chips.add(ProductChipModel(id: 1, label: 'طرح', opensBottomSheet: true));
+        chips.add(ProductChipModel(id: 1, label: S.current.plan, opensBottomSheet: true));
         break;
       default:
         break;
     }
     
     if (step == ReportStep.category || step == ReportStep.products) {
-      chips.add(ProductChipModel(id: 3, label: 'دسته‌بندی والد', opensBottomSheet: true));
+      chips.add(ProductChipModel(id: 3, label: S.current.parentCategoryLabel, opensBottomSheet: true));
     }
     
     return chips.reversed.toList(); 
@@ -216,7 +217,7 @@ class _ReportScreenState extends State<ReportScreen> {
       child: Align(
         alignment: Alignment.centerRight,
         child: Text(
-          '${state.totalCount} نتیجه',
+          S.current.resultsCountLabel(state.totalCount),
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
             color: AppColors.brandPalette.shade600,
             fontWeight: FontWeight.w600,
@@ -228,7 +229,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Widget _buildReportList(ReportState state) {
     if (state.filteredItems.isEmpty) {
-      return const Center(child: Text('گزارشی یافت نشد'));
+      return Center(child: Text(S.current.noReportFound));
     }
 
     return ListView.builder(

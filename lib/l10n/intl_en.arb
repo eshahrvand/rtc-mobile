@@ -359,6 +359,46 @@
       }
     }
   },
+  "reportSearchHint": "",
+  "selectPlanTitle": "",
+  "parentCategoryLabel": "",
+  "categoryLabel": "",
+  "resultsCountLabel": "{count}",
+  "@resultsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noReportFound": "",
+  "dateLabel": "",
+  "basePriceLabel": "",
+  "orderCountLabel": "",
+  "totalSalesAmountLabel": "",
+  "purchaseAmountLabel": "",
+  "salesReportTitle": "",
+  "planReportTitle": "",
+  "categoryReportTitle": "",
+  "productReportTitle": "",
+  "totalSalesLabel": "",
+  "totalOrdersLabel": "",
+  "totalItemsLabel": "",
+  "uniqueCustomersLabel": "",
+  "averageSalesAmountLabel": "",
+  "averageItemsPerOrderLabel": "",
+  "totalPurchaseLabel": "",
+  "averageSalesPerPlanLabel": "",
+  "averageSalesPerCategoryLabel": "",
+  "monthsCountLabel": "{count}",
+  "@monthsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "parentCategorySecondaryLabel": "",
   "commissionMessage": "By selling {distance} Rials more, your commission will increase to {nextRateCash}% cash or {nextRateProduct}% goods.",
   "@commissionMessage": {
     "placeholders": {

@@ -1,6 +1,7 @@
 import '../../core/models/report_item_model.dart';
 import '../../data_source/remote/report/model/report_dto_model.dart';
 import '../../data_source/remote/report/report_service.dart';
+import '../../generated/l10n.dart';
 import '../../ui/presenters/report/bloc/report_step.dart';
 
 class ReportRepository {
@@ -173,7 +174,7 @@ class ReportRepository {
       return response.results.map((dto) => ReportItemModel(
         id: dto.subPlanId,
         title: dto.planName ?? '',
-        secondaryLabel: '${dto.subPlanDuration} ماهه',
+        secondaryLabel: S.current.monthsCountLabel(dto.subPlanDuration.toString()),
         amount: dto.totalSalesAmount?.toStringAsFixed(0),
         quantity: dto.totalOrders?.toString(),
         tagLabel: dto.planName,
@@ -182,7 +183,7 @@ class ReportRepository {
       return response.results.map((dto) => ReportItemModel(
         id: dto.categoryId,
         title: dto.categoryName ?? '',
-        secondaryLabel: 'دسته والد',
+        secondaryLabel: S.current.parentCategorySecondaryLabel,
         tagLabel: dto.parentCategoryName,
         amount: dto.totalSalesAmount?.toStringAsFixed(0),
         quantity: dto.totalOrders?.toString(),
@@ -206,32 +207,32 @@ class ReportRepository {
     switch (step) {
       case ReportStep.sales:
         return [
-          ReportSummaryMetric(label: 'مبلغ کل فروش', value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
-          ReportSummaryMetric(label: 'تعداد کل سفارشات', value: summary.totalOrders?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'تعداد اقلام', value: summary.totalLineItems?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'مشتریان منحصر به فرد', value: summary.uniqueCustomers?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'میانگین مبلغ فروش', value: summary.avgOrderAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
-          ReportSummaryMetric(label: 'میانگین تعداد کالا در هر سفارش', value: summary.avgItemsPerOrder?.toStringAsFixed(0) ?? '۰'),
+          ReportSummaryMetric(label: S.current.totalSalesLabel, value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.totalOrdersLabel, value: summary.totalOrders?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.totalItemsLabel, value: summary.totalLineItems?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.uniqueCustomersLabel, value: summary.uniqueCustomers?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.averageSalesAmountLabel, value: summary.avgOrderAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.averageItemsPerOrderLabel, value: summary.avgItemsPerOrder?.toStringAsFixed(0) ?? '۰'),
         ];
       case ReportStep.plan:
         return [
-          ReportSummaryMetric(label: 'مبلغ کل خرید', value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
-          ReportSummaryMetric(label: 'تعداد کل سفارشات', value: summary.totalOrders?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'تعداد کل اقلام', value: summary.totalLineItems?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'میانگین فروش هر طرح', value: summary.avgSalesPerSubplan?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.totalPurchaseLabel, value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.totalOrdersLabel, value: summary.totalOrders?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.totalItemsLabel, value: summary.totalLineItems?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.averageSalesPerPlanLabel, value: summary.avgSalesPerSubplan?.toStringAsFixed(0) ?? '۰', isCurrency: true),
         ];
       case ReportStep.category:
         return [
-          ReportSummaryMetric(label: 'مبلغ کل خرید', value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
-          ReportSummaryMetric(label: 'تعداد کل سفارشات', value: summary.totalOrders?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'تعداد کل اقلام', value: summary.totalLineItems?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'میانگین فروش هر دسته‌بندی', value: summary.avgSalesPerCategory?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.totalPurchaseLabel, value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.totalOrdersLabel, value: summary.totalOrders?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.totalItemsLabel, value: summary.totalLineItems?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.averageSalesPerCategoryLabel, value: summary.avgSalesPerCategory?.toStringAsFixed(0) ?? '۰', isCurrency: true),
         ];
       case ReportStep.products:
         return [
-          ReportSummaryMetric(label: 'مبلغ کل فروش', value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
-          ReportSummaryMetric(label: 'تعداد کل سفارشات', value: summary.totalOrders?.toString() ?? '۰'),
-          ReportSummaryMetric(label: 'تعداد کل اقلام', value: summary.totalLineItems?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.totalSalesLabel, value: summary.totalSalesAmount?.toStringAsFixed(0) ?? '۰', isCurrency: true),
+          ReportSummaryMetric(label: S.current.totalOrdersLabel, value: summary.totalOrders?.toString() ?? '۰'),
+          ReportSummaryMetric(label: S.current.totalItemsLabel, value: summary.totalLineItems?.toString() ?? '۰'),
         ];
     }
   }
