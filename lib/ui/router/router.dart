@@ -17,6 +17,8 @@ import '../presenters/dashboard/widget/profile.dart';
 import '../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 import '../presenters/product_detail/product_detail.dart';
 import '../presenters/splash/splash.dart';
+import '../presenters/report/report.dart';
+import '../presenters/report/report_step.dart';
 import 'app_route.dart';
 
 // GoRouter configuration
@@ -109,6 +111,14 @@ final router = GoRouter(
           value: cubit,
           child: const TransactionListScreen(),
         );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.reports,
+      name: 'ReportScreen',
+      builder: (context, state) {
+        final step = state.extra as ReportStep? ?? ReportStep.sales;
+        return ReportScreen(initialStep: step);
       },
     ),
   ],

@@ -10,4 +10,5 @@ class AppRoutes {
   static const preInvoice = '/pre-invoice';
   static const wallet = '/wallet';
   static const transactionList = '/transaction-list';
+  static const reports = '/reports';
 }
