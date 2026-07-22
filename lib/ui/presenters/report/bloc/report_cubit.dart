@@ -1,47 +1,222 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import '../../../../core/models/product_chip_model.dart';
+import '../../../../locator.dart';
+import '../../../../repository/report/report_repository.dart';
+import '../../../../repository/plans/plans_repository.dart';
+import '../../../../repository/product/product_repository.dart';
+import '../../../../config/errorhandler.dart';
 import 'report_state.dart';
 import '../report_step.dart';
-import '../../../../core/models/report_item_model.dart';
 
 class ReportCubit extends Cubit<ReportState> {
+  final _reportRepo = sl<ReportRepository>();
+  final _plansRepo = sl<PlansRepository>();
+  final _productRepo = sl<ProductRepository>();
+
+  Timer? _searchTimer;
+
   ReportCubit() : super(const ReportState());
 
   void init(ReportStep step) {
     emit(state.copyWith(step: step, status: ReportRequestStatus.loading));
+    
+    // Fetch filter data in parallel
+    Future.wait([
+      _plansRepo.getSubPlans(page: 1),
+      _productRepo.getCategories(page: 1),
+    ]).then((values) {
+      final subPlansResponse = values[0] as dynamic;
+      final categoriesResponse = values[1] as dynamic;
+      
+      emit(state.copyWith(
+        subPlans: subPlansResponse.results,
+        hasMoreSubPlans: subPlansResponse.next != null,
+        currentSubPlanPage: 1,
+        categories: categoriesResponse.results,
+        hasMoreCategories: categoriesResponse.next != null,
+        currentCategoryPage: 1,
+      ));
+    }).catchError((_) {});
+
     _fetchData(step);
   }
 
+  void fetchCategoriesNextPage() {
+    if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
+
+    emit(state.copyWith(isCategoryPaginationLoading: true));
+
+    final nextPage = state.currentCategoryPage + 1;
+
+    _productRepo
+        .getCategories(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isCategoryPaginationLoading: false,
+              currentCategoryPage: nextPage,
+              categories: [...state.categories, ...response.results],
+              hasMoreCategories: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isCategoryPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchSubPlansNextPage() {
+    if (state.isSubPlanPaginationLoading || !state.hasMoreSubPlans) return;
+
+    emit(state.copyWith(isSubPlanPaginationLoading: true));
+
+    final nextPage = state.currentSubPlanPage + 1;
+
+    _plansRepo
+        .getSubPlans(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isSubPlanPaginationLoading: false,
+              currentSubPlanPage: nextPage,
+              subPlans: [...state.subPlans, ...response.results],
+              hasMoreSubPlans: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isSubPlanPaginationLoading: false));
+          return null;
+        });
+  }
+
   void _fetchData(ReportStep step) {
-    // TODO: Connect to repository
-    Future.delayed(const Duration(milliseconds: 500)).then((_) {
-      final mockItems = _generateMockData(step);
-      final mockMetrics = _generateMockMetrics(step);
-      emit(state.copyWith(
-        status: ReportRequestStatus.success,
-        items: mockItems,
-        filteredItems: mockItems,
-        summaryMetrics: mockMetrics,
-      ));
-    }).catchError((error) {
-      emit(state.copyWith(
-        status: ReportRequestStatus.error,
-        errorMessage: error.toString(),
-      ));
-    });
+    emit(state.copyWith(
+      status: ReportRequestStatus.loading,
+      currentPage: 1,
+      hasMoreData: true,
+      items: [],
+      filteredItems: [],
+    ));
+
+    final dateFrom = _formatGregorianDate(state.startDate);
+    final dateTo = _formatGregorianDate(state.endDate);
+
+    _getReportFuture(step, page: 1, dateFrom: dateFrom, dateTo: dateTo)
+        .then((bundle) {
+          final items = _reportRepo.mapToDomain(bundle.response, step);
+          final metrics = _reportRepo.mapSummaryToDomain(bundle.summary, step);
+          
+          emit(state.copyWith(
+            status: ReportRequestStatus.success,
+            items: items,
+            filteredItems: items,
+            summaryMetrics: metrics,
+            totalCount: (bundle.response as dynamic).count,
+            hasMoreData: (bundle.response as dynamic).next != null,
+          ));
+        })
+        .catchError((error) {
+          emit(state.copyWith(
+            status: ReportRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(error),
+          ));
+        });
+  }
+
+  void fetchNextPage() {
+    if (state.isPaginationLoading || !state.hasMoreData || state.status == ReportRequestStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(isPaginationLoading: true));
+
+    final nextPage = state.currentPage + 1;
+    final dateFrom = _formatGregorianDate(state.startDate);
+    final dateTo = _formatGregorianDate(state.endDate);
+
+    _getReportFuture(state.step, page: nextPage, dateFrom: dateFrom, dateTo: dateTo, includeSummary: false)
+        .then((bundle) {
+          final newItems = _reportRepo.mapToDomain(bundle.response, state.step);
+          final updatedItems = [...state.items, ...newItems];
+
+          emit(state.copyWith(
+            isPaginationLoading: false,
+            currentPage: nextPage,
+            items: updatedItems,
+            filteredItems: updatedItems,
+            hasMoreData: (bundle.response as dynamic).next != null,
+          ));
+        })
+        .catchError((error) {
+          emit(state.copyWith(isPaginationLoading: false));
+        });
+  }
+
+  Future<ReportDataBundle> _getReportFuture(
+    ReportStep step, {
+    int? page,
+    String? dateFrom,
+    String? dateTo,
+    bool includeSummary = true,
+  }) {
+    switch (step) {
+      case ReportStep.sales:
+        return _reportRepo.getSalesOverview(
+          dateFrom: dateFrom,
+          dateTo: dateTo,
+          subPlanId: state.selectedPlanId,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: page,
+          includeSummary: includeSummary,
+        );
+      case ReportStep.plan:
+        return _reportRepo.getSalesByPlan(
+          dateFrom: dateFrom,
+          dateTo: dateTo,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: page,
+          includeSummary: includeSummary,
+        );
+      case ReportStep.category:
+        return _reportRepo.getSalesByCategory(
+          dateFrom: dateFrom,
+          dateTo: dateTo,
+          parentCategoryId: state.selectedParentCategoryId,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: page,
+          includeSummary: includeSummary,
+        );
+      case ReportStep.products:
+        return _reportRepo.getSalesByProduct(
+          dateFrom: dateFrom,
+          dateTo: dateTo,
+          categoryId: state.selectedCategoryId,
+          subPlanId: state.selectedPlanId,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: page,
+          includeSummary: includeSummary,
+        );
+    }
+  }
+
+  void onChipClose(ProductChipModel chip) {
+    if (chip.id == 1) onPlanSelected(null);
+    if (chip.id == 2) onCategorySelected(null);
+    if (chip.id == 3) onParentCategorySelected(null);
+    if (chip.id == 4) onClearFilters(); // For date
   }
 
   void onSearchChanged(String query) {
-    final filtered = state.items.where((item) {
-      return item.title.contains(query) ||
-          (item.subtitle?.contains(query) ?? false) ||
-          (item.sku?.contains(query) ?? false);
-    }).toList();
+    emit(state.copyWith(searchQuery: query));
 
-    emit(state.copyWith(
-      searchQuery: query,
-      filteredItems: filtered,
-    ));
+    _searchTimer?.cancel();
+    _searchTimer = Timer(const Duration(seconds: 1), () {
+      _fetchData(state.step);
+    });
   }
 
   void activateSearch() {
@@ -49,14 +224,11 @@ class ReportCubit extends Cubit<ReportState> {
   }
 
   void deactivateSearch() {
-    emit(state.copyWith(
-      isSearchActive: false,
-      searchQuery: '',
-      filteredItems: state.items,
-    ));
+    _searchTimer?.cancel();
+    emit(state.copyWith(isSearchActive: false, searchQuery: ''));
+    _fetchData(state.step);
   }
 
-  // Filter handlers
   void onPlanSelected(String? id) {
     emit(state.copyWith(selectedPlanId: id));
     _fetchData(state.step);
@@ -93,81 +265,15 @@ class ReportCubit extends Cubit<ReportState> {
     _fetchData(state.step);
   }
 
-  List<ReportSummaryMetric> _generateMockMetrics(ReportStep step) {
-    switch (step) {
-      case ReportStep.sales:
-        return [
-          const ReportSummaryMetric(label: 'مبلغ کل فروش', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
-          const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
-          const ReportSummaryMetric(label: 'تعداد اقلام', value: '۱۵۰'),
-          const ReportSummaryMetric(label: 'مشتریان منحصر به فرد', value: '۱۰۲'),
-          const ReportSummaryMetric(label: 'میانگین مبلغ فروش', value: '۱۵۳۸۴۶۱۵', isCurrency: true),
-          const ReportSummaryMetric(label: 'میانگین تعداد کالا در هر سفارش', value: '۵'),
-        ];
-      case ReportStep.plan:
-        return [
-          const ReportSummaryMetric(label: 'مبلغ کل خرید', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
-          const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
-          const ReportSummaryMetric(label: 'تعداد کل اقلام', value: '۱۵۰'),
-          const ReportSummaryMetric(label: 'میانگین فروش هر طرح', value: '۱۵۳۸۴۶۱۵', isCurrency: true),
-        ];
-      case ReportStep.category:
-        return [
-          const ReportSummaryMetric(label: 'مبلغ کل خرید', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
-          const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
-          const ReportSummaryMetric(label: 'تعداد کل اقلام', value: '۱۴'),
-          const ReportSummaryMetric(label: 'میانگین فروش هر دسته‌بندی', value: '۱۴۲۸۵۷۱۴۲', isCurrency: true),
-        ];
-      case ReportStep.products:
-        return [
-          const ReportSummaryMetric(label: 'مبلغ کل فروش', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
-          const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
-          const ReportSummaryMetric(label: 'تعداد کل اقلام', value: '۱۵۰'),
-        ];
-    }
+  String? _formatGregorianDate(Jalali? date) {
+    if (date == null) return null;
+    final dateTime = date.toDateTime();
+    return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   }
 
-  List<ReportItemModel> _generateMockData(ReportStep step) {
-    switch (step) {
-      case ReportStep.sales:
-        return List.generate(5, (index) => ReportItemModel(
-          id: 'PF-1404-00125',
-          title: 'PF-1404-00125',
-          quantity: '۳',
-          tagLabel: 'آپ - ۱۲ ماهه',
-          amount: '80200000',
-          date: '۱۴۰۵/۰۱/۲۵',
-          time: '۱۲:۱۵',
-        ));
-      case ReportStep.plan:
-        return List.generate(5, (index) => const ReportItemModel(
-          id: 'plan_1',
-          title: 'اسنپ پی',
-          tagLabel: 'اسنپ‌پی - ۶ ماهه',
-          secondaryLabel: 'نام زیر مجموعه',
-          quantity: '۴',
-          amount: '80200000',
-        ));
-      case ReportStep.category:
-        return List.generate(5, (index) => const ReportItemModel(
-          id: 'cat_1',
-          title: 'تلویزیون',
-          tagLabel: 'لوازم صوتی تصویری',
-          secondaryLabel: 'دسته ‌والد',
-          quantity: '۴',
-          amount: '80200000',
-        ));
-      case ReportStep.products:
-        return List.generate(5, (index) => const ReportItemModel(
-          id: 'prod_1',
-          title: 'X500',
-          sku: 'RTC-REF-001',
-          tagLabel: 'لوازم صوتی تصویری',
-          secondaryLabel: 'دسته بندی کالا',
-          amount: '80200000',
-          secondaryAmount: '80200000',
-          quantity: '۴',
-        ));
-    }
+  @override
+  Future<void> close() {
+    _searchTimer?.cancel();
+    return super.close();
   }
 }

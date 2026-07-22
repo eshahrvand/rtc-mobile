@@ -12,9 +12,7 @@ import '../../widget/filter_date_bottomsheet.dart';
 import '../products/widget/filter_bottom_sheet.dart';
 import '../../../core/models/filter_item.dart';
 import '../../../core/models/product_chip_model.dart';
-import '../../../config/constants.dart';
 import '../../theme/colors.dart';
-import '../../../generated/l10n.dart';
 
 class ReportScreen extends StatefulWidget {
   final ReportStep initialStep;
@@ -30,37 +28,54 @@ class ReportScreen extends StatefulWidget {
 
 class _ReportScreenState extends State<ReportScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ScrollController _scrollController = ScrollController();
+  late final ReportCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = ReportCubit()..init(widget.initialStep);
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _cubit.close();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      _cubit.fetchNextPage();
+    }
+  }
 
   void _showPlanFilter(BuildContext context, ReportCubit cubit, ReportState state) {
-    // TODO: Fetch plans from repository
-    final plans = [
-      FilterItem(id: '1', title: 'طرح ۱'),
-      FilterItem(id: '2', title: 'طرح ۲'),
-    ];
-    
-    FilterBottomSheet.show(
+    FilterBottomSheet.show<ReportCubit, ReportState>(
       context,
+      bloc: cubit,
       title: 'انتخاب طرح',
       subtitle: 'طرح مورد نظر را انتخاب کنید',
-      items: plans,
+      items: state.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
+      itemsSelector: (s) => s.subPlans.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
+      loadingSelector: (s) => s.isSubPlanPaginationLoading,
       initialSelectedId: state.selectedPlanId,
       onApply: (selected) => cubit.onPlanSelected(selected?.id),
       onClear: () => cubit.onPlanSelected(null),
+      onLoadMore: cubit.fetchSubPlansNextPage,
     );
   }
 
   void _showCategoryFilter(BuildContext context, ReportCubit cubit, ReportState state, bool isParent) {
-    // TODO: Fetch categories from repository
-    final categories = [
-      FilterItem(id: 'c1', title: 'دسته‌بندی ۱'),
-      FilterItem(id: 'c2', title: 'دسته‌بندی ۲'),
-    ];
-    
-    FilterBottomSheet.show(
+    FilterBottomSheet.show<ReportCubit, ReportState>(
       context,
+      bloc: cubit,
       title: isParent ? 'دسته‌بندی والد' : 'دسته‌بندی کالا',
       subtitle: 'دسته‌بندی مورد نظر را انتخاب کنید',
-      items: categories,
+      items: state.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
+      itemsSelector: (s) => s.categories.map((e) => FilterItem(id: e.id, title: e.name)).toList(),
+      loadingSelector: (s) => s.isCategoryPaginationLoading,
       initialSelectedId: isParent ? state.selectedParentCategoryId : state.selectedCategoryId,
       onApply: (selected) => isParent 
           ? cubit.onParentCategorySelected(selected?.id) 
@@ -68,6 +83,7 @@ class _ReportScreenState extends State<ReportScreen> {
       onClear: () => isParent 
           ? cubit.onParentCategorySelected(null) 
           : cubit.onCategorySelected(null),
+      onLoadMore: cubit.fetchCategoriesNextPage,
     );
   }
 
@@ -84,27 +100,26 @@ class _ReportScreenState extends State<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ReportCubit()..init(widget.initialStep),
+    return BlocProvider.value(
+      value: _cubit,
       child: BlocBuilder<ReportCubit, ReportState>(
         builder: (context, state) {
-          final cubit = context.read<ReportCubit>();
-          
           return Scaffold(
             key: _scaffoldKey,
             backgroundColor: const Color(0xFFFAFAFA),
             appBar: RtcSearchAppBar(
               isSearchActive: state.isSearchActive,
               title: state.step.title,
-              onSearchChanged: cubit.onSearchChanged,
-              onSearchActivated: cubit.activateSearch,
-              onSearchDeactivated: cubit.deactivateSearch,
+              onSearchChanged: _cubit.onSearchChanged,
+              onSearchActivated: _cubit.activateSearch,
+              onSearchDeactivated: _cubit.deactivateSearch,
               scaffoldKey: _scaffoldKey,
               searchHint: 'جستجو در گزارش...',
+              showDrawerIcon: false,
             ),
             body: Column(
               children: [
-                _buildFilterRow(context, cubit, state),
+                _buildFilterRow(context, _cubit, state),
                 _buildSummaryMetrics(state),
                 _buildResultsLabel(state),
                 Expanded(
@@ -145,6 +160,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 if (chip.id == 3) _showCategoryFilter(context, cubit, state, true);
                 if (chip.id == 4) _showDateFilter(context, cubit, state);
               },
+              onChipClose: (index, chip) => _cubit.onChipClose(chip),
             ),
           ),
         ],
@@ -172,7 +188,7 @@ class _ReportScreenState extends State<ReportScreen> {
       chips.add(ProductChipModel(id: 3, label: 'دسته‌بندی والد', opensBottomSheet: true));
     }
     
-    return chips.reversed.toList(); // Align with right-to-left layout as per HTML
+    return chips.reversed.toList(); 
   }
 
   Widget _buildSummaryMetrics(ReportState state) {
@@ -183,7 +199,7 @@ class _ReportScreenState extends State<ReportScreen> {
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         scrollDirection: Axis.horizontal,
-        reverse: true, // Right-to-left alignment
+        reverse: true, 
         itemCount: state.summaryMetrics.length,
         itemBuilder: (context, index) {
           return Padding(
@@ -201,7 +217,7 @@ class _ReportScreenState extends State<ReportScreen> {
       child: Align(
         alignment: Alignment.centerRight,
         child: Text(
-          '${state.filteredItems.length} نتیجه',
+          '${state.totalCount} نتیجه',
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
             color: AppColors.brandPalette.shade600,
             fontWeight: FontWeight.w600,
@@ -217,9 +233,17 @@ class _ReportScreenState extends State<ReportScreen> {
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-      itemCount: state.filteredItems.length,
+      itemCount: state.filteredItems.length + (state.hasMoreData ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == state.filteredItems.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
         return ReportItemWidget(
           item: state.filteredItems[index],
           step: state.step,

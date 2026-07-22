@@ -1,45 +1,25 @@
-# Walkthrough: Report Summary Metrics Alignment
+# Walkthrough: Drawer Icon Visibility in Report Flow
 
-I have aligned the summary metrics (the horizontal cards at the top of the report results) for each of the four report flows according to your specific requirements.
+I have modified the `RtcSearchAppBar` to allow disabling the drawer (hamburger) icon, and specifically disabled it for the Report flow as requested.
 
 ## Changes Made
 
-### [ReportCubit](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/bloc/report_cubit.dart)
-I updated the `_generateMockMetrics` method to provide the exact items and ordering requested for each report type:
+### UI Components
 
-**1. Sales Report**
-- مبلغ کل فروش (Total sales amount)
-- تعداد کل سفارشات (Total number of orders)
-- تعداد اقلام (Number of items)
-- مشتریان منحصر به فرد (Unique customers)
-- میانگین مبلغ فروش (Average sales amount)
-- میانگین تعداد کالا در هر سفارش (Average number of items per order)
+#### [RtcSearchAppBar](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/widget/rtc_search_appbar.dart)
+- Added a `showDrawerIcon` boolean parameter to the constructor (defaults to `true`).
+- Updated the `build` method to conditionally render the leading drawer icon based on this parameter.
 
-**2. Sales Plan Report**
-- مبلغ کل خرید (Total purchase amount)
-- تعداد کل سفارشات (Total number of orders)
-- تعداد کل اقلام (Number of items)
-- میانگین فروش هر طرح (Average sales per plan)
+### Feature Screens
 
-**3. Product Category Report**
-- مبلغ کل خرید (Total purchase amount)
-- تعداد کل سفارشات (Total number of orders)
-- تعداد کل اقلام (Total number of items)
-- میانگین فروش هر دسته‌بندی (Average sales per category)
-
-**4. Product Report**
-- مبلغ کل فروش (Total sales amount)
-- تعداد کل سفارشات (Total number of orders)
-- تعداد کل اقلام (Total number of items)
+#### [ReportScreen](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/report.dart)
+- Explicitly set `showDrawerIcon: false` when instantiating `RtcSearchAppBar`.
 
 ## Verification Results
 
-| Report Flow | Summary Metrics Verified |
-| :--- | :--- |
-| **Sales** | [x] 6 items in correct order |
-| **Sales Plan** | [x] 4 items in correct order |
-| **Product Category** | [x] 4 items (Added Average sales per category) |
-| **Product** | [x] 3 items in correct order |
+### Manual Verification
+- **Report Screen:** The drawer menu icon is now hidden, allowing the title to be properly centered without leading clutter.
+- **Dashboard (Products/Orders):** Verified that `DashboardAppBar` still displays the drawer icon correctly because it uses the default value of `showDrawerIcon: true`.
 
-> [!NOTE]
-> All labels are in Persian to match the application's localization. No UI components or themes were modified.
+render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/widget/rtc_search_appbar.dart)
+render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/report.dart)
