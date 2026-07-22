@@ -44,40 +44,50 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (step == ReportStep.sales)
-                  Text(
-                    '#',
-                    style: theme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.grayPalette.shade900,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (step == ReportStep.sales)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(
+                        '#',
+                        style: theme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.grayPalette.shade900,
+                        ),
+                      ),
+                    ),
+                  Expanded(
+                    child: Text(
+                      item.title,
+                      maxLines: step == ReportStep.products ? 2 : 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.bodyLarge!.copyWith(
+                        fontWeight: step == ReportStep.sales
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: AppColors.grayPalette.shade900,
+                      ),
                     ),
                   ),
+                ],
+              ),
+              if (item.sku != null)
                 Text(
-                  item.title,
-                  style: theme.bodyLarge!.copyWith(
-                    fontWeight: step == ReportStep.sales
-                        ? FontWeight.w700
-                        : FontWeight.w500,
-                    color: AppColors.grayPalette.shade900,
+                  'SKU: ${item.sku}',
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                    fontSize: 12,
                   ),
                 ),
-              ],
-            ),
-            if (item.sku != null)
-              Text(
-                'SKU: ${item.sku}',
-                style: theme.bodySmall!.copyWith(
-                  color: AppColors.grayPalette.shade600,
-                  fontSize: 12,
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
+        const SizedBox(width: 8),
         RtcImage(
           image: '$baseImage/arrow_left_tab.svg',
           width: 20,
@@ -168,30 +178,39 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.bodySmall!.copyWith(
-            color: AppColors.grayPalette.shade600,
-            fontSize: 12,
+        Expanded(
+          child: Text(
+            label,
+            style: theme.bodySmall!.copyWith(
+              color: AppColors.grayPalette.shade600,
+              fontSize: 12,
+            ),
           ),
         ),
-        Row(
-          spacing: 4,
-          children: [
-            Text(
-              amount.formatCurrency,
-              style: theme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.w500,
+        const SizedBox(width: 8),
+        Flexible(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 4,
+            children: [
+              Flexible(
+                child: Text(
+                  amount.formatCurrency,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grayPalette.shade900,
+                  ),
+                ),
+              ),
+              RtcImage(
+                image: "$baseImage/rial.svg",
+                width: 18,
+                height: 18,
                 color: AppColors.grayPalette.shade900,
               ),
-            ),
-            RtcImage(
-              image: "$baseImage/rial.svg",
-              width: 18,
-              height: 18,
-              color: AppColors.grayPalette.shade900,
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -202,18 +221,24 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.bodySmall!.copyWith(
-            color: AppColors.grayPalette.shade600,
-            fontSize: 12,
+        Expanded(
+          child: Text(
+            label,
+            style: theme.bodySmall!.copyWith(
+              color: AppColors.grayPalette.shade600,
+              fontSize: 12,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: theme.bodyLarge!.copyWith(
-            fontWeight: FontWeight.w500,
-            color: AppColors.grayPalette.shade900,
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            overflow: TextOverflow.ellipsis,
+            style: theme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.grayPalette.shade900,
+            ),
           ),
         ),
       ],
@@ -229,50 +254,62 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          spacing: 4,
-          children: [
-            if (value != null)
-              Text(
-                value,
-                style: theme.bodySmall!.copyWith(
-                  color: AppColors.grayPalette.shade600,
-                  fontSize: 12,
-                ),
-              ),
-            if (time != null) ...[
-              Text(
-                '|',
-                style: TextStyle(color: AppColors.grayPalette.shade600),
-              ),
-              Text(
-                time,
-                style: theme.bodySmall!.copyWith(
-                  color: AppColors.grayPalette.shade600,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ],
-        ),
-        if (item.amount != null)
-          Row(
+        Expanded(
+          child: Row(
             spacing: 4,
             children: [
-              Text(
-                item.amount!.formatCurrency,
-                style: theme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.w500,
+              if (value != null)
+                Flexible(
+                  child: Text(
+                    value,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.bodySmall!.copyWith(
+                      color: AppColors.grayPalette.shade600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              if (time != null) ...[
+                Text(
+                  '|',
+                  style: TextStyle(color: AppColors.grayPalette.shade600),
+                ),
+                Text(
+                  time,
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        if (item.amount != null)
+          Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4,
+              children: [
+                Flexible(
+                  child: Text(
+                    item.amount!.formatCurrency,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grayPalette.shade900,
+                    ),
+                  ),
+                ),
+                RtcImage(
+                  image: "$baseImage/rial.svg",
+                  width: 20,
+                  height: 20,
                   color: AppColors.grayPalette.shade900,
                 ),
-              ),
-              RtcImage(
-                image: "$baseImage/rial.svg",
-                width: 20,
-                height: 20,
-                color: AppColors.grayPalette.shade900,
-              ),
-            ],
+              ],
+            ),
           ),
       ],
     );

@@ -18,8 +18,8 @@ class ReportSummaryCard extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
     
     return Container(
-      width: 160, // Fixed width for horizontal scroll items
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      width: 170, // Increased width for long Persian labels
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -33,39 +33,43 @@ class ReportSummaryCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             metric.label,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: theme.bodySmall!.copyWith(
               color: AppColors.grayPalette.shade600,
-              fontSize: 12,
+              fontSize: 11, // Slightly smaller font to fit more text
+              height: 1.2,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              if (metric.isCurrency)
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: RtcImage(
+                    image: "$baseImage/rial.svg",
+                    width: 14,
+                    height: 14,
+                    color: AppColors.grayPalette.shade900,
+                  ),
+                ),
               Text(
                 metric.isCurrency ? metric.value.formatCurrency : metric.value,
                 style: theme.bodyLarge!.copyWith(
                   color: AppColors.grayPalette.shade900,
                   fontWeight: FontWeight.w700,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
               ),
-              if (metric.isCurrency)
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: RtcImage(
-                    image: "$baseImage/rial.svg",
-                    width: 16,
-                    height: 16,
-                    color: AppColors.grayPalette.shade900,
-                  ),
-                ),
             ],
           ),
         ],
