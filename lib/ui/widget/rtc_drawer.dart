@@ -10,7 +10,7 @@ import '../../../generated/l10n.dart';
 import '../presenters/dashboard/bloc/dashboard_cubit.dart';
 import '../presenters/dashboard/bloc/dashboard_state.dart';
 import '../presenters/dashboard/widget/log_out_botttom_sheet.dart';
-import '../presenters/report/report_step.dart';
+import '../presenters/report/bloc/report_step.dart';
 
 class RtcDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;

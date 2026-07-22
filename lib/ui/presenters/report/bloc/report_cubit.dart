@@ -8,7 +8,7 @@ import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/product/product_repository.dart';
 import '../../../../config/errorhandler.dart';
 import 'report_state.dart';
-import '../report_step.dart';
+import 'report_step.dart';
 
 class ReportCubit extends Cubit<ReportState> {
   final _reportRepo = sl<ReportRepository>();

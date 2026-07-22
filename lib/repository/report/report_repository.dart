@@ -1,7 +1,7 @@
 import '../../core/models/report_item_model.dart';
 import '../../data_source/remote/report/model/report_dto_model.dart';
 import '../../data_source/remote/report/report_service.dart';
-import '../../ui/presenters/report/report_step.dart';
+import '../../ui/presenters/report/bloc/report_step.dart';
 
 class ReportRepository {
   final ReportService _service;

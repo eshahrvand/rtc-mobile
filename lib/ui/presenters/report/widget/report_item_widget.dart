@@ -4,7 +4,7 @@ import '../../../../core/models/report_item_model.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
-import '../report_step.dart';
+import '../bloc/report_step.dart';
 
 class ReportItemWidget extends StatelessWidget {
   final ReportItemModel item;
