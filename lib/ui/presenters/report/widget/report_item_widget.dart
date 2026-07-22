@@ -89,10 +89,9 @@ class ReportItemWidget extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         RtcImage(
-          image: '$baseImage/arrow_left_tab.svg',
-          width: 20,
-          height: 20,
-          color: AppColors.grayPalette.shade500,
+          image: '$baseImage/arrow_left_report.svg',
+          width: 24,
+          height: 24,
         ),
       ],
     );
@@ -205,9 +204,9 @@ class ReportItemWidget extends StatelessWidget {
               ),
               RtcImage(
                 image: "$baseImage/rial.svg",
-                width: 18,
-                height: 18,
-                color: AppColors.grayPalette.shade900,
+                width: 20,
+                height: 20,
+
               ),
             ],
           ),
@@ -306,7 +305,7 @@ class ReportItemWidget extends StatelessWidget {
                   image: "$baseImage/rial.svg",
                   width: 20,
                   height: 20,
-                  color: AppColors.grayPalette.shade900,
+
                 ),
               ],
             ),

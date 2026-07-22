@@ -8,15 +8,12 @@ import '../../../widget/rtc_image.dart';
 class ReportSummaryCard extends StatelessWidget {
   final ReportSummaryMetric metric;
 
-  const ReportSummaryCard({
-    super.key,
-    required this.metric,
-  });
+  const ReportSummaryCard({super.key, required this.metric});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    
+
     return Container(
       width: 170, // Increased width for long Persian labels
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -52,16 +49,6 @@ class ReportSummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (metric.isCurrency)
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: RtcImage(
-                    image: "$baseImage/rial.svg",
-                    width: 14,
-                    height: 14,
-                    color: AppColors.grayPalette.shade900,
-                  ),
-                ),
               Text(
                 metric.isCurrency ? metric.value.formatCurrency : metric.value,
                 style: theme.bodyLarge!.copyWith(
@@ -70,6 +57,15 @@ class ReportSummaryCard extends StatelessWidget {
                   fontSize: 13,
                 ),
               ),
+              if (metric.isCurrency)
+                Padding(
+                  padding: const EdgeInsets.only(right: 2),
+                  child: RtcImage(
+                    image: "$baseImage/rial.svg",
+                    width: 16,
+                    height: 16,
+                  ),
+                ),
             ],
           ),
         ],
