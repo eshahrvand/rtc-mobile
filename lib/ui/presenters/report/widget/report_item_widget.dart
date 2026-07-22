@@ -47,14 +47,8 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        RtcImage(
-          image: '$baseImage/arrow_left_tab.svg',
-          width: 20,
-          height: 20,
-          color: AppColors.grayPalette.shade500,
-        ),
         Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -84,6 +78,12 @@ class ReportItemWidget extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+        RtcImage(
+          image: '$baseImage/arrow_left_tab.svg',
+          width: 20,
+          height: 20,
+          color: AppColors.grayPalette.shade500,
         ),
       ],
     );
@@ -117,22 +117,6 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (item.tagLabel != null)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.brandPalette.shade50,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              item.tagLabel!,
-              style: theme.bodySmall!.copyWith(
-                color: AppColors.brandPalette.shade700,
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-              ),
-            ),
-          ),
         if (item.secondaryLabel != null || (step == ReportStep.sales && item.quantity != null))
           Row(
             spacing: 4,
@@ -155,6 +139,22 @@ class ReportItemWidget extends StatelessWidget {
                 ),
             ],
           ),
+        if (item.tagLabel != null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppColors.brandPalette.shade50,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              item.tagLabel!,
+              style: theme.bodySmall!.copyWith(
+                color: AppColors.brandPalette.shade700,
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -164,6 +164,13 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Text(
+          label,
+          style: theme.bodySmall!.copyWith(
+            color: AppColors.grayPalette.shade600,
+            fontSize: 12,
+          ),
+        ),
         Row(
           spacing: 4,
           children: [
@@ -182,13 +189,6 @@ class ReportItemWidget extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          label,
-          style: theme.bodySmall!.copyWith(
-            color: AppColors.grayPalette.shade600,
-            fontSize: 12,
-          ),
-        ),
       ],
     );
   }
@@ -199,17 +199,17 @@ class ReportItemWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          value,
-          style: theme.bodyLarge!.copyWith(
-            fontWeight: FontWeight.w500,
-            color: AppColors.grayPalette.shade900,
-          ),
-        ),
-        Text(
           label,
           style: theme.bodySmall!.copyWith(
             color: AppColors.grayPalette.shade600,
             fontSize: 12,
+          ),
+        ),
+        Text(
+          value,
+          style: theme.bodyLarge!.copyWith(
+            fontWeight: FontWeight.w500,
+            color: AppColors.grayPalette.shade900,
           ),
         ),
       ],
@@ -220,25 +220,6 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (item.amount != null)
-          Row(
-            spacing: 4,
-            children: [
-              RtcImage(
-                image: "$baseImage/rial.svg",
-                width: 20,
-                height: 20,
-                color: AppColors.grayPalette.shade900,
-              ),
-              Text(
-                item.amount!.formatCurrency,
-                style: theme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.grayPalette.shade900,
-                ),
-              ),
-            ],
-          ),
         Row(
           spacing: 4,
           children: [
@@ -262,6 +243,25 @@ class ReportItemWidget extends StatelessWidget {
             ],
           ],
         ),
+        if (item.amount != null)
+          Row(
+            spacing: 4,
+            children: [
+              RtcImage(
+                image: "$baseImage/rial.svg",
+                width: 20,
+                height: 20,
+                color: AppColors.grayPalette.shade900,
+              ),
+              Text(
+                item.amount!.formatCurrency,
+                style: theme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.grayPalette.shade900,
+                ),
+              ),
+            ],
+          ),
       ],
     );
   }

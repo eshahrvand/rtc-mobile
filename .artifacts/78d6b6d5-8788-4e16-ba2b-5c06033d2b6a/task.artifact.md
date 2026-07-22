@@ -10,4 +10,5 @@ Implement the refined Report flow with HTML-aligned UI, integrated filters, and 
 - [x] Task 5: Refactor `ReportScreen` (layout, background, results label, filter chips integration)
 - [x] Task 6: Final alignment check against HTML sources
 - [x] Task 7: Fix rendering error (Horizontal viewport unbounded width)
-- [ ] Task 8: Verification & Walkthrough
+- [x] Task 8: Verification & Walkthrough
+- [x] Task 9: Align Report Summary Metrics with user requirements

@@ -19,7 +19,7 @@ class ReportSummaryCard extends StatelessWidget {
     
     return Container(
       width: 160, // Fixed width for horizontal scroll items
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -48,16 +48,6 @@ class ReportSummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (metric.isCurrency)
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: RtcImage(
-                    image: "$baseImage/rial.svg",
-                    width: 16,
-                    height: 16,
-                    color: AppColors.grayPalette.shade900,
-                  ),
-                ),
               Text(
                 metric.isCurrency ? metric.value.formatCurrency : metric.value,
                 style: theme.bodyLarge!.copyWith(
@@ -66,6 +56,16 @@ class ReportSummaryCard extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
+              if (metric.isCurrency)
+                Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: RtcImage(
+                    image: "$baseImage/rial.svg",
+                    width: 16,
+                    height: 16,
+                    color: AppColors.grayPalette.shade900,
+                  ),
+                ),
             ],
           ),
         ],

@@ -156,7 +156,7 @@ class _ReportScreenState extends State<ReportScreen> {
     final chips = <ProductChipModel>[];
     
     // Date filter is common for all
-    chips.add(ProductChipModel(id: 4, label: '۳۰ روز گذشته', opensBottomSheet: true));
+    chips.add(ProductChipModel(id: 4, label: 'تاریخ', opensBottomSheet: true));
     
     switch (step) {
       case ReportStep.sales:
@@ -179,7 +179,7 @@ class _ReportScreenState extends State<ReportScreen> {
     if (state.summaryMetrics.isEmpty) return const SizedBox.shrink();
     
     return SizedBox(
-      height: 100,
+      height: 110,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         scrollDirection: Axis.horizontal,

@@ -99,27 +99,28 @@ class ReportCubit extends Cubit<ReportState> {
         return [
           const ReportSummaryMetric(label: 'مبلغ کل فروش', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
           const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
-          const ReportSummaryMetric(label: 'میانگین مبلغ فروش', value: '۱۵۳۸۴۶۱۵', isCurrency: true),
           const ReportSummaryMetric(label: 'تعداد اقلام', value: '۱۵۰'),
-          const ReportSummaryMetric(label: 'میانگین تعداد کالا در هر سفارش', value: '۵'),
           const ReportSummaryMetric(label: 'مشتریان منحصر به فرد', value: '۱۰۲'),
+          const ReportSummaryMetric(label: 'میانگین مبلغ فروش', value: '۱۵۳۸۴۶۱۵', isCurrency: true),
+          const ReportSummaryMetric(label: 'میانگین تعداد کالا در هر سفارش', value: '۵'),
         ];
       case ReportStep.plan:
         return [
           const ReportSummaryMetric(label: 'مبلغ کل خرید', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
           const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
-          const ReportSummaryMetric(label: 'میانگین فروش هر طرح', value: '۱۵۳۸۴۶۱۵', isCurrency: true),
           const ReportSummaryMetric(label: 'تعداد کل اقلام', value: '۱۵۰'),
+          const ReportSummaryMetric(label: 'میانگین فروش هر طرح', value: '۱۵۳۸۴۶۱۵', isCurrency: true),
         ];
       case ReportStep.category:
         return [
-          const ReportSummaryMetric(label: 'کل مبلغ فروش', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
+          const ReportSummaryMetric(label: 'مبلغ کل خرید', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
           const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
           const ReportSummaryMetric(label: 'تعداد کل اقلام', value: '۱۴'),
+          const ReportSummaryMetric(label: 'میانگین فروش هر دسته‌بندی', value: '۱۴۲۸۵۷۱۴۲', isCurrency: true),
         ];
       case ReportStep.products:
         return [
-          const ReportSummaryMetric(label: 'جمع کل مبلغ فروش', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
+          const ReportSummaryMetric(label: 'مبلغ کل فروش', value: '۲۰۰۰۰۰۰۰۰۰', isCurrency: true),
           const ReportSummaryMetric(label: 'تعداد کل سفارشات', value: '۱۳۰'),
           const ReportSummaryMetric(label: 'تعداد کل اقلام', value: '۱۵۰'),
         ];
