@@ -52,17 +52,6 @@ class ReportItemWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  if (step == ReportStep.sales)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(
-                        '#',
-                        style: theme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.grayPalette.shade900,
-                        ),
-                      ),
-                    ),
                   Expanded(
                     child: Text(
                       item.title,
@@ -76,6 +65,17 @@ class ReportItemWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (step == ReportStep.sales)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(
+                        '#',
+                        style: theme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.grayPalette.shade900,
+                        ),
+                      ),
+                    ),
                 ],
               ),
               if (item.sku != null)
@@ -134,29 +134,6 @@ class ReportItemWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (item.secondaryLabel != null ||
-            (step == ReportStep.sales && item.quantity != null))
-          Row(
-            spacing: 4,
-            children: [
-              if (item.secondaryLabel != null)
-                Text(
-                  item.secondaryLabel!,
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              if (step == ReportStep.sales && item.quantity != null)
-                Text(
-                  '${S.current.product} ${item.quantity}',
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-            ],
-          ),
         if (item.tagLabel != null)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -172,6 +149,29 @@ class ReportItemWidget extends StatelessWidget {
                 fontSize: 12,
               ),
             ),
+          ),
+        if (item.secondaryLabel != null ||
+            (step == ReportStep.sales && item.quantity != null))
+          Row(
+            spacing: 4,
+            children: [
+              if (item.secondaryLabel != null)
+                Text(
+                  item.secondaryLabel!,
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              if (step == ReportStep.sales && item.quantity != null)
+                Text(
+                  '${item.quantity} ${S.current.product}',
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            ],
           ),
       ],
     );
@@ -257,6 +257,19 @@ class ReportItemWidget extends StatelessWidget {
           child: Row(
             spacing: 4,
             children: [
+              if (time != null) ...[
+                Text(
+                  time,
+                  style: theme.bodySmall!.copyWith(
+                    color: AppColors.grayPalette.shade600,
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  '|',
+                  style: TextStyle(color: AppColors.grayPalette.shade600),
+                ),
+              ],
               if (value != null)
                 Flexible(
                   child: Text(
@@ -268,19 +281,6 @@ class ReportItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (time != null) ...[
-                Text(
-                  '|',
-                  style: TextStyle(color: AppColors.grayPalette.shade600),
-                ),
-                Text(
-                  time,
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
             ],
           ),
         ),

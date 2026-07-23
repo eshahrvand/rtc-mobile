@@ -10,6 +10,7 @@ import '../../widget/rtc_search_appbar.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../../widget/filter_date_bottomsheet.dart';
 import '../products/widget/filter_bottom_sheet.dart';
+import '../../widget/rtc_divider.dart';
 import '../../../core/models/filter_item.dart';
 import '../../../core/models/product_chip_model.dart';
 import '../../theme/colors.dart';
@@ -140,6 +141,13 @@ class _ReportScreenState extends State<ReportScreen> {
               children: [
                 _buildFilterRow(context, _cubit, state),
                 _buildSummaryMetrics(state),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: RtcDivider(
+                    height: 1,
+                    color: AppColors.grayPalette.shade200,
+                  ),
+                ),
                 _buildResultsLabel(state),
                 Expanded(
                   child: state.status == ReportRequestStatus.loading
@@ -243,11 +251,10 @@ class _ReportScreenState extends State<ReportScreen> {
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         scrollDirection: Axis.horizontal,
-        reverse: true,
         itemCount: state.summaryMetrics.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.only(left: 12),
+            padding: const EdgeInsets.only(right: 12),
             child: ReportSummaryCard(metric: state.summaryMetrics[index]),
           );
         },
