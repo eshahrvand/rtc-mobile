@@ -164,7 +164,9 @@ class ReportRepository {
           id: dto.id,
           title: dto.id.length > 10 ? dto.id.substring(0, 10) : dto.id, // Fallback title
           amount: dto.orderTotal?.toStringAsFixed(0),
-          tagLabel: dto.planName,
+          tagLabel: dto.planName != null && dto.subPlanDuration != null
+              ? '${dto.planName} - ${S.current.monthsCountLabel(dto.subPlanDuration.toString())}'
+              : dto.planName,
           quantity: dto.lineItemCount?.toString(),
           date: date,
           time: time,
