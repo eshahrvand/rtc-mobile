@@ -32,10 +32,8 @@ class ReportSummaryCard extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: theme.bodySmall!.copyWith(
-              color: AppColors.grayPalette.shade600,
-              fontSize: 11, // Slightly smaller font to fit more text
-              height: 1.2,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.grayPalette.shade700,
             ),
           ),
           const SizedBox(height: 4),
@@ -44,10 +42,9 @@ class ReportSummaryCard extends StatelessWidget {
             children: [
               Text(
                 metric.isCurrency ? metric.value.formatCurrency : metric.value,
-                style: theme.bodyLarge!.copyWith(
+                style: theme.labelLarge!.copyWith(
                   color: AppColors.grayPalette.shade900,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               if (metric.isCurrency)
@@ -57,6 +54,8 @@ class ReportSummaryCard extends StatelessWidget {
                     image: "$baseImage/rial.svg",
                     width: 16,
                     height: 16,
+                    boxFit: BoxFit.fill,
+                    color: AppColors.grayPalette.shade800,
                   ),
                 ),
             ],

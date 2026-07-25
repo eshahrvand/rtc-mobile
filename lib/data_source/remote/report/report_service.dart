@@ -46,7 +46,7 @@ abstract class ReportService {
   Future<SalesByCategoryResponse> getSalesByCategory({
     @Query('date_from') String? dateFrom,
     @Query('date_to') String? dateTo,
-    @Query('parent_category') String? parentCategoryId,
+    @Query('category_id') String? categoryId,
     @Query('search') String? search,
     @Query('page') int? page,
     @Query('page_size') int? pageSize,
@@ -56,7 +56,7 @@ abstract class ReportService {
   Future<ReportSummaryDtoModel> getSalesByCategorySummary({
     @Query('date_from') String? dateFrom,
     @Query('date_to') String? dateTo,
-    @Query('parent_category') String? parentCategoryId,
+    @Query('category_id') String? categoryId,
     @Query('search') String? search,
   });
 

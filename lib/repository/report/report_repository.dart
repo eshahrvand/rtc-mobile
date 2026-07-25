@@ -82,7 +82,7 @@ class ReportRepository {
   Future<ReportDataBundle<SalesByCategoryResponse>> getSalesByCategory({
     String? dateFrom,
     String? dateTo,
-    String? parentCategoryId,
+    String? categoryId,
     String? search,
     int? page,
     bool includeSummary = true,
@@ -91,7 +91,7 @@ class ReportRepository {
       _service.getSalesByCategory(
         dateFrom: dateFrom,
         dateTo: dateTo,
-        parentCategoryId: parentCategoryId,
+        categoryId: categoryId,
         search: search,
         page: page,
         pageSize: 20,
@@ -100,7 +100,7 @@ class ReportRepository {
         _service.getSalesByCategorySummary(
           dateFrom: dateFrom,
           dateTo: dateTo,
-          parentCategoryId: parentCategoryId,
+          categoryId: categoryId,
           search: search,
         )
       else

@@ -167,6 +167,7 @@ class ReportCubit extends Cubit<ReportState> {
               currentPage: nextPage,
               items: updatedItems,
               filteredItems: updatedItems,
+              totalCount: (bundle.response as dynamic).count,
               hasMoreData: (bundle.response as dynamic).next != null,
             ),
           );
@@ -205,7 +206,7 @@ class ReportCubit extends Cubit<ReportState> {
         return _reportRepo.getSalesByCategory(
           dateFrom: dateFrom,
           dateTo: dateTo,
-          parentCategoryId: state.selectedParentCategoryId,
+          categoryId: state.selectedParentCategoryId,
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
           page: page,
           includeSummary: includeSummary,

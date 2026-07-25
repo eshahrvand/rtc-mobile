@@ -77,7 +77,7 @@ class RtcDrawer extends StatelessWidget {
                     ),
                     _ExpandableDrawerMenuItem(
                       title: 'گزارشات',
-                      iconPath: '$baseImage/asset_report.svg',
+                      iconPath: '$baseImage/chart-pie.2.svg',
                       subItems: [
                         _DrawerSubItem(
                           title: 'فروش',
@@ -304,9 +304,9 @@ class _ExpandableDrawerMenuItemState extends State<_ExpandableDrawerMenuItem> {
     final color = _isExpanded
         ? AppColors.brandPalette.shade600
         : AppColors.grayPalette.shade600;
-    final bgColor = _isExpanded
-        ? AppColors.brandPalette.shade25
-        : Colors.transparent;
+    final iconColor = _isExpanded ? null : AppColors.grayPalette.shade600;
+    final bgColor =
+        _isExpanded ? AppColors.brandPalette.shade25 : Colors.transparent;
 
     return Column(
       children: [
@@ -324,7 +324,7 @@ class _ExpandableDrawerMenuItemState extends State<_ExpandableDrawerMenuItem> {
                   image: widget.iconPath,
                   width: 24,
                   height: 24,
-                  color: color,
+                  color: iconColor,
                 ),
                 const SizedBox(width: 12),
                 Text(
