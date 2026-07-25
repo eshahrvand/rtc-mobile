@@ -89,7 +89,10 @@ class ReportItemWidget extends StatelessWidget {
         if (step == ReportStep.plan)
           Padding(
             padding: const EdgeInsets.only(top: 12),
-            child: RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
+            child: RtcDivider(
+              height: 0.5,
+              color: AppColors.grayPalette.shade200,
+            ),
           ),
         if (item.sku != null)
           Text(
@@ -141,11 +144,8 @@ class ReportItemWidget extends StatelessWidget {
   }
 
   Widget _buildMiddleRow(TextTheme theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (item.tagLabel != null)
-          Container(
+    final tagWidget = item.tagLabel != null
+        ? Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: AppColors.brandPalette.shade50,
@@ -158,18 +158,20 @@ class ReportItemWidget extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ),
+          )
+        : const SizedBox.shrink();
 
-        if (item.secondaryLabel != null ||
+    final secondaryWidget =
+        (item.secondaryLabel != null ||
             (step == ReportStep.sales && item.quantity != null))
-          Row(
+        ? Row(
             spacing: 4,
             children: [
               if (item.secondaryLabel != null)
                 Text(
                   item.secondaryLabel!,
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade700,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -182,8 +184,14 @@ class ReportItemWidget extends StatelessWidget {
                   ),
                 ),
             ],
-          ),
-      ],
+          )
+        : const SizedBox.shrink();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: step == ReportStep.plan
+          ? [secondaryWidget, tagWidget]
+          : [tagWidget, secondaryWidget],
     );
   }
 
@@ -195,9 +203,9 @@ class ReportItemWidget extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: theme.bodySmall!.copyWith(
-              color: AppColors.grayPalette.shade600,
-              fontSize: 12,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.grayPalette.shade700,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
@@ -205,7 +213,7 @@ class ReportItemWidget extends StatelessWidget {
         Flexible(
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: 4,
+            spacing: 2,
             children: [
               Flexible(
                 child: Text(
@@ -217,7 +225,12 @@ class ReportItemWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              RtcImage(image: "$baseImage/rial.svg", width: 20, height: 20),
+              RtcImage(
+                image: "$baseImage/rial.svg",
+                width: 20,
+                height: 20,
+                color: AppColors.grayPalette.shade900,
+              ),
             ],
           ),
         ),
@@ -233,9 +246,9 @@ class ReportItemWidget extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: theme.bodySmall!.copyWith(
-              color: AppColors.grayPalette.shade600,
-              fontSize: 12,
+            style: theme.bodyMedium!.copyWith(
+              color: AppColors.grayPalette.shade700,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),

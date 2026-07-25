@@ -398,7 +398,8 @@
       }
     }
   },
-  "parentCategorySecondaryLabel": "",
+  "parentCategorySecondaryLabel": "Parent Category",
+  "subPlanNameLabel": "Sub-plan Name",
   "commissionMessage": "By selling {distance} Rials more, your commission will increase to {nextRateCash}% cash or {nextRateProduct}% goods.",
   "@commissionMessage": {
     "placeholders": {

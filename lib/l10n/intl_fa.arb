@@ -398,6 +398,7 @@
     }
   },
   "parentCategorySecondaryLabel": "دسته والد",
+  "subPlanNameLabel": "نام زیر مجموعه",
   "commissionMessage": "با فروش {distance} ریال دیگر پورسانت شما به {nextRateCash}٪ نقدی و یا {nextRateProduct}٪ کالایی افزایش می‌یابد.",
   "@commissionMessage": {
     "placeholders": {

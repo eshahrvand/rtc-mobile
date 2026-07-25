@@ -176,10 +176,12 @@ class ReportRepository {
       return response.results.map((dto) => ReportItemModel(
         id: dto.subPlanId,
         title: dto.planName ?? '',
-        secondaryLabel: S.current.monthsCountLabel(dto.subPlanDuration.toString()),
+        secondaryLabel: S.current.subPlanNameLabel,
         amount: dto.totalSalesAmount?.toStringAsFixed(0),
         quantity: dto.totalOrders?.toString(),
-        tagLabel: dto.planName,
+        tagLabel: dto.planName != null && dto.subPlanDuration != null
+            ? '${dto.planName} - ${S.current.monthsCountLabel(dto.subPlanDuration.toString())}'
+            : dto.planName,
       )).toList();
     } else if (response is SalesByCategoryResponse) {
       return response.results.map((dto) => ReportItemModel(

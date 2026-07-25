@@ -1,24 +1,20 @@
-# Walkthrough: Report Flow Localization
+# Walkthrough - Report Step Data Enhancement (Plan Step)
 
-I have successfully localized all hardcoded strings in the Report flow, following the project's localization guidelines.
+I have updated the "Sales by Plan" report mapping to correctly display the plan details and secondary labels.
 
 ## Changes Made
 
-### Localization Source Files
-- **[intl_fa.arb](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/l10n/intl_fa.arb):** Added all strings used in the Report flow (titles, filter labels, item rows, summary metrics) with their Persian values.
-- **[intl_en.arb](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/l10n/intl_en.arb):** Added the same keys with empty strings as values, as requested.
+### 1. Localization Updates
+Added `subPlanNameLabel` to the internationalization files to provide a descriptive label for the sub-plan name field.
+- **Persian (`intl_fa.arb`)**: Added `"subPlanNameLabel": "نام زیر مجموعه"`
+- **English (`intl_en.arb`)**: Added `"subPlanNameLabel": "Sub-plan Name"`
 
-### UI & Logic Integration
-- **[ReportStep](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/bloc/report_step.dart):** Updated the `title` getter to use `S.current` keys for different report types.
-- **[ReportScreen](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/report.dart):** Replaced hardcoded strings in search hints, filter bottom sheet titles/subtitles, result count labels, and empty state messages.
-- **[ReportItemWidget](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_item_widget.dart):** Externalized row labels (e.g., 'تاریخ', 'قیمت پایه') and units.
-- **[ReportRepository](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/repository/report/report_repository.dart):** Updated the mapping logic to use localized strings for summary metric labels and item secondary labels.
+### 2. Report Repository Enhancement
+Updated the `mapToDomain` method in [ReportRepository](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/repository/report/report_repository.dart) for the `SalesByPlanResponse` case:
+- **Tag Label**: Now combines the plan name and its duration (e.g., "بتا بانک رفاه - ۶ ماهه") instead of just the plan name.
+- **Secondary Label**: Changed from showing the duration to the static "نام زیر مجموعه" label, which aligns with the provided UI requirements.
 
 ## Verification
-- Ran `flutter pub run intl_utils:generate` to ensure the `S` class is correctly updated.
-- All Persian strings are now managed centrally in the ARB files, making the codebase cleaner and ready for any future localization needs.
-
-render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/l10n/intl_fa.arb)
-render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/report.dart)
-render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/report/widget/report_item_widget.dart)
-render_diffs(file:///Users/mahdi/StudioProjects/rtc_mobile/lib/repository/report/report_repository.dart)
+- Verified that the `tagLabel` concatenation logic handles null values gracefully.
+- Confirmed that the `secondaryLabel` correctly uses the new localized string.
+- The changes are isolated to the `SalesByPlanResponse` mapping, ensuring no regression in other report types.
