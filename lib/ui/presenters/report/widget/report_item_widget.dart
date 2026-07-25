@@ -51,8 +51,10 @@ class ReportItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 4,
                 children: [
-                  Expanded(
+                  Flexible(
                     child: Text(
                       item.title,
                       maxLines: step == ReportStep.products ? 2 : 1,
@@ -62,18 +64,16 @@ class ReportItemWidget extends StatelessWidget {
                             ? FontWeight.w700
                             : FontWeight.w500,
                         color: AppColors.grayPalette.shade900,
+
                       ),
                     ),
                   ),
                   if (step == ReportStep.sales)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(
-                        '#',
-                        style: theme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.grayPalette.shade900,
-                        ),
+                    Text(
+                      '#',
+                      style: theme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.grayPalette.shade900,
                       ),
                     ),
                 ],

@@ -169,36 +169,25 @@ class _ReportScreenState extends State<ReportScreen> {
     ReportCubit cubit,
     ReportState state,
   ) {
-    return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Expanded(
-            child: RtcChipList(
-              chips: _getFilterChips(state.step),
-              isChipSelected: (index, chip) {
-                if (chip.id == 1) return state.selectedPlanId != null;
-                if (chip.id == 2) return state.selectedCategoryId != null;
-                if (chip.id == 3) return state.selectedParentCategoryId != null;
-                if (chip.id == 4)
-                  return state.dateOptionId != null || state.startDate != null;
-                return false;
-              },
-              onChipTap: (index, chip) {
-                if (chip.id == 1) _showPlanFilter(context, cubit, state);
-                if (chip.id == 2)
-                  _showCategoryFilter(context, cubit, state, false);
-                if (chip.id == 3)
-                  _showCategoryFilter(context, cubit, state, true);
-                if (chip.id == 4) _showDateFilter(context, cubit, state);
-              },
-              onChipClose: (index, chip) => _cubit.onChipClose(chip),
-            ),
-          ),
-        ],
-      ),
+    return RtcChipList(
+      chips: _getFilterChips(state.step),
+      isChipSelected: (index, chip) {
+        if (chip.id == 1) return state.selectedPlanId != null;
+        if (chip.id == 2) return state.selectedCategoryId != null;
+        if (chip.id == 3) return state.selectedParentCategoryId != null;
+        if (chip.id == 4)
+          return state.dateOptionId != null || state.startDate != null;
+        return false;
+      },
+      onChipTap: (index, chip) {
+        if (chip.id == 1) _showPlanFilter(context, cubit, state);
+        if (chip.id == 2)
+          _showCategoryFilter(context, cubit, state, false);
+        if (chip.id == 3)
+          _showCategoryFilter(context, cubit, state, true);
+        if (chip.id == 4) _showDateFilter(context, cubit, state);
+      },
+      onChipClose: (index, chip) => _cubit.onChipClose(chip),
     );
   }
 
