@@ -20,14 +20,7 @@ class ReportSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 5,
-            offset: const Offset(0, 0),
-            spreadRadius: 0,
-          ),
-        ],
+        boxShadow: AppColors.summaryShadow,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

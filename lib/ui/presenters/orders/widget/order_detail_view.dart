@@ -6,6 +6,7 @@ import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/constants.dart';
+import '../../../../core/utils/id_formatter.dart';
 import '../../../../generated/l10n.dart';
 import '../../../router/app_route.dart';
 import '../../../widget/rtc_appbar.dart';
@@ -280,7 +281,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       fields: [
         ReceiptField(
           label: S.current.proInvoiceNumberLabel,
-          value: OrderMapper.formatDisplayId(state.selectedOrder!.id),
+          value: IdFormatter.formatDisplayId(state.selectedOrder!.id),
         ),
         ReceiptField(
           label: S.current.customerLabelWithColon,

@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
+import '../../../../core/utils/id_formatter.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
@@ -397,7 +398,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         .getPreInvoiceHtml(orderId)
         .then((html) async {
           final tempDir = await getTemporaryDirectory();
-          final displayId = OrderMapper.formatDisplayId(orderId);
+          final displayId = IdFormatter.formatDisplayId(orderId);
           final targetName = 'pre_invoice_$displayId';
 
           debugPrint('>> [PDF] Starting generation for Order: $orderId');

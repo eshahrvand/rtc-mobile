@@ -4,6 +4,7 @@ import '../../../../generated/l10n.dart';
 import 'bloc/report_cubit.dart';
 import 'bloc/report_state.dart';
 import 'bloc/report_step.dart';
+import 'widget/report_detail_bottom_sheet.dart';
 import 'widget/report_item_widget.dart';
 import 'widget/report_summary_card.dart';
 import '../../widget/rtc_search_appbar.dart';
@@ -273,8 +274,12 @@ class _ReportScreenState extends State<ReportScreen> {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-      itemCount: state.filteredItems.length + (state.hasMoreData ? 1 : 0),
+      itemCount: state.filteredItems.length + (state.hasMoreData ? 1 : 0) + 1,
       itemBuilder: (context, index) {
+        if (index == state.filteredItems.length + (state.hasMoreData ? 1 : 0)) {
+          return const SizedBox(height: 32);
+        }
+
         if (index == state.filteredItems.length) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
@@ -286,7 +291,11 @@ class _ReportScreenState extends State<ReportScreen> {
           item: state.filteredItems[index],
           step: state.step,
           onTap: () {
-            // TODO: Open bottom sheet detail
+            ReportDetailBottomSheet.show(
+              context,
+              item: state.filteredItems[index],
+              step: state.step,
+            );
           },
         );
       },

@@ -2,6 +2,7 @@ import 'package:rtc_mobile/core/enums/order_status.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import 'package:rtc_mobile/core/utils/date_time_utils.dart';
 import 'package:rtc_mobile/core/utils/file_utils.dart';
+import 'package:rtc_mobile/core/utils/id_formatter.dart';
 import 'package:rtc_mobile/data_source/remote/orders/model/order_dto_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 
@@ -9,13 +10,6 @@ import '../../../../core/models/customer_model.dart';
 import '../../../../core/models/order_model.dart';
 
 class OrderMapper {
-  static String formatDisplayId(String id) {
-    if (id.contains('-')) {
-      return id.split('-').first.toUpperCase();
-    }
-    return id.substring(0, id.length > 8 ? 8 : id.length).toUpperCase();
-  }
-
   static OrderSummaryModel mapToSummary(OrderDtoModel dto) {
     final dateStr = DateTimeUtils.formatToJalali(dto.createdAt);
     final totalQuantity = (dto.lines ?? []).fold<int>(
@@ -25,7 +19,7 @@ class OrderMapper {
 
     return OrderSummaryModel(
       id: dto.id,
-      orderId: formatDisplayId(dto.id),
+      orderId: IdFormatter.formatDisplayId(dto.id),
       customerName: '${dto.customer.firstName} ${dto.customer.lastName}',
       itemCount: S.current.itemCount(totalQuantity),
       status: dto.status,
@@ -199,7 +193,7 @@ class OrderMapper {
   static CustomerOrderItemModel mapToCustomerOrderItem(OrderDtoModel dto) {
     return CustomerOrderItemModel(
       id: dto.id,
-      orderId: formatDisplayId(dto.id),
+      orderId: IdFormatter.formatDisplayId(dto.id),
       amount: dto.total.formatCurrency,
       date: DateTimeUtils.formatToJalaliDate(dto.createdAt),
       status: dto.status,

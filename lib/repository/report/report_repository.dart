@@ -1,4 +1,5 @@
 import '../../core/models/report_item_model.dart';
+import '../../core/utils/id_formatter.dart';
 import '../../data_source/remote/report/model/report_dto_model.dart';
 import '../../data_source/remote/report/report_service.dart';
 import '../../generated/l10n.dart';
@@ -162,7 +163,7 @@ class ReportRepository {
 
         return ReportItemModel(
           id: dto.id,
-          title: dto.id.length > 10 ? dto.id.substring(0, 10) : dto.id, // Fallback title
+          title: IdFormatter.formatDisplayId(dto.id),
           amount: dto.orderTotal?.toStringAsFixed(0),
           tagLabel: dto.planName != null && dto.subPlanDuration != null
               ? '${dto.planName} - ${S.current.monthsCountLabel(dto.subPlanDuration.toString())}'
