@@ -86,7 +86,7 @@ class ReportItemWidget extends StatelessWidget {
             ),
           ],
         ),
-        if (step == ReportStep.plan)
+        if (step == ReportStep.plan || step == ReportStep.category)
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: RtcDivider(
@@ -189,7 +189,7 @@ class ReportItemWidget extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: step == ReportStep.plan
+      children: step == ReportStep.plan || step == ReportStep.category
           ? [secondaryWidget, tagWidget]
           : [tagWidget, secondaryWidget],
     );

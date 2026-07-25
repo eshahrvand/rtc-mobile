@@ -188,7 +188,7 @@ class ReportRepository {
         id: dto.categoryId,
         title: dto.categoryName ?? '',
         secondaryLabel: S.current.parentCategorySecondaryLabel,
-        tagLabel: dto.parentCategoryName,
+        tagLabel: dto.parentCategoryName ?? "__",
         amount: dto.totalSalesAmount?.toStringAsFixed(0),
         quantity: dto.totalOrders?.toString(),
       )).toList();
