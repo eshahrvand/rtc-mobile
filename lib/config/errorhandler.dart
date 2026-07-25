@@ -75,6 +75,9 @@ final Map<String, _MessageFn> _errorMessages = <String, _MessageFn>{
   'order_immutable': (_) => 'این سفارش قابل تغییر نیست',
   'invalid_order_status': (_) => 'وضعیت سفارش اجازهٔ این عملیات را نمی‌دهد',
   'order_not_editable': (_) => 'سفارش فقط در وضعیت پیش‌فاکتور قابل ویرایش است',
+  'order_total_limit_exceeded': (p) => p?['max_total'] != null
+      ? 'مبلغ کل سفارش از حداکثر مجاز (${_fa(p?['max_total'])} ریال) بیشتر است'
+      : 'مبلغ کل سفارش از حداکثر مجاز بیشتر است',
   'agent_required': (_) => 'انتخاب نماینده الزامی است',
   'pre_invoice_unavailable': (_) =>
       'پیش‌فاکتور فقط برای سفارش‌های در وضعیت پیش‌فاکتور در دسترس است',

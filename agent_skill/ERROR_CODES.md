@@ -64,6 +64,7 @@ For **400 validation errors**, `detail` is a field map (`{ "mobile": ["..."] }`)
 | `order_immutable` | 422 | — | terse | editing a rejected/locked order |
 | `invalid_order_status` | 422 | — | detailed | operation not valid for current status |
 | `order_not_editable` | 422 | — | detailed | order edited outside `pre_invoice` |
+| `order_total_limit_exceeded` | 422 | `order_total:int`, `max_total:int` | detailed | order total exceeds the configured maximum |
 | `agent_required` | 400 | — | detailed | staff created an order without an agent |
 | `pre_invoice_unavailable` | 422 | — | terse | pre-invoice requested for non-pre-invoice order |
 | `sales_queue_empty` | 404 | — | detailed | no unassigned orders to pick |

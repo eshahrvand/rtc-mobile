@@ -15,7 +15,7 @@ class ReportSummaryCard extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
 
     return Container(
-      width: 170, // Increased width for long Persian labels
+      width: 170,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
