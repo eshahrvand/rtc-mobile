@@ -237,15 +237,13 @@ class _ReportScreenState extends State<ReportScreen> {
 
     return SizedBox(
       height: 110,
-      child: ListView.builder(
+      child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         scrollDirection: Axis.horizontal,
         itemCount: state.summaryMetrics.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: ReportSummaryCard(metric: state.summaryMetrics[index]),
-          );
+          return ReportSummaryCard(metric: state.summaryMetrics[index]);
         },
       ),
     );
