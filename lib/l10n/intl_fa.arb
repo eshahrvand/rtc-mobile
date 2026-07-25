@@ -377,7 +377,7 @@
   "totalSalesAmountLabel": "جمع مبلغ فروش",
   "purchaseAmountLabel": "مبلغ خرید",
   "salesReportTitle": "گزارش فروش",
-  "planReportTitle": "گزارش طرح‌ها",
+  "planReportTitle": "گزارش طرح\u200Cهای فروش",
   "categoryReportTitle": "گزارش دسته‌بندی کالاها",
   "productReportTitle": "گزارش محصولات",
   "totalSalesLabel": "مبلغ کل فروش",

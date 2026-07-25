@@ -43,14 +43,14 @@ class ReportItemWidget extends StatelessWidget {
   }
 
   Widget _buildHeader(TextTheme theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 4,
                 children: [
@@ -64,7 +64,6 @@ class ReportItemWidget extends StatelessWidget {
                             ? FontWeight.w700
                             : FontWeight.w500,
                         color: AppColors.grayPalette.shade900,
-
                       ),
                     ),
                   ),
@@ -78,23 +77,28 @@ class ReportItemWidget extends StatelessWidget {
                     ),
                 ],
               ),
-              if (item.sku != null)
-                Text(
-                  '${S.current.sku}: ${item.sku}',
-                  style: theme.bodySmall!.copyWith(
-                    color: AppColors.grayPalette.shade600,
-                    fontSize: 12,
-                  ),
-                ),
-            ],
+            ),
+            const SizedBox(width: 8),
+            RtcImage(
+              image: '$baseImage/arrow_left_report.svg',
+              width: 24,
+              height: 24,
+            ),
+          ],
+        ),
+        if (step == ReportStep.plan)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: RtcDivider(height: 0.5, color: AppColors.grayPalette.shade200),
           ),
-        ),
-        const SizedBox(width: 8),
-        RtcImage(
-          image: '$baseImage/arrow_left_report.svg',
-          width: 24,
-          height: 24,
-        ),
+        if (item.sku != null)
+          Text(
+            '${S.current.sku}: ${item.sku}',
+            style: theme.bodySmall!.copyWith(
+              color: AppColors.grayPalette.shade600,
+              fontSize: 12,
+            ),
+          ),
       ],
     );
   }
@@ -120,6 +124,12 @@ class ReportItemWidget extends StatelessWidget {
           ),
         ];
       case ReportStep.plan:
+        return [
+          _buildMiddleRow(theme),
+          _buildLabelRow(theme, S.current.orderCountLabel, item.quantity),
+          _buildAmountRow(theme, S.current.purchaseAmountLabel, item.amount),
+        ];
+
       case ReportStep.category:
         return [
           _buildMiddleRow(theme),
@@ -149,6 +159,7 @@ class ReportItemWidget extends StatelessWidget {
               ),
             ),
           ),
+
         if (item.secondaryLabel != null ||
             (step == ReportStep.sales && item.quantity != null))
           Row(
@@ -303,7 +314,12 @@ class ReportItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                RtcImage(image: "$baseImage/rial.svg", width: 20, height: 20 , color: AppColors.grayPalette.shade900,),
+                RtcImage(
+                  image: "$baseImage/rial.svg",
+                  width: 20,
+                  height: 20,
+                  color: AppColors.grayPalette.shade900,
+                ),
               ],
             ),
           ),
