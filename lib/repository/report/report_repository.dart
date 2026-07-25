@@ -198,6 +198,7 @@ class ReportRepository {
         title: dto.productName ?? '',
         sku: dto.productSku,
         tagLabel: dto.categoryName,
+        secondaryLabel: S.current.categoryLabel,
         amount: dto.basePrice,
         secondaryAmount: dto.totalSalesAmount?.toStringAsFixed(0),
         quantity: dto.totalOrders?.toString(),

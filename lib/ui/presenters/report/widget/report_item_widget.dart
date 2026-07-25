@@ -97,9 +97,16 @@ class ReportItemWidget extends StatelessWidget {
         if (item.sku != null)
           Text(
             '${S.current.sku}: ${item.sku}',
-            style: theme.bodySmall!.copyWith(
+            style: theme.bodyLarge!.copyWith(
               color: AppColors.grayPalette.shade600,
-              fontSize: 12,
+            ),
+          ),
+        if (step == ReportStep.products)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: RtcDivider(
+              height: 0.5,
+              color: AppColors.grayPalette.shade200,
             ),
           ),
       ],
@@ -189,7 +196,10 @@ class ReportItemWidget extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: step == ReportStep.plan || step == ReportStep.category
+      children:
+          step == ReportStep.plan ||
+              step == ReportStep.category ||
+              step == ReportStep.products
           ? [secondaryWidget, tagWidget]
           : [tagWidget, secondaryWidget],
     );
