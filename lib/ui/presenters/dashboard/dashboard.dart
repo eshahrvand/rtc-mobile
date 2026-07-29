@@ -117,11 +117,14 @@ class _MainViewState extends State<MainView> {
               if (OrderDetailScreenTracker.currentlyOpenOrderId == orderId) {
                 // Already on the detail screen for this order.
                 // Clear the pending nav to prevent duplicate pushes,
-                // then return. The OrderDetailView itself has its own listener
-                // on its cubit (which shares the link bus) to trigger data refresh.
+                // then return.
                 context.read<OrdersCubit>().clearPendingNavigation();
                 return;
               }
+
+              // Double-check synchronous state to catch race conditions 
+              // where the link triggers faster than the screen can mount.
+              if (state.pendingNavigation == null) return;
 
               context.read<OrdersCubit>().clearPendingNavigation();
               

@@ -49,6 +49,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     super.initState();
     _pageController = PageController();
     OrderDetailScreenTracker.currentlyOpenOrderId = widget.orderId;
+    OrderDetailScreenTracker.activeInstanceToken = hashCode;
   }
 
   @override
@@ -56,6 +57,9 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     _pageController.dispose();
     if (OrderDetailScreenTracker.currentlyOpenOrderId == widget.orderId) {
       OrderDetailScreenTracker.currentlyOpenOrderId = null;
+    }
+    if (OrderDetailScreenTracker.activeInstanceToken == hashCode) {
+      OrderDetailScreenTracker.activeInstanceToken = null;
     }
     super.dispose();
   }
@@ -74,6 +78,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             listenWhen: (prev, curr) =>
                 prev.deepLinkPaymentOutcome != curr.deepLinkPaymentOutcome,
             listener: (context, state) {
+              if (OrderDetailScreenTracker.activeInstanceToken != hashCode) {
+                return;
+              }
+
               if (state.deepLinkPaymentOutcome == PaymentOutcome.success) {
                 _showSuccessReceipt(context, state);
               } else if (state.deepLinkPaymentOutcome == PaymentOutcome.failed) {
@@ -89,6 +97,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             listenWhen: (prev, curr) =>
                 prev.pendingNavigation != curr.pendingNavigation,
             listener: (context, state) {
+              if (OrderDetailScreenTracker.activeInstanceToken != hashCode) {
+                return;
+              }
+
               if (state.pendingNavigation != null &&
                   state.selectedOrder != null &&
                   state.pendingNavigation!['orderId'] ==

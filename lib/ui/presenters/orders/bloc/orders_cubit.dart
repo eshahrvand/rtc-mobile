@@ -248,7 +248,10 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void fetchOrderDetail(String orderId, {String? paymentOutcome}) {
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
+    emit(state.copyWith(
+      status: OrdersRequestStatus.loading,
+      deepLinkPaymentOutcome: PaymentOutcome.initial,
+    ));
     _initTolerance();
 
     _ordersRepo

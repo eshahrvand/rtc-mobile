@@ -1,5 +1,5 @@
-- [x] Create `OrderDetailScreenTracker` utility
-- [x] Integrate tracker into `OrderDetailView` lifecycle
-- [x] Update `DashboardScreen` interception logic to use tracker
-- [x] Standardize deep link broadcast bus across Cubit instances
-- [x] Remove all debug logs and project-wide prints
+- [x] Update `OrderDetailScreenTracker` with instance token support
+- [x] Integrate instance token into `OrderDetailView` lifecycle and listeners
+- [x] Implement defensive navigation guard in `DashboardScreen`
+- [x] Refine `OrdersCubit` state reset logic
+- [x] Final verification of "Back" navigation after successful payment

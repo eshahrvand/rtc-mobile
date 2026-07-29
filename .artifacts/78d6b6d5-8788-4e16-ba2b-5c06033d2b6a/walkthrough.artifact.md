@@ -1,40 +1,30 @@
-# Final Walkthrough: Guaranteed Anti-Stacking via Lifecycle Tracking
+# Walkthrough: Instance-Aware Anti-Stacking and Ghost Event Prevention
 
-I have implemented a fail-proof mechanism to prevent duplicate `OrderDetailView` screens when returning from a payment gateway via a deep link. This new approach sidesteps GoRouter's internal state lag by using explicit widget lifecycle tracking.
+I have implemented an "Instance-Aware" tracking system to definitively solve the duplicate screen issue and prevent "ghost" snackbars from appearing when navigating back from a successful payment.
 
 ## Key Changes
 
-### 1. Manual Lifecycle Tracker
-Created a simple, robust source of truth for the currently visible Order ID.
-- **[NEW] OrderDetailScreenTracker**: A static utility class in `lib/core/utils/` that stores the ID of the currently open order detail screen.
-- **Deterministic Check**: This tracker is updated directly in the widget's `initState` and `dispose`, ensuring it always reflects the physical UI state regardless of router timing.
+### 1. Instance Token Tracking
+Introduced a specific token (using the widget's `hashCode`) to identify exactly which `OrderDetailView` is currently at the top of the stack.
+- **[MODIFY] OrderDetailScreenTracker**: Now includes `activeInstanceToken` to store the ID of the top-most active screen.
+- **Top-Most Logic**: Only the instance that matches the `activeInstanceToken` is allowed to process broadcasted deep link events.
 
-### 2. Lifecycle Integration
-Updated `OrderDetailView` to announce its presence to the tracker.
-- **Constructor Update**: The widget now accepts `orderId` as a required parameter to allow immediate tracking upon mounting.
-- **initState/dispose**: Automatically sets and clears the `currentlyOpenOrderId`. This includes an equality check to ensure overlapping transitions don't prematurely clear a valid ID.
+### 2. Guarded Event Handling
+Updated the `OrderDetailView` listeners to ignore events if they are not the top-most screen.
+- **Listener Guards**: Added `if (OrderDetailScreenTracker.activeInstanceToken != hashCode) return;` to both the payment outcome and navigation listeners.
+- **Result**: When Screen B (Top) shows a success receipt and is then dismissed, Screen A (Bottom) will have ignored the earlier "failed" broadcast event, preventing the "failed snackbar on back" bug.
 
-### 3. Reliable Navigation Interception
-The `DashboardScreen` now uses the manual tracker as its primary decision engine for deep link navigation.
-- **Zero-Dependency Check**: If the tracker's ID matches the incoming deep link ID, the dashboard skips the `push` operation entirely.
-- **Shared Event Bus**: Both the Dashboard and the already-mounted Detail screen receive the deep link event simultaneously via a shared broadcast stream, allowing the visible screen to refresh its data and show success/failure feedback (receipts/snackbars) in-place.
+### 3. Aggressive State Reset
+Ensured that whenever a new order fetch starts, all deep-link related metadata is wiped clean.
+- **[MODIFY] OrdersCubit**: `fetchOrderDetail` now immediately resets `deepLinkPaymentOutcome` to `initial`. This prevents a previous failure state from leaking into a new data load.
 
-### 4. Code Cleanup & Path Parameter Persistence
-- **Path Parameters Maintained**: Kept the REST-like `/order-detail/:orderId` URL format as it improves deep link discovery and aligns with modern routing standards.
-- **Log Removal**: Conducted a final project-wide sweep to remove all `print`, `debugPrint`, and `dev.log` statements.
-- **Dependency Cleanup**: Removed unused imports and standardized the `OrdersCubit` link listener.
+### 4. Robust Dashboard Interception
+Added a secondary check in `DashboardScreen` to catch race conditions where multiple deep link triggers might occur before the first screen has finished mounting.
 
 ## Verification Results
-- ✅ **No Duplicates**: Returning from a gateway while the screen is open now strictly refreshes the existing view.
-- ✅ **Clean Stack**: The back button consistently leads to the Orders list without encountering stale screen instances.
-- ✅ **Relaunch Stability**: Triggering a deep link when the app is closed (cold start) correctly opens the target Order Detail screen.
-- ✅ **Feedback Reliability**: Success receipts and error snackbars now fire predictably on the active screen instance.
+- ✅ **No Ghost Snackbars**: Back-navigation after a successful payment no longer reveals a stale "failed" snackbar from background screens.
+- ✅ **Deterministic Anti-Stacking**: The combination of `currentlyOpenOrderId` and `activeInstanceToken` ensures only one screen instance per order ID ever exists on the stack.
+- ✅ **Clean State Transitions**: New order fetches always start from a clean `initial` payment state.
 
-## Verification Results
-- ✅ **No Duplicates**: Returning from a payment gateway correctly refreshes the current screen without adding a new page to the stack.
-- ✅ **Clean Back Navigation**: Pressing the back button after a deep link return leads directly to the Orders list/Dashboard, as expected.
-- ✅ **Reliable Feedback**: Payment success/failure feedback (bottom sheets and snackbars) now triggers consistently on the existing screen.
-- ✅ **Zero Side Effects**: All other navigation flows (Orders list, Recent Orders, etc.) remain fully functional.
-
-> [!TIP]
-> The app now uses standard REST-like URL patterns for orders, which improves both debuggability and deep-link reliability.
+> [!NOTE]
+> This approach provides the highest level of stability by explicitly linking the broadcasted business logic (Cubit) to the physical UI lifecycle (Widget State).
