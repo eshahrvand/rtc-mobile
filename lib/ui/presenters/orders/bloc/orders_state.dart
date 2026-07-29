@@ -14,6 +14,8 @@ enum PrintStatus { initial, loading, success, error }
 
 enum GatewayType { online, offline }
 
+enum PaymentOutcome { initial, success, failed }
+
 @freezed
 class OrdersState with _$OrdersState {
   const factory OrdersState({
@@ -39,6 +41,10 @@ class OrdersState with _$OrdersState {
     Jalali? startDate,
     Jalali? endDate,
     String? selectedDateOptionId,
+
+    // Deep Link Flow
+    @Default(PaymentOutcome.initial) PaymentOutcome deepLinkPaymentOutcome,
+    Map<String, dynamic>? pendingNavigation,
 
     // Clearance Flow
     @Default(ClearanceStep.initial) ClearanceStep clearanceStep,

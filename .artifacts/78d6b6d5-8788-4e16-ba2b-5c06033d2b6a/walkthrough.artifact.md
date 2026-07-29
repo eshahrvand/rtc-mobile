@@ -1,20 +1,25 @@
-# Walkthrough - Report Step Data Enhancement (Plan Step)
+# Walkthrough: Final Refinements to Receipt and Navigation
 
-I have updated the "Sales by Plan" report mapping to correctly display the plan details and secondary labels.
+I have finalized the deep link return handling with specific refinements to the receipt content and navigation logic to ensure a seamless experience.
 
 ## Changes Made
 
-### 1. Localization Updates
-Added `subPlanNameLabel` to the internationalization files to provide a descriptive label for the sub-plan name field.
-- **Persian (`intl_fa.arb`)**: Added `"subPlanNameLabel": "نام زیر مجموعه"`
-- **English (`intl_en.arb`)**: Added `"subPlanNameLabel": "Sub-plan Name"`
+### 1. Refined Success Receipt
+Updated the success receipt logic to use existing localization keys and dynamic data extraction.
+- **Dynamic Field Resolution**: Scans `disbursementRecords` and `settlementRecords` for the latest successful transaction values.
+- **Conditional Fields**: The **Settlement Amount** is now only displayed if a successful settlement actually occurred.
+- **No UI Regressions**: Strictly used existing localization keys (`settlementAmountLabel` vs `settlementAmountLabelColon`) to ensure consistency with the established UI patterns.
+- [order_detail_view.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/orders/widget/order_detail_view.dart)
 
-### 2. Report Repository Enhancement
-Updated the `mapToDomain` method in [ReportRepository](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/repository/report/report_repository.dart) for the `SalesByPlanResponse` case:
-- **Tag Label**: Now combines the plan name and its duration (e.g., "بتا بانک رفاه - ۶ ماهه") instead of just the plan name.
-- **Secondary Label**: Changed from showing the duration to the static "نام زیر مجموعه" label, which aligns with the provided UI requirements.
+### 2. Tightened Anti-Stacking Logic
+Refined the navigation orchestration to prevent redundant screen instances on the stack.
+- **Dashboard Interception**: Improved the route matching logic in `DashboardScreen` to accurately detect if the user is already on the requested Order Detail page.
+- **Event Consumption**: `OrderDetailView` now "consumes" the deep link event if it matches the active order, triggering a refresh without a route push.
+- This ensures the **Back button** correctly returns to the previous screen (e.g., Orders list) instead of reloading the same order.
+- [dashboard.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/dashboard/dashboard.dart)
+- [order_detail_view.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/orders/widget/order_detail_view.dart)
 
 ## Verification
-- Verified that the `tagLabel` concatenation logic handles null values gracefully.
-- Confirmed that the `secondaryLabel` correctly uses the new localized string.
-- The changes are isolated to the `SalesByPlanResponse` mapping, ensuring no regression in other report types.
+- ✅ **Receipt Accuracy**: Clearance and Settlement amounts are correctly extracted and displayed using only available project text.
+- ✅ **Navigation Stability**: Returning from a link while on the detail screen refreshes data instantly without adding to the navigation history.
+- ✅ **Zero UI Side Effects**: The visual layout and design of all screens remain unchanged.

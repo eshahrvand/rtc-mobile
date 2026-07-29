@@ -67,21 +67,52 @@ class OrdersCubit extends Cubit<OrdersState> {
     _initTolerance();
     fetchOrders();
     _initDeepLinks();
+
+    // Check for initial deep link (cold start)
+    _appLinks.getInitialLink().then((uri) {
+      if (uri != null) _handleIncomingUri(uri);
+    }).catchError((_) {});
   }
 
   void _initDeepLinks() {
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      if (uri.path.contains('callback') ||
-          uri.host.contains('callback') ||
-          uri.path.contains('disbursement') ||
-          uri.path.contains('settlement')) {
-        if (state.selectedOrder != null) {
-          fetchOrderDetail(state.selectedOrder!.id);
-        } else {
-          fetchOrders();
-        }
-      }
+      _handleIncomingUri(uri);
     });
+  }
+
+  void _handleIncomingUri(Uri uri) {
+    debugPrint('>> [DeepLink] Incoming URI: $uri');
+
+    // Expected pattern: https://panel.rtciran.com/orders/<id>?payment=success&flow=settlement
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.length >= 2 && pathSegments[0] == 'orders') {
+      final orderId = pathSegments[1];
+      final payment = uri.queryParameters['payment'];
+      final flow = uri.queryParameters['flow'];
+
+      emit(
+        state.copyWith(
+          pendingNavigation: {
+            'orderId': orderId,
+            'payment': payment,
+            'flow': flow,
+          },
+        ),
+      );
+    } else if (uri.path.contains('callback') ||
+        uri.host.contains('callback') ||
+        uri.path.contains('disbursement') ||
+        uri.path.contains('settlement')) {
+      if (state.selectedOrder != null) {
+        fetchOrderDetail(state.selectedOrder!.id);
+      } else {
+        fetchOrders();
+      }
+    }
+  }
+
+  void clearPendingNavigation() {
+    emit(state.copyWith(pendingNavigation: null));
   }
 
   void _initTolerance() {
@@ -216,7 +247,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         });
   }
 
-  void fetchOrderDetail(String orderId) {
+  void fetchOrderDetail(String orderId, {String? paymentOutcome}) {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
     _initTolerance();
 
@@ -235,6 +266,13 @@ class OrdersCubit extends Cubit<OrdersState> {
               ? 1
               : 0;
 
+          PaymentOutcome outcome = PaymentOutcome.initial;
+          if (paymentOutcome == 'success') {
+            outcome = PaymentOutcome.success;
+          } else if (paymentOutcome == 'failed') {
+            outcome = PaymentOutcome.failed;
+          }
+
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
@@ -244,8 +282,14 @@ class OrdersCubit extends Cubit<OrdersState> {
               settlementOperation: _createSettlementOp(detail),
               isSettlementCompleted: isSettled,
               walletName: detail.creditPlan?.planName,
+              deepLinkPaymentOutcome: outcome,
             ),
           );
+
+          // Reset outcome immediately after emission to avoid re-triggering on UI rebuilds
+          if (outcome != PaymentOutcome.initial) {
+            emit(state.copyWith(deepLinkPaymentOutcome: PaymentOutcome.initial));
+          }
         })
         .catchError((e) {
           emit(

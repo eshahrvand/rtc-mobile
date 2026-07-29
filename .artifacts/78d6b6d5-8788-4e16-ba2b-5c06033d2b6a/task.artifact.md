@@ -1,5 +1,10 @@
-- [x] Add `subPlanNameLabel` to localization files
-    - [x] Update `intl_fa.arb`
-    - [x] Update `intl_en.arb`
-- [x] Update `ReportRepository` mapping logic for `SalesByPlanResponse`
-- [x] Verify changes
+- [x] Extend `OrdersState` with deep link outcome and navigation fields
+- [x] Implement URI parsing and orchestration in `OrdersCubit`
+- [x] Fix `getInitialLink` method name in `OrdersCubit`
+- [x] Update `router.dart` with dynamic parameter support for `/order-detail`
+- [x] Implement reactive navigation in `DashboardScreen`
+- [x] Implement outcome UI logic in `OrderDetailView`
+- [x] Verify app launch and cold start behavior
+- [x] Refine `OrderDetailView` receipt to show clearance/settlement fees
+- [x] Add `pendingNavigation` interception in `OrderDetailView` to prevent route stacking
+- [x] Final verification of navigation flow and receipt content
