@@ -85,23 +85,13 @@ final router = GoRouter(
       path: AppRoutes.orderDetail,
       name: 'OrderDetailView',
       builder: (context, state) {
-        String orderId;
-        String? paymentOutcome;
-
-        if (state.extra is String) {
-          orderId = state.extra as String;
-        } else if (state.extra is Map<String, dynamic>) {
-          final extra = state.extra as Map<String, dynamic>;
-          orderId = extra['orderId'] as String;
-          paymentOutcome = extra['payment'] as String?;
-        } else {
-          // Fallback or error handling
-          return const Scaffold(body: Center(child: Text('Invalid Order Detail Request')));
-        }
+        final orderId = state.pathParameters['orderId']!;
+        final paymentOutcome = state.uri.queryParameters['payment'];
 
         return BlocProvider(
-          create: (context) => OrdersCubit()..fetchOrderDetail(orderId, paymentOutcome: paymentOutcome),
-          child: const OrderDetailView(),
+          create: (context) =>
+              OrdersCubit()..fetchOrderDetail(orderId, paymentOutcome: paymentOutcome),
+          child: OrderDetailView(orderId: orderId),
         );
       },
     ),

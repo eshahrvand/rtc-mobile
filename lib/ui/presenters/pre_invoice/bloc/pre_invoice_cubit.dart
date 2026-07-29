@@ -109,8 +109,6 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           ),
         );
       } catch (e, stackTrace) {
-        print('>>k100 Error in PreInvoiceCubit.init mapping: $e');
-        print(stackTrace);
         emit(
           state.copyWith(
             status: PreInvoiceRequestStatus.error,

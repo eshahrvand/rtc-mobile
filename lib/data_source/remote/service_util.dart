@@ -19,38 +19,19 @@ class ServiceUtil {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          print('>> [API REQUEST] ${options.method} ${options.uri}');
-          if (options.data != null) {
-            print('>> [API BODY] ${options.data}');
-          }
-
           final token = prefs.accessToken;
           if (token != null) {
-            print('>> ACCESS TOKEN: $token');
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          print(
-            '>> [API RESPONSE] ${response.statusCode} ${response.requestOptions.uri}',
-          );
-          print('>> [API DATA] ${response.data}');
           return handler.next(response);
         },
         onError: (DioException e, handler) async {
-          print(
-            '>> [API ERROR] ${e.response?.statusCode} ${e.requestOptions.uri}',
-          );
-          print('>> [API MESSAGE] ${e.message}');
-          if (e.response?.data != null) {
-            print('>> [API DATA] ${e.response?.data}');
-          }
-
           if (e.response?.statusCode == 401) {
             final refreshToken = prefs.refreshToken;
             if (refreshToken != null) {
-              print('>> REFRESH TOKEN: $refreshToken');
               String? newAccess;
               try {
                 // Separate Dio for refresh to avoid cycles
@@ -71,12 +52,8 @@ class ServiceUtil {
 
                 newAccess = access;
 
-                print('>> NEW ACCESS TOKEN: $newAccess');
-                print('>> NEW REFRESH TOKEN: $refresh');
-
                 await prefs.saveTokens(access: newAccess, refresh: refresh);
               } catch (refreshError) {
-                print('>> [SESSION] Refresh failed: $refreshError');
                 await prefs.clearTokens();
                 router.go(AppRoutes.auth);
                 return handler.next(e);
@@ -95,7 +72,6 @@ class ServiceUtil {
                 }
               }
             } else {
-              print('>> [SESSION] No refresh token available');
               await prefs.clearTokens();
 
               router.go(AppRoutes.auth);

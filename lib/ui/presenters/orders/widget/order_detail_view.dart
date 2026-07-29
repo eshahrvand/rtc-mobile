@@ -8,6 +8,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../../core/utils/id_formatter.dart';
+import '../../../../core/utils/order_detail_screen_tracker.dart';
 import '../../../../generated/l10n.dart';
 import '../../../router/app_route.dart';
 import '../../../widget/rtc_appbar.dart';
@@ -24,7 +25,8 @@ import 'order_tab_history.dart';
 import 'orders_ui_helpers.dart';
 
 class OrderDetailView extends StatefulWidget {
-  const OrderDetailView({super.key});
+  final String orderId;
+  const OrderDetailView({super.key, required this.orderId});
 
   @override
   State<OrderDetailView> createState() => _OrderDetailViewState();
@@ -46,11 +48,15 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    OrderDetailScreenTracker.currentlyOpenOrderId = widget.orderId;
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    if (OrderDetailScreenTracker.currentlyOpenOrderId == widget.orderId) {
+      OrderDetailScreenTracker.currentlyOpenOrderId = null;
+    }
     super.dispose();
   }
 

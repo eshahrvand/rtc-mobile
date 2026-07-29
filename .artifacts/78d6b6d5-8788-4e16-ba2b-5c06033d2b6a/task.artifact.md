@@ -1,10 +1,5 @@
-- [x] Extend `OrdersState` with deep link outcome and navigation fields
-- [x] Implement URI parsing and orchestration in `OrdersCubit`
-- [x] Fix `getInitialLink` method name in `OrdersCubit`
-- [x] Update `router.dart` with dynamic parameter support for `/order-detail`
-- [x] Implement reactive navigation in `DashboardScreen`
-- [x] Implement outcome UI logic in `OrderDetailView`
-- [x] Verify app launch and cold start behavior
-- [x] Refine `OrderDetailView` receipt to show clearance/settlement fees
-- [x] Add `pendingNavigation` interception in `OrderDetailView` to prevent route stacking
-- [x] Final verification of navigation flow and receipt content
+- [x] Create `OrderDetailScreenTracker` utility
+- [x] Integrate tracker into `OrderDetailView` lifecycle
+- [x] Update `DashboardScreen` interception logic to use tracker
+- [x] Standardize deep link broadcast bus across Cubit instances
+- [x] Remove all debug logs and project-wide prints

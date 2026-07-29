@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import '../../router/app_route.dart';
+import '../../../core/utils/order_detail_screen_tracker.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/dashboard_state.dart';
 import 'widget/dashboard_app_bar.dart';
@@ -110,24 +111,24 @@ class _MainViewState extends State<MainView> {
           listener: (context, state) {
             if (state.pendingNavigation != null) {
               final nav = state.pendingNavigation!;
-
-              // Check if we are already on the order detail screen for THIS order
-              // to avoid stacking. The OrderDetailView itself also listens and
-              // refreshes if the ID matches.
-              final router = GoRouter.of(context);
-              final isOrderDetailVisible =
-                  router.routerDelegate.currentConfiguration.last.matchedLocation ==
-                      AppRoutes.orderDetail;
-
-              if (isOrderDetailVisible &&
-                  state.selectedOrder != null &&
-                  nav['orderId'] == state.selectedOrder!.id) {
-                // Let OrderDetailView handle the refresh
+              final orderId = nav['orderId'] as String;
+              final payment = nav['payment'] as String?;
+              
+              if (OrderDetailScreenTracker.currentlyOpenOrderId == orderId) {
+                // Already on the detail screen for this order.
+                // Clear the pending nav to prevent duplicate pushes,
+                // then return. The OrderDetailView itself has its own listener
+                // on its cubit (which shares the link bus) to trigger data refresh.
+                context.read<OrdersCubit>().clearPendingNavigation();
                 return;
               }
 
               context.read<OrdersCubit>().clearPendingNavigation();
-              context.push(AppRoutes.orderDetail, extra: nav);
+              
+              final targetPath = AppRoutes.orderDetail.replaceAll(':orderId', orderId);
+              final queryParams = payment != null ? '?payment=$payment' : '';
+              
+              context.push('$targetPath$queryParams');
             }
           },
         ),
