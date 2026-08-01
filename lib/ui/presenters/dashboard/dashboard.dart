@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
+import '../../router/app_route.dart';
+import '../../../core/utils/order_detail_screen_tracker.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/dashboard_state.dart';
 import 'widget/dashboard_app_bar.dart';
@@ -99,6 +102,36 @@ class _MainViewState extends State<MainView> {
                 type: SnackBarType.error,
                 message: state.errorMessage,
               );
+            }
+          },
+        ),
+        BlocListener<OrdersCubit, OrdersState>(
+          listenWhen: (prev, curr) =>
+              prev.pendingNavigation != curr.pendingNavigation,
+          listener: (context, state) {
+            if (state.pendingNavigation != null) {
+              final nav = state.pendingNavigation!;
+              final orderId = nav['orderId'] as String;
+              final payment = nav['payment'] as String?;
+              
+              if (OrderDetailScreenTracker.currentlyOpenOrderId == orderId) {
+                // Already on the detail screen for this order.
+                // Clear the pending nav to prevent duplicate pushes,
+                // then return.
+                context.read<OrdersCubit>().clearPendingNavigation();
+                return;
+              }
+
+              // Double-check synchronous state to catch race conditions 
+              // where the link triggers faster than the screen can mount.
+              if (state.pendingNavigation == null) return;
+
+              context.read<OrdersCubit>().clearPendingNavigation();
+              
+              final targetPath = AppRoutes.orderDetail.replaceAll(':orderId', orderId);
+              final queryParams = payment != null ? '?payment=$payment' : '';
+              
+              context.push('$targetPath$queryParams');
             }
           },
         ),

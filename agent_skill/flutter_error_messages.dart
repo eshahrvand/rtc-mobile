@@ -17,7 +17,18 @@
 /// Shown when a code is missing or not in the map. Never leaks English `detail`.
 const String genericFallback = 'خطایی رخ داد. لطفاً دوباره تلاش کنید';
 
-const List<String> _faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+const List<String> _faDigits = [
+  '۰',
+  '۱',
+  '۲',
+  '۳',
+  '۴',
+  '۵',
+  '۶',
+  '۷',
+  '۸',
+  '۹',
+];
 
 /// Group an integer/double with en-US style thousands separators (',') and a
 /// '.' decimal point. Deterministic, no locale data needed.
@@ -66,12 +77,14 @@ final Map<String, _MessageFn> _errorMessages = <String, _MessageFn>{
   'method_not_allowed': (_) => 'این عملیات مجاز نیست',
   'rate_limited': (_) => 'درخواست‌های زیادی ارسال شد — لطفاً چند لحظه صبر کنید',
   'server_error': (_) => 'خطای سرور رخ داد — لطفاً بعداً دوباره تلاش کنید',
-  'network_error': (_) => 'اتصال به سرور برقرار نشد — اینترنت یا آدرس سرور را بررسی کنید',
+  'network_error': (_) =>
+      'اتصال به سرور برقرار نشد — اینترنت یا آدرس سرور را بررسی کنید',
 
   // --- accounts / OTP ---
   'otp_expired': (_) => 'کد تأیید منقضی شده است — کد جدید دریافت کنید',
   'otp_invalid': (_) => 'کد تأیید واردشده نادرست است',
-  'otp_rate_limited': (_) => 'درخواست‌های زیادی ارسال شد — لطفاً چند لحظه صبر کنید',
+  'otp_rate_limited': (_) =>
+      'درخواست‌های زیادی ارسال شد — لطفاً چند لحظه صبر کنید',
   'user_not_registered': (_) => 'این شماره موبایل در سامانه ثبت نشده است',
 
   // --- wallet ---
@@ -79,35 +92,47 @@ final Map<String, _MessageFn> _errorMessages = <String, _MessageFn>{
       'مغایرت مبلغ (${_fa(p?['variance'])}٪) از حد مجاز شما (${_fa(p?['tolerance'])}٪) بیشتر است',
   'credit_limit_exceeded': (p) =>
       'این برداشت از سقف اعتبار شما عبور می‌کند؛ مانده پس از برداشت ${_fa(p?['resulting_balance'])} ریال می‌شود',
-  'insufficient_pocket_balance': (_) => 'موجودی کیف پول برای این عملیات کافی نیست',
+  'insufficient_pocket_balance': (_) =>
+      'موجودی کیف پول برای این عملیات کافی نیست',
 
   // --- orders ---
-  'product_not_available_for_subplan': (_) => 'این کالا در طرح انتخاب‌شده قابل سفارش نیست',
+  'product_not_available_for_subplan': (_) =>
+      'این کالا در طرح انتخاب‌شده قابل سفارش نیست',
   'insufficient_stock': (_) => 'موجودی کالا برای تعداد درخواستی کافی نیست',
-  'illegal_state_transition': (_) => 'این عملیات در وضعیت فعلی سفارش امکان‌پذیر نیست',
+  'illegal_state_transition': (_) =>
+      'این عملیات در وضعیت فعلی سفارش امکان‌پذیر نیست',
   'order_immutable': (_) => 'این سفارش قابل تغییر نیست',
   'invalid_order_status': (_) => 'وضعیت سفارش اجازهٔ این عملیات را نمی‌دهد',
   'order_not_editable': (_) => 'سفارش فقط در وضعیت پیش‌فاکتور قابل ویرایش است',
+  'order_total_limit_exceeded': (p) => p?['max_total'] != null
+      ? 'مبلغ کل سفارش از حداکثر مجاز (${_fa(p?['max_total'])} ریال) بیشتر است'
+      : 'مبلغ کل سفارش از حداکثر مجاز بیشتر است',
   'agent_required': (_) => 'انتخاب نماینده الزامی است',
   'pre_invoice_unavailable': (_) =>
       'پیش‌فاکتور فقط برای سفارش‌های در وضعیت پیش‌فاکتور در دسترس است',
   'sales_queue_empty': (_) => 'سفارش بررسی‌نشده‌ای در صف وجود ندارد',
   'not_assigned_sales_reviewer': (_) => 'این سفارش به شما ارجاع داده نشده است',
-  'not_assigned_finance_reviewer': (_) => 'این سفارش به شما ارجاع داده نشده است',
+  'not_assigned_finance_reviewer': (_) =>
+      'این سفارش به شما ارجاع داده نشده است',
 
   // --- gateway ---
   'gateway_invalid_otp': (_) => 'رمز پویا نادرست است — دوباره وارد کنید',
-  'gateway_session_expired': (_) => 'نشست پرداخت منقضی شد — لطفاً از ابتدا اقدام کنید',
+  'gateway_session_expired': (_) =>
+      'نشست پرداخت منقضی شد — لطفاً از ابتدا اقدام کنید',
   'gateway_rejected': (_) => 'تراکنش از سوی بانک تأیید نشد',
-  'gateway_unavailable': (_) => 'درگاه موقتاً در دسترس نیست — کمی بعد دوباره تلاش کنید',
-  'gateway_misconfigured': (_) => 'درگاه پرداخت پیکربندی نشده است — با پشتیبانی تماس بگیرید',
+  'gateway_unavailable': (_) =>
+      'درگاه موقتاً در دسترس نیست — کمی بعد دوباره تلاش کنید',
+  'gateway_misconfigured': (_) =>
+      'درگاه پرداخت پیکربندی نشده است — با پشتیبانی تماس بگیرید',
 
   // --- plans ---
   'subplan_has_orders': (_) => 'این زیرطرح به دلیل داشتن سفارش قابل حذف نیست',
-  'subplan_has_transactions': (_) => 'این زیرطرح به دلیل داشتن تراکنش مالی قابل حذف نیست',
+  'subplan_has_transactions': (_) =>
+      'این زیرطرح به دلیل داشتن تراکنش مالی قابل حذف نیست',
 
   // --- catalog ---
-  'category_has_products': (_) => 'این دسته‌بندی به دلیل داشتن کالا قابل حذف نیست',
+  'category_has_products': (_) =>
+      'این دسته‌بندی به دلیل داشتن کالا قابل حذف نیست',
   'product_not_orderable': (_) => 'این کالا در طرح انتخاب‌شده قابل سفارش نیست',
 
   // --- media ---
@@ -115,8 +140,10 @@ final Map<String, _MessageFn> _errorMessages = <String, _MessageFn>{
   'file_too_large': (p) => p?['max_mb'] != null
       ? 'حجم فایل بیش از حد مجاز است (حداکثر ${_fa(p?['max_mb'])} مگابایت)'
       : 'حجم فایل بیش از حد مجاز است',
-  'image_processing_failed': (_) => 'پردازش تصویر ممکن نشد — فایل دیگری را امتحان کنید',
-  'file_processing_failed': (_) => 'پردازش فایل ممکن نشد — فایل دیگری را امتحان کنید',
+  'image_processing_failed': (_) =>
+      'پردازش تصویر ممکن نشد — فایل دیگری را امتحان کنید',
+  'file_processing_failed': (_) =>
+      'پردازش فایل ممکن نشد — فایل دیگری را امتحان کنید',
 };
 
 /// Resolve a localized message for a backend error code, interpolating params.
@@ -164,19 +191,25 @@ class ApiError implements Exception {
   /// Build from a decoded JSON body + HTTP status. Falls back gracefully when
   /// the body is missing/not enveloped (e.g. transport errors → pass status 0).
   factory ApiError.fromResponse(int status, dynamic body) {
-    final Map<String, dynamic>? envelope =
-        (body is Map && body['error'] is Map) ? Map<String, dynamic>.from(body['error']) : null;
+    final Map<String, dynamic>? envelope = (body is Map && body['error'] is Map)
+        ? Map<String, dynamic>.from(body['error'])
+        : null;
 
     final int statusCode = (envelope?['status_code'] as int?) ?? status;
-    final String code = (envelope?['code'] as String?) ?? _fallbackCodeForStatus(status);
-    final Map<String, dynamic> params =
-        (envelope?['params'] is Map) ? Map<String, dynamic>.from(envelope!['params']) : {};
+    final String code =
+        (envelope?['code'] as String?) ?? _fallbackCodeForStatus(status);
+    final Map<String, dynamic> params = (envelope?['params'] is Map)
+        ? Map<String, dynamic>.from(envelope!['params'])
+        : {};
     final dynamic detail = envelope?['detail'];
 
     Map<String, List<String>>? fieldErrors;
     if (status == 400 && detail is Map) {
       fieldErrors = detail.map(
-        (k, v) => MapEntry(k.toString(), (v as List).map((e) => e.toString()).toList()),
+        (k, v) => MapEntry(
+          k.toString(),
+          (v as List).map((e) => e.toString()).toList(),
+        ),
       );
     }
 
@@ -208,18 +241,3 @@ String _fallbackCodeForStatus(int status) {
       return 'server_error';
   }
 }
-
-// ---------------------------------------------------------------------------
-// Usage example (with the `dio` package — adapt to your HTTP client):
-//
-//   try {
-//     await dio.post('/orders/$id/disburse', data: payload);
-//   } on DioException catch (e) {
-//     final err = ApiError.fromResponse(e.response?.statusCode ?? 0, e.response?.data);
-//     if (err.fieldErrors != null) {
-//       // map err.fieldErrors onto your form fields
-//     } else {
-//       showSnackBar(err.message); // localized Persian, never err.detail
-//     }
-//   }
-// ---------------------------------------------------------------------------

@@ -42,7 +42,7 @@ class DashboardUiHelpers {
             order: order,
             onTap: () {
               context.read<DashboardCubit>().onNavItemSelected(2);
-              context.push(AppRoutes.orderDetail, extra: order.id);
+              context.push('${AppRoutes.orderDetail.replaceAll(':orderId', order.id)}');
             },
           ),
         );

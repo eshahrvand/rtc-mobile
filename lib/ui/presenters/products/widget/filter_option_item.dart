@@ -10,6 +10,7 @@ class FilterOptionItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final bool showDivider;
+  final bool isMultiSelect;
 
   const FilterOptionItem({
     super.key,
@@ -17,6 +18,7 @@ class FilterOptionItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     this.showDivider = true,
+    this.isMultiSelect = false,
   });
 
   @override
@@ -32,7 +34,10 @@ class FilterOptionItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               children: [
-                _RadioIndicator(isSelected: isSelected),
+                _SelectionIndicator(
+                  isSelected: isSelected,
+                  isMultiSelect: isMultiSelect,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   title,
@@ -56,13 +61,27 @@ class FilterOptionItem extends StatelessWidget {
   }
 }
 
-class _RadioIndicator extends StatelessWidget {
+class _SelectionIndicator extends StatelessWidget {
   final bool isSelected;
+  final bool isMultiSelect;
 
-  const _RadioIndicator({required this.isSelected});
+  const _SelectionIndicator({
+    required this.isSelected,
+    required this.isMultiSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (isMultiSelect) {
+      return RtcImage(
+        image: isSelected
+            ? "$baseImage/check-boxes-select.svg"
+            : "$baseImage/check_boxes.svg",
+        width: 24,
+        height: 24,
+        boxFit: BoxFit.fill,
+      );
+    }
     return RtcImage(
       image: isSelected
           ? "$baseImage/brand_check_circle.svg"

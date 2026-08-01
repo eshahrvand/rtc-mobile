@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/models/filter_item.dart';
 import '../../../../generated/l10n.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
@@ -8,20 +10,18 @@ import '../../../widget/rtc_image.dart';
 import '../../../widget/rtc_text_button.dart';
 import 'filter_option_item.dart';
 
-class FilterItem {
-  final String id;
-  final String title;
-
-  const FilterItem({required this.id, required this.title});
-}
-
 class FilterBottomSheet extends StatefulWidget {
   final String title;
   final String subtitle;
   final List<FilterItem> items;
   final String? initialSelectedId;
+  final List<String>? initialSelectedIds;
+  final bool isMultiSelect;
   final ValueChanged<FilterItem?>? onApply;
+  final ValueChanged<List<FilterItem>>? onApplyMulti;
   final VoidCallback? onClear;
+  final VoidCallback? onLoadMore;
+  final bool isLoadingMore;
   final String? iconPath;
   final String? clearButtonTitle;
 
@@ -31,20 +31,33 @@ class FilterBottomSheet extends StatefulWidget {
     required this.subtitle,
     required this.items,
     this.initialSelectedId,
+    this.initialSelectedIds,
+    this.isMultiSelect = false,
     this.onApply,
+    this.onApplyMulti,
     this.onClear,
+    this.onLoadMore,
+    this.isLoadingMore = false,
     this.iconPath,
     this.clearButtonTitle,
   });
 
-  static Future<void> show(
+  static Future<void> show<B extends StateStreamableSource<STATE>, STATE>(
     BuildContext context, {
     required String title,
     required String subtitle,
     required List<FilterItem> items,
+    B? bloc,
+    List<FilterItem> Function(STATE)? itemsSelector,
+    bool Function(STATE)? loadingSelector,
     String? initialSelectedId,
+    List<String>? initialSelectedIds,
+    bool isMultiSelect = false,
     ValueChanged<FilterItem?>? onApply,
+    ValueChanged<List<FilterItem>>? onApplyMulti,
     VoidCallback? onClear,
+    VoidCallback? onLoadMore,
+    bool isLoadingMore = false,
     String? iconPath,
     String? clearButtonTitle,
   }) {
@@ -52,16 +65,50 @@ class FilterBottomSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => FilterBottomSheet(
-        title: title,
-        subtitle: subtitle,
-        items: items,
-        initialSelectedId: initialSelectedId,
-        onApply: onApply,
-        onClear: onClear,
-        iconPath: iconPath,
-        clearButtonTitle: clearButtonTitle,
-      ),
+      builder: (_) {
+        final content = FilterBottomSheet(
+          title: title,
+          subtitle: subtitle,
+          items: items,
+          initialSelectedId: initialSelectedId,
+          initialSelectedIds: initialSelectedIds,
+          isMultiSelect: isMultiSelect,
+          onApply: onApply,
+          onApplyMulti: onApplyMulti,
+          onClear: onClear,
+          onLoadMore: onLoadMore,
+          isLoadingMore: isLoadingMore,
+          iconPath: iconPath,
+          clearButtonTitle: clearButtonTitle,
+        );
+
+        if (bloc != null && itemsSelector != null) {
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocBuilder<B, STATE>(
+              builder: (context, state) {
+                return FilterBottomSheet(
+                  title: title,
+                  subtitle: subtitle,
+                  items: itemsSelector(state),
+                  initialSelectedId: initialSelectedId,
+                  initialSelectedIds: initialSelectedIds,
+                  isMultiSelect: isMultiSelect,
+                  onApply: onApply,
+                  onApplyMulti: onApplyMulti,
+                  onClear: onClear,
+                  onLoadMore: onLoadMore,
+                  isLoadingMore: loadingSelector?.call(state) ?? isLoadingMore,
+                  iconPath: iconPath,
+                  clearButtonTitle: clearButtonTitle,
+                );
+              },
+            ),
+          );
+        }
+
+        return content;
+      },
     );
   }
 
@@ -71,36 +118,74 @@ class FilterBottomSheet extends StatefulWidget {
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedId;
+  late List<String> _selectedIds;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _selectedId = widget.initialSelectedId;
+    _selectedIds = List.from(widget.initialSelectedIds ?? []);
+    _scrollController.addListener(_onScroll);
   }
 
-  bool get _hasSelection => _selectedId != null;
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (widget.onLoadMore != null &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent * 0.8) {
+      widget.onLoadMore?.call();
+    }
+  }
+
+  bool get _hasSelection =>
+      widget.isMultiSelect ? _selectedIds.isNotEmpty : _selectedId != null;
 
   FilterItem? get _selectedItem => _selectedId == null
       ? null
       : widget.items.firstWhere((item) => item.id == _selectedId);
 
+  List<FilterItem> get _selectedItems =>
+      widget.items.where((item) => _selectedIds.contains(item.id)).toList();
+
   void _onClear() {
-    setState(() => _selectedId = null);
+    setState(() {
+      _selectedId = null;
+      _selectedIds.clear();
+    });
     widget.onClear?.call();
   }
 
   void _onApply() {
-    widget.onApply?.call(_selectedItem);
+    if (widget.isMultiSelect) {
+      widget.onApplyMulti?.call(_selectedItems);
+    } else {
+      widget.onApply?.call(_selectedItem);
+    }
     Navigator.of(context).pop();
   }
 
   void _onItemTap(String id) {
     setState(() {
-      if (_selectedId == id) {
-        _selectedId = null; // Unselect if already selected
+      if (widget.isMultiSelect) {
+        if (_selectedIds.contains(id)) {
+          _selectedIds.remove(id);
+        } else {
+          _selectedIds.add(id);
+        }
       } else {
-        _selectedId =
-            id; // Select new item (replaces previous in single selection)
+        if (_selectedId == id) {
+          _selectedId = null; // Unselect if already selected
+        } else {
+          _selectedId =
+              id; // Select new item (replaces previous in single selection)
+        }
       }
     });
   }
@@ -208,15 +293,32 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   /// ── Scrollable list of FilterOptionItem ──
   Widget _buildItemsList() {
     return ListView.builder(
+      controller: _scrollController,
       shrinkWrap: true,
-      padding: EdgeInsets.zero, // Add the 32px padding here
-      itemCount: widget.items.length,
+      padding: EdgeInsets.zero,
+      itemCount: widget.items.length + (widget.isLoadingMore ? 1 : 0),
       itemBuilder: (_, index) {
+        if (index == widget.items.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+
         final item = widget.items[index];
-        final isSelected = _selectedId == item.id;
+        final isSelected = widget.isMultiSelect
+            ? _selectedIds.contains(item.id)
+            : _selectedId == item.id;
         return FilterOptionItem(
           title: item.title,
           isSelected: isSelected,
+          isMultiSelect: widget.isMultiSelect,
           onTap: () => _onItemTap(item.id),
           showDivider: false,
         );

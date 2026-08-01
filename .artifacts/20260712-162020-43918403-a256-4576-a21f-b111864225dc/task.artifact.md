@@ -1,19 +1,9 @@
-# Task: Clean Up Media Picker / Repository / Service Code
+# Task: Product Pagination in Pre-Invoice Step 2
 
-Refactor media-related code to remove debug artifacts, reduce duplication, and improve readability without changing behavior.
+Implement pagination for the product list in Pre-Invoice Step 2.
 
 ## Progress
-- [x] Task 1: Research and Planning
-- [x] Task 2: UI & Presenter Cleanup
-    - [x] Remove prints from `MediaPickerCubit`
-    - [x] Clean up imports in `MediaPickerCubit` and `MediaEditScreen`
-- [x] Task 3: Data Layer Refactor
-    - [x] Refactor `MediaService.uploadMedia`
-    - [x] Extract helpers for safe filename and multipart file creation
-    - [x] Add defensive comments
-- [x] Task 4: Verification
-    - [x] Run `flutter analyze`
-    - [x] Create walkthrough
-
-## Completed
-Cleanup is finished. No behavior was changed, and code hygiene has been improved.
+- [ ] Task 1: Update `PreInvoiceState` with pagination fields
+- [ ] Task 2: Implement `fetchProductsNextPage` in `PreInvoiceCubit`
+- [ ] Task 3: Add `ScrollController` and pagination UI to `PreInvoiceStep2View`
+- [ ] Task 4: Verification

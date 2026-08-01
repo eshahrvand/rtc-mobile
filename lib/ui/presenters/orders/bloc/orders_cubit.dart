@@ -1,7 +1,5 @@
 import 'package:cross_file/cross_file.dart';
 import 'dart:async';
-import 'dart:io';
-import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_html_to_pdf/flutter_native_html_to_pdf.dart';
@@ -13,6 +11,7 @@ import 'package:flutter/services.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
+import '../../../../core/utils/id_formatter.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
@@ -35,7 +34,6 @@ Future<String?> _saveToDownloads(String fileName, Uint8List bytes) async {
     );
     return path;
   } on PlatformException catch (e) {
-    debugPrint('>> [PDF] MethodChannel error: ${e.message}');
     return null;
   }
 }
@@ -50,10 +48,22 @@ class OrdersCubit extends Cubit<OrdersState> {
   Timer? _searchTimer;
   Timer? _settlementTimer;
   Timer? _clearanceOtpTimer;
-  final _appLinks = AppLinks();
-  StreamSubscription? _linkSubscription;
 
-  OrdersCubit() : super(const OrdersState());
+  static final _linkController = StreamController<Uri>.broadcast();
+  static StreamSubscription? _globalLinkSub;
+  StreamSubscription? _instanceLinkSub;
+
+  OrdersCubit() : super(const OrdersState()) {
+    _instanceLinkSub = _linkController.stream.listen(_handleIncomingUri);
+    _ensureGlobalLinkListener();
+  }
+
+  static void _ensureGlobalLinkListener() {
+    if (_globalLinkSub != null) return;
+    _globalLinkSub = AppLinks().uriLinkStream.listen((uri) {
+      _linkController.add(uri);
+    });
+  }
 
   void init() {
     _plansRepo
@@ -65,22 +75,44 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _initTolerance();
     fetchOrders();
-    _initDeepLinks();
+
+    // Check for initial deep link (cold start)
+    AppLinks().getInitialLink().then((uri) {
+      if (uri != null) _handleIncomingUri(uri);
+    }).catchError((_) {});
   }
 
-  void _initDeepLinks() {
-    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      if (uri.path.contains('callback') ||
-          uri.host.contains('callback') ||
-          uri.path.contains('disbursement') ||
-          uri.path.contains('settlement')) {
-        if (state.selectedOrder != null) {
-          fetchOrderDetail(state.selectedOrder!.id);
-        } else {
-          fetchOrders();
-        }
+  void _handleIncomingUri(Uri uri) {
+    // Expected pattern: https://panel.rtciran.com/orders/<id>?payment=success&flow=settlement
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.length >= 2 && pathSegments[0] == 'orders') {
+      final orderId = pathSegments[1];
+      final payment = uri.queryParameters['payment'];
+      final flow = uri.queryParameters['flow'];
+
+      emit(
+        state.copyWith(
+          pendingNavigation: {
+            'orderId': orderId,
+            'payment': payment,
+            'flow': flow,
+          },
+        ),
+      );
+    } else if (uri.path.contains('callback') ||
+        uri.host.contains('callback') ||
+        uri.path.contains('disbursement') ||
+        uri.path.contains('settlement')) {
+      if (state.selectedOrder != null) {
+        fetchOrderDetail(state.selectedOrder!.id);
+      } else {
+        fetchOrders();
       }
-    });
+    }
+  }
+
+  void clearPendingNavigation() {
+    emit(state.copyWith(pendingNavigation: null));
   }
 
   void _initTolerance() {
@@ -117,7 +149,13 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void fetchOrders({OrdersState? rollbackState}) {
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: OrdersRequestStatus.loading,
+        currentPage: 1,
+        hasMoreData: true,
+      ),
+    );
 
     final createdAfter = _formatGregorianDate(state.startDate);
     final createdBefore = _formatGregorianDate(state.endDate);
@@ -131,6 +169,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           createdAfter: createdAfter,
           createdBefore: createdBefore,
           search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: 1,
         )
         .then((response) {
           final orders = response.results
@@ -141,6 +180,8 @@ class OrdersCubit extends Cubit<OrdersState> {
               status: OrdersRequestStatus.success,
               allOrders: orders,
               filteredOrders: orders,
+              totalCount: response.count,
+              hasMoreData: response.next != null,
             ),
           );
         })
@@ -158,8 +199,59 @@ class OrdersCubit extends Cubit<OrdersState> {
         });
   }
 
-  void fetchOrderDetail(String orderId) {
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
+  void fetchNextPage() {
+    if (state.isPaginationLoading ||
+        !state.hasMoreData ||
+        state.status == OrdersRequestStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(isPaginationLoading: true));
+
+    final nextPage = state.currentPage + 1;
+    final createdAfter = _formatGregorianDate(state.startDate);
+    final createdBefore = _formatGregorianDate(state.endDate);
+
+    _ordersRepo
+        .getOrders(
+          status: state.selectedStatusId != null
+              ? [state.selectedStatusId!]
+              : null,
+          subPlanId: state.selectedSubPlanId,
+          createdAfter: createdAfter,
+          createdBefore: createdBefore,
+          search: state.searchQuery.trim().isEmpty ? null : state.searchQuery,
+          page: nextPage,
+        )
+        .then((response) {
+          final newOrders = response.results
+              .map((dto) => OrderMapper.mapToSummary(dto))
+              .toList();
+
+          final updatedOrders = [...state.allOrders, ...newOrders];
+
+          emit(
+            state.copyWith(
+              isPaginationLoading: false,
+              currentPage: nextPage,
+              allOrders: updatedOrders,
+              filteredOrders: updatedOrders,
+              hasMoreData: response.next != null,
+              totalCount: response.count,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchOrderDetail(String orderId, {String? paymentOutcome}) {
+    emit(state.copyWith(
+      status: OrdersRequestStatus.loading,
+      deepLinkPaymentOutcome: PaymentOutcome.initial,
+    ));
     _initTolerance();
 
     _ordersRepo
@@ -177,6 +269,13 @@ class OrdersCubit extends Cubit<OrdersState> {
               ? 1
               : 0;
 
+          PaymentOutcome outcome = PaymentOutcome.initial;
+          if (paymentOutcome == 'success') {
+            outcome = PaymentOutcome.success;
+          } else if (paymentOutcome == 'failed') {
+            outcome = PaymentOutcome.failed;
+          }
+
           emit(
             state.copyWith(
               status: OrdersRequestStatus.success,
@@ -186,8 +285,18 @@ class OrdersCubit extends Cubit<OrdersState> {
               settlementOperation: _createSettlementOp(detail),
               isSettlementCompleted: isSettled,
               walletName: detail.creditPlan?.planName,
+              deepLinkPaymentOutcome: outcome,
             ),
           );
+
+          // Reset outcome after a small delay to allow UI listeners to catch it
+          if (outcome != PaymentOutcome.initial) {
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (!isClosed) {
+                emit(state.copyWith(deepLinkPaymentOutcome: PaymentOutcome.initial));
+              }
+            });
+          }
         })
         .catchError((e) {
           emit(
@@ -340,11 +449,8 @@ class OrdersCubit extends Cubit<OrdersState> {
         .getPreInvoiceHtml(orderId)
         .then((html) async {
           final tempDir = await getTemporaryDirectory();
-          final displayId = OrderMapper.formatDisplayId(orderId);
+          final displayId = IdFormatter.formatDisplayId(orderId);
           final targetName = 'pre_invoice_$displayId';
-
-          debugPrint('>> [PDF] Starting generation for Order: $orderId');
-          dev.log('Starting PDF generation', name: 'PDF_DEBUG');
 
           final converter = HtmlToPdfConverter();
           final generatedFile = await converter.convertHtmlToPdf(
@@ -355,17 +461,12 @@ class OrdersCubit extends Cubit<OrdersState> {
 
           if (generatedFile != null) {
             final bytes = await generatedFile.readAsBytes();
-            debugPrint('>> [PDF] Generated bytes length: ${bytes.length}');
-            debugPrint('>> [PDF] Temp file path: ${generatedFile.path}');
 
             // Saves directly to public Downloads folder:
             // - Android < 10  → Environment.DIRECTORY_DOWNLOADS (direct write)
             // - Android 10+   → MediaStore.Downloads (no storage permission needed)
             // No picker dialog is shown.
             final savedPath = await _saveToDownloads(targetName, bytes);
-
-            debugPrint('>> [PDF] saveToDownloads result: $savedPath');
-            dev.log('File saved at: $savedPath', name: 'PDF_DEBUG');
 
             if (savedPath != null && savedPath.isNotEmpty) {
               emit(
@@ -384,13 +485,6 @@ class OrdersCubit extends Cubit<OrdersState> {
                 ),
               );
             }
-          } else {
-            debugPrint('>> [PDF] ERROR: generatedFile was null');
-            dev.log(
-              'PDF generation failed',
-              name: 'PDF_DEBUG',
-              error: 'generatedFile is null',
-            );
           }
 
           Future.delayed(const Duration(seconds: 1), () {
@@ -1000,7 +1094,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     _searchTimer?.cancel();
     _settlementTimer?.cancel();
     _clearanceOtpTimer?.cancel();
-    _linkSubscription?.cancel();
+    _instanceLinkSub?.cancel();
     return super.close();
   }
 }

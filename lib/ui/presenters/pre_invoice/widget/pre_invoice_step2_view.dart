@@ -1,9 +1,12 @@
+import 'package:rtc_mobile/ui/presenters/pre_invoice/widget/pre_invoice_step2_widgets.dart';
+
 import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../locator.dart';
@@ -24,11 +27,27 @@ class PreInvoiceStep2View extends StatefulWidget {
 
 class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      context.read<PreInvoiceCubit>().fetchProductsNextPage();
+    }
   }
 
   void _showCategoryFilter(
@@ -36,27 +55,27 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     PreInvoiceCubit cubit,
     PreInvoiceState state,
   ) {
-    sl<ProductRepository>().getCategories().then((response) {
-      final items = response.results
+    FilterBottomSheet.show<PreInvoiceCubit, PreInvoiceState>(
+      context,
+      title: S.current.categoryTitle,
+      subtitle: S.current.categoryFilterSubtitle,
+      items: state.availableCategories
           .map((c) => FilterItem(id: c.id, title: c.name))
-          .toList();
-
-      if (context.mounted) {
-        FilterBottomSheet.show(
-          context,
-          title: S.current.categoryTitle,
-          subtitle: S.current.categoryFilterSubtitle,
-          items: items,
-          initialSelectedId: state.selectedCategoryId,
-          onApply: (selected) {
-            cubit.onCategorySelected(selected?.id);
-          },
-          onClear: () {
-            cubit.onCategorySelected(null);
-          },
-        );
-      }
-    });
+          .toList(),
+      bloc: cubit,
+      itemsSelector: (s) => s.availableCategories
+          .map((c) => FilterItem(id: c.id, title: c.name))
+          .toList(),
+      loadingSelector: (s) => s.isCategoryPaginationLoading,
+      initialSelectedId: state.selectedCategoryId,
+      onLoadMore: () => cubit.fetchCategoriesNextPage(),
+      onApply: (selected) {
+        cubit.onCategorySelected(selected?.id);
+      },
+      onClear: () {
+        cubit.onCategorySelected(null);
+      },
+    );
   }
 
   void _showSortFilter(
@@ -65,10 +84,10 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
     PreInvoiceState state,
   ) {
     final items = [
-      FilterItem(id: '-price', title: S.current.cheapest),
-      FilterItem(id: 'price', title: S.current.mostExpensive),
-      FilterItem(id: 'date', title: S.current.newest),
-      FilterItem(id: '-date', title: S.current.oldest),
+      FilterItem(id: 'plan_price', title: S.current.cheapest),
+      FilterItem(id: '-plan_price', title: S.current.mostExpensive),
+      FilterItem(id: 'created_at', title: S.current.newest),
+      FilterItem(id: '-created_at', title: S.current.oldest),
     ];
 
     FilterBottomSheet.show(
@@ -84,6 +103,34 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
       },
       onClear: () {
         cubit.onSortSelected(null);
+      },
+    );
+  }
+
+  void _showBrandFilter(
+    BuildContext context,
+    PreInvoiceCubit cubit,
+    PreInvoiceState state,
+  ) {
+    FilterBottomSheet.show<PreInvoiceCubit, PreInvoiceState>(
+      context,
+      title: S.current.brand,
+      subtitle: S.current.brandFilter,
+      items: state.availableBrands
+          .map((b) => FilterItem(id: b.id, title: b.name))
+          .toList(),
+      bloc: cubit,
+      itemsSelector: (s) => s.availableBrands
+          .map((b) => FilterItem(id: b.id, title: b.name))
+          .toList(),
+      loadingSelector: (s) => s.isBrandPaginationLoading,
+      initialSelectedId: state.selectedBrandId,
+      onLoadMore: () => cubit.fetchBrandsNextPage(),
+      onApply: (selected) {
+        cubit.selectBrand(selected?.id);
+      },
+      onClear: () {
+        cubit.selectBrand(null);
       },
     );
   }
@@ -182,7 +229,7 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                   children: [
                     SizedBox(
                       height: 32,
-                      width: 140,
+                      width: 200,
                       child: RtcChipList(
                         chips: [
                           ProductChipModel(
@@ -190,35 +237,42 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                             label: S.current.category,
                             opensBottomSheet: true,
                           ),
+                          ProductChipModel(
+                            id: 4,
+                            label: S.current.brand,
+                            opensBottomSheet: true,
+                          ),
                         ],
-                        isChipSelected: (index, chip) =>
-                            state.selectedCategoryId != null,
-                        onChipTap: (index, chip) =>
-                            _showCategoryFilter(context, cubit, state),
-                        onChipClose: (index, chip) =>
-                            cubit.onCategorySelected(null),
+                        isChipSelected: (index, chip) {
+                          if (chip.id == 1)
+                            return state.selectedCategoryId != null;
+                          if (chip.id == 4)
+                            return state.selectedBrandId != null;
+                          return false;
+                        },
+                        onChipTap: (index, chip) {
+                          if (chip.id == 1) {
+                            _showCategoryFilter(context, cubit, state);
+                          } else if (chip.id == 4) {
+                            _showBrandFilter(context, cubit, state);
+                          }
+                        },
+                        onChipClose: (index, chip) {
+                          if (chip.id == 1) {
+                            cubit.onCategorySelected(null);
+                          } else if (chip.id == 4) {
+                            cubit.selectBrand(null);
+                          }
+                        },
                       ),
                     ),
                     const Spacer(),
 
-                    GestureDetector(
-                      onTap: () => cubit.toggleShowAvailableOnly(),
-                      child: RtcImage(
-                        image: state.showAvailableOnly
-                            ? "$baseImage/toggle_active.svg"
-                            : "$baseImage/toggle_base.svg",
-                        width: 36,
-                        height: 20,
-                      ),
+                    PreInvoiceStep2AvailabilityToggle(
+                      showAvailableOnly: state.showAvailableOnly,
+                      onToggle: () => cubit.toggleShowAvailableOnly(),
                     ),
 
-                    const SizedBox(width: 8),
-                    Text(
-                      "نمایش کالاهای موجود",
-                      style: theme.bodyMedium!.copyWith(
-                        color: AppColors.grayPalette.shade600,
-                      ),
-                    ),
                     SizedBox(width: 16),
                   ],
                 ),
@@ -229,10 +283,10 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  state.filteredProducts.isEmpty
+                  state.totalProductCount == 0
                       ? SizedBox.shrink()
                       : Text(
-                          '${state.filteredProducts.length} ${S.current.productsFound}',
+                          '${state.totalProductCount} ${S.current.productsFound}',
                           style: theme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w500,
                             color: AppColors.grayPalette.shade900,
@@ -254,8 +308,18 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                       ),
                     )
                   : ListView.builder(
-                      itemCount: state.filteredProducts.length,
+                      controller: _scrollController,
+                      itemCount:
+                          state.filteredProducts.length +
+                          (state.isProductPaginationLoading ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == state.filteredProducts.length) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
                         final product = state.filteredProducts[index];
                         final cartItem = state.cartItems.firstWhere(
                           (item) => item.productId == product.id,

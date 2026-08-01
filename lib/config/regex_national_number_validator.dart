@@ -1,4 +1,3 @@
-
 bool isNationalIDValid(String nc) {
   if (nc.trim() == '') {
     return false;

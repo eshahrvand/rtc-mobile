@@ -19,11 +19,27 @@ class CustomersListView extends StatefulWidget {
 
 class _CustomersListViewState extends State<CustomersListView> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<CustomersCubit>().fetchNextPage();
+    }
   }
 
   @override
@@ -76,6 +92,7 @@ class _CustomersListViewState extends State<CustomersListView> {
                 context: context,
                 state: state,
                 theme: theme,
+                scrollController: _scrollController,
               ),
             ),
           ],

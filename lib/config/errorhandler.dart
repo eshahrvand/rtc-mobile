@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// Shown when a code is missing or not in the map. Never leaks English `detail`.
 const String genericFallback = 'خطایی رخ داد. لطفاً دوباره تلاش کنید';
@@ -74,6 +75,9 @@ final Map<String, _MessageFn> _errorMessages = <String, _MessageFn>{
   'order_immutable': (_) => 'این سفارش قابل تغییر نیست',
   'invalid_order_status': (_) => 'وضعیت سفارش اجازهٔ این عملیات را نمی‌دهد',
   'order_not_editable': (_) => 'سفارش فقط در وضعیت پیش‌فاکتور قابل ویرایش است',
+  'order_total_limit_exceeded': (p) => p?['max_total'] != null
+      ? 'مبلغ کل سفارش از حداکثر مجاز (${_fa(p?['max_total'])} ریال) بیشتر است'
+      : 'مبلغ کل سفارش از حداکثر مجاز بیشتر است',
   'agent_required': (_) => 'انتخاب نماینده الزامی است',
   'pre_invoice_unavailable': (_) =>
       'پیش‌فاکتور فقط برای سفارش‌های در وضعیت پیش‌فاکتور در دسترس است',
@@ -185,7 +189,12 @@ class ErrorHandler {
   ErrorHandler._();
 
   /// Accepts any error and returns a localized Persian message.
-  static String getMessage(dynamic error) {
+  static String getMessage(dynamic error, {StackTrace? stackTrace}) {
+    // Automatically capture unhandled or non-API errors to Sentry
+    if (error is! ApiError) {
+      Sentry.captureException(error, stackTrace: stackTrace);
+    }
+
     if (error is ApiError) {
       return error.message;
     }
@@ -195,6 +204,10 @@ class ErrorHandler {
         error.response?.statusCode ?? 0,
         error.response?.data,
       );
+      // Capture detailed API errors for better debugging if it's a server error
+      if (apiError.statusCode >= 500) {
+        Sentry.captureException(error, stackTrace: stackTrace);
+      }
       return apiError.message;
     }
 

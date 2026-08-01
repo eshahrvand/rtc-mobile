@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../../config/constants.dart';
 import '../../../../config/regex_national_number_validator.dart';
 import '../../../../config/postal_code_validator.dart';
 import '../../../../core/models/pre_invoice_model.dart';
+import '../../../../data_source/remote/catalog/model/category_dto_model.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/plans/plans_repository.dart';
@@ -13,6 +15,8 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../repository/customers/customers_repository.dart';
 import '../../../../repository/orders/orders_repository.dart';
 import '../../../../repository/media/media_repository.dart';
+import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
+import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
@@ -35,42 +39,84 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void init() {
     emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
 
-    _plansRepo
-        .getSubPlans()
-        .then<void>((response) {
-          final plans = response.results.map(_mapToCreditPlanModel).toList();
+    final subPlansFuture = _plansRepo.getSubPlans(page: 1).catchError((
+      e,
+      stackTrace,
+    ) {
+      Sentry.captureException(e, stackTrace: stackTrace);
+      return const SubPlanListResponse(count: 0, results: []);
+    });
 
-          final chips = [
-            PreInvoiceChipModel(
-              id: 1,
-              label: S.current.category,
-              opensBottomSheet: true,
-            ),
-            PreInvoiceChipModel(
-              id: 2,
-              label: S.current.plan,
-              opensBottomSheet: true,
-            ),
-            PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
-          ];
+    final brandsFuture = _productRepo.getBrands(page: 1).catchError((
+      e,
+      stackTrace,
+    ) {
+      Sentry.captureException(e, stackTrace: stackTrace);
+      return const BrandListResponse(count: 0, results: []);
+    });
 
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.success,
-              creditPlans: plans,
-              filterChips: chips,
-            ),
-          );
-        })
-        .catchError((e) {
-          emit(
-            state.copyWith(
-              status: PreInvoiceRequestStatus.error,
-              errorMessage: ErrorHandler.getMessage(e),
-            ),
-          );
-          return null;
-        });
+    final categoriesFuture = _productRepo.getCategories(page: 1).catchError((
+      e,
+      stackTrace,
+    ) {
+      return const CategoryListResponse(count: 0, results: []);
+    });
+
+    Future.wait([subPlansFuture, brandsFuture, categoriesFuture]).then<void>((
+      results,
+    ) {
+      try {
+        final subPlansResponse = results[0] as SubPlanListResponse;
+        final brandsResponse = results[1] as BrandListResponse;
+        final categoriesResponse = results[2] as CategoryListResponse;
+
+        final plans = subPlansResponse.results
+            .map((dto) => _mapToCreditPlanModel(dto))
+            .toList();
+
+        final chips = [
+          PreInvoiceChipModel(
+            id: 1,
+            label: S.current.category,
+            opensBottomSheet: true,
+          ),
+          PreInvoiceChipModel(
+            id: 4,
+            label: S.current.brand,
+            opensBottomSheet: true,
+          ),
+          PreInvoiceChipModel(
+            id: 2,
+            label: S.current.plan,
+            opensBottomSheet: true,
+          ),
+          PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
+        ];
+
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.success,
+            creditPlans: plans,
+            hasMoreCreditPlans: subPlansResponse.next != null,
+            currentCreditPlanPage: 1,
+            filterChips: chips,
+            availableBrands: brandsResponse.results,
+            hasMoreBrands: brandsResponse.next != null,
+            currentBrandPage: 1,
+            availableCategories: categoriesResponse.results,
+            hasMoreCategories: categoriesResponse.next != null,
+            currentCategoryPage: 1,
+          ),
+        );
+      } catch (e, stackTrace) {
+        emit(
+          state.copyWith(
+            status: PreInvoiceRequestStatus.error,
+            errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
+          ),
+        );
+      }
+    });
   }
 
   void goToStep(PreInvoiceStep step) {
@@ -100,15 +146,23 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   void _loadProducts() {
     if (state.selectedCreditPlanId == null) return;
-    emit(state.copyWith(status: PreInvoiceRequestStatus.loading));
+    emit(
+      state.copyWith(
+        status: PreInvoiceRequestStatus.loading,
+        currentProductPage: 1,
+        hasMoreProducts: false,
+      ),
+    );
 
     _productRepo
         .getProducts(
           subPlanId: state.selectedCreditPlanId!,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
           inStock: state.showAvailableOnly ? true : null,
           ordering: state.selectedSortOrder,
+          page: 1,
         )
         .then((response) {
           final products = response.results.map(_mapProductDtoToModel).toList();
@@ -117,6 +171,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
               status: PreInvoiceRequestStatus.success,
               allProducts: products,
               filteredProducts: products,
+              totalProductCount: response.count,
+              hasMoreProducts: response.next != null,
             ),
           );
         })
@@ -163,6 +219,138 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   void onSortSelected(String? ordering) {
     emit(state.copyWith(selectedSortOrder: ordering));
     _loadProducts();
+  }
+
+  void selectBrand(String? brandId) {
+    emit(state.copyWith(selectedBrandId: brandId));
+    _loadProducts();
+  }
+
+  void fetchProductsNextPage() {
+    if (state.isProductPaginationLoading ||
+        !state.hasMoreProducts ||
+        state.status == PreInvoiceRequestStatus.loading ||
+        state.selectedCreditPlanId == null) {
+      return;
+    }
+
+    emit(state.copyWith(isProductPaginationLoading: true));
+
+    final nextPage = state.currentProductPage + 1;
+
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedCreditPlanId!,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
+          inStock: state.showAvailableOnly ? true : null,
+          ordering: state.selectedSortOrder,
+          page: nextPage,
+        )
+        .then((response) {
+          final newProducts = response.results
+              .map(_mapProductDtoToModel)
+              .toList();
+
+          emit(
+            state.copyWith(
+              isProductPaginationLoading: false,
+              currentProductPage: nextPage,
+              allProducts: [...state.allProducts, ...newProducts],
+              filteredProducts: [...state.filteredProducts, ...newProducts],
+              totalProductCount: response.count,
+              hasMoreProducts: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isProductPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchCategoriesNextPage() {
+    if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
+
+    emit(state.copyWith(isCategoryPaginationLoading: true));
+
+    final nextPage = state.currentCategoryPage + 1;
+
+    _productRepo
+        .getCategories(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isCategoryPaginationLoading: false,
+              currentCategoryPage: nextPage,
+              availableCategories: [
+                ...state.availableCategories,
+                ...response.results,
+              ],
+              hasMoreCategories: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isCategoryPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchBrandsNextPage() {
+    if (state.isBrandPaginationLoading || !state.hasMoreBrands) return;
+
+    emit(state.copyWith(isBrandPaginationLoading: true));
+
+    final nextPage = state.currentBrandPage + 1;
+
+    _productRepo
+        .getBrands(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isBrandPaginationLoading: false,
+              currentBrandPage: nextPage,
+              availableBrands: [...state.availableBrands, ...response.results],
+              hasMoreBrands: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isBrandPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchSubPlansNextPage() {
+    if (state.isCreditPlanPaginationLoading || !state.hasMoreCreditPlans)
+      return;
+
+    emit(state.copyWith(isCreditPlanPaginationLoading: true));
+
+    final nextPage = state.currentCreditPlanPage + 1;
+
+    _plansRepo
+        .getSubPlans(page: nextPage)
+        .then((response) {
+          final newPlans = response.results
+              .map((dto) => _mapToCreditPlanModel(dto))
+              .toList();
+
+          emit(
+            state.copyWith(
+              isCreditPlanPaginationLoading: false,
+              currentCreditPlanPage: nextPage,
+              creditPlans: [...state.creditPlans, ...newPlans],
+              hasMoreCreditPlans: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isCreditPlanPaginationLoading: false));
+          return null;
+        });
   }
 
   void onChipSelected(int index) {
@@ -517,13 +705,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     );
     if (result != null && result.isNotEmpty) {
       final availableSlots = 5 - state.optionalDocs.length;
-      final newDocs = result
-          .take(availableSlots)
-          .map((m) => m.xFile)
-          .toList();
+      final newDocs = result.take(availableSlots).map((m) => m.xFile).toList();
 
-      final updatedDocs = List<XFile>.from(state.optionalDocs)
-        ..addAll(newDocs);
+      final updatedDocs = List<XFile>.from(state.optionalDocs)..addAll(newDocs);
       emit(state.copyWith(optionalDocs: updatedDocs));
 
       if (result.length > availableSlots) {
@@ -543,8 +727,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void removeOptionalDoc(int index) {
-    final updatedDocs = List<XFile>.from(state.optionalDocs)
-      ..removeAt(index);
+    final updatedDocs = List<XFile>.from(state.optionalDocs)..removeAt(index);
     emit(state.copyWith(optionalDocs: updatedDocs));
   }
 
@@ -661,13 +844,13 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
 
   // ─── Private Helpers ───────────────────────────────────────────────
 
-  CreditPlanItemModel _mapToCreditPlanModel(dynamic dto) {
+  CreditPlanItemModel _mapToCreditPlanModel(SubPlanDtoModel dto) {
     return CreditPlanItemModel(
       id: dto.id,
       logo: dto.creditPlan.image?.file ?? 'assets/images/wallet.svg',
       providerName: dto.creditPlan.name,
       planName: dto.name,
-      validityDuration: dto.creditPlan.validity_window_days.toString(),
+      validityDuration: dto.creditPlan.validity_window_days?.toString() ?? '',
     );
   }
 

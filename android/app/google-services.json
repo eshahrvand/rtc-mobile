@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "604989067023",
+    "project_id": "rtc-app-5e83f",
+    "storage_bucket": "rtc-app-5e83f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604989067023:android:832e54837074fb92a1387a",
+        "android_client_info": {
+          "package_name": "com.avat.rtc_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD10zY5UTPN66rPDR4FXjy7niLETOwxg_k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

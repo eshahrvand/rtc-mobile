@@ -334,6 +334,8 @@
   "orderDetail": "جزییات سفارش",
   "orderFinancialDetail": "اطلاعات مالی",
   "history": "تاریخچه",
+  "brand": "برند",
+  "brandFilter": "برند کالای مورد نظر را انتخاب کنید",
   "historyPayment": "تاریخچه پرداخت‌ها",
   "settlementConfirmError": "خطا در تایید تسویه: ",
   "toleranceSettingNotFoundError": "مقدار تولرانس در تنظیمات یافت نشد",
@@ -356,6 +358,47 @@
       }
     }
   },
+  "reportSearchHint": "جستجو در گزارش...",
+  "selectPlanTitle": "انتخاب طرح",
+  "parentCategoryLabel": "دسته‌بندی والد",
+  "categoryLabel": "دسته‌بندی کالا",
+  "resultsCountLabel": "{count} نتیجه",
+  "@resultsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noReportFound": "گزارشی یافت نشد",
+  "dateLabel": "تاریخ",
+  "basePriceLabel": "قیمت پایه",
+  "orderCountLabel": "تعداد سفارش",
+  "totalSalesAmountLabel": "جمع مبلغ فروش",
+  "purchaseAmountLabel": "مبلغ خرید",
+  "salesReportTitle": "گزارش فروش",
+  "planReportTitle": "گزارش طرح\u200Cهای فروش",
+  "categoryReportTitle": "گزارش دسته‌بندی کالاها",
+  "productReportTitle": "گزارش محصولات",
+  "totalSalesLabel": "مبلغ کل فروش",
+  "totalOrdersLabel": "تعداد کل سفارشات",
+  "totalItemsLabel": "تعداد اقلام",
+  "uniqueCustomersLabel": "مشتریان منحصر به فرد",
+  "averageSalesAmountLabel": "میانگین مبلغ فروش",
+  "averageItemsPerOrderLabel": "میانگین تعداد کالا در هر سفارش",
+  "totalPurchaseLabel": "مبلغ کل خرید",
+  "averageSalesPerPlanLabel": "میانگین فروش هر طرح",
+  "averageSalesPerCategoryLabel": "میانگین فروش هر دسته‌بندی",
+  "monthsCountLabel": "{count} ماهه",
+  "@monthsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "parentCategorySecondaryLabel": "دسته والد",
+  "subPlanNameLabel": "نام زیر مجموعه",
   "commissionMessage": "با فروش {distance} ریال دیگر پورسانت شما به {nextRateCash}٪ نقدی و یا {nextRateProduct}٪ کالایی افزایش می‌یابد.",
   "@commissionMessage": {
     "placeholders": {

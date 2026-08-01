@@ -264,4 +264,13 @@ class AppColors {
       color: Color(0x14676E76),
     ),
   ];
+
+  static const List<BoxShadow> summaryShadow = [
+    BoxShadow(
+      offset: Offset(0, 0),
+      blurRadius: 5,
+      spreadRadius: 0,
+      color: Color(0x40000000), // #00000040
+    ),
+  ];
 }

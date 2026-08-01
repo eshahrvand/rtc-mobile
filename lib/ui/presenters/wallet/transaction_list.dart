@@ -9,6 +9,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
+import '../../../core/models/filter_item.dart';
 import '../../../core/models/product_chip_model.dart';
 import '../../widget/rtc_chip_list.dart';
 import '../products/widget/filter_bottom_sheet.dart';

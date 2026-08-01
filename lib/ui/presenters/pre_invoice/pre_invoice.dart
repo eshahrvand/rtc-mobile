@@ -67,7 +67,7 @@ class PreInvoiceView extends StatelessWidget {
               );
             }
             if (state.status == PreInvoiceRequestStatus.submitted) {
-              context.go(AppRoutes.orderDetail, extra: state.createdOrderId);
+              context.go('${AppRoutes.orderDetail.replaceAll(':orderId', state.createdOrderId!)}');
             }
             if (state.status == PreInvoiceRequestStatus.submittedAndCleared) {
               context.pop();

@@ -1,49 +1,42 @@
-# Implementation Plan - Media Picker / Repository / Service Cleanup
+# Implementation Plan - Product Pagination in Pre-Invoice Step 2
 
-Cleanup and refactor of media-related code to remove debug artifacts, reduce duplication, and improve readability without changing behavior.
+Implement pagination for the product list in the Pre-Invoice flow (Step 2) to match the behavior of the main Products screen.
 
 ## Proposed Changes
 
-### Media Picker Component
-- Remove all `print` statements used for debugging lifecycle and permissions.
-- Clean up unused imports (`dart:io` in some files).
-- Standardize on `XFile` usage.
+### State Management
 
-#### [media_picker_cubit.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/media_picker/bloc/media_picker_cubit.dart)
-- Remove `print` statements in `loadInitialGallery`, `loadNextPage`, `captureFromCamera`, `pickFromGalleryWeb`, and `pickFile`.
-- Remove unused import `dart:io`.
-- Keep PhotoManager permission handling logic as is, just remove the prints.
+#### [MODIFY] [PreInvoiceState](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/pre_invoice/bloc/pre_invoice_state.dart)
+- Add fields to track product pagination:
+    - `currentProductPage` (default: 1)
+    - `hasMoreProducts` (default: false)
+    - `isProductPaginationLoading` (default: false)
 
-#### [media_edit_screen.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/media_picker/widget/media_edit_screen.dart)
-- Remove unused import `dart:io`.
+#### [MODIFY] [PreInvoiceCubit](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/pre_invoice/bloc/pre_invoice_cubit.dart)
+- Update `_loadProducts()` to reset pagination fields when a new search or filter is applied.
+- Implement `fetchProductsNextPage()`:
+    - Check if already loading or no more products.
+    - Fetch the next page of products from `_productRepo.getProducts`.
+    - Append new products to `allProducts` and `filteredProducts`.
+    - Update `currentProductPage` and `hasMoreProducts`.
 
----
+### UI Layer
 
-### Media Data Layer
-- Consolidate `kIsWeb` branching in `MediaService.uploadMedia`.
-- Extract defensive filename logic into private helpers.
-
-#### [media_service.dart](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/data_source/remote/media/media_service.dart)
-- Consolidate `uploadMedia` to reduce duplication between Web and Mobile branches.
-- Extract `_getSafeFileName` helper.
-- Extract `_createMultipartFile` helper.
-- Add comments explaining the "defensive" nature of the filename fallback.
-
----
+#### [MODIFY] [PreInvoiceStep2View](file:///Users/mahdi/StudioProjects/rtc_mobile/lib/ui/presenters/pre_invoice/widget/pre_invoice_step2_view.dart)
+- Add a `ScrollController` to `_PreInvoiceStep2ViewState`.
+- Add an `_onScroll` listener to trigger `fetchProductsNextPage()` when scrolling near the bottom (matching `ProductsBody` behavior).
+- Update the `ListView.builder`:
+    - Attach the `ScrollController`.
+    - Increase `itemCount` by 1 if `isProductPaginationLoading` is true.
+    - In `itemBuilder`, show a `CircularProgressIndicator` if the index is at the end of the list.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `flutter analyze` to ensure no new issues or unused imports were missed.
+- Run `flutter analyze` to ensure no syntax errors.
 
 ### Manual Verification
-- **Web**:
-    - Upload an image (with and without cropping).
-    - Upload a PDF.
-    - Verify successful upload in both cases.
-- **Mobile**:
-    - Upload an image (with and without cropping).
-    - Upload a PDF.
-    - Verify successful upload in both cases.
-- **Network Inspection (Web)**:
-    - Check that the `filename` in multipart data is still present and correct.
+- Open Pre-Invoice flow.
+- Go to Step 2 (Select Products).
+- Scroll down the product list and verify that more products are loaded automatically.
+- Verify that filtering by category/brand or searching correctly resets the list and maintains pagination for the filtered results.

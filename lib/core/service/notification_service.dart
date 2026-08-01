@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Handling a background message: ${message.messageId}');
-}
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
 
 class NotificationService {
   NotificationService(this._firebaseMessaging, this._localNotificationsPlugin);
@@ -23,7 +21,6 @@ class NotificationService {
 
   void init() {
     _requestNotificationPermission();
-    // _printFcmToken();
     if (!kIsWeb) {
       _initLocalNotifications();
     }
@@ -33,25 +30,7 @@ class NotificationService {
   void _requestNotificationPermission() {
     _firebaseMessaging
         .requestPermission(alert: true, badge: true, sound: true)
-        .then((settings) {
-          debugPrint(
-            'User granted permission: ${settings.authorizationStatus}',
-          );
-        })
-        .catchError((e) {
-          debugPrint('Error requesting notification permission: $e');
-        });
-  }
-
-  void _printFcmToken() {
-    _firebaseMessaging
-        .getToken()
-        .then((token) {
-          debugPrint('>>fcm_token: $token');
-        })
-        .catchError((e) {
-          debugPrint('Error getting FCM token: $e');
-        });
+        .catchError((_) {});
   }
 
   void _initLocalNotifications() {
@@ -66,15 +45,9 @@ class NotificationService {
               .resolvePlatformSpecificImplementation<
                 AndroidFlutterLocalNotificationsPlugin
               >()
-              ?.createNotificationChannel(_channel)
-              .then((_) => debugPrint('Android Notification Channel Created'))
-              .catchError(
-                (e) => debugPrint('Error creating Android channel: $e'),
-              );
+              ?.createNotificationChannel(_channel);
         })
-        .catchError((e) {
-          debugPrint('Error initializing local notifications: $e');
-        });
+        .catchError((_) {});
   }
 
   void _initFCMListeners() {
@@ -84,26 +57,10 @@ class NotificationService {
           badge: true,
           sound: true,
         )
-        .then((_) => debugPrint('iOS foreground notification options set'))
-        .catchError(
-          (e) => debugPrint('Error setting iOS foreground options: $e'),
-        );
+        .catchError((_) {});
 
     FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      debugPrint('Notification opened app: ${message.messageId}');
-    });
-
-    _firebaseMessaging
-        .getInitialMessage()
-        .then((message) {
-          if (message != null) {
-            debugPrint('App launched from terminated state via notification');
-          }
-        })
-        .catchError((e) {
-          debugPrint('Error getting initial message: $e');
-        });
+    FirebaseMessaging.onMessageOpenedApp.listen((_) {});
 
     if (!kIsWeb) {
       FirebaseMessaging.onBackgroundMessage(
@@ -113,8 +70,6 @@ class NotificationService {
   }
 
   void _handleForegroundNotification(RemoteMessage message) {
-    debugPrint('Foreground Message Received: ${message.notification?.title}');
-
     final notification = message.notification;
     final android = message.notification?.android;
 

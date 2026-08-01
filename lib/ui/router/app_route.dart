@@ -6,8 +6,9 @@ class AppRoutes {
   static const productDetail = '/product-detail';
   static const customers = '/customers';
   static const orders = '/orders';
-  static const orderDetail = '/order-detail';
+  static const orderDetail = '/order-detail/:orderId';
   static const preInvoice = '/pre-invoice';
   static const wallet = '/wallet';
   static const transactionList = '/transaction-list';
+  static const reports = '/reports';
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../core/models/product_item_model.dart';
-import '../../../../core/utils/network_helper.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../repository/plans/plans_repository.dart';
@@ -24,26 +23,40 @@ class ProductCubit extends Cubit<ProductState> {
 
     final chips = _createInitialChips();
 
-    Future.wait([_productRepo.getCategories(), _plansRepo.getSubPlans()])
+    Future.wait([
+      _productRepo.getCategories(page: 1),
+      _plansRepo.getSubPlans(page: 1),
+      _productRepo.getBrands(page: 1),
+    ])
         .then((results) {
-          final categoriesResponse = results[0];
-          final subPlansResponse = results[1];
+          final categoriesResponse = results[0] as dynamic;
+          final subPlansResponse = results[1] as dynamic;
+          final brandsResponse = results[2] as dynamic;
 
           emit(
             state.copyWith(
               chips: chips,
-              availableCategories: (categoriesResponse as dynamic).results,
-              availableSubPlans: (subPlansResponse as dynamic).results,
+              availableCategories: categoriesResponse.results,
+              hasMoreCategories: categoriesResponse.next != null,
+              currentCategoryPage: 1,
+              availableSubPlans: subPlansResponse.results,
+              hasMoreSubPlans: subPlansResponse.next != null,
+              currentSubPlanPage: 1,
+              availableBrands: brandsResponse.results,
+              hasMoreBrands: brandsResponse.next != null,
+              currentBrandPage: 1,
             ),
           );
 
           _fetchProducts();
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: ProductRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -82,6 +95,22 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         selectedCategoryId: categoryId,
         selectedChipIndex: categoryId != null ? 0 : -1,
+        currentPage: 1,
+        hasMoreData: true,
+      ),
+    );
+    _fetchProducts();
+  }
+
+  void selectBrand(String? brandId) {
+    if (state.selectedBrandId == brandId) return;
+
+    emit(
+      state.copyWith(
+        selectedBrandId: brandId,
+        selectedChipIndex: brandId != null ? 1 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -98,7 +127,9 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         selectedSubPlanId: subPlanId,
         selectedSubPlanName: subPlanName,
-        selectedChipIndex: subPlanId != null ? 1 : -1,
+        selectedChipIndex: subPlanId != null ? 2 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -109,7 +140,9 @@ class ProductCubit extends Cubit<ProductState> {
     emit(
       state.copyWith(
         isOnlyAvailable: newValue,
-        selectedChipIndex: newValue ? 2 : -1,
+        selectedChipIndex: newValue ? 3 : -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
@@ -126,6 +159,8 @@ class ProductCubit extends Cubit<ProductState> {
   void onChipClose(ProductChipModel chip) {
     if (chip.id == 1) {
       selectCategory(null);
+    } else if (chip.id == 4) {
+      selectBrand(null);
     } else if (chip.id == 2) {
       selectSubPlan(null);
     } else if (chip.id == 3) {
@@ -144,43 +179,174 @@ class ProductCubit extends Cubit<ProductState> {
         searchQuery: '',
         isSearchActive: false,
         selectedCategoryId: null,
+        selectedBrandId: null,
         selectedSubPlanId: null,
         selectedSubPlanName: null,
         isOnlyAvailable: false,
         selectedChipIndex: -1,
+        currentPage: 1,
+        hasMoreData: true,
       ),
     );
     _fetchProducts();
   }
 
-  void _fetchProducts() {
-    emit(state.copyWith(status: ProductRequestStatus.loading));
+  void fetchCategoriesNextPage() {
+    if (state.isCategoryPaginationLoading || !state.hasMoreCategories) return;
+
+    emit(state.copyWith(isCategoryPaginationLoading: true));
+
+    final nextPage = state.currentCategoryPage + 1;
+
+    _productRepo
+        .getCategories(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isCategoryPaginationLoading: false,
+              currentCategoryPage: nextPage,
+              availableCategories: [
+                ...state.availableCategories,
+                ...response.results,
+              ],
+              hasMoreCategories: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isCategoryPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchBrandsNextPage() {
+    if (state.isBrandPaginationLoading || !state.hasMoreBrands) return;
+
+    emit(state.copyWith(isBrandPaginationLoading: true));
+
+    final nextPage = state.currentBrandPage + 1;
+
+    _productRepo
+        .getBrands(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isBrandPaginationLoading: false,
+              currentBrandPage: nextPage,
+              availableBrands: [...state.availableBrands, ...response.results],
+              hasMoreBrands: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isBrandPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchSubPlansNextPage() {
+    if (state.isSubPlanPaginationLoading || !state.hasMoreSubPlans) return;
+
+    emit(state.copyWith(isSubPlanPaginationLoading: true));
+
+    final nextPage = state.currentSubPlanPage + 1;
+
+    _plansRepo
+        .getSubPlans(page: nextPage)
+        .then((response) {
+          emit(
+            state.copyWith(
+              isSubPlanPaginationLoading: false,
+              currentSubPlanPage: nextPage,
+              availableSubPlans: [
+                ...state.availableSubPlans,
+                ...response.results,
+              ],
+              hasMoreSubPlans: response.next != null,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isSubPlanPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void fetchNextPage() {
+    if (state.isPaginationLoading ||
+        !state.hasMoreData ||
+        state.status == ProductRequestStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(isPaginationLoading: true));
+
+    final nextPage = state.currentPage + 1;
 
     _productRepo
         .getProducts(
           subPlanId: state.selectedSubPlanId,
           categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           inStock: state.isOnlyAvailable ? true : null,
+          page: nextPage,
         )
         .then((response) {
-          final products = response.results
-              .map(_mapToProductItemModel)
-              .toList();
+          final newProducts =
+              response.results.map(_mapToProductItemModel).toList();
+
+          final updatedProducts = [...state.allProducts, ...newProducts];
+
+          emit(
+            state.copyWith(
+              isPaginationLoading: false,
+              currentPage: nextPage,
+              allProducts: updatedProducts,
+              filteredProducts: updatedProducts,
+              hasMoreData: response.next != null,
+              totalCount: response.count,
+            ),
+          );
+        })
+        .catchError((e) {
+          emit(state.copyWith(isPaginationLoading: false));
+          return null;
+        });
+  }
+
+  void _fetchProducts() {
+    emit(state.copyWith(status: ProductRequestStatus.loading, currentPage: 1));
+
+    _productRepo
+        .getProducts(
+          subPlanId: state.selectedSubPlanId,
+          categoryId: state.selectedCategoryId,
+          brandId: state.selectedBrandId,
+          search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
+          inStock: state.isOnlyAvailable ? true : null,
+          page: 1,
+        )
+        .then((response) {
+          final products = response.results.map(_mapToProductItemModel).toList();
 
           emit(
             state.copyWith(
               status: ProductRequestStatus.success,
               allProducts: products,
               filteredProducts: products,
+              totalCount: response.count,
+              hasMoreData: response.next != null,
             ),
           );
         })
         .catchError((e) {
-          emit(state.copyWith(
-            status: ProductRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: ProductRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
           return null;
         });
   }
@@ -192,6 +358,7 @@ class ProductCubit extends Cubit<ProductState> {
         label: S.current.category,
         opensBottomSheet: true,
       ),
+      ProductChipModel(id: 4, label: S.current.brand, opensBottomSheet: true),
       ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
       ProductChipModel(
         id: 3,

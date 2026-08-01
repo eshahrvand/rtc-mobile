@@ -1,0 +1,5 @@
+- [x] Update `OrderDetailScreenTracker` with instance token support
+- [x] Integrate instance token into `OrderDetailView` lifecycle and listeners
+- [x] Implement defensive navigation guard in `DashboardScreen`
+- [x] Refine `OrdersCubit` state reset logic
+- [x] Final verification of "Back" navigation after successful payment

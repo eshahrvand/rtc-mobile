@@ -18,6 +18,7 @@ class RtcSearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Widget? searchPrefix;
   final Widget? searchSuffix;
   final bool showShadow;
+  final bool showDrawerIcon;
 
   const RtcSearchAppBar({
     super.key,
@@ -33,6 +34,7 @@ class RtcSearchAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.searchPrefix,
     this.searchSuffix,
     this.showShadow = true,
+    this.showDrawerIcon = true,
   });
 
   @override
@@ -145,17 +147,19 @@ class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
     return RtcAppBar(
       showShadow: widget.showShadow,
       centerTitle: true,
-      leading: Padding(
-        padding: const EdgeInsets.only(right: 16),
-        child: GestureDetector(
-          onTap: () => widget.scaffoldKey.currentState?.openDrawer(),
-          child: RtcImage(
-            image: '$baseImage/drawer_menu.svg',
-            width: 24,
-            height: 24,
-          ),
-        ),
-      ),
+      leading: widget.showDrawerIcon
+          ? Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: GestureDetector(
+                onTap: () => widget.scaffoldKey.currentState?.openDrawer(),
+                child: RtcImage(
+                  image: '$baseImage/drawer_menu.svg',
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+            )
+          : const SizedBox.shrink(),
       title: widget.title,
       titleStyle: widget.titleStyle,
       actions: [

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
+import 'model/brand_dto_model.dart';
 import 'model/category_dto_model.dart';
 import 'model/product_dto_model.dart';
 
@@ -10,12 +11,16 @@ abstract class CatalogService {
   factory CatalogService(Dio dio, {String baseUrl}) = _CatalogService;
 
   @GET('catalog/categories')
-  Future<CategoryListResponse> getCategories();
+  Future<CategoryListResponse> getCategories(@Query('page') int? page);
+
+  @GET('catalog/brands')
+  Future<BrandListResponse> getBrands(@Query('page') int? page);
 
   // Type 1: General Catalog
   @GET('catalog/products')
   Future<ProductListResponse> getProducts({
     @Query('category') String? categoryId,
+    @Query('brand') String? brandId,
     @Query('in_stock') bool? inStock,
     @Query('is_active') bool? isActive,
     @Query('ordering') String? ordering,
@@ -33,6 +38,7 @@ abstract class CatalogService {
   Future<ProductListResponse> getPlanProducts({
     @Path('sub_plan_id') required String subPlanId,
     @Query('category') String? categoryId,
+    @Query('brand') String? brandId,
     @Query('in_stock') bool? inStock,
     @Query('ordering') String? ordering,
     @Query('page') int? page,

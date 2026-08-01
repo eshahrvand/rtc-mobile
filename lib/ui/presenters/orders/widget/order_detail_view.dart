@@ -6,6 +6,9 @@ import 'package:rtc_mobile/config/order_calculations.dart';
 import 'package:rtc_mobile/config/snackbar.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../config/constants.dart';
+import '../../../../core/models/order_model.dart';
+import '../../../../core/utils/id_formatter.dart';
+import '../../../../core/utils/order_detail_screen_tracker.dart';
 import '../../../../generated/l10n.dart';
 import '../../../router/app_route.dart';
 import '../../../widget/rtc_appbar.dart';
@@ -22,7 +25,8 @@ import 'order_tab_history.dart';
 import 'orders_ui_helpers.dart';
 
 class OrderDetailView extends StatefulWidget {
-  const OrderDetailView({super.key});
+  final String orderId;
+  const OrderDetailView({super.key, required this.orderId});
 
   @override
   State<OrderDetailView> createState() => _OrderDetailViewState();
@@ -44,11 +48,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    OrderDetailScreenTracker.currentlyOpenOrderId = widget.orderId;
+    OrderDetailScreenTracker.activeInstanceToken = hashCode;
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    if (OrderDetailScreenTracker.currentlyOpenOrderId == widget.orderId) {
+      OrderDetailScreenTracker.currentlyOpenOrderId = null;
+    }
+    if (OrderDetailScreenTracker.activeInstanceToken == hashCode) {
+      OrderDetailScreenTracker.activeInstanceToken = null;
+    }
     super.dispose();
   }
 
@@ -62,6 +74,46 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       },
       child: MultiBlocListener(
         listeners: [
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) =>
+                prev.deepLinkPaymentOutcome != curr.deepLinkPaymentOutcome,
+            listener: (context, state) {
+              if (OrderDetailScreenTracker.activeInstanceToken != hashCode) {
+                return;
+              }
+
+              if (state.deepLinkPaymentOutcome == PaymentOutcome.success) {
+                _showSuccessReceipt(context, state);
+              } else if (state.deepLinkPaymentOutcome == PaymentOutcome.failed) {
+                rtcSnackBar(
+                  context: context,
+                  type: SnackBarType.error,
+                  message: "پرداخت موفق نبود، لطفا مجددا تلاش کنید",
+                );
+              }
+            },
+          ),
+          BlocListener<OrdersCubit, OrdersState>(
+            listenWhen: (prev, curr) =>
+                prev.pendingNavigation != curr.pendingNavigation,
+            listener: (context, state) {
+              if (OrderDetailScreenTracker.activeInstanceToken != hashCode) {
+                return;
+              }
+
+              if (state.pendingNavigation != null &&
+                  state.selectedOrder != null &&
+                  state.pendingNavigation!['orderId'] ==
+                      state.selectedOrder!.id) {
+                final payment = state.pendingNavigation!['payment'] as String?;
+                context.read<OrdersCubit>().clearPendingNavigation();
+                context.read<OrdersCubit>().fetchOrderDetail(
+                  state.selectedOrder!.id,
+                  paymentOutcome: payment,
+                );
+              }
+            },
+          ),
           BlocListener<OrdersCubit, OrdersState>(
             listenWhen: (prev, curr) => prev.status != curr.status,
             listener: (context, state) {
@@ -273,6 +325,42 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   }
 
   void _showSuccessReceipt(BuildContext context, OrdersState state) {
+    final order = state.selectedOrder!;
+
+    // Find last successful clearance
+    String clearanceAmountValue = state.clearanceAmount;
+    if (order.disbursementRecords.isNotEmpty) {
+      final last = order.disbursementRecords.lastWhere(
+        (r) => r.status == 'success' || r.status == 'موفق',
+        orElse: () => DisbursementRecordModel(
+          gateway: '',
+          amount: state.clearanceAmount,
+          reference: '',
+          status: '',
+          createdAt: '',
+        ),
+      );
+      clearanceAmountValue = last.amount;
+    }
+
+    // Find last successful settlement
+    String? settlementAmountValue;
+    if (order.settlementRecords.isNotEmpty) {
+      final last = order.settlementRecords.lastWhere(
+        (r) => r.status == 'success' || r.status == 'موفق',
+        orElse: () => SettlementRecordModel(
+          id: '',
+          amount: '۰',
+          paymentType: '',
+          status: '',
+          createdAt: '',
+        ),
+      );
+      if (last.id.isNotEmpty) {
+        settlementAmountValue = last.amount;
+      }
+    }
+
     OrderClearanceReceiptSheet.show(
       context,
       title: S.current.documentsSentSuccessTitle,
@@ -280,7 +368,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       fields: [
         ReceiptField(
           label: S.current.proInvoiceNumberLabel,
-          value: OrderMapper.formatDisplayId(state.selectedOrder!.id),
+          value: IdFormatter.formatDisplayId(state.selectedOrder!.id),
         ),
         ReceiptField(
           label: S.current.customerLabelWithColon,
@@ -292,7 +380,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                state.clearanceAmount,
+                clearanceAmountValue,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.grayPalette.shade900,
                   fontWeight: FontWeight.w600,
@@ -308,6 +396,29 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             ],
           ),
         ),
+        if (settlementAmountValue != null)
+          ReceiptField(
+            label: S.current.settlementAmountLabel,
+            value: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  settlementAmountValue,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.grayPalette.shade900,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                RtcImage(
+                  image: "$baseImage/rial.svg",
+                  boxFit: BoxFit.contain,
+                  width: 24,
+                  height: 24,
+                ),
+              ],
+            ),
+          ),
         ReceiptField(
           label: S.current.orderAmountLabel,
           value: Row(
