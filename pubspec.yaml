@@ -74,10 +74,12 @@ dependencies:
   screenshot: ^3.0.0
   share_plus: ^12.0.0
   flutter_native_html_to_pdf: 3.1.0
-  file_picker: ^11.0.2
   syncfusion_flutter_pdfviewer: ^33.2.13
   package_info_plus: ^9.0.1
   sms_autofill: ^2.5.0
+  avat_media_picker:
+    path: /Users/mahdi/StudioProjects/avat-media-picker
+  cross_file: ^0.3.4+2
 
 
 dev_dependencies:

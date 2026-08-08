@@ -19,7 +19,6 @@ import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
-import '../../media_picker/bloc/model/media_item.dart';
 import '../../media_picker/media_picker.dart';
 import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
@@ -77,9 +76,12 @@ class OrdersCubit extends Cubit<OrdersState> {
     fetchOrders();
 
     // Check for initial deep link (cold start)
-    AppLinks().getInitialLink().then((uri) {
-      if (uri != null) _handleIncomingUri(uri);
-    }).catchError((_) {});
+    AppLinks()
+        .getInitialLink()
+        .then((uri) {
+          if (uri != null) _handleIncomingUri(uri);
+        })
+        .catchError((_) {});
   }
 
   void _handleIncomingUri(Uri uri) {
@@ -248,10 +250,12 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void fetchOrderDetail(String orderId, {String? paymentOutcome}) {
-    emit(state.copyWith(
-      status: OrdersRequestStatus.loading,
-      deepLinkPaymentOutcome: PaymentOutcome.initial,
-    ));
+    emit(
+      state.copyWith(
+        status: OrdersRequestStatus.loading,
+        deepLinkPaymentOutcome: PaymentOutcome.initial,
+      ),
+    );
     _initTolerance();
 
     _ordersRepo
@@ -293,7 +297,11 @@ class OrdersCubit extends Cubit<OrdersState> {
           if (outcome != PaymentOutcome.initial) {
             Future.delayed(const Duration(milliseconds: 100), () {
               if (!isClosed) {
-                emit(state.copyWith(deepLinkPaymentOutcome: PaymentOutcome.initial));
+                emit(
+                  state.copyWith(
+                    deepLinkPaymentOutcome: PaymentOutcome.initial,
+                  ),
+                );
               }
             });
           }
@@ -624,7 +632,10 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     return _mediaRepo
-        .uploadMedia(category: 'order_document', xFile: state.uploadedClearanceDoc!)
+        .uploadMedia(
+          category: 'order_document',
+          xFile: state.uploadedClearanceDoc!,
+        )
         .then((media) {
           return _ordersRepo.addOrderDocument(
             state.selectedOrder!.id,
@@ -665,7 +676,7 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     return _ordersRepo
         .disburse(state.selectedOrder!.id, {
-          'payload': {'otp': otp}
+          'payload': {'otp': otp},
         })
         .then((_) {
           emit(
@@ -711,10 +722,7 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   Future<void> clearClearanceDocument() {
     emit(
-      state.copyWith(
-        uploadedClearanceDoc: null,
-        uploadedClearanceDocId: null,
-      ),
+      state.copyWith(uploadedClearanceDoc: null, uploadedClearanceDocId: null),
     );
     return Future.value();
   }
@@ -730,9 +738,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     if (result != null && result.isNotEmpty) {
       final newDocs = result.map((m) => m.xFile).toList();
       emit(
-        state.copyWith(
-          settlementDocs: [...state.settlementDocs, ...newDocs],
-        ),
+        state.copyWith(settlementDocs: [...state.settlementDocs, ...newDocs]),
       );
     }
   }
@@ -892,7 +898,8 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void resendSettlementLink() {
-    if (state.selectedOrder == null || state.settlementMethod != 'ipg_sms') return;
+    if (state.selectedOrder == null || state.settlementMethod != 'ipg_sms')
+      return;
     initiateSettlement('ipg_sms');
   }
 
@@ -934,16 +941,18 @@ class OrdersCubit extends Cubit<OrdersState> {
           });
     }
 
-    final docsToUpload =
-        imagePath != null
-            ? [XFile(imagePath)]
-            : (state.settlementMethod == 'card_to_card'
-                ? state.settlementDocs
-                : <XFile>[]);
+    final docsToUpload = imagePath != null
+        ? [XFile(imagePath)]
+        : (state.settlementMethod == 'card_to_card'
+              ? state.settlementDocs
+              : <XFile>[]);
 
     if (docsToUpload.isNotEmpty) {
       final uploadTasks = docsToUpload.map((xFile) {
-        return _mediaRepo.uploadMedia(category: 'order_settlement', xFile: xFile);
+        return _mediaRepo.uploadMedia(
+          category: 'order_settlement',
+          xFile: xFile,
+        );
       });
 
       return Future.wait(uploadTasks)
