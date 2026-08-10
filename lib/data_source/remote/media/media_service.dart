@@ -37,7 +37,7 @@ class MediaService {
   /// Uses [fromBytes] for Web to handle Blob URLs correctly, 
   /// and [fromFile] for Mobile to benefit from streaming large files.
   Future<dio.MultipartFile> _createMultipartFile(XFile xFile, String filename) async {
-    if (kIsWeb) {
+    if (kIsWeb || xFile.path.isEmpty) {
       final bytes = await xFile.readAsBytes();
       return dio.MultipartFile.fromBytes(
         bytes,

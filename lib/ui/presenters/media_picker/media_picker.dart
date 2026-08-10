@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:avat_media_picker/avat_media_picker.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'model/media_item.dart';
 
@@ -37,16 +40,32 @@ class MediaPickerBottomSheet {
     );
 
     if (result is AvatMediaSuccess) {
-      return result.files.map((file) {
-        return MediaItem(
-          xFile: file.path != null
-              ? XFile(file.path!)
-              : XFile.fromData(file.bytes, name: file.fileName),
-          type: file.type == AvatMediaType.pdf ? MediaType.pdf : MediaType.image,
-          thumbnail: file.type == AvatMediaType.image ? file.bytes : null,
-          fileName: file.fileName,
+      final items = <MediaItem>[];
+      for (final file in result.files) {
+        String? path = file.path;
+        if (!kIsWeb && (path == null || path.isEmpty || !File(path).existsSync())) {
+          final tempDir = await getTemporaryDirectory();
+          final ext = file.extension ?? (file.type == AvatMediaType.pdf ? 'pdf' : 'jpg');
+          final safeName = file.fileName.contains('.') ? file.fileName : '${file.fileName}.$ext';
+          final tempFile = File('${tempDir.path}/picker_${DateTime.now().microsecondsSinceEpoch}_$safeName');
+          await tempFile.writeAsBytes(file.bytes);
+          path = tempFile.path;
+        }
+
+        final xFile = path != null && path.isNotEmpty
+            ? XFile(path, bytes: file.bytes, name: file.fileName)
+            : XFile.fromData(file.bytes, name: file.fileName);
+
+        items.add(
+          MediaItem(
+            xFile: xFile,
+            type: file.type == AvatMediaType.pdf ? MediaType.pdf : MediaType.image,
+            thumbnail: file.type == AvatMediaType.image ? file.bytes : null,
+            fileName: file.fileName,
+          ),
         );
-      }).toList();
+      }
+      return items;
     }
 
     return null;

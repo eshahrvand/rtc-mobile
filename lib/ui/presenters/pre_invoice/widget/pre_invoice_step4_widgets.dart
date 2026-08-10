@@ -118,20 +118,41 @@ class PreInvoiceStep4UploadBox extends StatelessWidget {
                                   ),
                                 ),
                           )
-                        : Image.file(
-                            File(xFile!.path),
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Center(
-                                  child: Icon(
-                                    Icons.image,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                          ),
+                        : (xFile!.path.isNotEmpty && File(xFile!.path).existsSync()
+                            ? Image.file(
+                                File(xFile!.path),
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Center(
+                                      child: Icon(
+                                        Icons.image,
+                                        size: 50,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                              )
+                            : FutureBuilder<Uint8List>(
+                                future: xFile!.readAsBytes(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Image.memory(
+                                      snapshot.data!,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.contain,
+                                    );
+                                  }
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.image,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              )),
                   ),
                   Positioned(
                     bottom: 0,

@@ -1,5 +1,7 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import '../../../../config/constants.dart';
+import '../../../../core/utils/file_utils.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_image.dart';
 
@@ -7,6 +9,7 @@ class PreInvoiceDocumentItem extends StatelessWidget {
   final String title;
   final String fileName;
   final String fileSize;
+  final XFile? xFile;
   final VoidCallback onDelete;
   final VoidCallback onView;
   final bool showDeleteButton;
@@ -16,6 +19,7 @@ class PreInvoiceDocumentItem extends StatelessWidget {
     required this.title,
     required this.fileName,
     required this.fileSize,
+    this.xFile,
     required this.onDelete,
     required this.onView,
     this.showDeleteButton = true,
@@ -76,12 +80,24 @@ class PreInvoiceDocumentItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                fileSize,
-                style: theme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade600,
-                ),
-              ),
+              (xFile != null && (fileSize == '...' || fileSize.isEmpty))
+                  ? FutureBuilder<String>(
+                      future: FileUtils.getXFileSizeString(xFile!),
+                      builder: (context, snapshot) {
+                        return Text(
+                          snapshot.data ?? fileSize,
+                          style: theme.bodyMedium!.copyWith(
+                            color: AppColors.grayPalette.shade600,
+                          ),
+                        );
+                      },
+                    )
+                  : Text(
+                      fileSize,
+                      style: theme.bodyMedium!.copyWith(
+                        color: AppColors.grayPalette.shade600,
+                      ),
+                    ),
               const SizedBox(height: 8),
               Row(
                 spacing: 8,

@@ -5,10 +5,23 @@ import 'package:cross_file/cross_file.dart';
 class FileUtils {
   static Future<String> getXFileSizeString(XFile xFile) async {
     try {
-      int bytes = await xFile.length();
-      return formatFileSize(bytes);
-    } catch (e) {
-      return '0 B';
+      if (xFile.path.isNotEmpty) {
+        final file = File(xFile.path);
+        if (file.existsSync()) {
+          return formatFileSize(file.lengthSync());
+        }
+      }
+      final len = await xFile.length();
+      if (len > 0) return formatFileSize(len);
+      final bytes = await xFile.readAsBytes();
+      return formatFileSize(bytes.length);
+    } catch (_) {
+      try {
+        final bytes = await xFile.readAsBytes();
+        return formatFileSize(bytes.length);
+      } catch (_) {
+        return '\u200e۰ B';
+      }
     }
   }
 
