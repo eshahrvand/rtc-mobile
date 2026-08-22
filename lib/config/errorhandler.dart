@@ -28,18 +28,29 @@ String _enUsGroup(num value) {
     if (i > 0 && (intPart.length - i) % 3 == 0) buf.write(',');
     buf.write(intPart[i]);
   }
-  return '${isNegative ? '-' : ''}$buf$fracPart';
+  return '${isNegative ? '\u200E-' : ''}$buf$fracPart';
 }
 
 /// Render a numeric param with Persian digits + separators (٬ thousands,
 /// ٫ decimal), matching the web client output.
 String _fa(dynamic value) {
   if (value == null) return '';
-  final String text = value is num ? _enUsGroup(value) : value.toString();
-  return text
+  if (value is num) {
+    return _enUsGroup(value)
+        .replaceAllMapped(RegExp(r'\d'), (m) => _faDigits[int.parse(m[0]!)])
+        .replaceAll(',', '٬')
+        .replaceAll('.', '٫');
+  }
+  String text = value.toString();
+  final bool isNegative = text.startsWith('-');
+  if (isNegative) {
+    text = text.substring(1);
+  }
+  final formatted = text
       .replaceAllMapped(RegExp(r'\d'), (m) => _faDigits[int.parse(m[0]!)])
       .replaceAll(',', '٬')
       .replaceAll('.', '٫');
+  return isNegative ? '\u200E-$formatted' : formatted;
 }
 
 typedef _MessageFn = String Function(Map<String, dynamic>? params);

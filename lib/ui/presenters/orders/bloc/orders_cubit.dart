@@ -43,7 +43,6 @@ class OrdersCubit extends Cubit<OrdersState> {
   final _mediaRepo = sl<MediaRepository>();
   final _dashboardRepo = sl<DashboardRepository>();
 
-  static Future<double>? _cachedToleranceFuture;
   Timer? _searchTimer;
   Timer? _settlementTimer;
   Timer? _clearanceOtpTimer;
@@ -118,27 +117,24 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void _initTolerance() {
-    _cachedToleranceFuture ??= _dashboardRepo
+    debugPrint('>>OrdersCubit: _initTolerance called');
+    _dashboardRepo
         .getMyProfile()
         .then((profile) {
-          final tol = profile?.tolerance;
-          if (tol == null) {
-            _cachedToleranceFuture = null;
-            throw S.current.toleranceSettingNotFoundError;
+          debugPrint(
+            '>>OrdersCubit: getMyProfile result -> tolerance: ${profile?.tolerance}, toleranceCheckEnabled: ${profile?.toleranceCheckEnabled}',
+          );
+          if (!isClosed && profile != null) {
+            emit(
+              state.copyWith(
+                tolerance: profile.tolerance,
+                toleranceCheckEnabled: profile.toleranceCheckEnabled ?? true,
+              ),
+            );
           }
-
-          return tol;
         })
         .catchError((e) {
-          _cachedToleranceFuture = null;
-          throw e;
-        });
-
-    _cachedToleranceFuture!
-        .then((tol) {
-          if (!isClosed) emit(state.copyWith(tolerance: tol));
-        })
-        .catchError((e) {
+          debugPrint('>>OrdersCubit: getMyProfile error -> $e');
           if (!isClosed) {
             emit(
               state.copyWith(
@@ -520,15 +516,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   Future<void> initiateClearance(String amountStr) {
     if (state.selectedOrder == null) return Future.value();
 
-    if (state.tolerance == null) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: S.current.toleranceSettingNotFoundError,
-        ),
-      );
-      return Future.value();
-    }
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
 
     final rawAmountStr = amountStr.replaceAll(',', '');
     final amount = double.tryParse(rawAmountStr) ?? 0;
@@ -537,80 +525,117 @@ class OrdersCubit extends Cubit<OrdersState> {
         .replaceAll(',', '');
     final orderAmountVal = double.tryParse(rawOrderAmountStr) ?? 0;
 
-    final tolerancePercent = state.tolerance! / 100;
-    final minAllowed = orderAmountVal * (1 - tolerancePercent);
-    final maxAllowed = orderAmountVal * (1 + tolerancePercent);
+    return _dashboardRepo
+        .getMyProfile()
+        .then((profile) {
+          final isEnabled = profile?.toleranceCheckEnabled ?? true;
+          final tol = profile?.tolerance;
 
-    if (amount < minAllowed || amount > maxAllowed) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.success,
-          clearanceStep: ClearanceStep.amountEntered,
-          clearanceAmount: amountStr,
-          orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-          excessAmount: (amount - orderAmountVal).abs().toStringAsFixed(0),
-          isOutOfTolerance: true,
-        ),
-      );
-      return Future.value();
-    }
-
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
-
-    return _ordersRepo
-        .disburseInitiate(state.selectedOrder!.id, amount)
-        .then((response) {
-          final type = (response is Map) ? response['type'] : 'offline';
-          final mobile = (response is Map) ? response['mobile'] : null;
-          final redirectUrl = (response is Map)
-              ? response['redirect_url']
-              : null;
-
-          final isOnline = type == 'otp' || type == 'redirect';
-
-          final diff = amount - orderAmountVal;
-          final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
-          final wallet = (response is Map) ? response['wallet_name'] : null;
+          debugPrint(
+            '>>OrdersCubit: initiateClearance fresh profile -> amount: $amount, orderAmountVal: $orderAmountVal, toleranceCheckEnabled: $isEnabled, tolerance: $tol',
+          );
 
           emit(
             state.copyWith(
-              status: OrdersRequestStatus.success,
-              gatewayType: isOnline ? GatewayType.online : GatewayType.offline,
-              disbursementGatewayType: type,
-              disbursementMobile: mobile,
-              disbursementRedirectUrl: redirectUrl,
-              clearanceStep: type == 'otp'
-                  ? ClearanceStep.otpPending
-                  : type == 'redirect'
-                  ? ClearanceStep.amountEntered
-                  : ClearanceStep.documentsPending,
-              clearanceAmount: amountStr,
-              orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-              excessAmount: excess,
-              walletName: wallet,
-              isOutOfTolerance: false,
+              tolerance: tol,
+              toleranceCheckEnabled: isEnabled,
             ),
           );
 
-          if (type == 'otp') {
-            _startClearanceOtpTimer();
+          if (isEnabled) {
+            if (tol == null) {
+              debugPrint(
+                '>>OrdersCubit: initiateClearance -> error: tolerance setting not found while toleranceCheckEnabled is true',
+              );
+              emit(
+                state.copyWith(
+                  status: OrdersRequestStatus.error,
+                  errorMessage: S.current.toleranceSettingNotFoundError,
+                ),
+              );
+              return Future.value();
+            }
+
+            final tolerancePercent = tol / 100;
+            final minAllowed = orderAmountVal * (1 - tolerancePercent);
+            final maxAllowed = orderAmountVal * (1 + tolerancePercent);
+
+            if (amount < minAllowed || amount > maxAllowed) {
+              debugPrint(
+                '>>OrdersCubit: initiateClearance -> out of tolerance! (minAllowed: $minAllowed, maxAllowed: $maxAllowed)',
+              );
+              emit(
+                state.copyWith(
+                  status: OrdersRequestStatus.success,
+                  clearanceStep: ClearanceStep.amountEntered,
+                  clearanceAmount: amountStr,
+                  orderAmount: state.selectedOrder!.financialSummary.finalAmount,
+                  excessAmount: (amount - orderAmountVal).abs().toStringAsFixed(0),
+                  isOutOfTolerance: true,
+                ),
+              );
+              return Future.value();
+            }
           }
 
-          if (type == 'redirect' && redirectUrl != null) {
-            launchUrl(
-              Uri.parse(redirectUrl),
-              mode: LaunchMode.externalApplication,
-            );
-          }
+          return _ordersRepo
+              .disburseInitiate(state.selectedOrder!.id, amount)
+              .then((response) {
+                debugPrint('>>OrdersCubit: disburseInitiate response -> $response');
+                final type = (response is Map) ? response['type'] : 'offline';
+                final mobile = (response is Map) ? response['mobile'] : null;
+                final redirectUrl = (response is Map)
+                    ? response['redirect_url']
+                    : null;
+
+                final isOnline = type == 'otp' || type == 'redirect';
+
+                final diff = amount - orderAmountVal;
+                final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
+                final wallet = (response is Map) ? response['wallet_name'] : null;
+
+                emit(
+                  state.copyWith(
+                    status: OrdersRequestStatus.success,
+                    gatewayType:
+                        isOnline ? GatewayType.online : GatewayType.offline,
+                    disbursementGatewayType: type,
+                    disbursementMobile: mobile,
+                    disbursementRedirectUrl: redirectUrl,
+                    clearanceStep: type == 'otp'
+                        ? ClearanceStep.otpPending
+                        : type == 'redirect'
+                        ? ClearanceStep.amountEntered
+                        : ClearanceStep.documentsPending,
+                    clearanceAmount: amountStr,
+                    orderAmount:
+                        state.selectedOrder!.financialSummary.finalAmount,
+                    excessAmount: excess,
+                    walletName: wallet,
+                    isOutOfTolerance: false,
+                  ),
+                );
+
+                if (type == 'otp') {
+                  _startClearanceOtpTimer();
+                }
+
+                if (type == 'redirect' && redirectUrl != null) {
+                  launchUrl(
+                    Uri.parse(redirectUrl),
+                    mode: LaunchMode.externalApplication,
+                  );
+                }
+              });
         })
         .catchError((e) {
+          debugPrint('>>OrdersCubit: initiateClearance error -> $e');
           emit(
             state.copyWith(
               status: OrdersRequestStatus.error,
               errorMessage: ErrorHandler.getMessage(e),
             ),
           );
-          throw e;
         });
   }
 
@@ -754,93 +779,131 @@ class OrdersCubit extends Cubit<OrdersState> {
     String? trackingCode,
   }) {
     if (state.selectedOrder == null) return Future.value();
-    if (method == 'wallet' && state.tolerance == null) {
-      emit(
-        state.copyWith(
-          status: OrdersRequestStatus.error,
-          errorMessage: S.current.toleranceSettingNotFoundError,
-        ),
-      );
-      return Future.value();
-    }
-    emit(state.copyWith(status: OrdersRequestStatus.loading));
-
-    final apiMethod = _mapSettlementMethodToApi(method);
     final finalAmount =
         amount ?? _calculateRemainingSettlement(state.selectedOrder!);
 
-    return _ordersRepo
-        .settleInitiate(state.selectedOrder!.id, apiMethod, amount: finalAmount)
-        .then((response) {
-          final type = response['type'];
-          final walletName =
-              (type == 'wallet' && response['wallet_name'] != null)
-              ? response['wallet_name']
-              : state.walletName;
-          final mobile = response['mobile'];
+    emit(state.copyWith(status: OrdersRequestStatus.loading));
 
-          if (type == 'wallet') {
-            final requiredAmount = response['reserved_amount']?.toDouble() ?? 0;
+    return _dashboardRepo
+        .getMyProfile()
+        .then((profile) {
+          final isEnabled = profile?.toleranceCheckEnabled ?? true;
+          final tol = profile?.tolerance;
+
+          debugPrint(
+            '>>OrdersCubit: initiateSettlement fresh profile -> method: $method, amount: $amount, finalAmount: $finalAmount, toleranceCheckEnabled: $isEnabled, tolerance: $tol',
+          );
+
+          emit(
+            state.copyWith(
+              tolerance: tol,
+              toleranceCheckEnabled: isEnabled,
+            ),
+          );
+
+          if (method == 'wallet' && isEnabled && tol == null) {
+            debugPrint(
+              '>>OrdersCubit: initiateSettlement -> error: tolerance setting not found while toleranceCheckEnabled is true',
+            );
             emit(
               state.copyWith(
-                status: OrdersRequestStatus.success,
-                settlementStep: SettlementStep.methodSelected,
-                settlementMethod: method,
-                settlementReservedAmount: requiredAmount,
-                walletName: walletName,
-                isWalletBalanceSufficient: true,
+                status: OrdersRequestStatus.error,
+                errorMessage: S.current.toleranceSettingNotFoundError,
               ),
             );
-          } else {
-            final redirectUrl = type == 'redirect'
-                ? response['redirect_url']
-                : null;
-
-            emit(
-              state.copyWith(
-                status: OrdersRequestStatus.success,
-                settlementStep: SettlementStep.methodSelected,
-                settlementMethod: method,
-                settlementRedirectUrl: redirectUrl,
-                settlementMobile: mobile,
-                settlementBankAccount: type == 'offline'
-                    ? response['bank_account']
-                    : null,
-                settlementBankName: type == 'offline'
-                    ? response['bank_name']
-                    : null,
-                settlementAccountHolder: type == 'offline'
-                    ? response['account_holder']
-                    : null,
-              ),
-            );
-
-            if (method == 'ipg' && redirectUrl != null) {
-              launchUrl(
-                Uri.parse(redirectUrl),
-                mode: LaunchMode.externalApplication,
-              );
-            }
-
-            if (method == 'ipg_sms') {
-              _startSettlementTimer();
-            }
-
-            if (method == 'card_to_card' || method == 'offline') {
-              return confirmSettlement(trackingCode: trackingCode);
-            }
+            return Future.value();
           }
+
+          final apiMethod = _mapSettlementMethodToApi(method);
+
+          return _ordersRepo
+              .settleInitiate(
+                state.selectedOrder!.id,
+                apiMethod,
+                amount: finalAmount,
+              )
+              .then((response) {
+                debugPrint('>>OrdersCubit: settleInitiate response -> $response');
+                final type = response['type'];
+                final walletName =
+                    (type == 'wallet' && response['wallet_name'] != null)
+                    ? response['wallet_name']
+                    : state.walletName;
+                final mobile = response['mobile'];
+
+                if (type == 'wallet') {
+                  final requiredAmount =
+                      response['reserved_amount']?.toDouble() ?? 0;
+                  emit(
+                    state.copyWith(
+                      status: OrdersRequestStatus.success,
+                      settlementStep: SettlementStep.methodSelected,
+                      settlementMethod: method,
+                      settlementReservedAmount: requiredAmount,
+                      walletName: walletName,
+                      isWalletBalanceSufficient: true,
+                    ),
+                  );
+                } else {
+                  final redirectUrl = type == 'redirect'
+                      ? response['redirect_url']
+                      : null;
+
+                  emit(
+                    state.copyWith(
+                      status: OrdersRequestStatus.success,
+                      settlementStep: SettlementStep.methodSelected,
+                      settlementMethod: method,
+                      settlementRedirectUrl: redirectUrl,
+                      settlementMobile: mobile,
+                      settlementBankAccount: type == 'offline'
+                          ? response['bank_account']
+                          : null,
+                      settlementBankName: type == 'offline'
+                          ? response['bank_name']
+                          : null,
+                      settlementAccountHolder: type == 'offline'
+                          ? response['account_holder']
+                          : null,
+                    ),
+                  );
+
+                  if (method == 'ipg' && redirectUrl != null) {
+                    launchUrl(
+                      Uri.parse(redirectUrl),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  }
+
+                  if (method == 'ipg_sms') {
+                    _startSettlementTimer();
+                  }
+
+                  if (method == 'card_to_card' || method == 'offline') {
+                    return confirmSettlement(trackingCode: trackingCode);
+                  }
+                }
+              });
         })
         .catchError((e) {
+          debugPrint('>>OrdersCubit: settleInitiate error -> $e');
           if (method == 'wallet_debit' || method == 'wallet') {
             final apiError = ErrorHandler.getApiError(e);
-            if (apiError?.statusCode == 400) {
+            debugPrint(
+              '>>OrdersCubit: parsed apiError -> statusCode: ${apiError?.statusCode}, code: ${apiError?.code}, message: ${apiError?.message}',
+            );
+            if (apiError?.statusCode == 400 ||
+                apiError?.statusCode == 422 ||
+                apiError?.code == 'insufficient_pocket_balance' ||
+                apiError?.code == 'credit_limit_exceeded' ||
+                apiError?.code == 'tolerance_exceeded') {
               emit(
                 state.copyWith(
                   status: OrdersRequestStatus.success,
                   isWalletBalanceSufficient: false,
                   settlementMethod: method,
                   settlementStep: SettlementStep.methodSelected,
+                  errorMessage: apiError?.message ?? '',
                 ),
               );
               return null;
@@ -852,7 +915,7 @@ class OrdersCubit extends Cubit<OrdersState> {
               errorMessage: ErrorHandler.getMessage(e),
             ),
           );
-          throw e;
+          return null;
         });
   }
 
@@ -904,10 +967,13 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void selectSettlementMethod(String method) {
+    debugPrint('>>OrdersCubit: selectSettlementMethod called -> method: $method');
     emit(
       state.copyWith(
         settlementMethod: method,
         settlementStep: SettlementStep.initial,
+        isWalletBalanceSufficient:
+            (method == 'wallet_debit' || method == 'wallet') ? false : true,
       ),
     );
     if (method == 'wallet_debit' || method == 'wallet') {
@@ -916,7 +982,18 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   Future<void> confirmSettlement({String? trackingCode, String? imagePath}) {
+    debugPrint(
+      '>>OrdersCubit: confirmSettlement called -> method: ${state.settlementMethod}, isWalletBalanceSufficient: ${state.isWalletBalanceSufficient}, trackingCode: $trackingCode, imagePath: $imagePath',
+    );
     if (state.selectedOrder == null || state.settlementMethod == null) {
+      return Future.value();
+    }
+    if ((state.settlementMethod == 'wallet_debit' ||
+            state.settlementMethod == 'wallet') &&
+        !state.isWalletBalanceSufficient) {
+      debugPrint(
+        '>>OrdersCubit: confirmSettlement aborted -> isWalletBalanceSufficient is false',
+      );
       return Future.value();
     }
     emit(state.copyWith(status: OrdersRequestStatus.loading));
@@ -930,7 +1007,8 @@ class OrdersCubit extends Cubit<OrdersState> {
             apiMethod,
             trackingCode: trackingCode,
           )
-          .then((_) {
+          .then((res) {
+            debugPrint('>>OrdersCubit: settle response success');
             emit(
               state.copyWith(
                 status: OrdersRequestStatus.settlementSuccess,
@@ -938,6 +1016,15 @@ class OrdersCubit extends Cubit<OrdersState> {
               ),
             );
             fetchOrderDetail(state.selectedOrder!.id);
+          })
+          .catchError((e) {
+            debugPrint('>>OrdersCubit: settle response error -> $e');
+            emit(
+              state.copyWith(
+                status: OrdersRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(e),
+              ),
+            );
           });
     }
 

@@ -426,10 +426,13 @@ class _OrderSettlementOperationsWidgetState
                             ),
                           ),
                         if (!isPartial) ...[
-                          const SizedBox(height: 12.0),
-                          if (state.settlementMethod == 'wallet_debit')
+                          if (state.settlementMethod == 'wallet_debit' &&
+                              state.settlementStep != SettlementStep.initial &&
+                              state.status != OrdersRequestStatus.loading) ...[
+                            const SizedBox(height: 12.0),
                             _buildWalletBalanceStatus(state, theme),
-                          const SizedBox(height: 12.0),
+                            const SizedBox(height: 12.0),
+                          ],
                           if (state.settlementMethod == 'ipg_sms' &&
                               !isPartial &&
                               state.settlementStep != SettlementStep.initial)
@@ -511,7 +514,9 @@ class _OrderSettlementOperationsWidgetState
         : AppColors.errorPalette;
     final message = isSufficient
         ? S.current.walletBalanceSufficient(state.walletName ?? "")
-        : S.current.walletBalanceInsufficient(state.walletName ?? "");
+        : (state.errorMessage.isNotEmpty
+            ? state.errorMessage
+            : S.current.walletBalanceInsufficient(state.walletName ?? ""));
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14.0, 12.0, 14.0, 12.0),
