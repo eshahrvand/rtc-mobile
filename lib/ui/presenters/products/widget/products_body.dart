@@ -176,10 +176,9 @@ class _ProductsBodyState extends State<ProductsBody> {
                           }
 
                           final product = state.filteredProducts[index];
-                          final hasPlan = state.selectedSubPlanId != null;
                           return RtcProductItem(
                             product: product,
-                            showPrice: hasPlan,
+                            showPrice: true,
                             onTap: () {
                               context.push(
                                 AppRoutes.productDetail,
@@ -187,7 +186,7 @@ class _ProductsBodyState extends State<ProductsBody> {
                                   'productId': product.id,
                                   'subPlanId': state.selectedSubPlanId,
                                   'subPlanName': state.selectedSubPlanName,
-                                  'showPrice': hasPlan,
+                                  'showPrice': true,
                                 },
                               );
                             },

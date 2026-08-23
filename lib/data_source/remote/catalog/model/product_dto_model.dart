@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../profile/model/user_profile_dto_model.dart'; // For CityProvinceDtoModel/AvatarDtoModel reuse if applicable or use generic
 
 part 'product_dto_model.freezed.dart';
 part 'product_dto_model.g.dart';
@@ -26,8 +25,11 @@ class ProductDtoModel with _$ProductDtoModel {
     @JsonKey(name: 'technical_detail') String? technicalDetail,
     required CategorySummaryDtoModel category,
     BrandSummaryDtoModel? brand,
+    @JsonKey(name: 'price') int? price,
+    @JsonKey(name: 'price_before_discount') int? priceBeforeDiscount,
     @JsonKey(name: 'base_price') int? basePrice,
     @JsonKey(name: 'plan_price') int? planPrice,
+    @JsonKey(name: 'plan_price_before_discount') int? planPriceBeforeDiscount,
     @JsonKey(name: 'old_price') int? oldPrice,
     @JsonKey(name: 'discount_pct') int? discountPct,
     @JsonKey(name: 'stock_qty') required int stockQty,
