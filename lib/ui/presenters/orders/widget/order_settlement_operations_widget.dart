@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/core/utils/currency_formatter.dart';
 import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../../generated/l10n.dart';
-import '../../../../core/utils/file_utils.dart';
 import '../../../theme/colors.dart';
 import '../../../widget/rtc_button.dart';
 import '../../../widget/rtc_divider.dart';
@@ -393,6 +391,7 @@ class _OrderSettlementOperationsWidgetState
                               title: S.current.otherDocumentsLabel(index + 1),
                               fileName: doc.name,
                               fileSize: '...',
+                              xFile: doc,
                               onDelete: () => cubit.removeSettlementDoc(index),
                               onView: () {
                                 Navigator.push(
@@ -427,10 +426,13 @@ class _OrderSettlementOperationsWidgetState
                             ),
                           ),
                         if (!isPartial) ...[
-                          const SizedBox(height: 12.0),
-                          if (state.settlementMethod == 'wallet_debit')
+                          if (state.settlementMethod == 'wallet_debit' &&
+                              state.settlementStep != SettlementStep.initial &&
+                              state.status != OrdersRequestStatus.loading) ...[
+                            const SizedBox(height: 12.0),
                             _buildWalletBalanceStatus(state, theme),
-                          const SizedBox(height: 12.0),
+                            const SizedBox(height: 12.0),
+                          ],
                           if (state.settlementMethod == 'ipg_sms' &&
                               !isPartial &&
                               state.settlementStep != SettlementStep.initial)
@@ -512,7 +514,9 @@ class _OrderSettlementOperationsWidgetState
         : AppColors.errorPalette;
     final message = isSufficient
         ? S.current.walletBalanceSufficient(state.walletName ?? "")
-        : S.current.walletBalanceInsufficient(state.walletName ?? "");
+        : (state.errorMessage.isNotEmpty
+            ? state.errorMessage
+            : S.current.walletBalanceInsufficient(state.walletName ?? ""));
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14.0, 12.0, 14.0, 12.0),

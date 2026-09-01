@@ -58,6 +58,7 @@ class OrdersState with _$OrdersState {
     String? orderAmount,
     @Default(false) bool isOutOfTolerance,
     double? tolerance,
+    @Default(true) bool toleranceCheckEnabled,
 
     // Settlement Flow
     @Default(SettlementStep.initial) SettlementStep settlementStep,

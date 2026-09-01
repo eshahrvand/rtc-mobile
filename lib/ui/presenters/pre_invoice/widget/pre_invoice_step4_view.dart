@@ -1,14 +1,9 @@
-import 'dart:io';
-import 'dart:ui';
-
 import '../../../../config/constants.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_text_button.dart';
-import 'package:rtc_mobile/core/utils/file_utils.dart';
 import 'package:rtc_mobile/ui/presenters/orders/widget/document_viewer_screen.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
@@ -88,7 +83,8 @@ class PreInvoiceStep4View extends StatelessWidget {
                       return PreInvoiceDocumentItem(
                         title: S.current.otherDocumentsLabel(index + 1),
                         fileName: doc.name,
-                        fileSize: '...', // We can't easily do async here without a widget change
+                        fileSize: '...',
+                        xFile: doc,
                         onDelete: () => cubit.removeOptionalDoc(index),
                         onView: () {
                           Navigator.push(

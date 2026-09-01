@@ -37,6 +37,7 @@ class UserProfileDtoModel with _$UserProfileDtoModel {
     String? address,
     @JsonKey(name: 'credit_limit') double? creditLimit,
     double? tolerance,
+    @JsonKey(name: 'tolerance_check_enabled') bool? toleranceCheckEnabled,
     @JsonKey(name: 'agent_code') String? agentCode,
     @JsonKey(name: 'store_name') String? storeName,
     ManagerDtoModel? manager,

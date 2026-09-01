@@ -89,6 +89,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  avat_media_picker:
+    dependency: "direct main"
+    description:
+      path: "/Users/mahdi/StudioProjects/avat-media-picker"
+      relative: false
+    source: path
+    version: "0.0.1"
   bloc:
     dependency: "direct main"
     description:
@@ -306,7 +313,7 @@ packages:
     source: hosted
     version: "3.1.2"
   cross_file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cross_file
       sha256: "28bb3ae56f117b5aec029d702a90f57d285cd975c3c5c281eaca38dbc47c5937"
@@ -417,14 +424,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
-  file_picker:
-    dependency: "direct main"
-    description:
-      name: file_picker
-      sha256: f13a03000d942e476bc1ff0a736d2e9de711d2f89a95cd4c1d88f861c3348387
-      url: "https://pub.dev"
-    source: hosted
-    version: "11.0.2"
   file_selector_linux:
     dependency: transitive
     description:
@@ -973,6 +972,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  lottie:
+    dependency: transitive
+    description:
+      name: lottie
+      sha256: "58dda9eee3f1b1fb9d490b0161635cffe93022b3b8ca0687e3df33a53620ead2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.1"
   markdown:
     dependency: transitive
     description:
@@ -1205,6 +1212,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.5.0"
+  pro_image_editor:
+    dependency: transitive
+    description:
+      name: pro_image_editor
+      sha256: b75e82792ff9d3c51d6627558b4d916e5da7bc1dfaeb59d17b296fc5ae03d773
+      url: "https://pub.dev"
+    source: hosted
+    version: "13.3.0"
   process:
     dependency: transitive
     description:
@@ -1851,5 +1866,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.11.0 <4.0.0"
-  flutter: ">=3.41.0"
+  dart: ">=3.12.2 <4.0.0"
+  flutter: ">=3.44.0"

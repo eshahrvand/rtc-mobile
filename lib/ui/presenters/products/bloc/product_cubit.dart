@@ -372,28 +372,21 @@ class ProductCubit extends Cubit<ProductState> {
     final formatter = NumberFormat('#,###', 'en_US');
 
     final currentPrice = state.selectedSubPlanId != null
-        ? dto.planPrice ?? 0
-        : dto.basePrice ?? 0;
+        ? (dto.planPrice ?? 0)
+        : (dto.price ?? 0);
 
-    num? finalOldPrice = dto.oldPrice;
-
-    if (finalOldPrice == null &&
-        dto.discountPct != null &&
-        dto.discountPct! > 0) {
-      finalOldPrice = currentPrice / (1 - (dto.discountPct! / 100));
-    }
-
-    // fallback if still null and not applying plan price
-    if (state.selectedSubPlanId == null) {
-      finalOldPrice ??= dto.basePrice;
-    }
+    final finalOldPrice = state.selectedSubPlanId != null
+        ? dto.planPriceBeforeDiscount
+        : dto.priceBeforeDiscount;
 
     return ProductItemModel(
       id: dto.id,
       name: dto.name,
       imageUrl: dto.featuredImage?.file ?? '',
       price: formatter.format(currentPrice),
-      oldPrice: finalOldPrice != null ? formatter.format(finalOldPrice) : null,
+      oldPrice: (finalOldPrice != null && finalOldPrice > currentPrice)
+          ? formatter.format(finalOldPrice)
+          : null,
       inventory: dto.stockQty.toString(),
       discount: dto.discountPct != null && dto.discountPct != 0
           ? '${dto.discountPct}٪'
