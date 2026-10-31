@@ -413,5 +413,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "commissionReportTitle": "",
+  "commissionDrawerTitle": "",
+  "commissionSalesAmount": "",
+  "commissionAmount": "",
+  "commissionRate": "",
+  "commissionSalesList": "",
+  "commissionStoreFilter": "",
+  "commissionSelectStores": "",
+  "commissionSelectYear": "",
+  "commissionSelectMonth": "",
+  "commissionConsumerPrice": "",
+  "commissionDisbursedAt": "",
+  "commissionApprovedAt": "",
+  "commissionLoadMore": ""
 }

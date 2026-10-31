@@ -137,7 +137,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "clickToUpload": MessageLookupByLibrary.simpleMessage(
       "برای بارگذاری عکس اینجا را کلیک کنید.",
     ),
+    "commissionAmount": MessageLookupByLibrary.simpleMessage("مبلغ پورسانت"),
+    "commissionApprovedAt": MessageLookupByLibrary.simpleMessage("تایید"),
+    "commissionConsumerPrice": MessageLookupByLibrary.simpleMessage(
+      "قیمت مصرف",
+    ),
+    "commissionDisbursedAt": MessageLookupByLibrary.simpleMessage("تخلیه"),
+    "commissionDrawerTitle": MessageLookupByLibrary.simpleMessage("پورسانت"),
+    "commissionLoadMore": MessageLookupByLibrary.simpleMessage("نمایش بیشتر"),
     "commissionMessage": m0,
+    "commissionRate": MessageLookupByLibrary.simpleMessage("درصد پورسانت"),
+    "commissionReportTitle": MessageLookupByLibrary.simpleMessage(
+      "گزارش پورسانت",
+    ),
+    "commissionSalesAmount": MessageLookupByLibrary.simpleMessage("مبلغ فروش"),
+    "commissionSalesList": MessageLookupByLibrary.simpleMessage("لیست فروش"),
+    "commissionSelectMonth": MessageLookupByLibrary.simpleMessage(
+      "ماه مورد نظر را انتخاب کنید",
+    ),
+    "commissionSelectStores": MessageLookupByLibrary.simpleMessage(
+      "فروشگاه‌های مورد نظر را انتخاب کنید",
+    ),
+    "commissionSelectYear": MessageLookupByLibrary.simpleMessage(
+      "سال مورد نظر را انتخاب کنید",
+    ),
+    "commissionStoreFilter": MessageLookupByLibrary.simpleMessage("فروشگاه"),
     "companyName": MessageLookupByLibrary.simpleMessage("شرکت زندگی ویرا قشم"),
     "confirm": MessageLookupByLibrary.simpleMessage("تایید"),
     "confirmAndClearance": MessageLookupByLibrary.simpleMessage(

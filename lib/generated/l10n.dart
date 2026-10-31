@@ -1947,6 +1947,81 @@ class S {
       args: [distance, nextRateCash, nextRateProduct],
     );
   }
+
+  /// ``
+  String get commissionReportTitle {
+    return Intl.message('', name: 'commissionReportTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionDrawerTitle {
+    return Intl.message('', name: 'commissionDrawerTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionSalesAmount {
+    return Intl.message('', name: 'commissionSalesAmount', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionAmount {
+    return Intl.message('', name: 'commissionAmount', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionRate {
+    return Intl.message('', name: 'commissionRate', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionSalesList {
+    return Intl.message('', name: 'commissionSalesList', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionStoreFilter {
+    return Intl.message('', name: 'commissionStoreFilter', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionSelectStores {
+    return Intl.message('', name: 'commissionSelectStores', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionSelectYear {
+    return Intl.message('', name: 'commissionSelectYear', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionSelectMonth {
+    return Intl.message('', name: 'commissionSelectMonth', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionConsumerPrice {
+    return Intl.message(
+      '',
+      name: 'commissionConsumerPrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get commissionDisbursedAt {
+    return Intl.message('', name: 'commissionDisbursedAt', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionApprovedAt {
+    return Intl.message('', name: 'commissionApprovedAt', desc: '', args: []);
+  }
+
+  /// ``
+  String get commissionLoadMore {
+    return Intl.message('', name: 'commissionLoadMore', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

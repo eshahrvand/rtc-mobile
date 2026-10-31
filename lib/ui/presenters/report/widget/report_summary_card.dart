@@ -7,15 +7,16 @@ import '../../../widget/rtc_image.dart';
 
 class ReportSummaryCard extends StatelessWidget {
   final ReportSummaryMetric metric;
+  final double width;
 
-  const ReportSummaryCard({super.key, required this.metric});
+  const ReportSummaryCard({super.key, required this.metric, this.width = 170});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
 
     return Container(
-      width: 170,
+      width: width,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,

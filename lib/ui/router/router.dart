@@ -18,6 +18,7 @@ import '../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 import '../presenters/product_detail/product_detail.dart';
 import '../presenters/splash/splash.dart';
 import '../presenters/report/report.dart';
+import '../presenters/commission_report/commission_report.dart';
 import '../presenters/report/bloc/report_step.dart';
 import 'app_route.dart';
 
@@ -28,6 +29,11 @@ final router = GoRouter(
     sl<AnalyticsService>().observer,
   ],
   routes: [
+    GoRoute(
+      path: AppRoutes.commissionReport,
+      name: 'CommissionReportScreen',
+      builder: (context, state) => const CommissionReportScreen(),
+    ),
     GoRoute(
       path: AppRoutes.splash,
       name: 'SplashScreen',

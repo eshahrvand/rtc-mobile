@@ -412,5 +412,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "commissionReportTitle": "گزارش پورسانت",
+  "commissionDrawerTitle": "پورسانت",
+  "commissionSalesAmount": "مبلغ فروش",
+  "commissionAmount": "مبلغ پورسانت",
+  "commissionRate": "درصد پورسانت",
+  "commissionSalesList": "لیست فروش",
+  "commissionStoreFilter": "فروشگاه",
+  "commissionSelectStores": "فروشگاه‌های مورد نظر را انتخاب کنید",
+  "commissionSelectYear": "سال مورد نظر را انتخاب کنید",
+  "commissionSelectMonth": "ماه مورد نظر را انتخاب کنید",
+  "commissionConsumerPrice": "قیمت مصرف",
+  "commissionDisbursedAt": "تخلیه",
+  "commissionApprovedAt": "تایید",
+  "commissionLoadMore": "نمایش بیشتر"
 }

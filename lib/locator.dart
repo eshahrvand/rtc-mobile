@@ -24,6 +24,7 @@ import 'repository/orders/orders_repository.dart';
 import 'repository/plans/plans_repository.dart';
 import 'repository/product/product_repository.dart';
 import 'repository/report/report_repository.dart';
+import 'repository/report/commission_report_repository.dart';
 import 'repository/wallet/wallet_repository.dart';
 
 final sl = GetIt.instance;
@@ -71,4 +72,5 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => OrdersRepository(sl()));
   sl.registerLazySingleton(() => MediaRepository(sl()));
   sl.registerLazySingleton(() => ReportRepository(sl()));
+  sl.registerLazySingleton(() => CommissionReportRepository(sl()));
 }

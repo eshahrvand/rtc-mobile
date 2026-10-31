@@ -88,6 +88,13 @@ class RtcDrawer extends StatelessWidget {
                           },
                         ),
                         _DrawerSubItem(
+                          title: S.current.commissionDrawerTitle,
+                          onTap: () {
+                            scaffoldKey.currentState?.closeDrawer();
+                            context.push(AppRoutes.commissionReport);
+                          },
+                        ),
+                        _DrawerSubItem(
                           title: 'طرح‌ها',
                           onTap: () {
                             scaffoldKey.currentState?.closeDrawer();

@@ -1,12 +1,29 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'model/report_dto_model.dart';
+import 'model/commission_dto_model.dart';
 
 part 'report_service.g.dart';
 
 @RestApi()
 abstract class ReportService {
   factory ReportService(Dio dio, {String baseUrl}) = _ReportService;
+
+  @GET('reports/commission')
+  Future<CommissionReportResponse> getCommission({
+    @Query('year') int? year,
+    @Query('month') int? month,
+    @Query('search') String? search,
+    @Query('page') int? page,
+    @Query('page_size') int? pageSize,
+  });
+
+  @GET('reports/commission/summary')
+  Future<CommissionSummaryDtoModel> getCommissionSummary({
+    @Query('year') int? year,
+    @Query('month') int? month,
+    @Query('search') String? search,
+  });
 
   @GET('reports/sales/overview')
   Future<SalesOverviewResponse> getSalesOverview({
