@@ -1,4 +1,5 @@
 import '../../core/models/report_item_model.dart';
+import '../../core/utils/date_time_utils.dart';
 import '../../core/utils/id_formatter.dart';
 import '../../data_source/remote/report/model/report_dto_model.dart';
 import '../../data_source/remote/report/report_service.dart';
@@ -157,8 +158,10 @@ class ReportRepository {
   List<ReportItemModel> mapToDomain(dynamic response, ReportStep step) {
     if (response is SalesOverviewResponse) {
       return response.results.map((dto) {
-        final dateTime = DateTime.tryParse(dto.createdAt ?? '');
-        final date = dateTime != null ? _formatJalaliDate(dateTime) : null;
+        final dateTime = DateTimeUtils.parseToLocal(dto.createdAt);
+        final date = dateTime != null
+            ? DateTimeUtils.formatToJalaliDate(dateTime.toIso8601String())
+            : null;
         final time = dateTime != null ? _formatTime(dateTime) : null;
 
         return ReportItemModel(
@@ -241,11 +244,6 @@ class ReportRepository {
           ReportSummaryMetric(label: S.current.totalItemsLabel, value: summary.totalLineItems?.toString() ?? '۰'),
         ];
     }
-  }
-
-  String _formatJalaliDate(DateTime date) {
-    // Basic formatting, real app might use a helper
-    return '${date.year}/${date.month}/${date.day}'; 
   }
 
   String _formatTime(DateTime date) {

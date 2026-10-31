@@ -537,7 +537,7 @@ DailyChartDtoModel _$DailyChartDtoModelFromJson(Map<String, dynamic> json) {
 mixin _$DailyChartDtoModel {
   String get date => throw _privateConstructorUsedError;
   @JsonKey(name: 'total_sales_amount')
-  double get totalSalesAmount => throw _privateConstructorUsedError;
+  double? get totalSalesAmount => throw _privateConstructorUsedError;
   @JsonKey(name: 'previous_total_sales_amount')
   double get previousTotalSalesAmount => throw _privateConstructorUsedError;
 
@@ -560,7 +560,7 @@ abstract class $DailyChartDtoModelCopyWith<$Res> {
   @useResult
   $Res call({
     String date,
-    @JsonKey(name: 'total_sales_amount') double totalSalesAmount,
+    @JsonKey(name: 'total_sales_amount') double? totalSalesAmount,
     @JsonKey(name: 'previous_total_sales_amount')
     double previousTotalSalesAmount,
   });
@@ -582,7 +582,7 @@ class _$DailyChartDtoModelCopyWithImpl<$Res, $Val extends DailyChartDtoModel>
   @override
   $Res call({
     Object? date = null,
-    Object? totalSalesAmount = null,
+    Object? totalSalesAmount = freezed,
     Object? previousTotalSalesAmount = null,
   }) {
     return _then(
@@ -591,10 +591,10 @@ class _$DailyChartDtoModelCopyWithImpl<$Res, $Val extends DailyChartDtoModel>
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
                       as String,
-            totalSalesAmount: null == totalSalesAmount
+            totalSalesAmount: freezed == totalSalesAmount
                 ? _value.totalSalesAmount
                 : totalSalesAmount // ignore: cast_nullable_to_non_nullable
-                      as double,
+                      as double?,
             previousTotalSalesAmount: null == previousTotalSalesAmount
                 ? _value.previousTotalSalesAmount
                 : previousTotalSalesAmount // ignore: cast_nullable_to_non_nullable
@@ -616,7 +616,7 @@ abstract class _$$DailyChartDtoModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String date,
-    @JsonKey(name: 'total_sales_amount') double totalSalesAmount,
+    @JsonKey(name: 'total_sales_amount') double? totalSalesAmount,
     @JsonKey(name: 'previous_total_sales_amount')
     double previousTotalSalesAmount,
   });
@@ -637,7 +637,7 @@ class __$$DailyChartDtoModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? date = null,
-    Object? totalSalesAmount = null,
+    Object? totalSalesAmount = freezed,
     Object? previousTotalSalesAmount = null,
   }) {
     return _then(
@@ -646,10 +646,10 @@ class __$$DailyChartDtoModelImplCopyWithImpl<$Res>
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
                   as String,
-        totalSalesAmount: null == totalSalesAmount
+        totalSalesAmount: freezed == totalSalesAmount
             ? _value.totalSalesAmount
             : totalSalesAmount // ignore: cast_nullable_to_non_nullable
-                  as double,
+                  as double?,
         previousTotalSalesAmount: null == previousTotalSalesAmount
             ? _value.previousTotalSalesAmount
             : previousTotalSalesAmount // ignore: cast_nullable_to_non_nullable
@@ -676,7 +676,7 @@ class _$DailyChartDtoModelImpl implements _DailyChartDtoModel {
   final String date;
   @override
   @JsonKey(name: 'total_sales_amount')
-  final double totalSalesAmount;
+  final double? totalSalesAmount;
   @override
   @JsonKey(name: 'previous_total_sales_amount')
   final double previousTotalSalesAmount;
@@ -730,7 +730,8 @@ class _$DailyChartDtoModelImpl implements _DailyChartDtoModel {
 abstract class _DailyChartDtoModel implements DailyChartDtoModel {
   const factory _DailyChartDtoModel({
     required final String date,
-    @JsonKey(name: 'total_sales_amount') required final double totalSalesAmount,
+    @JsonKey(name: 'total_sales_amount')
+    required final double? totalSalesAmount,
     @JsonKey(name: 'previous_total_sales_amount')
     required final double previousTotalSalesAmount,
   }) = _$DailyChartDtoModelImpl;
@@ -742,7 +743,7 @@ abstract class _DailyChartDtoModel implements DailyChartDtoModel {
   String get date;
   @override
   @JsonKey(name: 'total_sales_amount')
-  double get totalSalesAmount;
+  double? get totalSalesAmount;
   @override
   @JsonKey(name: 'previous_total_sales_amount')
   double get previousTotalSalesAmount;

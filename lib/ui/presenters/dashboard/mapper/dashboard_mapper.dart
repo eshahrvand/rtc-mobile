@@ -12,6 +12,14 @@ import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 
 class DashboardMapper {
+  // Colors used only by the dashboard pie charts.
+  static const _pieGreen = Color(0xFF83C3A6);
+  static const _pieYellow = Color(0xFFF7C86A);
+  static const _pieRed = Color(0xFFDF626E);
+  static const _piePink = Color(0xFFE6A3C0);
+  static const _pieCyan = Color(0xFF8ACBD0);
+  static const _piePurple = Color(0xFF9383B9);
+
   static List<QuickAccessItemModel> mapQuickAccessItems(
     DashboardSummaryDtoModel s,
     CommissionDtoModel? c,
@@ -61,13 +69,14 @@ class DashboardMapper {
   }
 
   static LineChartDataModel mapLineChartData(
-    List<DailyChartDtoModel> dailyChart,
-  ) {
-    final now = Jalali.now();
+    List<DailyChartDtoModel> dailyChart, {
+    Jalali? today,
+  }) {
+    final now = today ?? Jalali.now();
     final List<FlSpot> previousMonthSpots = [];
     final List<FlSpot> currentMonthSpots = [];
 
-    for (int i = 1; i <= now.day; i++) {
+    for (int i = 1; i <= now.monthLength; i++) {
       final dailyData = dailyChart.where((d) {
         try {
           final localDateTime = DateTime.parse(d.date).toLocal();
@@ -82,11 +91,13 @@ class DashboardMapper {
 
       if (dailyData.isNotEmpty) {
         final item = dailyData.first;
-        currentMonthSpots.add(FlSpot(i.toDouble(), item.totalSalesAmount));
+        if (i <= now.day && item.totalSalesAmount != null) {
+          currentMonthSpots.add(FlSpot(i.toDouble(), item.totalSalesAmount!));
+        }
         previousMonthSpots.add(
           FlSpot(i.toDouble(), item.previousTotalSalesAmount),
         );
-      } else {
+      } else if (i <= now.day) {
         currentMonthSpots.add(FlSpot(i.toDouble(), 0));
         previousMonthSpots.add(FlSpot(i.toDouble(), 0));
       }
@@ -126,19 +137,19 @@ class DashboardMapper {
       switch (s.orderStatus) {
         case OrderStatus.approved:
           label = S.current.statusApproved;
-          color = AppColors.successPalette.shade400;
+          color = _pieGreen;
         case OrderStatus.rejected:
           label = S.current.statusRejected;
-          color = AppColors.errorPalette.shade400;
+          color = _pieRed;
         case OrderStatus.underReview:
           label = S.current.statusPending;
-          color = AppColors.warningPalette.shade400;
+          color = _pieYellow;
         case OrderStatus.preInvoice:
           label = S.current.preInvoice;
-          color = AppColors.brandPalette.shade400;
+          color = AppColors.blueGrayPalette.shade400;
         case OrderStatus.expired:
           label = S.current.statusExpired;
-          color = AppColors.grayPalette.shade400;
+          color = AppColors.grayPalette.shade300;
         case OrderStatus.awaitingSettlement:
           label = S.current.statusWaitingSettlement;
           color = AppColors.blueGrayPalette.shade400;
@@ -162,15 +173,13 @@ class DashboardMapper {
     final sortedList = List<CategoryChartDtoModel>.from(list);
     sortedList.sort((a, b) => b.totalOrders.compareTo(a.totalOrders));
 
-    final List<Color> palette = [
-      AppColors.brandPalette.shade400,
-      AppColors.successPalette.shade400,
-      AppColors.warningPalette.shade400,
-      AppColors.errorPalette.shade400,
-      AppColors.purplePalette.shade400,
-      AppColors.orangePalette.shade400,
-      AppColors.indigoPalette.shade400,
-      AppColors.pinkPalette.shade400,
+    const List<Color> palette = [
+      _pieYellow,
+      _piePink,
+      _pieRed,
+      _pieGreen,
+      _pieCyan,
+      _piePurple,
     ];
 
     return sortedList.asMap().entries.map((entry) {

@@ -48,7 +48,7 @@ _$DailyChartDtoModelImpl _$$DailyChartDtoModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$DailyChartDtoModelImpl(
   date: json['date'] as String,
-  totalSalesAmount: (json['total_sales_amount'] as num).toDouble(),
+  totalSalesAmount: (json['total_sales_amount'] as num?)?.toDouble(),
   previousTotalSalesAmount: (json['previous_total_sales_amount'] as num)
       .toDouble(),
 );

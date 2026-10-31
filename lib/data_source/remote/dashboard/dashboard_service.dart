@@ -20,7 +20,9 @@ abstract class DashboardService {
   Future<List<WalletStatusDtoModel>> getWalletStatus();
 
   @GET('dashboard/daily-chart')
-  Future<List<DailyChartDtoModel>> getDailyChart();
+  Future<List<DailyChartDtoModel>> getDailyChart({
+    @Query('full_month') bool fullMonth = true,
+  });
 
   @GET('dashboard/categories')
   Future<List<CategoryChartDtoModel>> getCategories();

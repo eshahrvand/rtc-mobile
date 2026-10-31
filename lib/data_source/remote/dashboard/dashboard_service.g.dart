@@ -104,9 +104,11 @@ class _DashboardService implements DashboardService {
   }
 
   @override
-  Future<List<DailyChartDtoModel>> getDailyChart() async {
+  Future<List<DailyChartDtoModel>> getDailyChart({
+    bool fullMonth = true,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'full_month': fullMonth};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<List<DailyChartDtoModel>>(
