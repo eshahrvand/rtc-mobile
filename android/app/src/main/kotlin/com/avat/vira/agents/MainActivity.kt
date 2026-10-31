@@ -1,4 +1,4 @@
-package com.avat.rtc_mobile
+package com.avat.vira.agents
 
 import android.content.ContentValues
 import android.os.Build
