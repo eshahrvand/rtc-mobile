@@ -12,7 +12,8 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val keystorePropertiesFile = File("/Users/mahdi/StudioProjects/rtc_mobile/key/key.properties")
+val keystorePropertiesFile = rootProject.file("../new_key_agent/new_agent_key.properties").takeIf { it.exists() }
+    ?: File("/Users/mahdi/StudioProjects/rtc_mobile/new_key_agent/new_agent_key.properties")
 val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
