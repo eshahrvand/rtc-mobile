@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/models/product_chip_model.dart';
@@ -88,13 +89,13 @@ class ProductCubit extends Cubit<ProductState> {
     });
   }
 
-  void selectCategory(String? categoryId) {
-    if (state.selectedCategoryId == categoryId) return;
+  void selectCategories(List<String> categoryIds) {
+    if (listEquals(state.selectedCategoryIds, categoryIds)) return;
 
     emit(
       state.copyWith(
-        selectedCategoryId: categoryId,
-        selectedChipIndex: categoryId != null ? 0 : -1,
+        selectedCategoryIds: List.of(categoryIds),
+        selectedChipIndex: categoryIds.isNotEmpty ? 0 : -1,
         currentPage: 1,
         hasMoreData: true,
       ),
@@ -158,7 +159,7 @@ class ProductCubit extends Cubit<ProductState> {
 
   void onChipClose(ProductChipModel chip) {
     if (chip.id == 1) {
-      selectCategory(null);
+      selectCategories([]);
     } else if (chip.id == 4) {
       selectBrand(null);
     } else if (chip.id == 2) {
@@ -178,7 +179,7 @@ class ProductCubit extends Cubit<ProductState> {
       state.copyWith(
         searchQuery: '',
         isSearchActive: false,
-        selectedCategoryId: null,
+        selectedCategoryIds: [],
         selectedBrandId: null,
         selectedSubPlanId: null,
         selectedSubPlanName: null,
@@ -286,7 +287,9 @@ class ProductCubit extends Cubit<ProductState> {
     _productRepo
         .getProducts(
           subPlanId: state.selectedSubPlanId,
-          categoryId: state.selectedCategoryId,
+          categoryIds: state.selectedCategoryIds.isEmpty
+              ? null
+              : state.selectedCategoryIds,
           brandId: state.selectedBrandId,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           inStock: state.isOnlyAvailable ? true : null,
@@ -321,7 +324,9 @@ class ProductCubit extends Cubit<ProductState> {
     _productRepo
         .getProducts(
           subPlanId: state.selectedSubPlanId,
-          categoryId: state.selectedCategoryId,
+          categoryIds: state.selectedCategoryIds.isEmpty
+              ? null
+              : state.selectedCategoryIds,
           brandId: state.selectedBrandId,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
           inStock: state.isOnlyAvailable ? true : null,

@@ -158,7 +158,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         .getProducts(
           subPlanId: state.selectedCreditPlanId!,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
-          categoryId: state.selectedCategoryId,
+          categoryIds: state.selectedCategoryIds.isEmpty
+              ? null
+              : state.selectedCategoryIds,
           brandId: state.selectedBrandId,
           inStock: state.showAvailableOnly ? true : null,
           ordering: state.selectedSortOrder,
@@ -211,8 +213,8 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     });
   }
 
-  void onCategorySelected(String? categoryId) {
-    emit(state.copyWith(selectedCategoryId: categoryId));
+  void onCategoriesSelected(List<String> categoryIds) {
+    emit(state.copyWith(selectedCategoryIds: List.of(categoryIds)));
     _loadProducts();
   }
 
@@ -242,7 +244,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         .getProducts(
           subPlanId: state.selectedCreditPlanId!,
           search: state.searchQuery.isNotEmpty ? state.searchQuery : null,
-          categoryId: state.selectedCategoryId,
+          categoryIds: state.selectedCategoryIds.isEmpty
+              ? null
+              : state.selectedCategoryIds,
           brandId: state.selectedBrandId,
           inStock: state.showAvailableOnly ? true : null,
           ordering: state.selectedSortOrder,

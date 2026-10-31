@@ -35,7 +35,7 @@ class OrdersState with _$OrdersState {
     @Default(true) bool isDocumentsExpanded,
     @Default(true) bool isFinancialSummaryExpanded,
     @Default(true) bool isClearanceSectionExpanded,
-    String? selectedStatusId,
+    @Default([]) List<String> selectedStatusIds,
     String? selectedSubPlanId,
     @Default([]) List<SubPlanDtoModel> subPlans,
     Jalali? startDate,

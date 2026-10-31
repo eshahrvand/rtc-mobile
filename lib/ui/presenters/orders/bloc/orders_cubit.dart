@@ -160,9 +160,9 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _ordersRepo
         .getOrders(
-          status: state.selectedStatusId != null
-              ? [state.selectedStatusId!]
-              : null,
+          status: state.selectedStatusIds.isEmpty
+              ? null
+              : state.selectedStatusIds,
           subPlanId: state.selectedSubPlanId,
           createdAfter: createdAfter,
           createdBefore: createdBefore,
@@ -212,9 +212,9 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _ordersRepo
         .getOrders(
-          status: state.selectedStatusId != null
-              ? [state.selectedStatusId!]
-              : null,
+          status: state.selectedStatusIds.isEmpty
+              ? null
+              : state.selectedStatusIds,
           subPlanId: state.selectedSubPlanId,
           createdAfter: createdAfter,
           createdBefore: createdBefore,
@@ -335,9 +335,9 @@ class OrdersCubit extends Cubit<OrdersState> {
     fetchOrders(rollbackState: rollbackState);
   }
 
-  void onStatusFilterChanged(String? statusId) {
+  void onStatusFilterChanged(List<String> statusIds) {
     final rollbackState = state;
-    emit(state.copyWith(selectedStatusId: statusId));
+    emit(state.copyWith(selectedStatusIds: List.of(statusIds)));
     fetchOrders(rollbackState: rollbackState);
   }
 
@@ -378,7 +378,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       state.copyWith(
         searchQuery: '',
         isSearchActive: false,
-        selectedStatusId: null,
+        selectedStatusIds: [],
         selectedSubPlanId: null,
         startDate: null,
         endDate: null,

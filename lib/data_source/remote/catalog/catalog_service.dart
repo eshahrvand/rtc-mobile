@@ -19,7 +19,7 @@ abstract class CatalogService {
   // Type 1: General Catalog
   @GET('catalog/products')
   Future<ProductListResponse> getProducts({
-    @Query('category') String? categoryId,
+    @Query('category') List<String>? categoryIds,
     @Query('brand') String? brandId,
     @Query('in_stock') bool? inStock,
     @Query('is_active') bool? isActive,
@@ -37,7 +37,7 @@ abstract class CatalogService {
   @GET('plans/sub-plans/{sub_plan_id}/products')
   Future<ProductListResponse> getPlanProducts({
     @Path('sub_plan_id') required String subPlanId,
-    @Query('category') String? categoryId,
+    @Query('category') List<String>? categoryIds,
     @Query('brand') String? brandId,
     @Query('in_stock') bool? inStock,
     @Query('ordering') String? ordering,

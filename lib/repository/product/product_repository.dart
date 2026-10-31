@@ -18,7 +18,7 @@ class ProductRepository {
 
   Future<ProductListResponse> getProducts({
     String? subPlanId,
-    String? categoryId,
+    List<String>? categoryIds,
     String? brandId,
     String? search,
     int? page,
@@ -28,7 +28,7 @@ class ProductRepository {
     if (subPlanId != null) {
       return await _catalogService.getPlanProducts(
         subPlanId: subPlanId,
-        categoryId: categoryId,
+        categoryIds: categoryIds,
         brandId: brandId,
         search: search,
         page: page,
@@ -37,7 +37,7 @@ class ProductRepository {
       );
     } else {
       return await _catalogService.getProducts(
-        categoryId: categoryId,
+        categoryIds: categoryIds,
         brandId: brandId,
         search: search,
         page: page,

@@ -28,7 +28,7 @@ class ProductState with _$ProductState {
     // Choice Chips
     @Default([]) List<ProductChipModel> chips,
     @Default(-1) int selectedChipIndex, // -1 means no chip is selected by default
-    String? selectedCategoryId,
+    @Default([]) List<String> selectedCategoryIds,
     String? selectedBrandId,
     String? selectedSubPlanId,
     String? selectedSubPlanName,

@@ -55,7 +55,7 @@ class PreInvoiceState with _$PreInvoiceState {
     @Default(false) bool showAvailableOnly,
     @Default([]) List<CartItemModel> cartItems,
     @Default(false) bool isCartVisible,
-    String? selectedCategoryId,
+    @Default([]) List<String> selectedCategoryIds,
     @Default([]) List<CategoryDtoModel> availableCategories,
     @Default(1) int currentCategoryPage,
     @Default(false) bool hasMoreCategories,

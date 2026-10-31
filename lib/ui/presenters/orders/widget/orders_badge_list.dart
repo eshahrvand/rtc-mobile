@@ -31,7 +31,7 @@ class OrdersBadgeList extends StatelessWidget {
     return RtcChipList(
       chips: chips,
       isChipSelected: (index, chip) {
-        if (chip.id == 1) return state.selectedStatusId != null;
+        if (chip.id == 1) return state.selectedStatusIds.isNotEmpty;
         if (chip.id == 2) return state.selectedSubPlanId != null;
         if (chip.id == 3) {
           return state.startDate != null || state.endDate != null;
@@ -49,7 +49,7 @@ class OrdersBadgeList extends StatelessWidget {
       },
       onChipClose: (index, chip) {
         if (chip.id == 1) {
-          cubit.onStatusFilterChanged(null);
+          cubit.onStatusFilterChanged([]);
         } else if (chip.id == 2) {
           cubit.onSubPlanFilterChanged(null);
         } else if (chip.id == 3) {
@@ -91,9 +91,12 @@ class OrdersBadgeList extends StatelessWidget {
       title: S.current.status,
       subtitle: S.current.selectOrderStatusSubtitle,
       items: statusItems,
-      initialSelectedId: state.selectedStatusId,
-      onApply: (item) => cubit.onStatusFilterChanged(item?.id),
-      onClear: () => cubit.onStatusFilterChanged(null),
+      isMultiSelect: true,
+      initialSelectedIds: state.selectedStatusIds,
+      onApplyMulti: (items) => cubit.onStatusFilterChanged(
+        items.map((item) => item.id).toList(),
+      ),
+      onClear: () => cubit.onStatusFilterChanged([]),
     );
   }
 

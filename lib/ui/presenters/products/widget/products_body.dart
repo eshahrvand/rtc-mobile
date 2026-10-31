@@ -49,7 +49,7 @@ class _ProductsBodyState extends State<ProductsBody> {
   ) {
     final cubit = context.read<ProductCubit>();
     if (chip.id == 1) {
-      // Category Filter (Single-selection)
+      // Category Filter (Multi-selection)
       FilterBottomSheet.show<ProductCubit, ProductState>(
         context,
         title: chip.label,
@@ -62,13 +62,14 @@ class _ProductsBodyState extends State<ProductsBody> {
             .map((c) => FilterItem(id: c.id, title: c.name))
             .toList(),
         loadingSelector: (s) => s.isCategoryPaginationLoading,
-        initialSelectedId: state.selectedCategoryId,
+        isMultiSelect: true,
+        initialSelectedIds: state.selectedCategoryIds,
         onLoadMore: () => cubit.fetchCategoriesNextPage(),
-        onApply: (selected) {
-          cubit.selectCategory(selected?.id);
+        onApplyMulti: (selected) {
+          cubit.selectCategories(selected.map((item) => item.id).toList());
         },
         onClear: () {
-          cubit.selectCategory(null);
+          cubit.selectCategories([]);
         },
       );
     } else if (chip.id == 4) {
@@ -139,7 +140,7 @@ class _ProductsBodyState extends State<ProductsBody> {
               RtcChipList(
                 chips: state.chips,
                 isChipSelected: (index, chip) {
-                  if (chip.id == 1) return state.selectedCategoryId != null;
+                  if (chip.id == 1) return state.selectedCategoryIds.isNotEmpty;
                   if (chip.id == 4) return state.selectedBrandId != null;
                   if (chip.id == 2) return state.selectedSubPlanId != null;
                   if (chip.id == 3) return state.isOnlyAvailable;

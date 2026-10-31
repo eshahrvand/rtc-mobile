@@ -75,7 +75,7 @@ class _CatalogService implements CatalogService {
 
   @override
   Future<ProductListResponse> getProducts({
-    String? categoryId,
+    List<String>? categoryIds,
     String? brandId,
     bool? inStock,
     bool? isActive,
@@ -87,7 +87,7 @@ class _CatalogService implements CatalogService {
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'category': categoryId,
+      r'category': categoryIds,
       r'brand': brandId,
       r'in_stock': inStock,
       r'is_active': isActive,
@@ -151,7 +151,7 @@ class _CatalogService implements CatalogService {
   @override
   Future<ProductListResponse> getPlanProducts({
     required String subPlanId,
-    String? categoryId,
+    List<String>? categoryIds,
     String? brandId,
     bool? inStock,
     String? ordering,
@@ -161,7 +161,7 @@ class _CatalogService implements CatalogService {
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'category': categoryId,
+      r'category': categoryIds,
       r'brand': brandId,
       r'in_stock': inStock,
       r'ordering': ordering,

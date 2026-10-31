@@ -147,6 +147,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   bool get _hasSelection =>
       widget.isMultiSelect ? _selectedIds.isNotEmpty : _selectedId != null;
 
+  bool get _canApply =>
+      _hasSelection ||
+      (widget.isMultiSelect && (widget.initialSelectedIds?.isNotEmpty ?? false));
+
   FilterItem? get _selectedItem => _selectedId == null
       ? null
       : widget.items.firstWhere((item) => item.id == _selectedId);
@@ -351,9 +355,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             title: S.current.applyFilter,
             width: buttonWidth,
             onPressed: _onApply,
-            isActive: _hasSelection,
+            isActive: _canApply,
             styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: _hasSelection
+              color: _canApply
                   ? Colors.white
                   : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w600,

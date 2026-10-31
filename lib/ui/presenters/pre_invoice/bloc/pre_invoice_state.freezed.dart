@@ -45,7 +45,7 @@ mixin _$PreInvoiceState {
   bool get showAvailableOnly => throw _privateConstructorUsedError;
   List<CartItemModel> get cartItems => throw _privateConstructorUsedError;
   bool get isCartVisible => throw _privateConstructorUsedError;
-  String? get selectedCategoryId => throw _privateConstructorUsedError;
+  List<String> get selectedCategoryIds => throw _privateConstructorUsedError;
   List<CategoryDtoModel> get availableCategories =>
       throw _privateConstructorUsedError;
   int get currentCategoryPage => throw _privateConstructorUsedError;
@@ -120,7 +120,7 @@ abstract class $PreInvoiceStateCopyWith<$Res> {
     bool showAvailableOnly,
     List<CartItemModel> cartItems,
     bool isCartVisible,
-    String? selectedCategoryId,
+    List<String> selectedCategoryIds,
     List<CategoryDtoModel> availableCategories,
     int currentCategoryPage,
     bool hasMoreCategories,
@@ -192,7 +192,7 @@ class _$PreInvoiceStateCopyWithImpl<$Res, $Val extends PreInvoiceState>
     Object? showAvailableOnly = null,
     Object? cartItems = null,
     Object? isCartVisible = null,
-    Object? selectedCategoryId = freezed,
+    Object? selectedCategoryIds = null,
     Object? availableCategories = null,
     Object? currentCategoryPage = null,
     Object? hasMoreCategories = null,
@@ -312,10 +312,10 @@ class _$PreInvoiceStateCopyWithImpl<$Res, $Val extends PreInvoiceState>
                 ? _value.isCartVisible
                 : isCartVisible // ignore: cast_nullable_to_non_nullable
                       as bool,
-            selectedCategoryId: freezed == selectedCategoryId
-                ? _value.selectedCategoryId
-                : selectedCategoryId // ignore: cast_nullable_to_non_nullable
-                      as String?,
+            selectedCategoryIds: null == selectedCategoryIds
+                ? _value.selectedCategoryIds
+                : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
             availableCategories: null == availableCategories
                 ? _value.availableCategories
                 : availableCategories // ignore: cast_nullable_to_non_nullable
@@ -481,7 +481,7 @@ abstract class _$$PreInvoiceStateImplCopyWith<$Res>
     bool showAvailableOnly,
     List<CartItemModel> cartItems,
     bool isCartVisible,
-    String? selectedCategoryId,
+    List<String> selectedCategoryIds,
     List<CategoryDtoModel> availableCategories,
     int currentCategoryPage,
     bool hasMoreCategories,
@@ -552,7 +552,7 @@ class __$$PreInvoiceStateImplCopyWithImpl<$Res>
     Object? showAvailableOnly = null,
     Object? cartItems = null,
     Object? isCartVisible = null,
-    Object? selectedCategoryId = freezed,
+    Object? selectedCategoryIds = null,
     Object? availableCategories = null,
     Object? currentCategoryPage = null,
     Object? hasMoreCategories = null,
@@ -672,10 +672,10 @@ class __$$PreInvoiceStateImplCopyWithImpl<$Res>
             ? _value.isCartVisible
             : isCartVisible // ignore: cast_nullable_to_non_nullable
                   as bool,
-        selectedCategoryId: freezed == selectedCategoryId
-            ? _value.selectedCategoryId
-            : selectedCategoryId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+        selectedCategoryIds: null == selectedCategoryIds
+            ? _value._selectedCategoryIds
+            : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
         availableCategories: null == availableCategories
             ? _value._availableCategories
             : availableCategories // ignore: cast_nullable_to_non_nullable
@@ -834,7 +834,7 @@ class _$PreInvoiceStateImpl implements _PreInvoiceState {
     this.showAvailableOnly = false,
     final List<CartItemModel> cartItems = const [],
     this.isCartVisible = false,
-    this.selectedCategoryId,
+    final List<String> selectedCategoryIds = const [],
     final List<CategoryDtoModel> availableCategories = const [],
     this.currentCategoryPage = 1,
     this.hasMoreCategories = false,
@@ -872,6 +872,7 @@ class _$PreInvoiceStateImpl implements _PreInvoiceState {
        _allProducts = allProducts,
        _filteredProducts = filteredProducts,
        _cartItems = cartItems,
+       _selectedCategoryIds = selectedCategoryIds,
        _availableCategories = availableCategories,
        _availableBrands = availableBrands,
        _optionalDocs = optionalDocs,
@@ -974,8 +975,16 @@ class _$PreInvoiceStateImpl implements _PreInvoiceState {
   @override
   @JsonKey()
   final bool isCartVisible;
+  final List<String> _selectedCategoryIds;
   @override
-  final String? selectedCategoryId;
+  @JsonKey()
+  List<String> get selectedCategoryIds {
+    if (_selectedCategoryIds is EqualUnmodifiableListView)
+      return _selectedCategoryIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedCategoryIds);
+  }
+
   final List<CategoryDtoModel> _availableCategories;
   @override
   @JsonKey()
@@ -1096,7 +1105,7 @@ class _$PreInvoiceStateImpl implements _PreInvoiceState {
 
   @override
   String toString() {
-    return 'PreInvoiceState(status: $status, errorMessage: $errorMessage, currentStep: $currentStep, creditPlans: $creditPlans, currentCreditPlanPage: $currentCreditPlanPage, hasMoreCreditPlans: $hasMoreCreditPlans, isCreditPlanPaginationLoading: $isCreditPlanPaginationLoading, selectedCreditPlanId: $selectedCreditPlanId, isSearchActive: $isSearchActive, searchQuery: $searchQuery, filterChips: $filterChips, selectedChipIndex: $selectedChipIndex, allProducts: $allProducts, filteredProducts: $filteredProducts, totalProductCount: $totalProductCount, currentProductPage: $currentProductPage, hasMoreProducts: $hasMoreProducts, isProductPaginationLoading: $isProductPaginationLoading, showAvailableOnly: $showAvailableOnly, cartItems: $cartItems, isCartVisible: $isCartVisible, selectedCategoryId: $selectedCategoryId, availableCategories: $availableCategories, currentCategoryPage: $currentCategoryPage, hasMoreCategories: $hasMoreCategories, isCategoryPaginationLoading: $isCategoryPaginationLoading, selectedSortOrder: $selectedSortOrder, selectedBrandId: $selectedBrandId, availableBrands: $availableBrands, currentBrandPage: $currentBrandPage, hasMoreBrands: $hasMoreBrands, isBrandPaginationLoading: $isBrandPaginationLoading, totalAmount: $totalAmount, totalDiscounts: $totalDiscounts, payableAmount: $payableAmount, totalQuantity: $totalQuantity, customerIdQuery: $customerIdQuery, isNationalIdValid: $isNationalIdValid, isPhoneNumberValid: $isPhoneNumberValid, isPostalCodeValid: $isPostalCodeValid, customerInfo: $customerInfo, originalCustomerInfo: $originalCustomerInfo, customerSearchLoading: $customerSearchLoading, isExistingCustomer: $isExistingCustomer, mandatoryDoc: $mandatoryDoc, mandatoryDocId: $mandatoryDocId, optionalDocs: $optionalDocs, optionalDocIds: $optionalDocIds, createdOrderId: $createdOrderId, isEditMode: $isEditMode, isSubmittingPreInvoice: $isSubmittingPreInvoice, isSubmittingAndClearing: $isSubmittingAndClearing, isUploadingDocuments: $isUploadingDocuments, isSubmittingCustomerInfo: $isSubmittingCustomerInfo)';
+    return 'PreInvoiceState(status: $status, errorMessage: $errorMessage, currentStep: $currentStep, creditPlans: $creditPlans, currentCreditPlanPage: $currentCreditPlanPage, hasMoreCreditPlans: $hasMoreCreditPlans, isCreditPlanPaginationLoading: $isCreditPlanPaginationLoading, selectedCreditPlanId: $selectedCreditPlanId, isSearchActive: $isSearchActive, searchQuery: $searchQuery, filterChips: $filterChips, selectedChipIndex: $selectedChipIndex, allProducts: $allProducts, filteredProducts: $filteredProducts, totalProductCount: $totalProductCount, currentProductPage: $currentProductPage, hasMoreProducts: $hasMoreProducts, isProductPaginationLoading: $isProductPaginationLoading, showAvailableOnly: $showAvailableOnly, cartItems: $cartItems, isCartVisible: $isCartVisible, selectedCategoryIds: $selectedCategoryIds, availableCategories: $availableCategories, currentCategoryPage: $currentCategoryPage, hasMoreCategories: $hasMoreCategories, isCategoryPaginationLoading: $isCategoryPaginationLoading, selectedSortOrder: $selectedSortOrder, selectedBrandId: $selectedBrandId, availableBrands: $availableBrands, currentBrandPage: $currentBrandPage, hasMoreBrands: $hasMoreBrands, isBrandPaginationLoading: $isBrandPaginationLoading, totalAmount: $totalAmount, totalDiscounts: $totalDiscounts, payableAmount: $payableAmount, totalQuantity: $totalQuantity, customerIdQuery: $customerIdQuery, isNationalIdValid: $isNationalIdValid, isPhoneNumberValid: $isPhoneNumberValid, isPostalCodeValid: $isPostalCodeValid, customerInfo: $customerInfo, originalCustomerInfo: $originalCustomerInfo, customerSearchLoading: $customerSearchLoading, isExistingCustomer: $isExistingCustomer, mandatoryDoc: $mandatoryDoc, mandatoryDocId: $mandatoryDocId, optionalDocs: $optionalDocs, optionalDocIds: $optionalDocIds, createdOrderId: $createdOrderId, isEditMode: $isEditMode, isSubmittingPreInvoice: $isSubmittingPreInvoice, isSubmittingAndClearing: $isSubmittingAndClearing, isUploadingDocuments: $isUploadingDocuments, isSubmittingCustomerInfo: $isSubmittingCustomerInfo)';
   }
 
   @override
@@ -1163,8 +1172,10 @@ class _$PreInvoiceStateImpl implements _PreInvoiceState {
             ) &&
             (identical(other.isCartVisible, isCartVisible) ||
                 other.isCartVisible == isCartVisible) &&
-            (identical(other.selectedCategoryId, selectedCategoryId) ||
-                other.selectedCategoryId == selectedCategoryId) &&
+            const DeepCollectionEquality().equals(
+              other._selectedCategoryIds,
+              _selectedCategoryIds,
+            ) &&
             const DeepCollectionEquality().equals(
               other._availableCategories,
               _availableCategories,
@@ -1276,7 +1287,7 @@ class _$PreInvoiceStateImpl implements _PreInvoiceState {
     showAvailableOnly,
     const DeepCollectionEquality().hash(_cartItems),
     isCartVisible,
-    selectedCategoryId,
+    const DeepCollectionEquality().hash(_selectedCategoryIds),
     const DeepCollectionEquality().hash(_availableCategories),
     currentCategoryPage,
     hasMoreCategories,
@@ -1346,7 +1357,7 @@ abstract class _PreInvoiceState implements PreInvoiceState {
     final bool showAvailableOnly,
     final List<CartItemModel> cartItems,
     final bool isCartVisible,
-    final String? selectedCategoryId,
+    final List<String> selectedCategoryIds,
     final List<CategoryDtoModel> availableCategories,
     final int currentCategoryPage,
     final bool hasMoreCategories,
@@ -1424,7 +1435,7 @@ abstract class _PreInvoiceState implements PreInvoiceState {
   @override
   bool get isCartVisible;
   @override
-  String? get selectedCategoryId;
+  List<String> get selectedCategoryIds;
   @override
   List<CategoryDtoModel> get availableCategories;
   @override

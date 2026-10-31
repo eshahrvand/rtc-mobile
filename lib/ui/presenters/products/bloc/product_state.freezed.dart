@@ -24,7 +24,7 @@ mixin _$ProductState {
   List<ProductChipModel> get chips => throw _privateConstructorUsedError;
   int get selectedChipIndex =>
       throw _privateConstructorUsedError; // -1 means no chip is selected by default
-  String? get selectedCategoryId => throw _privateConstructorUsedError;
+  List<String> get selectedCategoryIds => throw _privateConstructorUsedError;
   String? get selectedBrandId => throw _privateConstructorUsedError;
   String? get selectedSubPlanId => throw _privateConstructorUsedError;
   String? get selectedSubPlanName => throw _privateConstructorUsedError;
@@ -75,7 +75,7 @@ abstract class $ProductStateCopyWith<$Res> {
     String searchQuery,
     List<ProductChipModel> chips,
     int selectedChipIndex,
-    String? selectedCategoryId,
+    List<String> selectedCategoryIds,
     String? selectedBrandId,
     String? selectedSubPlanId,
     String? selectedSubPlanName,
@@ -123,7 +123,7 @@ class _$ProductStateCopyWithImpl<$Res, $Val extends ProductState>
     Object? searchQuery = null,
     Object? chips = null,
     Object? selectedChipIndex = null,
-    Object? selectedCategoryId = freezed,
+    Object? selectedCategoryIds = null,
     Object? selectedBrandId = freezed,
     Object? selectedSubPlanId = freezed,
     Object? selectedSubPlanName = freezed,
@@ -174,10 +174,10 @@ class _$ProductStateCopyWithImpl<$Res, $Val extends ProductState>
                 ? _value.selectedChipIndex
                 : selectedChipIndex // ignore: cast_nullable_to_non_nullable
                       as int,
-            selectedCategoryId: freezed == selectedCategoryId
-                ? _value.selectedCategoryId
-                : selectedCategoryId // ignore: cast_nullable_to_non_nullable
-                      as String?,
+            selectedCategoryIds: null == selectedCategoryIds
+                ? _value.selectedCategoryIds
+                : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
             selectedBrandId: freezed == selectedBrandId
                 ? _value.selectedBrandId
                 : selectedBrandId // ignore: cast_nullable_to_non_nullable
@@ -292,7 +292,7 @@ abstract class _$$ProductStateImplCopyWith<$Res>
     String searchQuery,
     List<ProductChipModel> chips,
     int selectedChipIndex,
-    String? selectedCategoryId,
+    List<String> selectedCategoryIds,
     String? selectedBrandId,
     String? selectedSubPlanId,
     String? selectedSubPlanName,
@@ -339,7 +339,7 @@ class __$$ProductStateImplCopyWithImpl<$Res>
     Object? searchQuery = null,
     Object? chips = null,
     Object? selectedChipIndex = null,
-    Object? selectedCategoryId = freezed,
+    Object? selectedCategoryIds = null,
     Object? selectedBrandId = freezed,
     Object? selectedSubPlanId = freezed,
     Object? selectedSubPlanName = freezed,
@@ -390,10 +390,10 @@ class __$$ProductStateImplCopyWithImpl<$Res>
             ? _value.selectedChipIndex
             : selectedChipIndex // ignore: cast_nullable_to_non_nullable
                   as int,
-        selectedCategoryId: freezed == selectedCategoryId
-            ? _value.selectedCategoryId
-            : selectedCategoryId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+        selectedCategoryIds: null == selectedCategoryIds
+            ? _value._selectedCategoryIds
+            : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
         selectedBrandId: freezed == selectedBrandId
             ? _value.selectedBrandId
             : selectedBrandId // ignore: cast_nullable_to_non_nullable
@@ -501,7 +501,7 @@ class _$ProductStateImpl implements _ProductState {
     this.searchQuery = '',
     final List<ProductChipModel> chips = const [],
     this.selectedChipIndex = -1,
-    this.selectedCategoryId,
+    final List<String> selectedCategoryIds = const [],
     this.selectedBrandId,
     this.selectedSubPlanId,
     this.selectedSubPlanName,
@@ -526,6 +526,7 @@ class _$ProductStateImpl implements _ProductState {
     this.isPaginationLoading = false,
     this.hasMoreData = true,
   }) : _chips = chips,
+       _selectedCategoryIds = selectedCategoryIds,
        _availableCategories = availableCategories,
        _availableSubPlans = availableSubPlans,
        _availableBrands = availableBrands,
@@ -560,8 +561,17 @@ class _$ProductStateImpl implements _ProductState {
   @JsonKey()
   final int selectedChipIndex;
   // -1 means no chip is selected by default
+  final List<String> _selectedCategoryIds;
+  // -1 means no chip is selected by default
   @override
-  final String? selectedCategoryId;
+  @JsonKey()
+  List<String> get selectedCategoryIds {
+    if (_selectedCategoryIds is EqualUnmodifiableListView)
+      return _selectedCategoryIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedCategoryIds);
+  }
+
   @override
   final String? selectedBrandId;
   @override
@@ -668,7 +678,7 @@ class _$ProductStateImpl implements _ProductState {
 
   @override
   String toString() {
-    return 'ProductState(status: $status, errorMessage: $errorMessage, isSearchActive: $isSearchActive, searchQuery: $searchQuery, chips: $chips, selectedChipIndex: $selectedChipIndex, selectedCategoryId: $selectedCategoryId, selectedBrandId: $selectedBrandId, selectedSubPlanId: $selectedSubPlanId, selectedSubPlanName: $selectedSubPlanName, isOnlyAvailable: $isOnlyAvailable, activeFilterChip: $activeFilterChip, availableCategories: $availableCategories, currentCategoryPage: $currentCategoryPage, hasMoreCategories: $hasMoreCategories, isCategoryPaginationLoading: $isCategoryPaginationLoading, availableSubPlans: $availableSubPlans, currentSubPlanPage: $currentSubPlanPage, hasMoreSubPlans: $hasMoreSubPlans, isSubPlanPaginationLoading: $isSubPlanPaginationLoading, availableBrands: $availableBrands, currentBrandPage: $currentBrandPage, hasMoreBrands: $hasMoreBrands, isBrandPaginationLoading: $isBrandPaginationLoading, allProducts: $allProducts, filteredProducts: $filteredProducts, currentPage: $currentPage, totalCount: $totalCount, isPaginationLoading: $isPaginationLoading, hasMoreData: $hasMoreData)';
+    return 'ProductState(status: $status, errorMessage: $errorMessage, isSearchActive: $isSearchActive, searchQuery: $searchQuery, chips: $chips, selectedChipIndex: $selectedChipIndex, selectedCategoryIds: $selectedCategoryIds, selectedBrandId: $selectedBrandId, selectedSubPlanId: $selectedSubPlanId, selectedSubPlanName: $selectedSubPlanName, isOnlyAvailable: $isOnlyAvailable, activeFilterChip: $activeFilterChip, availableCategories: $availableCategories, currentCategoryPage: $currentCategoryPage, hasMoreCategories: $hasMoreCategories, isCategoryPaginationLoading: $isCategoryPaginationLoading, availableSubPlans: $availableSubPlans, currentSubPlanPage: $currentSubPlanPage, hasMoreSubPlans: $hasMoreSubPlans, isSubPlanPaginationLoading: $isSubPlanPaginationLoading, availableBrands: $availableBrands, currentBrandPage: $currentBrandPage, hasMoreBrands: $hasMoreBrands, isBrandPaginationLoading: $isBrandPaginationLoading, allProducts: $allProducts, filteredProducts: $filteredProducts, currentPage: $currentPage, totalCount: $totalCount, isPaginationLoading: $isPaginationLoading, hasMoreData: $hasMoreData)';
   }
 
   @override
@@ -686,8 +696,10 @@ class _$ProductStateImpl implements _ProductState {
             const DeepCollectionEquality().equals(other._chips, _chips) &&
             (identical(other.selectedChipIndex, selectedChipIndex) ||
                 other.selectedChipIndex == selectedChipIndex) &&
-            (identical(other.selectedCategoryId, selectedCategoryId) ||
-                other.selectedCategoryId == selectedCategoryId) &&
+            const DeepCollectionEquality().equals(
+              other._selectedCategoryIds,
+              _selectedCategoryIds,
+            ) &&
             (identical(other.selectedBrandId, selectedBrandId) ||
                 other.selectedBrandId == selectedBrandId) &&
             (identical(other.selectedSubPlanId, selectedSubPlanId) ||
@@ -766,7 +778,7 @@ class _$ProductStateImpl implements _ProductState {
     searchQuery,
     const DeepCollectionEquality().hash(_chips),
     selectedChipIndex,
-    selectedCategoryId,
+    const DeepCollectionEquality().hash(_selectedCategoryIds),
     selectedBrandId,
     selectedSubPlanId,
     selectedSubPlanName,
@@ -809,7 +821,7 @@ abstract class _ProductState implements ProductState {
     final String searchQuery,
     final List<ProductChipModel> chips,
     final int selectedChipIndex,
-    final String? selectedCategoryId,
+    final List<String> selectedCategoryIds,
     final String? selectedBrandId,
     final String? selectedSubPlanId,
     final String? selectedSubPlanName,
@@ -848,7 +860,7 @@ abstract class _ProductState implements ProductState {
   @override
   int get selectedChipIndex; // -1 means no chip is selected by default
   @override
-  String? get selectedCategoryId;
+  List<String> get selectedCategoryIds;
   @override
   String? get selectedBrandId;
   @override

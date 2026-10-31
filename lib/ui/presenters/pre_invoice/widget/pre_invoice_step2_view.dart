@@ -67,13 +67,14 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
           .map((c) => FilterItem(id: c.id, title: c.name))
           .toList(),
       loadingSelector: (s) => s.isCategoryPaginationLoading,
-      initialSelectedId: state.selectedCategoryId,
+      isMultiSelect: true,
+      initialSelectedIds: state.selectedCategoryIds,
       onLoadMore: () => cubit.fetchCategoriesNextPage(),
-      onApply: (selected) {
-        cubit.onCategorySelected(selected?.id);
+      onApplyMulti: (selected) {
+        cubit.onCategoriesSelected(selected.map((item) => item.id).toList());
       },
       onClear: () {
-        cubit.onCategorySelected(null);
+        cubit.onCategoriesSelected([]);
       },
     );
   }
@@ -245,7 +246,7 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                         ],
                         isChipSelected: (index, chip) {
                           if (chip.id == 1)
-                            return state.selectedCategoryId != null;
+                            return state.selectedCategoryIds.isNotEmpty;
                           if (chip.id == 4)
                             return state.selectedBrandId != null;
                           return false;
@@ -259,7 +260,7 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                         },
                         onChipClose: (index, chip) {
                           if (chip.id == 1) {
-                            cubit.onCategorySelected(null);
+                            cubit.onCategoriesSelected([]);
                           } else if (chip.id == 4) {
                             cubit.selectBrand(null);
                           }
