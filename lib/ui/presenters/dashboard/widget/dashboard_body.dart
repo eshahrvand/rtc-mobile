@@ -89,6 +89,9 @@ class DashboardBody extends StatelessWidget {
                         )
                       : const SizedBox.shrink(),
                 ),
+                SizedBox(
+                  height: 18,
+                ),
                 RtcPreInvoiceCard(
                   onTap: () => context.push(AppRoutes.preInvoice),
                 ),

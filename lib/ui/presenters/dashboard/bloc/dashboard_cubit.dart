@@ -57,6 +57,21 @@ class DashboardCubit extends MountedCubit<DashboardState> {
                 buildNumber: info.buildNumber,
               ),
             );
+            final buildNum = int.tryParse(info.buildNumber);
+            if (buildNum != null) {
+              _checkAppRelease(buildNum);
+            }
+          }
+        })
+        .catchError((_) {});
+  }
+
+  void _checkAppRelease(int buildNumber) {
+    _dashboardRepo
+        .checkAppRelease(buildNumber)
+        .then((update) {
+          if (!isClosed && update != null && update.updateAvailable) {
+            emit(state.copyWith(appUpdate: update));
           }
         })
         .catchError((_) {});

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../core/models/app_update_model.dart';
 import '../../../../core/models/bar_chart_item_model.dart';
 import '../../../../core/models/line_chart_data_model.dart';
 import '../../../../core/models/order_model.dart';
@@ -50,5 +51,8 @@ class DashboardState with _$DashboardState {
     // App Info
     @Default('') String appVersion,
     @Default('') String buildNumber,
+
+    // App Update
+    AppUpdateModel? appUpdate,
   }) = _DashboardState;
 }

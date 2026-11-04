@@ -17,7 +17,7 @@ class RtcMessageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 18, 0, 18),
+      padding: const EdgeInsets.fromLTRB(0, 18, 0, 0),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.warningPalette.shade25,

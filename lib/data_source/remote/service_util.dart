@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../config/constants.dart';
 
 import '../../ui/router/app_route.dart';
@@ -22,6 +23,8 @@ class ServiceUtil {
         sendTimeout: sendTimeout,
       ),
     );
+
+    _addTemporaryApiLogging(dio);
 
     dio.interceptors.add(
       InterceptorsWrapper(
@@ -69,6 +72,7 @@ class ServiceUtil {
                 final refreshDio = Dio(
                   BaseOptions(baseUrl: dio.options.baseUrl),
                 );
+                _addTemporaryApiLogging(refreshDio);
                 final response = await refreshDio.post(
                   'accounts/token/refresh',
                   data: {'refresh': refreshToken},
@@ -117,5 +121,19 @@ class ServiceUtil {
     );
 
     return dio;
+  }
+
+  // TEMP: Remove this helper and its two calls after API debugging.
+  static void _addTemporaryApiLogging(Dio dio) {
+    if (!kDebugMode) return;
+    dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        requestHeader: false,
+        responseHeader: false,
+        logPrint: (message) => debugPrint('[API] $message', wrapWidth: 1024),
+      ),
+    );
   }
 }

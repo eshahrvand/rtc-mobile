@@ -13,6 +13,13 @@ class WorkspaceService {
       )
       .then((response) => (response.data!['avatar'] as Map)['file'] as String);
 
+  Future<Map<String, dynamic>> checkAppRelease(int buildNumber) => dio
+      .get<Map<String, dynamic>>(
+        'content/app-releases/check',
+        queryParameters: {'build_number': buildNumber},
+      )
+      .then((response) => response.data ?? <String, dynamic>{});
+
   Future<Map<String, dynamic>?> activeSlider() => dio
       .get<dynamic>('content/sliders/active')
       .then<Map<String, dynamic>?>((response) {

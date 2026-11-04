@@ -16,6 +16,7 @@ import '../orders/bloc/orders_state.dart';
 import '../orders/orders_body.dart';
 import '../../widget/rtc_bottom_nav.dart';
 import '../../widget/rtc_drawer.dart';
+import '../../widget/rtc_update_sheet.dart';
 
 class DashboardScreen extends StatelessWidget {
   final int initialIndex;
@@ -78,6 +79,19 @@ class _MainViewState extends State<MainView> {
             // Always refresh orders when entering the tab
             if (state.selectedNavIndex == 2) {
               context.read<OrdersCubit>().fetchOrders();
+            }
+          },
+        ),
+        BlocListener<DashboardCubit, DashboardState>(
+          listenWhen: (prev, curr) =>
+              prev.appUpdate != curr.appUpdate && curr.appUpdate != null,
+          listener: (context, state) {
+            final update = state.appUpdate;
+            if (update != null && update.updateAvailable) {
+              showRtcUpdateSheet(
+                context: context,
+                update: update,
+              );
             }
           },
         ),

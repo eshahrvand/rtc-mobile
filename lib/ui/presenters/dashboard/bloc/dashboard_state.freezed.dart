@@ -46,6 +46,7 @@ mixin _$DashboardState {
       throw _privateConstructorUsedError; // App Info
   String get appVersion => throw _privateConstructorUsedError;
   String get buildNumber => throw _privateConstructorUsedError;
+  AppUpdateModel? get appUpdate => throw _privateConstructorUsedError;
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -80,6 +81,7 @@ abstract class $DashboardStateCopyWith<$Res> {
     CommissionDtoModel? commission,
     String appVersion,
     String buildNumber,
+    AppUpdateModel? appUpdate,
   });
 
   $UserProfileDtoModelCopyWith<$Res>? get userProfile;
@@ -119,6 +121,7 @@ class _$DashboardStateCopyWithImpl<$Res, $Val extends DashboardState>
     Object? commission = freezed,
     Object? appVersion = null,
     Object? buildNumber = null,
+    Object? appUpdate = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -194,6 +197,10 @@ class _$DashboardStateCopyWithImpl<$Res, $Val extends DashboardState>
                 ? _value.buildNumber
                 : buildNumber // ignore: cast_nullable_to_non_nullable
                       as String,
+            appUpdate: freezed == appUpdate
+                ? _value.appUpdate
+                : appUpdate // ignore: cast_nullable_to_non_nullable
+                      as AppUpdateModel?,
           )
           as $Val,
     );
@@ -256,6 +263,7 @@ abstract class _$$DashboardStateImplCopyWith<$Res>
     CommissionDtoModel? commission,
     String appVersion,
     String buildNumber,
+    AppUpdateModel? appUpdate,
   });
 
   @override
@@ -296,6 +304,7 @@ class __$$DashboardStateImplCopyWithImpl<$Res>
     Object? commission = freezed,
     Object? appVersion = null,
     Object? buildNumber = null,
+    Object? appUpdate = freezed,
   }) {
     return _then(
       _$DashboardStateImpl(
@@ -371,6 +380,10 @@ class __$$DashboardStateImplCopyWithImpl<$Res>
             ? _value.buildNumber
             : buildNumber // ignore: cast_nullable_to_non_nullable
                   as String,
+        appUpdate: freezed == appUpdate
+            ? _value.appUpdate
+            : appUpdate // ignore: cast_nullable_to_non_nullable
+                  as AppUpdateModel?,
       ),
     );
   }
@@ -398,6 +411,7 @@ class _$DashboardStateImpl implements _DashboardState {
     this.commission,
     this.appVersion = '',
     this.buildNumber = '',
+    this.appUpdate,
   }) : _quickAccessItems = quickAccessItems,
        _lineChartData = lineChartData,
        _pieChart1Data = pieChart1Data,
@@ -508,10 +522,12 @@ class _$DashboardStateImpl implements _DashboardState {
   @override
   @JsonKey()
   final String buildNumber;
+  @override
+  final AppUpdateModel? appUpdate;
 
   @override
   String toString() {
-    return 'DashboardState(status: $status, errorMessage: $errorMessage, selectedNavIndex: $selectedNavIndex, quickAccessItems: $quickAccessItems, messageText: $messageText, messageIconPath: $messageIconPath, lineChartData: $lineChartData, pieChart1Data: $pieChart1Data, pieChart1Title: $pieChart1Title, pieChart2Data: $pieChart2Data, pieChart2Title: $pieChart2Title, barChartData: $barChartData, barChartTitle: $barChartTitle, recentOrders: $recentOrders, userProfile: $userProfile, commission: $commission, appVersion: $appVersion, buildNumber: $buildNumber)';
+    return 'DashboardState(status: $status, errorMessage: $errorMessage, selectedNavIndex: $selectedNavIndex, quickAccessItems: $quickAccessItems, messageText: $messageText, messageIconPath: $messageIconPath, lineChartData: $lineChartData, pieChart1Data: $pieChart1Data, pieChart1Title: $pieChart1Title, pieChart2Data: $pieChart2Data, pieChart2Title: $pieChart2Title, barChartData: $barChartData, barChartTitle: $barChartTitle, recentOrders: $recentOrders, userProfile: $userProfile, commission: $commission, appVersion: $appVersion, buildNumber: $buildNumber, appUpdate: $appUpdate)';
   }
 
   @override
@@ -565,11 +581,13 @@ class _$DashboardStateImpl implements _DashboardState {
             (identical(other.appVersion, appVersion) ||
                 other.appVersion == appVersion) &&
             (identical(other.buildNumber, buildNumber) ||
-                other.buildNumber == buildNumber));
+                other.buildNumber == buildNumber) &&
+            (identical(other.appUpdate, appUpdate) ||
+                other.appUpdate == appUpdate));
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     status,
     errorMessage,
@@ -589,7 +607,8 @@ class _$DashboardStateImpl implements _DashboardState {
     commission,
     appVersion,
     buildNumber,
-  );
+    appUpdate,
+  ]);
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.
@@ -623,6 +642,7 @@ abstract class _DashboardState implements DashboardState {
     final CommissionDtoModel? commission,
     final String appVersion,
     final String buildNumber,
+    final AppUpdateModel? appUpdate,
   }) = _$DashboardStateImpl;
 
   @override
@@ -661,6 +681,8 @@ abstract class _DashboardState implements DashboardState {
   String get appVersion;
   @override
   String get buildNumber;
+  @override
+  AppUpdateModel? get appUpdate;
 
   /// Create a copy of DashboardState
   /// with the given fields replaced by the non-null parameter values.

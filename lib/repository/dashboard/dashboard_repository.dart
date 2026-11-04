@@ -1,3 +1,6 @@
+import '../../core/models/app_update_model.dart';
+import '../../locator.dart';
+import '../workspace/workspace_repository.dart';
 import '../../data_source/remote/auth/auth_service.dart';
 import '../../data_source/remote/dashboard/dashboard_service.dart';
 import '../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
@@ -39,5 +42,10 @@ class DashboardRepository {
 
   Future<CommissionDtoModel> getCommission() async {
     return await _dashboardService.getCommission();
+  }
+
+  Future<AppUpdateModel?> checkAppRelease(int buildNumber) {
+    return sl<WorkspaceRepository>().checkAppRelease?.call(buildNumber) ??
+        Future.value(null);
   }
 }

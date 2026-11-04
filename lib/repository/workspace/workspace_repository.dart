@@ -1,4 +1,5 @@
 import 'package:cross_file/cross_file.dart';
+import '../../core/models/app_update_model.dart';
 import '../../core/models/workspace_models.dart';
 import '../../data_source/remote/media/media_service.dart';
 import '../../data_source/remote/workspace/workspace_service.dart';
@@ -25,6 +26,7 @@ class WorkspaceRepository {
     this.uploadAvatar,
     this.submitRefund,
     this.isTermsRequiredResponse,
+    this.checkAppRelease,
   });
 
   factory WorkspaceRepository.remote(WorkspaceService service) =>
@@ -65,6 +67,10 @@ class WorkspaceRepository {
               'policy_acceptance_required',
               'agent_policy_pending',
             }.contains(body['error']['code']),
+        checkAppRelease: (buildNumber) => service
+            .checkAppRelease(buildNumber)
+            .then(AppUpdateModel.fromJson)
+            .then((model) => model.updateAvailable ? model : null),
       );
   final Future<UserProfileDtoModel> Function()? loadMe;
   final Future<BranchInfo> Function(String id)? loadBranch;
@@ -82,6 +88,7 @@ class WorkspaceRepository {
   final Future<String> Function(XFile file, String userId)? uploadAvatar;
   final Future<void> Function(String orderId)? submitRefund;
   final bool Function(Object? responseBody)? isTermsRequiredResponse;
+  final Future<AppUpdateModel?> Function(int buildNumber)? checkAppRelease;
 
   Future<T> unavailable<T>() => Future.error(const WorkspaceServicePending());
 }
