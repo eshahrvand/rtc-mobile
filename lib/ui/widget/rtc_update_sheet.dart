@@ -9,12 +9,9 @@ import '../theme/colors.dart';
 import 'rtc_button.dart';
 import 'rtc_image.dart';
 
-/// Displays the update bottom sheet.
-///
-/// If [update.isForce] is true:
-/// - The sheet cannot be dismissed by tapping outside or dragging.
-/// - The back button on Android is blocked.
-/// - The skip / later button is hidden.
+/// Displays the update bottom sheet matching the Figma designs:
+/// - Force update inactive (two buttons: 'بروزرسانی برنامه' & 'بعداً')
+/// - Force update active (single button: 'بروزرسانی برنامه', non-dismissible)
 Future<void> showRtcUpdateSheet({
   required BuildContext context,
   required AppUpdateModel update,
@@ -104,7 +101,8 @@ class RtcUpdateSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final hasChanges = update.changeLog != null && update.changeLog!.trim().isNotEmpty;
+    final hasChanges =
+        update.changeLog != null && update.changeLog!.trim().isNotEmpty;
 
     return Material(
       color: AppColors.grayPalette.shade50,
@@ -115,137 +113,125 @@ class RtcUpdateSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag handle & Header
+            // Header (Handle + Title Row)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
               child: Column(
                 children: [
+                  // Blue drag handle matching Figma (Rectangle 36, 31x2, radius 42)
                   Container(
-                    width: 32,
-                    height: 3,
+                    width: 31,
+                    height: 2,
                     decoration: BoxDecoration(
-                      color: AppColors.grayPalette.shade300,
+                      color: AppColors.brandPalette.shade600,
                       borderRadius: BorderRadius.circular(42),
                     ),
                   ),
                   const SizedBox(height: 12),
+                  // Title row with rocket icon
                   Row(
                     children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: AppColors.brandPalette.shade50,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        alignment: Alignment.center,
-                        child: const RtcImage(
-                          image: 'assets/images/trend-up.svg',
-                          width: 20,
-                          height: 20,
-                          boxFit: BoxFit.contain,
+                      const RtcImage(
+                        image: 'assets/images/ic_rocket.svg',
+                        width: 20,
+                        height: 20,
+                        boxFit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        update.title ?? S.current.updateLabel,
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.grayPalette.shade900,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          update.title ?? S.current.updateLabel,
-                          style: textTheme.bodyLarge?.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.workspaceTextStrong,
-                          ),
-                        ),
-                      ),
-                      if (!update.isForce)
-                        InkWell(
-                          onTap: () => _handleSkipPress(context),
-                          borderRadius: BorderRadius.circular(20),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: RtcImage(
-                              image: 'assets/images/close.svg',
-                              width: 14,
-                              height: 14,
-                              color: AppColors.grayPalette.shade600,
-                              boxFit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ],
               ),
             ),
             Divider(
-              height: .5,
-              thickness: .5,
-              color: AppColors.grayPalette.shade300,
+              height: 1,
+              thickness: 1,
+              color: AppColors.grayPalette.shade200,
             ),
 
             // Scrollable Content
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Illustration Card
-                    _UpdateIllustrationCard(version: update.version),
-                    const SizedBox(height: 18),
+                    // Illustration - no box, no border, pure centered graphic (120x122)
+                    Container(
+                      height: 122,
+                      alignment: Alignment.center,
+                      child: const RtcImage(
+                        image: 'assets/images/app_update_illustration.svg',
+                        width: 120,
+                        height: 122,
+                        boxFit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                    // Version & Subtitle
+                    // Version Title & Subtitle
                     Text(
                       'نسخه ${update.version}',
-                      textAlign: TextAlign.center,
-                      style: textTheme.titleLarge?.copyWith(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.workspaceTextStrong,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grayPalette.shade900,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
-                      'نسخه جدید اپلیکیشن آماده دریافت و نصب است',
-                      textAlign: TextAlign.center,
+                      'نسخه جدید برنامه آماده دریافت و نصب است.',
                       style: textTheme.bodyMedium?.copyWith(
-                        fontSize: 13,
-                        color: AppColors.grayPalette.shade600,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.grayPalette.shade700,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
-                    // Dashed Divider
-                    const RtcDashSeparator(),
-                    const SizedBox(height: 16),
+                    // Dashed Divider matching Figma (Vector 666, strokeDashes=[4.0, 4.0])
+                    const RtcDashSeparator(
+                      height: 1,
+                      dashWidth: 4,
+                      dashSpace: 4,
+                    ),
+                    const SizedBox(height: 12),
 
                     // Changelog Section
                     if (hasChanges) ...[
                       Text(
-                        'تغییرات نسخه جدید',
-                        style: textTheme.titleMedium?.copyWith(
+                        'تغییرات نسخه جدید:',
+                        style: textTheme.bodyMedium?.copyWith(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.workspaceTextStrong,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grayPalette.shade900,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       Container(
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.grayPalette.shade200,
-                            width: 1,
-                          ),
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        child: Text(
-                          update.changeLog!,
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontSize: 13,
-                            height: 1.7,
-                            color: AppColors.grayPalette.shade700,
+                        constraints: const BoxConstraints(maxHeight: 220),
+                        child: SingleChildScrollView(
+                          child: Text(
+                            update.changeLog!,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              height: 1.8,
+                              color: AppColors.grayPalette.shade700,
+                            ),
                           ),
                         ),
                       ),
@@ -257,10 +243,9 @@ class RtcUpdateSheet extends StatelessWidget {
 
             // Action Buttons
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: AppColors.primaryShadow,
+                color: AppColors.grayPalette.shade50,
                 border: Border(
                   top: BorderSide(
                     color: AppColors.grayPalette.shade200,
@@ -268,29 +253,11 @@ class RtcUpdateSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              child: Row(
-                children: [
-                  if (!update.isForce) ...[
-                    Expanded(
-                      child: RtcButton(
-                        fitTitle: true,
-                        title: 'بعداً',
-                        backgroundColor: AppColors.grayPalette.shade50,
-                        borderColor: AppColors.grayPalette.shade300,
-                        styleBtn: textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: AppColors.grayPalette.shade700,
-                        ),
-                        onPressed: () => _handleSkipPress(context),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: RtcButton(
+              child: update.isForce
+                  ? RtcButton(
+                      height: 44,
                       fitTitle: true,
-                      title: S.current.updateLabel,
+                      title: 'بروزرسانی برنامه',
                       backgroundColor: AppColors.brandPalette.shade600,
                       styleBtn: textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
@@ -298,67 +265,44 @@ class RtcUpdateSheet extends StatelessWidget {
                         color: Colors.white,
                       ),
                       onPressed: () => _handleUpdatePress(context),
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: RtcButton(
+                            height: 44,
+                            fitTitle: true,
+                            title: 'بروزرسانی برنامه',
+                            backgroundColor: AppColors.brandPalette.shade600,
+                            styleBtn: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                            onPressed: () => _handleUpdatePress(context),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: RtcButton(
+                            height: 44,
+                            fitTitle: true,
+                            title: 'بعداً',
+                            backgroundColor: AppColors.grayPalette.shade50,
+                            borderColor: AppColors.grayPalette.shade300,
+                            styleBtn: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: AppColors.grayPalette.shade700,
+                            ),
+                            onPressed: () => _handleSkipPress(context),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _UpdateIllustrationCard extends StatelessWidget {
-  const _UpdateIllustrationCard({required this.version});
-  final String version;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 130,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColors.brandPalette.shade50,
-            AppColors.brandPalette.shade100.withValues(alpha: .45),
-          ],
-        ),
-        border: Border.all(
-          color: AppColors.brandPalette.shade100,
-          width: 1,
-        ),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 96,
-            height: 96,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.brandPalette.shade100.withValues(alpha: .35),
-            ),
-          ),
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              boxShadow: AppColors.primaryShadow,
-            ),
-            padding: const EdgeInsets.all(14),
-            child: Image.asset(
-              'assets/images/rtc_logo.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -369,7 +313,7 @@ class RtcDashSeparator extends StatelessWidget {
     super.key,
     this.height = 1,
     this.color,
-    this.dashWidth = 5.0,
+    this.dashWidth = 4.0,
     this.dashSpace = 4.0,
   });
 

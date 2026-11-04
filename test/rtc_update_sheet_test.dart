@@ -5,8 +5,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rtc_mobile/main_ui_preview.dart';
 import 'package:rtc_mobile/locator.dart';
 import 'package:rtc_mobile/core/models/app_update_model.dart';
+import 'package:rtc_mobile/core/models/workspace_models.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/repository/workspace/workspace_repository.dart';
+import 'package:rtc_mobile/repository/workspace/workspace_mapper.dart';
+import 'package:rtc_mobile/data_source/remote/profile/model/user_profile_dto_model.dart';
+import 'package:rtc_mobile/ui/presenters/workspace/bloc/workspace_cubit.dart';
 import 'package:rtc_mobile/ui/presenters/dashboard/bloc/dashboard_cubit.dart';
 import 'package:rtc_mobile/ui/theme/theme.dart';
 import 'package:rtc_mobile/ui/widget/rtc_button.dart';
@@ -122,7 +126,7 @@ void main() {
 
       // Check version and changelog text
       expect(find.text('نسخه 2.5.0'), findsOneWidget);
-      expect(find.text('تغییرات نسخه جدید'), findsOneWidget);
+      expect(find.text('تغییرات نسخه جدید:'), findsOneWidget);
       expect(find.text('بهبود سرعت و عملکرد سیستم'), findsOneWidget);
 
       // Check skip button exists
@@ -134,7 +138,7 @@ void main() {
       expect(skipPressed, isTrue);
 
       // Tap update button
-      await tester.tap(find.widgetWithText(RtcButton, 'بروزرسانی'));
+      await tester.tap(find.widgetWithText(RtcButton, 'بروزرسانی برنامه'));
       await tester.pump();
       expect(updatePressed, isTrue);
     });
@@ -160,7 +164,7 @@ void main() {
       // Skip button must NOT be present
       expect(find.text('بعداً'), findsNothing);
       // Only the primary update button
-      expect(find.widgetWithText(RtcButton, 'بروزرسانی'), findsOneWidget);
+      expect(find.widgetWithText(RtcButton, 'بروزرسانی برنامه'), findsOneWidget);
     });
   });
 
@@ -200,6 +204,35 @@ void main() {
       expect(cubit.state.appUpdate, isNotNull);
       expect(cubit.state.appUpdate?.version, '1.0.0');
       expect(cubit.state.appUpdate?.isForce, isTrue);
+    });
+  });
+
+  group('Employee Position resolution', () {
+    test('resolves store_user, store_accountant, and store_manager correctly', () {
+      expect(WorkspaceMapper.resolvePosition('store_user'), 'فروشنده');
+      expect(WorkspaceMapper.resolvePosition('store_accountant'), 'حسابدار فروشگاه');
+      expect(WorkspaceMapper.resolvePosition('store_manager'), 'مدیر فروشگاه');
+      expect(WorkspaceMapper.resolvePosition(null, fallback: 'کارمند'), 'کارمند');
+      expect(WorkspaceMapper.resolvePosition('', fallback: 'کارمند'), 'کارمند');
+    });
+
+    test('WorkspaceCubit setProfile extracts and maps position from UserProfileDtoModel', () {
+      final cubit = WorkspaceCubit(WorkspaceRepository());
+      const profile = UserProfileDtoModel(
+        id: 'user-1',
+        mobile: '09123456789',
+        role: 'sales_person',
+        firstName: 'علی',
+        lastName: 'محمدی',
+        isActive: true,
+        dateJoined: '2024-01-01',
+        position: 'store_user',
+      );
+
+      cubit.setProfile(profile);
+
+      expect(cubit.state.position, 'فروشنده');
+      expect(cubit.state.role, AccountRole.employee);
     });
   });
 }

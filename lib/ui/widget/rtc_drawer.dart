@@ -10,6 +10,7 @@ import 'rtc_divider.dart';
 import 'rtc_image.dart';
 import '../presenters/dashboard/widget/log_out_botttom_sheet.dart';
 import '../presenters/report/bloc/report_step.dart';
+import '../../repository/workspace/workspace_mapper.dart';
 import '../presenters/workspace/bloc/workspace_cubit.dart';
 import '../presenters/workspace/bloc/workspace_state.dart';
 
@@ -234,7 +235,12 @@ class RtcDrawerAccount extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             state.role == AccountRole.employee
-                                ? state.position
+                                ? (state.position.isNotEmpty
+                                    ? WorkspaceMapper.resolvePosition(
+                                        state.position,
+                                        fallback: 'کارمند',
+                                      )
+                                    : 'کارمند')
                                 : S.current.salesAgent,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(

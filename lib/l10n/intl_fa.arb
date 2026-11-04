@@ -535,7 +535,7 @@
   "@employeePositionHint": {},
   "shopAccountant": "حسابدار فروشگاه",
   "@shopAccountant": {},
-  "shopSupervisor": "سرپرست فروشگاه",
+  "shopSupervisor": "مدیر فروشگاه",
   "@shopSupervisor": {},
   "saveBranchUser": "ثبت کاربر",
   "@saveBranchUser": {},
@@ -628,7 +628,7 @@
       }
     }
   },
-  "storeUserPosition": "کارمند فروشگاه",
+  "storeUserPosition": "فروشنده",
   "@storeUserPosition": {},
   "orderBranchFilter": "شعبه",
   "@orderBranchFilter": {},

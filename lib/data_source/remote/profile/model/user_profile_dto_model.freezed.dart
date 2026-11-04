@@ -310,6 +310,7 @@ mixin _$UserProfileDtoModel {
   double? get totalSales => throw _privateConstructorUsedError;
   @JsonKey(name: 'wallet_balance')
   double? get walletBalance => throw _privateConstructorUsedError;
+  String? get position => throw _privateConstructorUsedError;
 
   /// Serializes this UserProfileDtoModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -360,6 +361,7 @@ abstract class $UserProfileDtoModelCopyWith<$Res> {
     @JsonKey(name: 'sales_last_30_days') double? salesLast30Days,
     @JsonKey(name: 'total_sales') double? totalSales,
     @JsonKey(name: 'wallet_balance') double? walletBalance,
+    String? position,
   });
 
   $ImageDtoModelCopyWith<$Res>? get avatar;
@@ -414,6 +416,7 @@ class _$UserProfileDtoModelCopyWithImpl<$Res, $Val extends UserProfileDtoModel>
     Object? salesLast30Days = freezed,
     Object? totalSales = freezed,
     Object? walletBalance = freezed,
+    Object? position = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -541,6 +544,10 @@ class _$UserProfileDtoModelCopyWithImpl<$Res, $Val extends UserProfileDtoModel>
                 ? _value.walletBalance
                 : walletBalance // ignore: cast_nullable_to_non_nullable
                       as double?,
+            position: freezed == position
+                ? _value.position
+                : position // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -644,6 +651,7 @@ abstract class _$$UserProfileDtoModelImplCopyWith<$Res>
     @JsonKey(name: 'sales_last_30_days') double? salesLast30Days,
     @JsonKey(name: 'total_sales') double? totalSales,
     @JsonKey(name: 'wallet_balance') double? walletBalance,
+    String? position,
   });
 
   @override
@@ -701,6 +709,7 @@ class __$$UserProfileDtoModelImplCopyWithImpl<$Res>
     Object? salesLast30Days = freezed,
     Object? totalSales = freezed,
     Object? walletBalance = freezed,
+    Object? position = freezed,
   }) {
     return _then(
       _$UserProfileDtoModelImpl(
@@ -828,6 +837,10 @@ class __$$UserProfileDtoModelImplCopyWithImpl<$Res>
             ? _value.walletBalance
             : walletBalance // ignore: cast_nullable_to_non_nullable
                   as double?,
+        position: freezed == position
+            ? _value.position
+            : position // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -868,6 +881,7 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
     @JsonKey(name: 'sales_last_30_days') this.salesLast30Days,
     @JsonKey(name: 'total_sales') this.totalSales,
     @JsonKey(name: 'wallet_balance') this.walletBalance,
+    this.position,
   }) : _documents = documents;
 
   factory _$UserProfileDtoModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -963,10 +977,12 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
   @override
   @JsonKey(name: 'wallet_balance')
   final double? walletBalance;
+  @override
+  final String? position;
 
   @override
   String toString() {
-    return 'UserProfileDtoModel(id: $id, mobile: $mobile, role: $role, firstName: $firstName, lastName: $lastName, email: $email, isActive: $isActive, dateJoined: $dateJoined, updatedAt: $updatedAt, avatar: $avatar, agentType: $agentType, nationalCode: $nationalCode, insuranceId: $insuranceId, province: $province, city: $city, address: $address, postalCode: $postalCode, storesCount: $storesCount, walletEnabled: $walletEnabled, policyStatus: $policyStatus, documents: $documents, creditLimit: $creditLimit, tolerance: $tolerance, toleranceCheckEnabled: $toleranceCheckEnabled, agentCode: $agentCode, storeName: $storeName, manager: $manager, completedOrdersCount: $completedOrdersCount, salesLast30Days: $salesLast30Days, totalSales: $totalSales, walletBalance: $walletBalance)';
+    return 'UserProfileDtoModel(id: $id, mobile: $mobile, role: $role, firstName: $firstName, lastName: $lastName, email: $email, isActive: $isActive, dateJoined: $dateJoined, updatedAt: $updatedAt, avatar: $avatar, agentType: $agentType, nationalCode: $nationalCode, insuranceId: $insuranceId, province: $province, city: $city, address: $address, postalCode: $postalCode, storesCount: $storesCount, walletEnabled: $walletEnabled, policyStatus: $policyStatus, documents: $documents, creditLimit: $creditLimit, tolerance: $tolerance, toleranceCheckEnabled: $toleranceCheckEnabled, agentCode: $agentCode, storeName: $storeName, manager: $manager, completedOrdersCount: $completedOrdersCount, salesLast30Days: $salesLast30Days, totalSales: $totalSales, walletBalance: $walletBalance, position: $position)';
   }
 
   @override
@@ -1029,7 +1045,9 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
             (identical(other.totalSales, totalSales) ||
                 other.totalSales == totalSales) &&
             (identical(other.walletBalance, walletBalance) ||
-                other.walletBalance == walletBalance));
+                other.walletBalance == walletBalance) &&
+            (identical(other.position, position) ||
+                other.position == position));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1067,6 +1085,7 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
     salesLast30Days,
     totalSales,
     walletBalance,
+    position,
   ]);
 
   /// Create a copy of UserProfileDtoModel
@@ -1119,6 +1138,7 @@ abstract class _UserProfileDtoModel implements UserProfileDtoModel {
     @JsonKey(name: 'sales_last_30_days') final double? salesLast30Days,
     @JsonKey(name: 'total_sales') final double? totalSales,
     @JsonKey(name: 'wallet_balance') final double? walletBalance,
+    final String? position,
   }) = _$UserProfileDtoModelImpl;
 
   factory _UserProfileDtoModel.fromJson(Map<String, dynamic> json) =
@@ -1206,6 +1226,8 @@ abstract class _UserProfileDtoModel implements UserProfileDtoModel {
   @override
   @JsonKey(name: 'wallet_balance')
   double? get walletBalance;
+  @override
+  String? get position;
 
   /// Create a copy of UserProfileDtoModel
   /// with the given fields replaced by the non-null parameter values.

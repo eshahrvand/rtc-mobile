@@ -51,6 +51,7 @@ class UserProfileDtoModel with _$UserProfileDtoModel {
     @JsonKey(name: 'sales_last_30_days') double? salesLast30Days,
     @JsonKey(name: 'total_sales') double? totalSales,
     @JsonKey(name: 'wallet_balance') double? walletBalance,
+    String? position,
   }) = _UserProfileDtoModel;
 
   factory UserProfileDtoModel.fromJson(Map<String, dynamic> json) => _$UserProfileDtoModelFromJson(json);

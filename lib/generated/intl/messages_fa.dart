@@ -696,7 +696,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settlementOperation": MessageLookupByLibrary.simpleMessage("عملیات تسویه"),
     "share": MessageLookupByLibrary.simpleMessage("اشتراک گذاری"),
     "shopAccountant": MessageLookupByLibrary.simpleMessage("حسابدار فروشگاه"),
-    "shopSupervisor": MessageLookupByLibrary.simpleMessage("سرپرست فروشگاه"),
+    "shopSupervisor": MessageLookupByLibrary.simpleMessage("مدیر فروشگاه"),
     "sku": MessageLookupByLibrary.simpleMessage("SKU"),
     "sortSubtitle": MessageLookupByLibrary.simpleMessage(
       "نوع چیدمان کالاها را انتخاب کنید",
@@ -721,7 +721,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "آدرس فروشگاه",
     ),
     "storeName": MessageLookupByLibrary.simpleMessage("نام فروشگاه *"),
-    "storeUserPosition": MessageLookupByLibrary.simpleMessage("کارمند فروشگاه"),
+    "storeUserPosition": MessageLookupByLibrary.simpleMessage("فروشنده"),
     "subPlanNameLabel": MessageLookupByLibrary.simpleMessage("نام زیر مجموعه"),
     "submitAndClearCart": MessageLookupByLibrary.simpleMessage(
       "ثبت و تخلیه کارت",

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/models/workspace_models.dart';
+import '../../../../repository/workspace/workspace_mapper.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart';
 import '../../../../generated/l10n.dart';
@@ -100,7 +101,12 @@ class ProfileScreen extends StatelessWidget {
                     if (employee)
                       RtcInfoRow(
                         label: S.current.employeePosition,
-                        value: state.position,
+                        value: state.position.isNotEmpty
+                            ? WorkspaceMapper.resolvePosition(
+                                state.position,
+                                fallback: 'کارمند',
+                              )
+                            : 'کارمند',
                       )
                     else
                       RtcInfoRow(

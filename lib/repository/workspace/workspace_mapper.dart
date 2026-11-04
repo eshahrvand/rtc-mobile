@@ -96,11 +96,40 @@ class WorkspaceMapper {
     isActive: json['is_active'] as bool,
   );
 
-  static Map<String, String> get positions => {
-    'store_user': S.current.storeUserPosition,
-    'store_accountant': S.current.shopAccountant,
-    'store_manager': S.current.shopSupervisor,
-  };
+  static Map<String, String> get positions {
+    final userPos = S.current.storeUserPosition.isNotEmpty
+        ? S.current.storeUserPosition
+        : 'فروشنده';
+    final accountantPos = S.current.shopAccountant.isNotEmpty
+        ? S.current.shopAccountant
+        : 'حسابدار فروشگاه';
+    final managerPos = S.current.shopSupervisor.isNotEmpty
+        ? S.current.shopSupervisor
+        : 'مدیر فروشگاه';
+    return {
+      'store_user': userPos,
+      'store_accountant': accountantPos,
+      'store_manager': managerPos,
+    };
+  }
+
+  static String resolvePosition(String? codeOrTitle, {String fallback = ''}) {
+    if (codeOrTitle == null || codeOrTitle.trim().isEmpty) return fallback;
+    final trimmed = codeOrTitle.trim();
+    if (positions.containsKey(trimmed)) {
+      return positions[trimmed]!;
+    }
+    return switch (trimmed) {
+      'store_user' || 'فروشنده' || 'کارمند فروشگاه' =>
+        positions['store_user'] ?? 'فروشنده',
+      'store_accountant' || 'حسابدار فروشگاه' =>
+        positions['store_accountant'] ?? 'حسابدار فروشگاه',
+      'store_manager' || 'مدیر فروشگاه' || 'سرپرست فروشگاه' =>
+        positions['store_manager'] ?? 'مدیر فروشگاه',
+      _ => trimmed.isNotEmpty ? trimmed : fallback,
+    };
+  }
+
   static BranchEmployee employee(Map<String, dynamic> json) => BranchEmployee(
     id: json['id'] as String,
     branchId: (json['store'] as Map)['id'] as String,
@@ -108,20 +137,28 @@ class WorkspaceMapper {
     lastName: json['last_name'] as String,
     nationalId: json['national_code'] as String? ?? '',
     mobile: json['mobile'] as String,
-    position: positions[json['position']] ?? json['position'] as String? ?? '',
+    position: resolvePosition(json['position'] as String?),
     isActive: json['is_active'] as bool,
     avatar: (json['avatar'] as Map?)?['file'] as String?,
   );
+
   static Map<String, dynamic> employeeBody(BranchEmployee employee) {
-    final code = positions.entries
+    var code = positions.entries
         .where(
           (item) =>
               item.value == employee.position || item.key == employee.position,
         )
         .firstOrNull
         ?.key;
-    if (code == null)
+    code ??= switch (employee.position) {
+      'فروشنده' || 'کارمند فروشگاه' || 'کارمند' => 'store_user',
+      'حسابدار فروشگاه' => 'store_accountant',
+      'مدیر فروشگاه' || 'سرپرست فروشگاه' => 'store_manager',
+      _ => null,
+    };
+    if (code == null) {
       throw const FormatException('Unknown sales-person position');
+    }
     return {
       'mobile': employee.mobile,
       'first_name': employee.firstName,

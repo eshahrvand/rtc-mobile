@@ -8,6 +8,7 @@ import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart
 import '../../../../generated/l10n.dart';
 import '../../../../core/service/html_document_exporter.dart';
 import '../../../../repository/workspace/workspace_repository.dart';
+import '../../../../repository/workspace/workspace_mapper.dart';
 import 'workspace_state.dart';
 
 class WorkspaceCubit extends Cubit<WorkspaceState> {
@@ -54,7 +55,13 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
                 ? AccountRole.employee
                 : AccountRole.agent),
         avatar: avatar ?? profile?.avatar?.file,
-        position: position ?? state.position,
+        position: position ??
+            ((profile?.position?.isNotEmpty == true)
+                ? WorkspaceMapper.resolvePosition(
+                    profile?.position,
+                    fallback: 'کارمند',
+                  )
+                : state.position),
         postalCode: postalCode ?? profile?.postalCode ?? state.postalCode,
         companyName: companyName ?? state.companyName,
       ),

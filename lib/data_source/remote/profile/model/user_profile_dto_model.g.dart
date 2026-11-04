@@ -72,6 +72,7 @@ _$UserProfileDtoModelImpl _$$UserProfileDtoModelImplFromJson(
   salesLast30Days: (json['sales_last_30_days'] as num?)?.toDouble(),
   totalSales: (json['total_sales'] as num?)?.toDouble(),
   walletBalance: (json['wallet_balance'] as num?)?.toDouble(),
+  position: json['position'] as String?,
 );
 
 Map<String, dynamic> _$$UserProfileDtoModelImplToJson(
@@ -108,6 +109,7 @@ Map<String, dynamic> _$$UserProfileDtoModelImplToJson(
   'sales_last_30_days': instance.salesLast30Days,
   'total_sales': instance.totalSales,
   'wallet_balance': instance.walletBalance,
+  'position': instance.position,
 };
 
 _$CityProvinceDtoModelImpl _$$CityProvinceDtoModelImplFromJson(
