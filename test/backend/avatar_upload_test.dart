@@ -5,11 +5,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rtc_mobile/core/models/workspace_models.dart';
 import 'package:rtc_mobile/data_source/remote/workspace/workspace_service.dart';
+import 'package:rtc_mobile/data_source/remote/profile/model/user_profile_dto_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/repository/workspace/workspace_repository.dart';
 import 'package:rtc_mobile/ui/presenters/workspace/bloc/workspace_cubit.dart';
 import 'package:rtc_mobile/ui/presenters/workspace/bloc/workspace_state.dart';
-import 'contracts_test.dart' show LocalAdapter;
+import 'contracts_test.dart' show LocalAdapter, meJson;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -20,27 +21,41 @@ void main() {
       'avatar upload uses media/images user_avatar multipart for ${role.name}',
       () async {
         final adapter = LocalAdapter(
-          (_) => (
-            201,
-            {
-              'id': 'image-id',
-              'image_group': 'user_avatar',
-              'title': 'portrait.jpg',
-              'file': 'https://images.test/avatar.jpg',
-              'width': 128,
-              'height': 128,
-              'file_size': 4,
-              'uploaded_by_id': 'me',
-              'created_at': '2026-11-04T12:33:23Z',
-            },
-          ),
+          (request) => request.method == 'PATCH'
+              ? (
+                  200,
+                  {
+                    'avatar': {'file': 'https://images.test/attached.jpg'},
+                  },
+                )
+              : (
+                  201,
+                  {
+                    'id': 'image-id',
+                    'image_group': 'user_avatar',
+                    'title': 'portrait.jpg',
+                    'file': 'https://images.test/avatar.jpg',
+                    'width': 128,
+                    'height': 128,
+                    'file_size': 4,
+                    'uploaded_by_id': 'me',
+                    'created_at': '2026-11-04T12:33:23Z',
+                  },
+                ),
         );
         final dio = Dio(BaseOptions(baseUrl: 'https://local.invalid/api/v1/'))
           ..httpClientAdapter = adapter;
         addTearDown(dio.close);
         final cubit = WorkspaceCubit(
           WorkspaceRepository.remote(WorkspaceService(dio)),
-          initialState: WorkspaceState(role: role),
+          initialState: WorkspaceState(
+            role: role,
+            profile: UserProfileDtoModel.fromJson(
+              meJson(
+                role: role == AccountRole.agent ? 'agent' : 'sales_person',
+              ),
+            ),
+          ),
         );
         addTearDown(cubit.close);
         final bytes = Uint8List.fromList([255, 216, 255, 217]);
@@ -58,9 +73,9 @@ void main() {
         expect(cubit.state.avatarStatus, WorkspaceStatus.loading);
         await finished;
         expect(cubit.state.avatarStatus, WorkspaceStatus.success);
-        expect(cubit.state.avatar, 'https://images.test/avatar.jpg');
-        expect(adapter.requests, hasLength(1));
-        final request = adapter.requests.single;
+        expect(cubit.state.avatar, 'https://images.test/attached.jpg');
+        expect(adapter.requests, hasLength(2));
+        final request = adapter.requests.first;
         expect(request.path, 'media/images');
         expect(request.method, 'POST');
         final form = request.data as FormData;
@@ -68,6 +83,9 @@ void main() {
         expect(form.files.single.key, 'file');
         expect(form.files.single.value.filename, endsWith('.jpg'));
         expect(form.files.single.value.length, bytes.length);
+        expect(adapter.requests.last.method, 'PATCH');
+        expect(adapter.requests.last.path, 'accounts/users/user-1');
+        expect(adapter.requests.last.data, {'avatar': 'image-id'});
       },
     );
   }
@@ -85,6 +103,9 @@ void main() {
     addTearDown(dio.close);
     final cubit = WorkspaceCubit(
       WorkspaceRepository.remote(WorkspaceService(dio)),
+      initialState: WorkspaceState(
+        profile: UserProfileDtoModel.fromJson(meJson()),
+      ),
     );
     addTearDown(cubit.close);
     final bytes = Uint8List.fromList([1, 2]);
@@ -97,4 +118,76 @@ void main() {
     expect(cubit.state.avatar, isNull);
     expect(cubit.state.errorMessage, isNotEmpty);
   });
+
+  for (final role in AccountRole.values) {
+    test(
+      'failed avatar attachment keeps the old photo for ${role.name}',
+      () async {
+        final adapter = LocalAdapter(
+          (request) => request.method == 'PATCH'
+              ? (
+                  403,
+                  {
+                    'error': {'code': 'permission_denied'},
+                  },
+                )
+              : (
+                  201,
+                  {
+                    'id': 'image-id',
+                    'image_group': 'user_avatar',
+                    'title': 'portrait.jpg',
+                    'file': 'https://images.test/new.jpg',
+                    'width': 128,
+                    'height': 128,
+                    'file_size': 2,
+                    'created_at': '2026-11-04T12:33:23Z',
+                  },
+                ),
+        );
+        final dio = Dio(BaseOptions(baseUrl: 'https://local.invalid/'))
+          ..httpClientAdapter = adapter;
+        addTearDown(dio.close);
+        final cubit = WorkspaceCubit(
+          WorkspaceRepository.remote(WorkspaceService(dio)),
+          initialState: WorkspaceState(
+            role: role,
+            avatar: 'old.jpg',
+            profile: UserProfileDtoModel.fromJson(meJson()),
+          ),
+        );
+        addTearDown(cubit.close);
+        final finished = cubit.stream.firstWhere(
+          (s) => s.avatarStatus == WorkspaceStatus.error,
+        );
+        final bytes = Uint8List.fromList([1, 2]);
+        cubit.selectAvatar(XFile.fromData(bytes, name: 'portrait.jpg'), bytes);
+        await finished;
+        expect(adapter.requests, hasLength(2));
+        expect(cubit.state.avatar, 'old.jpg');
+        expect(cubit.state.avatarPreview, isNull);
+        expect(cubit.state.errorMessage, isNotEmpty);
+      },
+    );
+  }
+
+  test(
+    'missing own-account ID prevents uploading or patching another user',
+    () async {
+      final adapter = LocalAdapter(
+        (_) => throw StateError('No request expected'),
+      );
+      final dio = Dio(BaseOptions(baseUrl: 'https://local.invalid/'))
+        ..httpClientAdapter = adapter;
+      addTearDown(dio.close);
+      final cubit = WorkspaceCubit(
+        WorkspaceRepository.remote(WorkspaceService(dio)),
+      );
+      addTearDown(cubit.close);
+      final bytes = Uint8List.fromList([1]);
+      cubit.selectAvatar(XFile.fromData(bytes), bytes);
+      expect(cubit.state.avatarStatus, WorkspaceStatus.error);
+      expect(adapter.requests, isEmpty);
+    },
+  );
 }

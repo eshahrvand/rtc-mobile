@@ -303,6 +303,11 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
   }
 
   void selectAvatar(XFile file, Uint8List bytes) {
+    final userId = state.profile?.id;
+    if (userId == null || userId.isEmpty) {
+      reportAvatarError(StateError('Current account is unavailable'));
+      return;
+    }
     final epoch = _epoch;
     emit(
       state.copyWith(
@@ -311,7 +316,8 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
         errorMessage: '',
       ),
     );
-    (repository.uploadAvatar?.call(file) ?? repository.unavailable<String>())
+    (repository.uploadAvatar?.call(file, userId) ??
+            repository.unavailable<String>())
         .then((url) {
           if (_active(epoch)) {
             emit(
@@ -326,6 +332,7 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
           if (_active(epoch)) {
             emit(
               state.copyWith(
+                avatarPreview: null,
                 avatarStatus: WorkspaceStatus.error,
                 errorMessage: _message(error),
               ),

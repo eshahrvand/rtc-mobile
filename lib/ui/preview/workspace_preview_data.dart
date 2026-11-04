@@ -133,7 +133,7 @@ class WorkspacePreviewData {
       employees.removeWhere((employee) => employee.id == id);
       return Future.value();
     },
-    uploadAvatar: (file) => Future.value(file.path),
+    uploadAvatar: (file, userId) => Future.value(file.path),
     submitRefund: (id) => Future.value(),
     loadBanners: () => Future.value(const [
       HomeBanner(

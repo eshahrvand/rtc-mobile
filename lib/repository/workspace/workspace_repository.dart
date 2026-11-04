@@ -27,45 +27,45 @@ class WorkspaceRepository {
     this.isTermsRequiredResponse,
   });
 
-  factory WorkspaceRepository.remote(
-    WorkspaceService service,
-  ) => WorkspaceRepository(
-    loadMe: service.getMe,
-    loadBanners: () => service.activeSlider().then(WorkspaceMapper.slider),
-    // Backend confirms user_avatar uploads attach to the authenticated user.
-    uploadAvatar: (file) => MediaService(service.dio)
-        .uploadImage(imageGroup: 'user_avatar', xFile: file)
-        .then((image) => image.file),
-    loadTerms: () => service.currentPolicy().then(
-      (json) => json == null ? null : WorkspaceMapper.policy(json),
-    ),
-    acceptTerms: (version) =>
-        service.acceptPolicy(int.parse(version)).then(WorkspaceMapper.policy),
-    loadPolicyHtml: service.policyHtml,
-    loadBranches: () => service.stores().then(
-      (items) => items.map(WorkspaceMapper.branch).toList(),
-    ),
-    searchBranches: (query) => service
-        .stores(search: query)
-        .then((items) => items.map(WorkspaceMapper.branch).toList()),
-    loadBranch: (id) => service.store(id).then(WorkspaceMapper.branch),
-    loadEmployees: (id) => service
-        .employees(id)
-        .then((items) => items.map(WorkspaceMapper.employee).toList()),
-    loadEmployee: (id) => service.employee(id).then(WorkspaceMapper.employee),
-    saveEmployee: (employee) =>
-        Future.sync(() => WorkspaceMapper.employeeBody(employee))
-            .then((body) => service.saveEmployee(employee.id, body))
-            .then(WorkspaceMapper.employee),
-    deleteEmployee: service.deleteEmployee,
-    isTermsRequiredResponse: (body) =>
-        body is Map &&
-        body['error'] is Map &&
-        const {
-          'policy_acceptance_required',
-          'agent_policy_pending',
-        }.contains(body['error']['code']),
-  );
+  factory WorkspaceRepository.remote(WorkspaceService service) =>
+      WorkspaceRepository(
+        loadMe: service.getMe,
+        loadBanners: () => service.activeSlider().then(WorkspaceMapper.slider),
+        uploadAvatar: (file, userId) => MediaService(service.dio)
+            .uploadImage(imageGroup: 'user_avatar', xFile: file)
+            .then((image) => service.setAvatar(userId, image.id)),
+        loadTerms: () => service.currentPolicy().then(
+          (json) => json == null ? null : WorkspaceMapper.policy(json),
+        ),
+        acceptTerms: (version) => service
+            .acceptPolicy(int.parse(version))
+            .then(WorkspaceMapper.policy),
+        loadPolicyHtml: service.policyHtml,
+        loadBranches: () => service.stores().then(
+          (items) => items.map(WorkspaceMapper.branch).toList(),
+        ),
+        searchBranches: (query) => service
+            .stores(search: query)
+            .then((items) => items.map(WorkspaceMapper.branch).toList()),
+        loadBranch: (id) => service.store(id).then(WorkspaceMapper.branch),
+        loadEmployees: (id) => service
+            .employees(id)
+            .then((items) => items.map(WorkspaceMapper.employee).toList()),
+        loadEmployee: (id) =>
+            service.employee(id).then(WorkspaceMapper.employee),
+        saveEmployee: (employee) =>
+            Future.sync(() => WorkspaceMapper.employeeBody(employee))
+                .then((body) => service.saveEmployee(employee.id, body))
+                .then(WorkspaceMapper.employee),
+        deleteEmployee: service.deleteEmployee,
+        isTermsRequiredResponse: (body) =>
+            body is Map &&
+            body['error'] is Map &&
+            const {
+              'policy_acceptance_required',
+              'agent_policy_pending',
+            }.contains(body['error']['code']),
+      );
   final Future<UserProfileDtoModel> Function()? loadMe;
   final Future<BranchInfo> Function(String id)? loadBranch;
   final Future<BranchEmployee> Function(String id)? loadEmployee;
@@ -79,7 +79,7 @@ class WorkspaceRepository {
   final Future<List<BranchEmployee>> Function(String branchId)? loadEmployees;
   final Future<BranchEmployee> Function(BranchEmployee employee)? saveEmployee;
   final Future<void> Function(String id)? deleteEmployee;
-  final Future<String> Function(XFile file)? uploadAvatar;
+  final Future<String> Function(XFile file, String userId)? uploadAvatar;
   final Future<void> Function(String orderId)? submitRefund;
   final bool Function(Object? responseBody)? isTermsRequiredResponse;
 
