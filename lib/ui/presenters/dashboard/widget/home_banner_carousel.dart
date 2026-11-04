@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +26,33 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     keepPage: false,
   );
   int _index = 0;
+  Timer? _autoAdvance;
+
+  @override
+  void initState() {
+    super.initState();
+    _autoAdvance = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted ||
+          !_pages.hasClients ||
+          !TickerMode.of(context) ||
+          WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed ||
+          _pages.position.isScrollingNotifier.value) {
+        return;
+      }
+      final count = context
+          .read<WorkspaceCubit>()
+          .state
+          .banners
+          .where((banner) => banner.height.isFinite && banner.height > 0)
+          .length;
+      if (count < 2) return;
+      _pages.animateToPage(
+        (_index + 1) % count,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
 
   VoidCallback? _action(BuildContext context, HomeBanner banner) {
     if (banner.screen == 'orders') {
@@ -50,6 +79,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   @override
   void dispose() {
+    _autoAdvance?.cancel();
     _pages.dispose();
     super.dispose();
   }

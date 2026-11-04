@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/models/commission_report_entry.dart';
-import '../../../../core/models/workspace_models.dart';
 import '../../../../core/models/report_item_model.dart';
 
 part 'commission_report_state.freezed.dart';
@@ -17,10 +16,6 @@ class CommissionReportState with _$CommissionReportState {
     @Default([]) List<int> years,
     int? selectedYear,
     int? selectedMonth,
-    String? selectedStoreId,
-    @Default([]) List<BranchInfo> storeOptions,
-    @Default(false) bool isStoreOptionsLoading,
-    @Default('') String storeOptionsError,
     @Default('') String searchQuery,
     @Default(false) bool isSearchActive,
     @Default(1) int currentPage,

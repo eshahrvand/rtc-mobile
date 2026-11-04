@@ -52,8 +52,8 @@ For current backend gaps and contract questions, see
   charts only display statuses with supported Persian translations.
 - Consumer-total rows are shared by all delivery variants. Independent consumer
   unit prices are retained with cart quantities; missing data stays unknown.
-- Commission reports have an enabled branch filter using the confirmed `store`
-  query on both list and summary, preserved for pagination.
+- Commission reports only filter by year, month and search. Branch filtering
+  and the `store` query parameter were removed per the corrected contract.
 - Position choices currently come from the three documented Swagger enums.
   No dynamic choices endpoint has been supplied.
 - Carousel cards keep 16 px corners, the existing `primaryShadow`, and a subtle
@@ -92,7 +92,7 @@ The full application suite was not run, as requested.
 
 Earlier follow-up validation passed nine tests related to avatar upload,
 own-profile picker, read-only employee photo, invoice branch selection and
-commission branch filtering.
+commission period filtering.
 
 The broader command below documents coverage from earlier integration work:
 

@@ -25,10 +25,6 @@ mixin _$CommissionReportState {
   List<int> get years => throw _privateConstructorUsedError;
   int? get selectedYear => throw _privateConstructorUsedError;
   int? get selectedMonth => throw _privateConstructorUsedError;
-  String? get selectedStoreId => throw _privateConstructorUsedError;
-  List<BranchInfo> get storeOptions => throw _privateConstructorUsedError;
-  bool get isStoreOptionsLoading => throw _privateConstructorUsedError;
-  String get storeOptionsError => throw _privateConstructorUsedError;
   String get searchQuery => throw _privateConstructorUsedError;
   bool get isSearchActive => throw _privateConstructorUsedError;
   int get currentPage => throw _privateConstructorUsedError;
@@ -59,10 +55,6 @@ abstract class $CommissionReportStateCopyWith<$Res> {
     List<int> years,
     int? selectedYear,
     int? selectedMonth,
-    String? selectedStoreId,
-    List<BranchInfo> storeOptions,
-    bool isStoreOptionsLoading,
-    String storeOptionsError,
     String searchQuery,
     bool isSearchActive,
     int currentPage,
@@ -98,10 +90,6 @@ class _$CommissionReportStateCopyWithImpl<
     Object? years = null,
     Object? selectedYear = freezed,
     Object? selectedMonth = freezed,
-    Object? selectedStoreId = freezed,
-    Object? storeOptions = null,
-    Object? isStoreOptionsLoading = null,
-    Object? storeOptionsError = null,
     Object? searchQuery = null,
     Object? isSearchActive = null,
     Object? currentPage = null,
@@ -140,22 +128,6 @@ class _$CommissionReportStateCopyWithImpl<
                 ? _value.selectedMonth
                 : selectedMonth // ignore: cast_nullable_to_non_nullable
                       as int?,
-            selectedStoreId: freezed == selectedStoreId
-                ? _value.selectedStoreId
-                : selectedStoreId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            storeOptions: null == storeOptions
-                ? _value.storeOptions
-                : storeOptions // ignore: cast_nullable_to_non_nullable
-                      as List<BranchInfo>,
-            isStoreOptionsLoading: null == isStoreOptionsLoading
-                ? _value.isStoreOptionsLoading
-                : isStoreOptionsLoading // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            storeOptionsError: null == storeOptionsError
-                ? _value.storeOptionsError
-                : storeOptionsError // ignore: cast_nullable_to_non_nullable
-                      as String,
             searchQuery: null == searchQuery
                 ? _value.searchQuery
                 : searchQuery // ignore: cast_nullable_to_non_nullable
@@ -207,10 +179,6 @@ abstract class _$$CommissionReportStateImplCopyWith<$Res>
     List<int> years,
     int? selectedYear,
     int? selectedMonth,
-    String? selectedStoreId,
-    List<BranchInfo> storeOptions,
-    bool isStoreOptionsLoading,
-    String storeOptionsError,
     String searchQuery,
     bool isSearchActive,
     int currentPage,
@@ -243,10 +211,6 @@ class __$$CommissionReportStateImplCopyWithImpl<$Res>
     Object? years = null,
     Object? selectedYear = freezed,
     Object? selectedMonth = freezed,
-    Object? selectedStoreId = freezed,
-    Object? storeOptions = null,
-    Object? isStoreOptionsLoading = null,
-    Object? storeOptionsError = null,
     Object? searchQuery = null,
     Object? isSearchActive = null,
     Object? currentPage = null,
@@ -285,22 +249,6 @@ class __$$CommissionReportStateImplCopyWithImpl<$Res>
             ? _value.selectedMonth
             : selectedMonth // ignore: cast_nullable_to_non_nullable
                   as int?,
-        selectedStoreId: freezed == selectedStoreId
-            ? _value.selectedStoreId
-            : selectedStoreId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        storeOptions: null == storeOptions
-            ? _value._storeOptions
-            : storeOptions // ignore: cast_nullable_to_non_nullable
-                  as List<BranchInfo>,
-        isStoreOptionsLoading: null == isStoreOptionsLoading
-            ? _value.isStoreOptionsLoading
-            : isStoreOptionsLoading // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        storeOptionsError: null == storeOptionsError
-            ? _value.storeOptionsError
-            : storeOptionsError // ignore: cast_nullable_to_non_nullable
-                  as String,
         searchQuery: null == searchQuery
             ? _value.searchQuery
             : searchQuery // ignore: cast_nullable_to_non_nullable
@@ -345,10 +293,6 @@ class _$CommissionReportStateImpl implements _CommissionReportState {
     final List<int> years = const [],
     this.selectedYear,
     this.selectedMonth,
-    this.selectedStoreId,
-    final List<BranchInfo> storeOptions = const [],
-    this.isStoreOptionsLoading = false,
-    this.storeOptionsError = '',
     this.searchQuery = '',
     this.isSearchActive = false,
     this.currentPage = 1,
@@ -358,8 +302,7 @@ class _$CommissionReportStateImpl implements _CommissionReportState {
     this.paginationErrorMessage = '',
   }) : _entries = entries,
        _summaryMetrics = summaryMetrics,
-       _years = years,
-       _storeOptions = storeOptions;
+       _years = years;
 
   final List<CommissionReportEntry> _entries;
   @override
@@ -399,23 +342,6 @@ class _$CommissionReportStateImpl implements _CommissionReportState {
   @override
   final int? selectedMonth;
   @override
-  final String? selectedStoreId;
-  final List<BranchInfo> _storeOptions;
-  @override
-  @JsonKey()
-  List<BranchInfo> get storeOptions {
-    if (_storeOptions is EqualUnmodifiableListView) return _storeOptions;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_storeOptions);
-  }
-
-  @override
-  @JsonKey()
-  final bool isStoreOptionsLoading;
-  @override
-  @JsonKey()
-  final String storeOptionsError;
-  @override
   @JsonKey()
   final String searchQuery;
   @override
@@ -439,7 +365,7 @@ class _$CommissionReportStateImpl implements _CommissionReportState {
 
   @override
   String toString() {
-    return 'CommissionReportState(entries: $entries, status: $status, errorMessage: $errorMessage, summaryMetrics: $summaryMetrics, years: $years, selectedYear: $selectedYear, selectedMonth: $selectedMonth, selectedStoreId: $selectedStoreId, storeOptions: $storeOptions, isStoreOptionsLoading: $isStoreOptionsLoading, storeOptionsError: $storeOptionsError, searchQuery: $searchQuery, isSearchActive: $isSearchActive, currentPage: $currentPage, totalCount: $totalCount, hasMoreData: $hasMoreData, isPaginationLoading: $isPaginationLoading, paginationErrorMessage: $paginationErrorMessage)';
+    return 'CommissionReportState(entries: $entries, status: $status, errorMessage: $errorMessage, summaryMetrics: $summaryMetrics, years: $years, selectedYear: $selectedYear, selectedMonth: $selectedMonth, searchQuery: $searchQuery, isSearchActive: $isSearchActive, currentPage: $currentPage, totalCount: $totalCount, hasMoreData: $hasMoreData, isPaginationLoading: $isPaginationLoading, paginationErrorMessage: $paginationErrorMessage)';
   }
 
   @override
@@ -460,16 +386,6 @@ class _$CommissionReportStateImpl implements _CommissionReportState {
                 other.selectedYear == selectedYear) &&
             (identical(other.selectedMonth, selectedMonth) ||
                 other.selectedMonth == selectedMonth) &&
-            (identical(other.selectedStoreId, selectedStoreId) ||
-                other.selectedStoreId == selectedStoreId) &&
-            const DeepCollectionEquality().equals(
-              other._storeOptions,
-              _storeOptions,
-            ) &&
-            (identical(other.isStoreOptionsLoading, isStoreOptionsLoading) ||
-                other.isStoreOptionsLoading == isStoreOptionsLoading) &&
-            (identical(other.storeOptionsError, storeOptionsError) ||
-                other.storeOptionsError == storeOptionsError) &&
             (identical(other.searchQuery, searchQuery) ||
                 other.searchQuery == searchQuery) &&
             (identical(other.isSearchActive, isSearchActive) ||
@@ -496,10 +412,6 @@ class _$CommissionReportStateImpl implements _CommissionReportState {
     const DeepCollectionEquality().hash(_years),
     selectedYear,
     selectedMonth,
-    selectedStoreId,
-    const DeepCollectionEquality().hash(_storeOptions),
-    isStoreOptionsLoading,
-    storeOptionsError,
     searchQuery,
     isSearchActive,
     currentPage,
@@ -531,10 +443,6 @@ abstract class _CommissionReportState implements CommissionReportState {
     final List<int> years,
     final int? selectedYear,
     final int? selectedMonth,
-    final String? selectedStoreId,
-    final List<BranchInfo> storeOptions,
-    final bool isStoreOptionsLoading,
-    final String storeOptionsError,
     final String searchQuery,
     final bool isSearchActive,
     final int currentPage,
@@ -558,14 +466,6 @@ abstract class _CommissionReportState implements CommissionReportState {
   int? get selectedYear;
   @override
   int? get selectedMonth;
-  @override
-  String? get selectedStoreId;
-  @override
-  List<BranchInfo> get storeOptions;
-  @override
-  bool get isStoreOptionsLoading;
-  @override
-  String get storeOptionsError;
   @override
   String get searchQuery;
   @override

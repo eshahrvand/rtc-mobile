@@ -17,7 +17,6 @@ class CommissionReportRepository {
     int? year,
     int? month,
     String? search,
-    String? storeId,
     int page = 1,
     bool includeSummary = true,
   }) {
@@ -26,17 +25,11 @@ class CommissionReportRepository {
         year: year,
         month: month,
         search: search,
-        storeId: storeId,
         page: page,
         pageSize: 20,
       ),
       if (includeSummary)
-        _service.getCommissionSummary(
-          year: year,
-          month: month,
-          search: search,
-          storeId: storeId,
-        )
+        _service.getCommissionSummary(year: year, month: month, search: search)
       else
         Future.value(null),
     ]).then((responses) {

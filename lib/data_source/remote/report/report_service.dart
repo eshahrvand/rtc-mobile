@@ -14,7 +14,6 @@ abstract class ReportService {
     @Query('year') int? year,
     @Query('month') int? month,
     @Query('search') String? search,
-    @Query('store') String? storeId,
     @Query('page') int? page,
     @Query('page_size') int? pageSize,
   });
@@ -24,7 +23,6 @@ abstract class ReportService {
     @Query('year') int? year,
     @Query('month') int? month,
     @Query('search') String? search,
-    @Query('store') String? storeId,
   });
 
   @GET('reports/sales/overview')

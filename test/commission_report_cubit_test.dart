@@ -31,36 +31,20 @@ void main() {
     await sl.reset();
   });
 
-  test(
-    'branch criteria persist in list, summary and pagination, and clear independently',
-    () async {
-      cubit.init();
-      await waitForReport(cubit);
-      api.requests.clear();
-      cubit.selectStore('store-1');
-      await waitForReport(cubit);
-      expect(api.requests, hasLength(2));
-      expect(
-        api.requests.every(
-          (request) => request.queryParameters['store'] == 'store-1',
-        ),
-        isTrue,
-      );
-      cubit.selectYear(1404);
-      await waitForReport(cubit);
-      expect(api.requests.last.queryParameters['store'], 'store-1');
-      cubit.fetchNextPage();
-      if (cubit.state.isPaginationLoading)
-        await cubit.stream.firstWhere((state) => !state.isPaginationLoading);
-      expect(api.requests.last.queryParameters['page'], 2);
-      expect(api.requests.last.queryParameters['store'], 'store-1');
-      cubit.selectStore(null);
-      await waitForReport(cubit);
-      expect(cubit.state.selectedYear, 1404);
-      expect(cubit.state.selectedStoreId, isNull);
-      expect(api.requests.last.queryParameters.containsKey('store'), isFalse);
-    },
-  );
+  test('list, summary and pagination never send a branch filter', () async {
+    cubit.init();
+    await waitForReport(cubit);
+    cubit.selectYear(1404);
+    await waitForReport(cubit);
+    cubit.fetchNextPage();
+    if (cubit.state.isPaginationLoading) {
+      await cubit.stream.firstWhere((state) => !state.isPaginationLoading);
+    }
+    expect(api.requests.last.queryParameters['page'], 2);
+    for (final request in api.requests) {
+      expect(request.queryParameters.containsKey('store'), isFalse);
+    }
+  });
 
   test(
     'starts without period filters; maps totals from summary, not current page',

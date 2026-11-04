@@ -22,7 +22,6 @@ class _ReportService implements ReportService {
     int? year,
     int? month,
     String? search,
-    String? storeId,
     int? page,
     int? pageSize,
   }) async {
@@ -31,7 +30,6 @@ class _ReportService implements ReportService {
       r'year': year,
       r'month': month,
       r'search': search,
-      r'store': storeId,
       r'page': page,
       r'page_size': pageSize,
     };
@@ -64,14 +62,12 @@ class _ReportService implements ReportService {
     int? year,
     int? month,
     String? search,
-    String? storeId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'year': year,
       r'month': month,
       r'search': search,
-      r'store': storeId,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
