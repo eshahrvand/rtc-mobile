@@ -21,14 +21,41 @@ import '../presenters/report/report.dart';
 import '../presenters/commission_report/commission_report.dart';
 import '../presenters/report/bloc/report_step.dart';
 import 'app_route.dart';
+import '../presenters/terms/terms_screen.dart';
+import '../presenters/branches/branches_screen.dart';
+import '../presenters/branches/branch_detail_screen.dart';
+import '../presenters/branches/employee_detail_screen.dart';
 
 // GoRouter configuration
 final router = GoRouter(
   initialLocation: AppRoutes.splash,
-  observers: [
-    sl<AnalyticsService>().observer,
-  ],
+  observers: [sl<AnalyticsService>().observer],
   routes: [
+    GoRoute(
+      path: AppRoutes.terms,
+      name: 'TermsScreen',
+      builder: (context, state) {
+        return const TermsScreen();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.branches,
+      name: 'BranchesScreen',
+      builder: (context, state) {
+        return const BranchesScreen();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.branchDetail,
+      name: 'BranchDetailScreen',
+      builder: (context, state) => const BranchDetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.employeeDetail,
+      name: 'EmployeeDetailScreen',
+      builder: (context, state) =>
+          EmployeeDetailScreen(employeeId: state.extra as String),
+    ),
     GoRoute(
       path: AppRoutes.commissionReport,
       name: 'CommissionReportScreen',
@@ -50,9 +77,7 @@ final router = GoRouter(
       builder: (context, state) {
         final indexStr = state.uri.queryParameters['index'];
         final index = int.tryParse(indexStr ?? '0') ?? 0;
-        return DashboardScreen(
-          initialIndex: index,
-        );
+        return DashboardScreen(initialIndex: index);
       },
     ),
 
@@ -96,7 +121,8 @@ final router = GoRouter(
 
         return BlocProvider(
           create: (context) =>
-              OrdersCubit()..fetchOrderDetail(orderId, paymentOutcome: paymentOutcome),
+              OrdersCubit()
+                ..fetchOrderDetail(orderId, paymentOutcome: paymentOutcome),
           child: OrderDetailView(orderId: orderId),
         );
       },

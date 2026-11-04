@@ -5,10 +5,12 @@ import 'package:rtc_mobile/ui/presenters/products/widget/filter_bottom_sheet.dar
 import 'package:rtc_mobile/ui/widget/filter_date_bottomsheet.dart';
 import 'package:rtc_mobile/ui/widget/rtc_chip_list.dart';
 import '../../../../core/models/filter_item.dart';
+import '../../../../core/models/workspace_models.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../generated/l10n.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
 
 class OrdersBadgeList extends StatelessWidget {
   final OrdersState state;
@@ -19,6 +21,14 @@ class OrdersBadgeList extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<OrdersCubit>();
     final chips = [
+      if (context.select(
+        (WorkspaceCubit workspace) => workspace.state.role == AccountRole.agent,
+      ))
+        ProductChipModel(
+          id: 4,
+          label: S.current.orderBranchFilter,
+          opensBottomSheet: true,
+        ),
       ProductChipModel(id: 1, label: S.current.status, opensBottomSheet: true),
       ProductChipModel(id: 2, label: S.current.plan, opensBottomSheet: true),
       ProductChipModel(
@@ -33,13 +43,16 @@ class OrdersBadgeList extends StatelessWidget {
       isChipSelected: (index, chip) {
         if (chip.id == 1) return state.selectedStatusIds.isNotEmpty;
         if (chip.id == 2) return state.selectedSubPlanId != null;
+        if (chip.id == 4) return state.selectedStoreId != null;
         if (chip.id == 3) {
           return state.startDate != null || state.endDate != null;
         }
         return false;
       },
       onChipTap: (index, chip) {
-        if (chip.id == 1) {
+        if (chip.id == 4) {
+          _showStoreFilter(context, cubit, state);
+        } else if (chip.id == 1) {
           _showStatusFilter(context, cubit, state);
         } else if (chip.id == 2) {
           _showPlanFilter(context, cubit, state);
@@ -48,7 +61,9 @@ class OrdersBadgeList extends StatelessWidget {
         }
       },
       onChipClose: (index, chip) {
-        if (chip.id == 1) {
+        if (chip.id == 4) {
+          cubit.filterByStore(null);
+        } else if (chip.id == 1) {
           cubit.onStatusFilterChanged([]);
         } else if (chip.id == 2) {
           cubit.onSubPlanFilterChanged(null);
@@ -59,32 +74,70 @@ class OrdersBadgeList extends StatelessWidget {
     );
   }
 
+  void _showStoreFilter(
+    BuildContext context,
+    OrdersCubit cubit,
+    OrdersState state,
+  ) {
+    cubit.loadStoreOptions();
+    FilterBottomSheet.show<OrdersCubit, OrdersState>(
+      context,
+      title: S.current.selectInvoiceBranch,
+      subtitle: S.current.selectInvoiceBranchPrompt,
+      items: state.storeOptions
+          .map((branch) => FilterItem(id: branch.id, title: branch.name))
+          .toList(),
+      bloc: cubit,
+      itemsSelector: (current) => current.storeOptions
+          .map((branch) => FilterItem(id: branch.id, title: branch.name))
+          .toList(),
+      loadingSelector: (current) => current.isStoreOptionsLoading,
+      initialSelectedId: state.selectedStoreId,
+      onApply: (item) => cubit.filterByStore(item?.id),
+      onClear: () => cubit.filterByStore(null),
+    );
+  }
+
   void _showStatusFilter(
     BuildContext context,
     OrdersCubit cubit,
     OrdersState state,
   ) {
     // Derive filter items from OrderStatus enum to remove hardcoded strings
-    final statusItems = [
-      OrderStatus.preInvoice,
-      OrderStatus.underReview,
-      OrderStatus.approved,
-      OrderStatus.rejected,
-      OrderStatus.awaitingSettlement,
-      OrderStatus.expired,
-    ].map((status) {
-      String id = '';
-      switch (status) {
-        case OrderStatus.preInvoice: id = 'pre_invoice'; break;
-        case OrderStatus.underReview: id = 'under_review'; break;
-        case OrderStatus.approved: id = 'approved'; break;
-        case OrderStatus.rejected: id = 'rejected'; break;
-        case OrderStatus.awaitingSettlement: id = 'awaiting_settlement'; break;
-        case OrderStatus.expired: id = 'expired'; break;
-        default: id = '';
-      }
-      return FilterItem(id: id, title: status.toDisplayString());
-    }).toList();
+    final statusItems =
+        [
+          OrderStatus.preInvoice,
+          OrderStatus.underReview,
+          OrderStatus.approved,
+          OrderStatus.rejected,
+          OrderStatus.awaitingSettlement,
+          OrderStatus.expired,
+        ].map((status) {
+          String id = '';
+          switch (status) {
+            case OrderStatus.preInvoice:
+              id = 'pre_invoice';
+              break;
+            case OrderStatus.underReview:
+              id = 'under_review';
+              break;
+            case OrderStatus.approved:
+              id = 'approved';
+              break;
+            case OrderStatus.rejected:
+              id = 'rejected';
+              break;
+            case OrderStatus.awaitingSettlement:
+              id = 'awaiting_settlement';
+              break;
+            case OrderStatus.expired:
+              id = 'expired';
+              break;
+            default:
+              id = '';
+          }
+          return FilterItem(id: id, title: status.toDisplayString());
+        }).toList();
 
     FilterBottomSheet.show(
       context,
@@ -93,9 +146,8 @@ class OrdersBadgeList extends StatelessWidget {
       items: statusItems,
       isMultiSelect: true,
       initialSelectedIds: state.selectedStatusIds,
-      onApplyMulti: (items) => cubit.onStatusFilterChanged(
-        items.map((item) => item.id).toList(),
-      ),
+      onApplyMulti: (items) =>
+          cubit.onStatusFilterChanged(items.map((item) => item.id).toList()),
       onClear: () => cubit.onStatusFilterChanged([]),
     );
   }

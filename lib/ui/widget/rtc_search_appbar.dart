@@ -19,6 +19,8 @@ class RtcSearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Widget? searchSuffix;
   final bool showShadow;
   final bool showDrawerIcon;
+  final VoidCallback? onBack;
+  final double toolbarHeight;
 
   const RtcSearchAppBar({
     super.key,
@@ -35,13 +37,15 @@ class RtcSearchAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.searchSuffix,
     this.showShadow = true,
     this.showDrawerIcon = true,
+    this.onBack,
+    this.toolbarHeight = kToolbarHeight,
   });
 
   @override
   State<RtcSearchAppBar> createState() => _RtcSearchAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(toolbarHeight);
 }
 
 class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
@@ -73,61 +77,63 @@ class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
         child: SafeArea(
           bottom: false,
           child: Container(
-            height: kToolbarHeight,
+            height: widget.toolbarHeight,
             padding: const EdgeInsets.only(left: 16, right: 16, top: 2),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: RtcTextField(
-                    controller: _controller,
-                    autoFocus: true,
-                    hintText: widget.searchHint,
-                    labelText: widget.searchLabel,
-                    hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: AppColors.grayPalette.shade400,
-                    ),
-                    onChanged: (value) {
-                      widget.onSearchChanged(value);
-                      setState(() {}); // Show/hide clear icon
-                    },
-                    prefix:
-                        widget.searchPrefix ??
-                        RtcImage(
-                          image: '$baseImage/search.svg',
-                          width: 20,
-                          height: 20,
-                          color: AppColors.grayPalette.shade400,
-                        ),
-                    suffix:
-                        widget.searchSuffix ??
-                        (_controller.text.isNotEmpty
-                            ? GestureDetector(
-                                onTap: () {
-                                  _controller.clear();
-                                  widget.onSearchChanged('');
-                                  setState(() {});
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 12),
-                                  child: RtcImage(
-                                    image: '$baseImage/close.svg',
-                                    width: 20,
-                                    height: 20,
-                                    color: AppColors.grayPalette.shade700,
-                                    boxFit: BoxFit.fill,
+                  child: SizedBox(
+                    height: 44,
+                    child: RtcTextField(
+                      controller: _controller,
+                      autoFocus: true,
+                      hintText: widget.searchHint,
+                      labelText: widget.searchLabel,
+                      hintStyle: Theme.of(context).textTheme.bodyLarge!
+                          .copyWith(color: AppColors.grayPalette.shade400),
+                      onChanged: (value) {
+                        widget.onSearchChanged(value);
+                        setState(() {}); // Show/hide clear icon
+                      },
+                      prefix:
+                          widget.searchPrefix ??
+                          RtcImage(
+                            image: '$baseImage/search.svg',
+                            width: 20,
+                            height: 20,
+                            color: AppColors.grayPalette.shade400,
+                          ),
+                      suffix:
+                          widget.searchSuffix ??
+                          (_controller.text.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    _controller.clear();
+                                    widget.onSearchChanged('');
+                                    setState(() {});
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 12),
+                                    child: RtcImage(
+                                      image: '$baseImage/close.svg',
+                                      width: 20,
+                                      height: 20,
+                                      color: AppColors.grayPalette.shade700,
+                                      boxFit: BoxFit.fill,
+                                    ),
                                   ),
-                                ),
-                              )
-                            : null),
-                    bowShadow: const [],
+                                )
+                              : null),
+                      bowShadow: const [],
+                    ),
                   ),
                 ),
                 const SizedBox(width: 15),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: GestureDetector(
-                    onTap: widget.onSearchDeactivated,
+                GestureDetector(
+                  onTap: widget.onSearchDeactivated,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       "لغو",
                       style: Theme.of(context).textTheme.displaySmall!.copyWith(
@@ -146,6 +152,9 @@ class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
     // NORMAL UI: Keep the high-fidelity RtcAppBar
     return RtcAppBar(
       showShadow: widget.showShadow,
+      toolbarHeight: widget.toolbarHeight,
+      onBack: widget.onBack,
+      backIconPath: '$baseImage/angle-right.svg',
       centerTitle: true,
       leading: widget.showDrawerIcon
           ? Padding(
@@ -159,7 +168,7 @@ class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
                 ),
               ),
             )
-          : const SizedBox.shrink(),
+          : null,
       title: widget.title,
       titleStyle: widget.titleStyle,
       actions: [

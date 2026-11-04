@@ -2,6 +2,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
+import '../../../../core/models/workspace_models.dart';
 import '../../../../data_source/remote/plans/model/plan_dto_model.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../generated/l10n.dart';
@@ -37,6 +38,9 @@ class OrdersState with _$OrdersState {
     @Default(true) bool isClearanceSectionExpanded,
     @Default([]) List<String> selectedStatusIds,
     String? selectedSubPlanId,
+    String? selectedStoreId,
+    @Default([]) List<BranchInfo> storeOptions,
+    @Default(false) bool isStoreOptionsLoading,
     @Default([]) List<SubPlanDtoModel> subPlans,
     Jalali? startDate,
     Jalali? endDate,

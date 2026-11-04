@@ -1,5 +1,6 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'dart:async';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../locator.dart';
@@ -10,7 +11,7 @@ import '../../../../config/errorhandler.dart';
 import 'report_state.dart';
 import 'report_step.dart';
 
-class ReportCubit extends Cubit<ReportState> {
+class ReportCubit extends MountedCubit<ReportState> {
   final _reportRepo = sl<ReportRepository>();
   final _plansRepo = sl<PlansRepository>();
   final _productRepo = sl<ProductRepository>();

@@ -6,6 +6,7 @@ import '../../../../core/models/pre_invoice_model.dart';
 import '../bloc/pre_invoice_cubit.dart';
 import '../bloc/pre_invoice_state.dart';
 import 'pre_invoice_step3_widgets.dart';
+import 'pre_invoice_recipient_fields.dart';
 
 class PreInvoiceStep3View extends StatefulWidget {
   const PreInvoiceStep3View({super.key});
@@ -107,16 +108,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
                           addressController: _addressController,
                         ),
                         const SizedBox(height: 24),
-                        PreInvoiceStep3AddressToggle(
-                          isOrderSentToCustomerAddress:
-                              state.customerInfo!.isOrderSentToCustomerAddress,
-                          onToggle: () => cubit.onCustomerFieldChanged(
-                            'isOrderSentToCustomerAddress',
-                            !state
-                                .customerInfo!
-                                .isOrderSentToCustomerAddress,
-                          ),
-                        ),
+                        const PreInvoiceDeliveryOptions(),
                         const SizedBox(height: 12),
                       ],
                     ],

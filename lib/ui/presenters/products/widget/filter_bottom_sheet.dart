@@ -24,6 +24,10 @@ class FilterBottomSheet extends StatefulWidget {
   final bool isLoadingMore;
   final String? iconPath;
   final String? clearButtonTitle;
+  final bool showClearAction;
+  final String? applyButtonTitle;
+  final String? errorMessage;
+  final VoidCallback? onRetry;
 
   const FilterBottomSheet({
     super.key,
@@ -40,6 +44,10 @@ class FilterBottomSheet extends StatefulWidget {
     this.isLoadingMore = false,
     this.iconPath,
     this.clearButtonTitle,
+    this.showClearAction = true,
+    this.applyButtonTitle,
+    this.errorMessage,
+    this.onRetry,
   });
 
   static Future<void> show<B extends StateStreamableSource<STATE>, STATE>(
@@ -60,6 +68,10 @@ class FilterBottomSheet extends StatefulWidget {
     bool isLoadingMore = false,
     String? iconPath,
     String? clearButtonTitle,
+    bool showClearAction = true,
+    String? applyButtonTitle,
+    String Function(STATE)? errorSelector,
+    VoidCallback? onRetry,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -80,6 +92,9 @@ class FilterBottomSheet extends StatefulWidget {
           isLoadingMore: isLoadingMore,
           iconPath: iconPath,
           clearButtonTitle: clearButtonTitle,
+          showClearAction: showClearAction,
+          applyButtonTitle: applyButtonTitle,
+          onRetry: onRetry,
         );
 
         if (bloc != null && itemsSelector != null) {
@@ -101,6 +116,10 @@ class FilterBottomSheet extends StatefulWidget {
                   isLoadingMore: loadingSelector?.call(state) ?? isLoadingMore,
                   iconPath: iconPath,
                   clearButtonTitle: clearButtonTitle,
+                  showClearAction: showClearAction,
+                  applyButtonTitle: applyButtonTitle,
+                  errorMessage: errorSelector?.call(state),
+                  onRetry: onRetry,
                 );
               },
             ),
@@ -147,13 +166,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   bool get _hasSelection =>
       widget.isMultiSelect ? _selectedIds.isNotEmpty : _selectedId != null;
 
-  bool get _canApply =>
-      _hasSelection ||
-      (widget.isMultiSelect && (widget.initialSelectedIds?.isNotEmpty ?? false));
+  bool get _canApply => widget.isMultiSelect
+      ? _hasSelection || (widget.initialSelectedIds?.isNotEmpty ?? false)
+      : _selectedItem != null;
 
   FilterItem? get _selectedItem => _selectedId == null
       ? null
-      : widget.items.firstWhere((item) => item.id == _selectedId);
+      : widget.items.where((item) => item.id == _selectedId).firstOrNull;
 
   List<FilterItem> get _selectedItems =>
       widget.items.where((item) => _selectedIds.contains(item.id)).toList();
@@ -184,7 +203,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           _selectedIds.add(id);
         }
       } else {
-        if (_selectedId == id) {
+        if (_selectedId == id && widget.showClearAction) {
           _selectedId = null; // Unselect if already selected
         } else {
           _selectedId =
@@ -260,19 +279,20 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           ),
 
           const Spacer(),
-          RtcTextButton(
-            title: widget.clearButtonTitle ?? S.current.clearFilter,
-            onPressed: () {
-              _onClear();
-              context.pop();
-            },
-            styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: _hasSelection
-                  ? AppColors.errorPalette.shade600
-                  : AppColors.grayPalette.shade300,
-              fontWeight: FontWeight.w500,
+          if (widget.showClearAction)
+            RtcTextButton(
+              title: widget.clearButtonTitle ?? S.current.clearFilter,
+              onPressed: () {
+                _onClear();
+                context.pop();
+              },
+              styleBtn: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: _hasSelection
+                    ? AppColors.errorPalette.shade600
+                    : AppColors.grayPalette.shade300,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -296,6 +316,24 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   /// ── Scrollable list of FilterOptionItem ──
   Widget _buildItemsList() {
+    if (widget.errorMessage?.isNotEmpty == true) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(widget.errorMessage!, textAlign: TextAlign.center),
+            if (widget.onRetry != null) ...[
+              const SizedBox(height: 12),
+              RtcButton(
+                title: S.current.retryWorkspace,
+                onPressed: widget.onRetry!,
+              ),
+            ],
+          ],
+        ),
+      );
+    }
     return ListView.builder(
       controller: _scrollController,
       shrinkWrap: true,
@@ -352,14 +390,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
           ),
           RtcButton(
-            title: S.current.applyFilter,
+            title: widget.applyButtonTitle ?? S.current.applyFilter,
             width: buttonWidth,
             onPressed: _onApply,
             isActive: _canApply,
             styleBtn: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: _canApply
-                  ? Colors.white
-                  : AppColors.grayPalette.shade300,
+              color: _canApply ? Colors.white : AppColors.grayPalette.shade300,
               fontWeight: FontWeight.w600,
             ),
           ),

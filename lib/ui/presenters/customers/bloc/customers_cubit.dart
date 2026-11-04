@@ -1,5 +1,6 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'dart:async';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/models/customer_model.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../../../config/errorhandler.dart';
@@ -9,7 +10,7 @@ import '../../../../locator.dart';
 import '../../orders/mapper/order_mapper.dart';
 import 'customers_state.dart';
 
-class CustomersCubit extends Cubit<CustomersState> {
+class CustomersCubit extends MountedCubit<CustomersState> {
   CustomersCubit() : super(const CustomersState());
 
   final _customersRepo = sl<CustomersRepository>();

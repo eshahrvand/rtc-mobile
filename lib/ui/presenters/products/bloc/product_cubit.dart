@@ -1,6 +1,7 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show listEquals;
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:intl/intl.dart';
 import '../../../../core/models/product_chip_model.dart';
 import '../../../../core/models/product_item_model.dart';
@@ -12,7 +13,7 @@ import '../../../../locator.dart';
 import '../../../../data_source/remote/catalog/model/product_dto_model.dart';
 import 'product_state.dart';
 
-class ProductCubit extends Cubit<ProductState> {
+class ProductCubit extends MountedCubit<ProductState> {
   ProductCubit() : super(const ProductState());
 
   final _productRepo = sl<ProductRepository>();

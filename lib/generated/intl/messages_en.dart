@@ -23,44 +23,57 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m0(distance, nextRateCash, nextRateProduct) =>
       "By selling ${distance} Rials more, your commission will increase to ${nextRateCash}% cash or ${nextRateProduct}% goods.";
 
-  static String m1(walletName) =>
+  static String m1(name) => "";
+
+  static String m2(walletName) =>
       "Excess amount will be added to \"${walletName}\" pocket.";
 
-  static String m2(count) => "";
+  static String m3(count) => "";
 
-  static String m3(label) => "${label}";
+  static String m4(label) => "${label}";
 
-  static String m4(count) => "${count}";
+  static String m5(count) => "${count}";
 
-  static String m5(index) => "${index}";
+  static String m6(index) => "${index}";
 
-  static String m6(phoneNumber) => "";
+  static String m7(phoneNumber) => "";
 
-  static String m7(phoneNumber) => "${phoneNumber}";
+  static String m8(phoneNumber) => "${phoneNumber}";
 
-  static String m8(phoneNumber) => "Payment link sent to ${phoneNumber}";
+  static String m9(phoneNumber) => "Payment link sent to ${phoneNumber}";
 
-  static String m9(name) => "${name}";
-
-  static String m10(count) => "${count}";
+  static String m10(name) => "${name}";
 
   static String m11(count) => "${count}";
 
-  static String m12(label) => "${label}";
+  static String m12(date) => "";
 
-  static String m13(walletName) =>
+  static String m13(version, month) => "";
+
+  static String m14(count) => "${count}";
+
+  static String m15(label) => "${label}";
+
+  static String m16(date) => "";
+
+  static String m17(walletName) =>
       "Balance of ${walletName} wallet is not sufficient for payment";
 
-  static String m14(walletName) =>
+  static String m18(walletName) =>
       "Balance of ${walletName} wallet is sufficient for payment";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "active": MessageLookupByLibrary.simpleMessage(""),
     "add": MessageLookupByLibrary.simpleMessage(""),
+    "addBranchUser": MessageLookupByLibrary.simpleMessage(""),
+    "addBranchUserTitle": MessageLookupByLibrary.simpleMessage(""),
     "address": MessageLookupByLibrary.simpleMessage(""),
     "addressLabel": MessageLookupByLibrary.simpleMessage(""),
     "agencyCode": MessageLookupByLibrary.simpleMessage(""),
+    "agencyInformation": MessageLookupByLibrary.simpleMessage(""),
+    "agencyType": MessageLookupByLibrary.simpleMessage(""),
+    "agentName": MessageLookupByLibrary.simpleMessage(""),
     "amount": MessageLookupByLibrary.simpleMessage(""),
     "appName": MessageLookupByLibrary.simpleMessage(""),
     "appSubtitle": MessageLookupByLibrary.simpleMessage(""),
@@ -73,9 +86,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "back": MessageLookupByLibrary.simpleMessage(""),
     "balance": MessageLookupByLibrary.simpleMessage(""),
     "basePriceLabel": MessageLookupByLibrary.simpleMessage(""),
+    "branchAccessDenied": MessageLookupByLibrary.simpleMessage(""),
+    "branchInformation": MessageLookupByLibrary.simpleMessage(""),
+    "branchManagement": MessageLookupByLibrary.simpleMessage(""),
+    "branchStoreName": MessageLookupByLibrary.simpleMessage(""),
+    "branchUserInformation": MessageLookupByLibrary.simpleMessage(""),
+    "branchUsers": MessageLookupByLibrary.simpleMessage(""),
     "brand": MessageLookupByLibrary.simpleMessage(""),
     "brandFilter": MessageLookupByLibrary.simpleMessage(""),
     "cancel": MessageLookupByLibrary.simpleMessage(""),
+    "cancelWorkspace": MessageLookupByLibrary.simpleMessage(""),
     "cardToCardSettlementTitle": MessageLookupByLibrary.simpleMessage(""),
     "cartTitle": MessageLookupByLibrary.simpleMessage(""),
     "cashCommission": MessageLookupByLibrary.simpleMessage(""),
@@ -120,12 +140,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmAndClearance": MessageLookupByLibrary.simpleMessage(""),
     "confirmAndPayButton": MessageLookupByLibrary.simpleMessage(""),
     "confirmAndSend": MessageLookupByLibrary.simpleMessage(""),
+    "confirmDeleteBranchUser": MessageLookupByLibrary.simpleMessage(""),
+    "confirmNewTerms": MessageLookupByLibrary.simpleMessage(""),
+    "confirmRefundRequest": MessageLookupByLibrary.simpleMessage(""),
     "confirmSelectedMethod": MessageLookupByLibrary.simpleMessage(""),
+    "consumerFinalAmount": MessageLookupByLibrary.simpleMessage(""),
     "creditLimit": MessageLookupByLibrary.simpleMessage(""),
     "creditLimitHelper": MessageLookupByLibrary.simpleMessage(""),
     "creditPlanTitle": MessageLookupByLibrary.simpleMessage(""),
     "currentMonth": MessageLookupByLibrary.simpleMessage(""),
     "customDate": MessageLookupByLibrary.simpleMessage(""),
+    "customerDeliveryAddress": MessageLookupByLibrary.simpleMessage(""),
     "customerDetails": MessageLookupByLibrary.simpleMessage(""),
     "customerInfo": MessageLookupByLibrary.simpleMessage(""),
     "customerInfoSubmitError": MessageLookupByLibrary.simpleMessage(""),
@@ -137,6 +162,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "dateLabel": MessageLookupByLibrary.simpleMessage(""),
     "day": MessageLookupByLibrary.simpleMessage(""),
     "dayUnit": MessageLookupByLibrary.simpleMessage(""),
+    "deleteBranchUser": MessageLookupByLibrary.simpleMessage(""),
+    "deleteBranchUserMessage": m1,
+    "deliveryDestination": MessageLookupByLibrary.simpleMessage(""),
     "deposit": MessageLookupByLibrary.simpleMessage(""),
     "depositTo": MessageLookupByLibrary.simpleMessage(""),
     "description": MessageLookupByLibrary.simpleMessage(""),
@@ -147,29 +175,46 @@ class MessageLookup extends MessageLookupByLibrary {
     "documentUploadError": MessageLookupByLibrary.simpleMessage(""),
     "documentUploadOrFinalizeError": MessageLookupByLibrary.simpleMessage(""),
     "documentsSentSuccessTitle": MessageLookupByLibrary.simpleMessage(""),
+    "downloadTerms": MessageLookupByLibrary.simpleMessage(""),
+    "editBranchUserTitle": MessageLookupByLibrary.simpleMessage(""),
     "editCustomerInfoTitle": MessageLookupByLibrary.simpleMessage(""),
     "editDocumentsTitle": MessageLookupByLibrary.simpleMessage(""),
     "editImage": MessageLookupByLibrary.simpleMessage(""),
     "editProductsTitle": MessageLookupByLibrary.simpleMessage(""),
+    "editProfilePhoto": MessageLookupByLibrary.simpleMessage(""),
     "email": MessageLookupByLibrary.simpleMessage(""),
+    "employeeFirstNameHint": MessageLookupByLibrary.simpleMessage(""),
+    "employeeFirstNameRequired": MessageLookupByLibrary.simpleMessage(""),
+    "employeeLastNameHint": MessageLookupByLibrary.simpleMessage(""),
+    "employeeLastNameRequired": MessageLookupByLibrary.simpleMessage(""),
+    "employeeMobileHint": MessageLookupByLibrary.simpleMessage(""),
+    "employeeMobileRequired": MessageLookupByLibrary.simpleMessage(""),
+    "employeeNationalIdHint": MessageLookupByLibrary.simpleMessage(""),
+    "employeeNationalIdRequired": MessageLookupByLibrary.simpleMessage(""),
+    "employeePosition": MessageLookupByLibrary.simpleMessage(""),
+    "employeePositionHint": MessageLookupByLibrary.simpleMessage(""),
+    "employeePositionRequired": MessageLookupByLibrary.simpleMessage(""),
     "endDate": MessageLookupByLibrary.simpleMessage(""),
     "enterClearanceAmountHint": MessageLookupByLibrary.simpleMessage(""),
     "enterOtpCode": MessageLookupByLibrary.simpleMessage(""),
     "enterPhoneNumber": MessageLookupByLibrary.simpleMessage(""),
     "enterTrackingCodeHint": MessageLookupByLibrary.simpleMessage(""),
-    "excessAmountAddedToWallet": m1,
+    "excessAmountAddedToWallet": m2,
     "excessAmountOutOfTolerance": MessageLookupByLibrary.simpleMessage(""),
+    "exitWorkspace": MessageLookupByLibrary.simpleMessage(""),
     "expireDateLabel": MessageLookupByLibrary.simpleMessage(""),
     "failed": MessageLookupByLibrary.simpleMessage(""),
     "fetchOrderDetailsError": MessageLookupByLibrary.simpleMessage(""),
     "fetchUserSettingsError": MessageLookupByLibrary.simpleMessage(""),
     "finalFactorAmount": MessageLookupByLibrary.simpleMessage(""),
     "finalFactorAmountLabel": MessageLookupByLibrary.simpleMessage(""),
+    "financialCreditInformation": MessageLookupByLibrary.simpleMessage(""),
     "financialManagerNameLabel": MessageLookupByLibrary.simpleMessage(""),
     "financialSummaryTitle": MessageLookupByLibrary.simpleMessage(""),
     "fromDate": MessageLookupByLibrary.simpleMessage(""),
     "fullAddressLabel": MessageLookupByLibrary.simpleMessage(""),
     "fullAddressLabelWithStar": MessageLookupByLibrary.simpleMessage(""),
+    "fullNameLabel": MessageLookupByLibrary.simpleMessage(""),
     "gatewayLabel": MessageLookupByLibrary.simpleMessage(""),
     "getOtpCode": MessageLookupByLibrary.simpleMessage(""),
     "goToShaparakButton": MessageLookupByLibrary.simpleMessage(""),
@@ -179,31 +224,36 @@ class MessageLookup extends MessageLookupByLibrary {
     "hourUnit": MessageLookupByLibrary.simpleMessage(""),
     "imageLoadError": MessageLookupByLibrary.simpleMessage(""),
     "inactive": MessageLookupByLibrary.simpleMessage(""),
+    "inactiveBranchStatus": MessageLookupByLibrary.simpleMessage(""),
     "initiateClearanceError": MessageLookupByLibrary.simpleMessage(""),
     "initiateSettlementError": MessageLookupByLibrary.simpleMessage(""),
     "internetError": MessageLookupByLibrary.simpleMessage(""),
     "inventory": MessageLookupByLibrary.simpleMessage(""),
     "ipgSettlementTitle": MessageLookupByLibrary.simpleMessage(""),
-    "itemCount": m2,
-    "labelWithColon": m3,
+    "itemCount": m3,
+    "labelWithColon": m4,
     "lastMonth": MessageLookupByLibrary.simpleMessage(""),
     "lastNameLabel": MessageLookupByLibrary.simpleMessage(""),
     "lastNameLabelWithStar": MessageLookupByLibrary.simpleMessage(""),
     "lastWeek": MessageLookupByLibrary.simpleMessage(""),
+    "legalAgency": MessageLookupByLibrary.simpleMessage(""),
     "legalAgent": MessageLookupByLibrary.simpleMessage(""),
     "legalId": MessageLookupByLibrary.simpleMessage(""),
     "linkSettlementTitle": MessageLookupByLibrary.simpleMessage(""),
+    "locationInformation": MessageLookupByLibrary.simpleMessage(""),
     "logOutHint": MessageLookupByLibrary.simpleMessage(""),
     "loginToSystem": MessageLookupByLibrary.simpleMessage(""),
     "logout": MessageLookupByLibrary.simpleMessage(""),
     "mandatoryDocument": MessageLookupByLibrary.simpleMessage(""),
     "minuteUnit": MessageLookupByLibrary.simpleMessage(""),
+    "mobileLabel": MessageLookupByLibrary.simpleMessage(""),
     "month": MessageLookupByLibrary.simpleMessage(""),
     "monthUnit": MessageLookupByLibrary.simpleMessage(""),
     "monthlySales": MessageLookupByLibrary.simpleMessage(""),
-    "monthsCountLabel": m4,
+    "monthsCountLabel": m5,
     "mostExpensive": MessageLookupByLibrary.simpleMessage(""),
     "myCustomers": MessageLookupByLibrary.simpleMessage(""),
+    "myOrders": MessageLookupByLibrary.simpleMessage(""),
     "myPockets": MessageLookupByLibrary.simpleMessage(""),
     "nameLabel": MessageLookupByLibrary.simpleMessage(""),
     "nameLabelWithStar": MessageLookupByLibrary.simpleMessage(""),
@@ -214,11 +264,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "nationalId": MessageLookupByLibrary.simpleMessage(""),
     "nationalIdFront": MessageLookupByLibrary.simpleMessage(""),
     "nationalIdWrong": MessageLookupByLibrary.simpleMessage(""),
+    "naturalAgency": MessageLookupByLibrary.simpleMessage(""),
     "naturalAgent": MessageLookupByLibrary.simpleMessage(""),
     "newest": MessageLookupByLibrary.simpleMessage(""),
     "nextStep": MessageLookupByLibrary.simpleMessage(""),
+    "noBranchUsers": MessageLookupByLibrary.simpleMessage(""),
+    "noBranchesFound": MessageLookupByLibrary.simpleMessage(""),
     "noItemsFound": MessageLookupByLibrary.simpleMessage(""),
     "noPlanSelected": MessageLookupByLibrary.simpleMessage(""),
+    "noPublishedPolicies": MessageLookupByLibrary.simpleMessage(""),
     "noReportFound": MessageLookupByLibrary.simpleMessage(""),
     "noSell": MessageLookupByLibrary.simpleMessage(""),
     "oldest": MessageLookupByLibrary.simpleMessage(""),
@@ -226,16 +280,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlyAvailableProducts": MessageLookupByLibrary.simpleMessage(""),
     "optionalDocuments": MessageLookupByLibrary.simpleMessage(""),
     "orderAmountLabel": MessageLookupByLibrary.simpleMessage(""),
+    "orderBranchFilter": MessageLookupByLibrary.simpleMessage(""),
     "orderCountLabel": MessageLookupByLibrary.simpleMessage(""),
     "orderDetail": MessageLookupByLibrary.simpleMessage(""),
     "orderFinancialDetail": MessageLookupByLibrary.simpleMessage(""),
     "orderStatusChartTitle": MessageLookupByLibrary.simpleMessage(""),
     "orders": MessageLookupByLibrary.simpleMessage(""),
+    "organizationInformation": MessageLookupByLibrary.simpleMessage(""),
     "otherDocuments": MessageLookupByLibrary.simpleMessage(""),
-    "otherDocumentsLabel": m5,
+    "otherDocumentsLabel": m6,
     "otpResent": MessageLookupByLibrary.simpleMessage(""),
-    "otpSentTo": m6,
-    "otpSentToPhone": m7,
+    "otpSentTo": m7,
+    "otpSentToPhone": m8,
     "otpVerifyOrFinalizeError": MessageLookupByLibrary.simpleMessage(""),
     "outOfStockError": MessageLookupByLibrary.simpleMessage(""),
     "outOfStockLabel": MessageLookupByLibrary.simpleMessage(""),
@@ -247,7 +303,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "payWithWalletButton": MessageLookupByLibrary.simpleMessage(""),
     "payableAmount": MessageLookupByLibrary.simpleMessage(""),
     "paymentDocuments": MessageLookupByLibrary.simpleMessage(""),
-    "paymentLinkSentTo": m8,
+    "paymentLinkSentTo": m9,
     "phoneNumber": MessageLookupByLibrary.simpleMessage(""),
     "phoneNumberHint": MessageLookupByLibrary.simpleMessage(""),
     "phoneNumberLabel": MessageLookupByLibrary.simpleMessage(""),
@@ -259,8 +315,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "planReportTitle": MessageLookupByLibrary.simpleMessage(""),
     "planTitle": MessageLookupByLibrary.simpleMessage(""),
     "plansSalesChartTitle": MessageLookupByLibrary.simpleMessage(""),
-    "pocketName": m9,
-    "pocketsCount": m10,
+    "pocketName": m10,
+    "pocketsCount": m11,
+    "policyDownloadedSuccess": MessageLookupByLibrary.simpleMessage(""),
+    "policyPublishedIntro": m12,
+    "policyVersionLabel": m13,
     "postalCode": MessageLookupByLibrary.simpleMessage(""),
     "postalCodeLabel": MessageLookupByLibrary.simpleMessage(""),
     "postalCodeLabelWithStar": MessageLookupByLibrary.simpleMessage(""),
@@ -282,7 +341,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "province": MessageLookupByLibrary.simpleMessage(""),
     "purchaseAmountLabel": MessageLookupByLibrary.simpleMessage(""),
     "receiptUploadError": MessageLookupByLibrary.simpleMessage(""),
+    "receiveByAnotherPerson": MessageLookupByLibrary.simpleMessage(""),
     "recentOrdersHeader": MessageLookupByLibrary.simpleMessage(""),
+    "recheckTerms": MessageLookupByLibrary.simpleMessage(""),
+    "recipientFullName": MessageLookupByLibrary.simpleMessage(""),
+    "recipientNameHint": MessageLookupByLibrary.simpleMessage(""),
+    "recipientNameRequired": MessageLookupByLibrary.simpleMessage(""),
+    "recipientNationalId": MessageLookupByLibrary.simpleMessage(""),
+    "recipientNationalIdHint": MessageLookupByLibrary.simpleMessage(""),
+    "recipientNationalIdRequired": MessageLookupByLibrary.simpleMessage(""),
+    "refundAwaitingReview": MessageLookupByLibrary.simpleMessage(""),
+    "refundRequestMessage": MessageLookupByLibrary.simpleMessage(""),
+    "refundRequestTitle": MessageLookupByLibrary.simpleMessage(""),
     "regionalManager": MessageLookupByLibrary.simpleMessage(""),
     "registrationDate": MessageLookupByLibrary.simpleMessage(""),
     "registrationDateLabel": MessageLookupByLibrary.simpleMessage(""),
@@ -296,14 +366,20 @@ class MessageLookup extends MessageLookupByLibrary {
       "Resend payment link",
     ),
     "resendSms": MessageLookupByLibrary.simpleMessage(""),
-    "resultsCountLabel": m11,
+    "resultsCountLabel": m14,
     "retry": MessageLookupByLibrary.simpleMessage(""),
+    "retryWorkspace": MessageLookupByLibrary.simpleMessage(""),
     "returnPeriod": MessageLookupByLibrary.simpleMessage(""),
     "reviewAndSubmit": MessageLookupByLibrary.simpleMessage(""),
+    "rialLabel": MessageLookupByLibrary.simpleMessage(""),
+    "salesAgent": MessageLookupByLibrary.simpleMessage(""),
     "salesByCategoryChartTitle": MessageLookupByLibrary.simpleMessage(""),
     "salesReportTitle": MessageLookupByLibrary.simpleMessage(""),
     "save": MessageLookupByLibrary.simpleMessage(""),
+    "saveBranchUser": MessageLookupByLibrary.simpleMessage(""),
+    "saveBranchUserChanges": MessageLookupByLibrary.simpleMessage(""),
     "search": MessageLookupByLibrary.simpleMessage(""),
+    "searchBranchHint": MessageLookupByLibrary.simpleMessage(""),
     "searchHint": MessageLookupByLibrary.simpleMessage(""),
     "searchInProducts": MessageLookupByLibrary.simpleMessage(""),
     "searchProducts": MessageLookupByLibrary.simpleMessage(""),
@@ -312,7 +388,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectCreditPlanSubtitle": MessageLookupByLibrary.simpleMessage(""),
     "selectDate": MessageLookupByLibrary.simpleMessage(""),
     "selectEndDate": MessageLookupByLibrary.simpleMessage(""),
-    "selectOptionSubtitle": m12,
+    "selectInvoiceBranch": MessageLookupByLibrary.simpleMessage(""),
+    "selectInvoiceBranchHint": MessageLookupByLibrary.simpleMessage(""),
+    "selectInvoiceBranchPrompt": MessageLookupByLibrary.simpleMessage(""),
+    "selectOptionSubtitle": m15,
     "selectOrderStatusSubtitle": MessageLookupByLibrary.simpleMessage(""),
     "selectPlanTitle": MessageLookupByLibrary.simpleMessage(""),
     "selectProducts": MessageLookupByLibrary.simpleMessage(""),
@@ -331,6 +410,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "settlementMethod": MessageLookupByLibrary.simpleMessage(""),
     "settlementOperation": MessageLookupByLibrary.simpleMessage(""),
     "share": MessageLookupByLibrary.simpleMessage(""),
+    "shopAccountant": MessageLookupByLibrary.simpleMessage(""),
+    "shopSupervisor": MessageLookupByLibrary.simpleMessage(""),
     "sku": MessageLookupByLibrary.simpleMessage(""),
     "sortSubtitle": MessageLookupByLibrary.simpleMessage(""),
     "sortTitle": MessageLookupByLibrary.simpleMessage(""),
@@ -340,11 +421,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusDone": MessageLookupByLibrary.simpleMessage(""),
     "statusExpired": MessageLookupByLibrary.simpleMessage(""),
     "statusFailed": MessageLookupByLibrary.simpleMessage(""),
+    "statusLabel": MessageLookupByLibrary.simpleMessage(""),
     "statusPending": MessageLookupByLibrary.simpleMessage(""),
     "statusRejected": MessageLookupByLibrary.simpleMessage(""),
     "statusWaitingSettlement": MessageLookupByLibrary.simpleMessage(""),
     "stockLimitError": MessageLookupByLibrary.simpleMessage(""),
+    "storeDeliveryAddress": MessageLookupByLibrary.simpleMessage(""),
     "storeName": MessageLookupByLibrary.simpleMessage("Store Name *"),
+    "storeUserPosition": MessageLookupByLibrary.simpleMessage(""),
     "subPlanNameLabel": MessageLookupByLibrary.simpleMessage("Sub-plan Name"),
     "submitAndClearCart": MessageLookupByLibrary.simpleMessage(""),
     "submitPreInvoice": MessageLookupByLibrary.simpleMessage(""),
@@ -354,6 +438,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "supportNameLabel": MessageLookupByLibrary.simpleMessage(""),
     "takePhoto": MessageLookupByLibrary.simpleMessage(""),
     "technicalSpecs": MessageLookupByLibrary.simpleMessage(""),
+    "termsAcceptedAt": MessageLookupByLibrary.simpleMessage(""),
+    "termsAgentDatedExplanation": m16,
+    "termsAgentExplanation": MessageLookupByLibrary.simpleMessage(""),
+    "termsAgreement": MessageLookupByLibrary.simpleMessage(""),
+    "termsEmployeeExplanation": MessageLookupByLibrary.simpleMessage(""),
+    "termsEmployeeTitle": MessageLookupByLibrary.simpleMessage(""),
+    "termsPublishedAt": MessageLookupByLibrary.simpleMessage(""),
+    "termsTitle": MessageLookupByLibrary.simpleMessage(""),
+    "termsUpdateTitle": MessageLookupByLibrary.simpleMessage(""),
     "threeMonthsAgo": MessageLookupByLibrary.simpleMessage(""),
     "toDate": MessageLookupByLibrary.simpleMessage(""),
     "today": MessageLookupByLibrary.simpleMessage(""),
@@ -386,18 +479,27 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadFormatInfo": MessageLookupByLibrary.simpleMessage(""),
     "uploaded": MessageLookupByLibrary.simpleMessage(""),
     "uploadedDocumentsTitle": MessageLookupByLibrary.simpleMessage(""),
+    "userInformation": MessageLookupByLibrary.simpleMessage(""),
     "validityPeriodLabel": MessageLookupByLibrary.simpleMessage(""),
+    "viewProducts": MessageLookupByLibrary.simpleMessage(""),
     "vpnError": MessageLookupByLibrary.simpleMessage(""),
     "waitingForClearanceCompletion": MessageLookupByLibrary.simpleMessage(""),
     "wallet": MessageLookupByLibrary.simpleMessage(""),
     "walletBalance": MessageLookupByLibrary.simpleMessage(""),
-    "walletBalanceInsufficient": m13,
-    "walletBalanceSufficient": m14,
+    "walletBalanceInsufficient": m17,
+    "walletBalanceSufficient": m18,
+    "walletCreditLimit": MessageLookupByLibrary.simpleMessage(""),
     "walletReceiptTitle": MessageLookupByLibrary.simpleMessage(""),
     "walletSettlement": MessageLookupByLibrary.simpleMessage(""),
     "withdrawal": MessageLookupByLibrary.simpleMessage(""),
     "withdrawalFrom": MessageLookupByLibrary.simpleMessage(""),
     "workshopCode": MessageLookupByLibrary.simpleMessage(""),
+    "workspaceCategories": MessageLookupByLibrary.simpleMessage(""),
+    "workspacePlans": MessageLookupByLibrary.simpleMessage(""),
+    "workspaceProducts": MessageLookupByLibrary.simpleMessage(""),
+    "workspaceReports": MessageLookupByLibrary.simpleMessage(""),
+    "workspaceSales": MessageLookupByLibrary.simpleMessage(""),
+    "workspaceServicePending": MessageLookupByLibrary.simpleMessage(""),
     "year": MessageLookupByLibrary.simpleMessage(""),
   };
 }

@@ -10,6 +10,7 @@ import '../../../../config/constants.dart';
 import '../../../../data_source/local/prefs/prefs.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
 
 void showLogOutBottomSheet({required BuildContext context}) {
   showModalBottomSheet(
@@ -129,6 +130,7 @@ void showLogOutBottomSheet({required BuildContext context}) {
 void _performLogOut(BuildContext context) async {
   final prefs = sl<Prefs>();
   await prefs.clear();
+  sl<WorkspaceCubit>().reset();
 
   if (context.mounted) {
     context.go(AppRoutes.auth);

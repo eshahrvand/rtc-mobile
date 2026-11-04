@@ -36,6 +36,17 @@ _$OrderDtoModelImpl _$$OrderDtoModelImplFromJson(
   ),
   status: json['status'] as String,
   total: (json['total'] as num).toDouble(),
+  store: json['store'] == null
+      ? null
+      : StoreReferenceDto.fromJson(json['store'] as Map<String, dynamic>),
+  createdBy: json['created_by'] == null
+      ? null
+      : OrderCreatorDto.fromJson(json['created_by'] as Map<String, dynamic>),
+  baseTotal: (json['base_total'] as num?)?.toDouble(),
+  settlementAmount: (json['settlement_amount'] as num?)?.toDouble(),
+  walletEnabled: json['wallet_enabled'] as bool?,
+  receiverFullName: json['receiver_full_name'] as String?,
+  receiverNationalId: json['receiver_national_id'] as String?,
   createdAt: json['created_at'] as String,
   updatedAt: json['updated_at'] as String?,
   lines: (json['lines'] as List<dynamic>?)
@@ -79,6 +90,13 @@ Map<String, dynamic> _$$OrderDtoModelImplToJson(_$OrderDtoModelImpl instance) =>
       'sub_plan': instance.subPlan,
       'status': instance.status,
       'total': instance.total,
+      'store': instance.store,
+      'created_by': instance.createdBy,
+      'base_total': instance.baseTotal,
+      'settlement_amount': instance.settlementAmount,
+      'wallet_enabled': instance.walletEnabled,
+      'receiver_full_name': instance.receiverFullName,
+      'receiver_national_id': instance.receiverNationalId,
       'created_at': instance.createdAt,
       'updated_at': instance.updatedAt,
       'lines': instance.lines,
@@ -275,6 +293,10 @@ Map<String, dynamic> _$$OrderProductSummaryDtoModelImplToJson(
 _$OrderCreateRequestImpl _$$OrderCreateRequestImplFromJson(
   Map<String, dynamic> json,
 ) => _$OrderCreateRequestImpl(
+  agentId: json['agent'] as String?,
+  storeId: json['store'] as String?,
+  receiverFullName: json['receiver_full_name'] as String?,
+  receiverNationalId: json['receiver_national_id'] as String?,
   customerId: json['customer'] as String,
   subPlanId: json['sub_plan'] as String,
   lines: (json['lines'] as List<dynamic>)
@@ -289,6 +311,11 @@ _$OrderCreateRequestImpl _$$OrderCreateRequestImplFromJson(
 Map<String, dynamic> _$$OrderCreateRequestImplToJson(
   _$OrderCreateRequestImpl instance,
 ) => <String, dynamic>{
+  if (instance.agentId case final value?) 'agent': value,
+  if (instance.storeId case final value?) 'store': value,
+  if (instance.receiverFullName case final value?) 'receiver_full_name': value,
+  if (instance.receiverNationalId case final value?)
+    'receiver_national_id': value,
   'customer': instance.customerId,
   'sub_plan': instance.subPlanId,
   'lines': instance.lines,

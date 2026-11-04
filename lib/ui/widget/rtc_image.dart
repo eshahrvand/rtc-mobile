@@ -59,10 +59,7 @@ class RtcImage extends StatelessWidget {
     }
 
     if (image != null) {
-      return Padding(
-        padding: padding ?? EdgeInsets.zero,
-        child: getImage(),
-      );
+      return Padding(padding: padding ?? EdgeInsets.zero, child: getImage());
     } else {
       return Padding(
         padding: padding ?? EdgeInsets.zero,
@@ -73,8 +70,6 @@ class RtcImage extends StatelessWidget {
 
   Widget getImage() {
     if (image!.startsWith("http")) {
-
-
       if (image!.contains(".svg")) {
         if (width != null || height != null) {
           if (color != null) {
@@ -83,6 +78,7 @@ class RtcImage extends StatelessWidget {
               width: width,
               height: height,
               fit: boxFit!,
+              alignment: alignment ?? Alignment.center,
               colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
             );
           } else {
@@ -91,6 +87,7 @@ class RtcImage extends StatelessWidget {
               width: width,
               height: height,
               fit: boxFit!,
+              alignment: alignment ?? Alignment.center,
             );
           }
         } else {
@@ -98,12 +95,14 @@ class RtcImage extends StatelessWidget {
             return SvgPicture.network(
               image ?? "",
               fit: boxFit!,
+              alignment: alignment ?? Alignment.center,
               colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
             );
           } else {
             return SvgPicture.network(
               image ?? "",
               fit: boxFit!,
+              alignment: alignment ?? Alignment.center,
             );
           }
         }
@@ -116,6 +115,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             color: color,
             imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
           );
@@ -125,6 +125,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
           );
         }
@@ -133,6 +134,7 @@ class RtcImage extends StatelessWidget {
           return CachedNetworkImage(
             imageUrl: image ?? "",
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             color: color,
             imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
           );
@@ -140,6 +142,7 @@ class RtcImage extends StatelessWidget {
           return CachedNetworkImage(
             imageUrl: image ?? "",
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
           );
         }
@@ -154,6 +157,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             color: color,
             errorBuilder: (context, error, stackTrace) => getPlaceHolder(),
           );
@@ -161,6 +165,7 @@ class RtcImage extends StatelessWidget {
           return Image.network(
             image ?? "",
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             color: color,
             errorBuilder: (context, error, stackTrace) => getPlaceHolder(),
           );
@@ -174,6 +179,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             color: color,
           );
         } else {
@@ -182,6 +188,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
           );
         }
       } else {
@@ -189,12 +196,14 @@ class RtcImage extends StatelessWidget {
           return Image.file(
             File(image ?? ""),
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             color: color,
           );
         } else {
           return Image.file(
             File(image ?? ""),
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
           );
         }
       }
@@ -224,6 +233,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
           );
         } else {
@@ -232,6 +242,7 @@ class RtcImage extends StatelessWidget {
             width: width,
             height: height,
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
           );
         }
       } else {
@@ -239,12 +250,14 @@ class RtcImage extends StatelessWidget {
           return SvgPicture.asset(
             image ?? "",
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
             colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
           );
         } else {
           return SvgPicture.asset(
             image ?? "",
             fit: boxFit!,
+            alignment: alignment ?? Alignment.center,
           );
         }
       }
@@ -257,6 +270,7 @@ class RtcImage extends StatelessWidget {
           width: width,
           height: height,
           fit: boxFit!,
+          alignment: alignment ?? Alignment.center,
           color: color,
         );
       } else {
@@ -265,6 +279,7 @@ class RtcImage extends StatelessWidget {
           width: width,
           height: height,
           fit: boxFit!,
+          alignment: alignment ?? Alignment.center,
         );
       }
     } else {
@@ -272,12 +287,14 @@ class RtcImage extends StatelessWidget {
         return Image.asset(
           image ?? "",
           fit: boxFit!,
+          alignment: alignment ?? Alignment.center,
           color: color,
         );
       } else {
         return Image.asset(
           image ?? "",
           fit: boxFit!,
+          alignment: alignment ?? Alignment.center,
         );
       }
     }
@@ -285,13 +302,9 @@ class RtcImage extends StatelessWidget {
 
   Widget getPlaceHolder() {
     if (placeHolder!.contains("svg")) {
-      return SvgPicture.asset(
-        placeHolder ?? "",
-      );
+      return SvgPicture.asset(placeHolder ?? "");
     }
 
-    return Image.asset(
-      placeHolder ?? "",
-    );
+    return Image.asset(placeHolder ?? "");
   }
 }

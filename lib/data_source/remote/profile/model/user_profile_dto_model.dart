@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../catalog/model/product_dto_model.dart';
+import '../../workspace/account_contracts.dart';
 
 part 'user_profile_dto_model.freezed.dart';
 part 'user_profile_dto_model.g.dart';
@@ -35,6 +36,11 @@ class UserProfileDtoModel with _$UserProfileDtoModel {
     CityProvinceDtoModel? province,
     CityProvinceDtoModel? city,
     String? address,
+    @JsonKey(name: 'postal_code') String? postalCode,
+    @JsonKey(name: 'stores_count') int? storesCount,
+    @JsonKey(name: 'wallet_enabled') bool? walletEnabled,
+    @JsonKey(name: 'policy_status') PolicyStatusDto? policyStatus,
+    List<ProfileDocumentDto>? documents,
     @JsonKey(name: 'credit_limit') double? creditLimit,
     double? tolerance,
     @JsonKey(name: 'tolerance_check_enabled') bool? toleranceCheckEnabled,

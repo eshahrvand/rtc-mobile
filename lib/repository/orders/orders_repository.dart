@@ -55,6 +55,7 @@ class OrdersRepository {
     int? page,
     int? pageSize,
     String? customerId,
+    String? storeId,
   }) {
     return _service.getOrders(
       status: status,
@@ -65,6 +66,7 @@ class OrdersRepository {
       page: page,
       pageSize: pageSize,
       customerId: customerId,
+      storeId: storeId,
     );
   }
 

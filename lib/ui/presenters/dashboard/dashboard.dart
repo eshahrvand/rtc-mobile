@@ -113,7 +113,7 @@ class _MainViewState extends State<MainView> {
               final nav = state.pendingNavigation!;
               final orderId = nav['orderId'] as String;
               final payment = nav['payment'] as String?;
-              
+
               if (OrderDetailScreenTracker.currentlyOpenOrderId == orderId) {
                 // Already on the detail screen for this order.
                 // Clear the pending nav to prevent duplicate pushes,
@@ -122,15 +122,18 @@ class _MainViewState extends State<MainView> {
                 return;
               }
 
-              // Double-check synchronous state to catch race conditions 
+              // Double-check synchronous state to catch race conditions
               // where the link triggers faster than the screen can mount.
               if (state.pendingNavigation == null) return;
 
               context.read<OrdersCubit>().clearPendingNavigation();
-              
-              final targetPath = AppRoutes.orderDetail.replaceAll(':orderId', orderId);
+
+              final targetPath = AppRoutes.orderDetail.replaceAll(
+                ':orderId',
+                orderId,
+              );
               final queryParams = payment != null ? '?payment=$payment' : '';
-              
+
               context.push('$targetPath$queryParams');
             }
           },
@@ -158,7 +161,12 @@ class _MainViewState extends State<MainView> {
                 builder: (context, ordersState) {
                   return Scaffold(
                     key: scaffoldKey,
-                    drawer: RtcDrawer(scaffoldKey: scaffoldKey),
+                    drawer: RtcDrawer(
+                      scaffoldKey: scaffoldKey,
+                      onDashboardTabSelected: context
+                          .read<DashboardCubit>()
+                          .onNavItemSelected,
+                    ),
                     appBar: DashboardAppBar(
                       index: dashboardState.selectedNavIndex,
                       scaffoldKey: scaffoldKey,

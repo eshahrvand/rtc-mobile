@@ -13,6 +13,7 @@ void rtcSnackBar({
   required String message,
   Duration duration = const Duration(seconds: 3),
 }) {
+  if (message.isEmpty) return;
   final overlay = Overlay.of(context);
   final theme = Theme.of(context);
 
@@ -112,6 +113,7 @@ void rtcBottomSnackBar({
   required String message,
   Duration duration = const Duration(seconds: 3),
 }) {
+  if (message.isEmpty) return;
   // Clear any existing snackbars
   ScaffoldMessenger.of(context).clearSnackBars();
 

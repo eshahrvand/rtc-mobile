@@ -20,6 +20,7 @@ class PreInvoiceProductModel {
   final String imageUrl;
   final String price;
   final String? oldPrice;
+  final num? consumerUnitPrice;
   final String? discount;
   final String inventory;
   final bool isAvailable;
@@ -30,6 +31,7 @@ class PreInvoiceProductModel {
     required this.imageUrl,
     required this.price,
     this.oldPrice,
+    this.consumerUnitPrice,
     this.discount,
     required this.inventory,
     this.isAvailable = true,
@@ -42,6 +44,7 @@ class CartItemModel {
   final String imageUrl;
   final String price;
   final String? oldPrice;
+  final num? consumerUnitPrice;
   final String? discount;
   final int quantity;
 
@@ -51,6 +54,7 @@ class CartItemModel {
     required this.imageUrl,
     required this.price,
     this.oldPrice,
+    this.consumerUnitPrice,
     this.discount,
     required this.quantity,
   });
@@ -61,6 +65,7 @@ class CartItemModel {
     String? imageUrl,
     String? price,
     String? oldPrice,
+    num? consumerUnitPrice,
     String? discount,
     int? quantity,
   }) {
@@ -70,6 +75,7 @@ class CartItemModel {
       imageUrl: imageUrl ?? this.imageUrl,
       price: price ?? this.price,
       oldPrice: oldPrice ?? this.oldPrice,
+      consumerUnitPrice: consumerUnitPrice ?? this.consumerUnitPrice,
       discount: discount ?? this.discount,
       quantity: quantity ?? this.quantity,
     );
@@ -85,6 +91,9 @@ class CustomerInfoModel {
   final String postalCode;
   final String address;
   final bool isOrderSentToCustomerAddress;
+  final bool isOtherRecipient;
+  final String recipientName;
+  final String recipientNationalId;
 
   CustomerInfoModel({
     this.id,
@@ -95,6 +104,9 @@ class CustomerInfoModel {
     required this.postalCode,
     required this.address,
     this.isOrderSentToCustomerAddress = false,
+    this.isOtherRecipient = false,
+    this.recipientName = '',
+    this.recipientNationalId = '',
   });
 
   CustomerInfoModel copyWith({
@@ -106,6 +118,9 @@ class CustomerInfoModel {
     String? postalCode,
     String? address,
     bool? isOrderSentToCustomerAddress,
+    bool? isOtherRecipient,
+    String? recipientName,
+    String? recipientNationalId,
   }) {
     return CustomerInfoModel(
       id: id ?? this.id,
@@ -115,7 +130,11 @@ class CustomerInfoModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       postalCode: postalCode ?? this.postalCode,
       address: address ?? this.address,
-      isOrderSentToCustomerAddress: isOrderSentToCustomerAddress ?? this.isOrderSentToCustomerAddress,
+      isOrderSentToCustomerAddress:
+          isOrderSentToCustomerAddress ?? this.isOrderSentToCustomerAddress,
+      isOtherRecipient: isOtherRecipient ?? this.isOtherRecipient,
+      recipientName: recipientName ?? this.recipientName,
+      recipientNationalId: recipientNationalId ?? this.recipientNationalId,
     );
   }
 }

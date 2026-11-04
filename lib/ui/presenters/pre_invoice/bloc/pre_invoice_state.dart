@@ -1,13 +1,15 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:intl/intl.dart';
 import '../../../../data_source/remote/catalog/model/brand_dto_model.dart';
-import '../../../../core/models/filter_item.dart';
 import '../../../../core/models/pre_invoice_model.dart';
 import '../../../../data_source/remote/catalog/model/category_dto_model.dart';
+import '../../../../config/regex_national_number_validator.dart';
 
 part 'pre_invoice_state.freezed.dart';
 
 enum PreInvoiceStep {
+  branch, // Optional initial step for multi-branch agents
   creditPlan, // Step 1
   products, // Step 2
   customerInfo, // Step 3
@@ -102,25 +104,55 @@ class PreInvoiceState with _$PreInvoiceState {
 }
 
 extension PreInvoiceStateX on PreInvoiceState {
+  /// Consumer prices are supplied independently of plan/discount prices.
+  /// Missing data is not interpreted as a zero or a plan price.
+  String? get consumerFinalAmount {
+    if (cartItems.isEmpty ||
+        cartItems.any((item) => item.consumerUnitPrice == null)) {
+      return null;
+    }
+    final amount = cartItems.fold<num>(
+      0,
+      (sum, item) => sum + item.consumerUnitPrice! * item.quantity,
+    );
+    return NumberFormat('#,###', 'en_US').format(amount);
+  }
+
   int get totalCartItemsCount =>
       cartItems.fold(0, (sum, item) => sum + item.quantity);
 
   bool get isCurrentStepValid => switch (currentStep) {
+    PreInvoiceStep.branch =>
+      false, // Validated by the invoice-local branch state.
     PreInvoiceStep.creditPlan => selectedCreditPlanId != null,
     PreInvoiceStep.products => totalCartItemsCount > 0,
-    PreInvoiceStep.customerInfo => customerInfo != null &&
-        customerInfo!.firstName.isNotEmpty &&
-        customerInfo!.lastName.isNotEmpty &&
-        customerInfo!.phoneNumber.isNotEmpty &&
-        isPhoneNumberValid &&
-        customerInfo!.postalCode.isNotEmpty &&
-        isPostalCodeValid &&
-        customerInfo!.address.isNotEmpty,
+    PreInvoiceStep.customerInfo =>
+      customerInfo != null &&
+          customerInfo!.firstName.isNotEmpty &&
+          customerInfo!.lastName.isNotEmpty &&
+          customerInfo!.phoneNumber.isNotEmpty &&
+          isPhoneNumberValid &&
+          customerInfo!.postalCode.isNotEmpty &&
+          isPostalCodeValid &&
+          customerInfo!.address.isNotEmpty &&
+          isDeliveryRecipientValid,
     PreInvoiceStep.documents => mandatoryDoc != null,
     PreInvoiceStep.review => true,
   };
 
+  bool get isDeliveryRecipientValid {
+    final info = customerInfo;
+    if (info == null ||
+        !info.isOrderSentToCustomerAddress ||
+        !info.isOtherRecipient)
+      return true;
+    return info.recipientName.trim().isNotEmpty &&
+        RegExp(r'^\d{10}$').hasMatch(info.recipientNationalId) &&
+        isNationalIDValid(info.recipientNationalId);
+  }
+
   bool get isNextStepLoading => switch (currentStep) {
+    PreInvoiceStep.branch => status == PreInvoiceRequestStatus.loading,
     PreInvoiceStep.creditPlan => status == PreInvoiceRequestStatus.loading,
     PreInvoiceStep.customerInfo => isSubmittingCustomerInfo,
     PreInvoiceStep.documents => isUploadingDocuments,

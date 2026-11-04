@@ -5,12 +5,14 @@ class RtcTabBar extends StatelessWidget {
   final List<String> tabs;
   final int selectedIndex;
   final Function(int) onTabChanged;
+  final double verticalPadding;
 
   const RtcTabBar({
     super.key,
     required this.tabs,
     required this.selectedIndex,
     required this.onTabChanged,
+    this.verticalPadding = 16,
   });
 
   @override
@@ -29,7 +31,7 @@ class RtcTabBar extends StatelessWidget {
             child: InkWell(
               onTap: () => onTabChanged(index),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: verticalPadding),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(

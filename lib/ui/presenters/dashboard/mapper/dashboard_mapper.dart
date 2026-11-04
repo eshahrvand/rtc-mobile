@@ -123,7 +123,7 @@ class DashboardMapper {
       OrderStatus.expired: 6,
     };
 
-    final sortedList = List<OrderStatusDtoModel>.from(list);
+    final sortedList = list.where((item) => orderWeights.containsKey(item.orderStatus)).toList();
     sortedList.sort((a, b) {
       final weightA = orderWeights[a.orderStatus] ?? 99;
       final weightB = orderWeights[b.orderStatus] ?? 99;

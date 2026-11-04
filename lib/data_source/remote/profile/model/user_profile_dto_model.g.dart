@@ -51,6 +51,15 @@ _$UserProfileDtoModelImpl _$$UserProfileDtoModelImplFromJson(
       ? null
       : CityProvinceDtoModel.fromJson(json['city'] as Map<String, dynamic>),
   address: json['address'] as String?,
+  postalCode: json['postal_code'] as String?,
+  storesCount: (json['stores_count'] as num?)?.toInt(),
+  walletEnabled: json['wallet_enabled'] as bool?,
+  policyStatus: json['policy_status'] == null
+      ? null
+      : PolicyStatusDto.fromJson(json['policy_status'] as Map<String, dynamic>),
+  documents: (json['documents'] as List<dynamic>?)
+      ?.map((e) => ProfileDocumentDto.fromJson(e as Map<String, dynamic>))
+      .toList(),
   creditLimit: (json['credit_limit'] as num?)?.toDouble(),
   tolerance: (json['tolerance'] as num?)?.toDouble(),
   toleranceCheckEnabled: json['tolerance_check_enabled'] as bool?,
@@ -84,6 +93,11 @@ Map<String, dynamic> _$$UserProfileDtoModelImplToJson(
   'province': instance.province,
   'city': instance.city,
   'address': instance.address,
+  'postal_code': instance.postalCode,
+  'stores_count': instance.storesCount,
+  'wallet_enabled': instance.walletEnabled,
+  'policy_status': instance.policyStatus,
+  'documents': instance.documents,
   'credit_limit': instance.creditLimit,
   'tolerance': instance.tolerance,
   'tolerance_check_enabled': instance.toleranceCheckEnabled,

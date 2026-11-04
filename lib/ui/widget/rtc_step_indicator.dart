@@ -7,19 +7,27 @@ class RtcStepIndicator extends StatelessWidget {
   final int totalSteps;
   final int currentStepIndex;
   final List<String> stepLabels;
+  final double horizontalGap;
+  final double? counterWidth;
+  final EdgeInsetsGeometry padding;
+  final double? labelHeight;
 
   const RtcStepIndicator({
     super.key,
     required this.totalSteps,
     required this.currentStepIndex,
     required this.stepLabels,
+    this.horizontalGap = 39,
+    this.counterWidth,
+    this.padding = const EdgeInsets.all(16),
+    this.labelHeight,
   });
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: padding,
       decoration: const BoxDecoration(
         color: Colors.white,
         boxShadow: AppColors.primaryShadow,
@@ -29,12 +37,15 @@ class RtcStepIndicator extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            spacing: 39,
+            spacing: horizontalGap,
             children: [
-              Text(
-                'مرحله ${currentStepIndex + 1} از $totalSteps',
-                style: theme.bodyMedium!.copyWith(
-                  color: AppColors.grayPalette.shade700,
+              SizedBox(
+                width: counterWidth,
+                child: Text(
+                  'مرحله ${currentStepIndex + 1} از $totalSteps',
+                  style: theme.bodyMedium!.copyWith(
+                    color: AppColors.grayPalette.shade700,
+                  ),
                 ),
               ),
               Expanded(
@@ -56,11 +67,17 @@ class RtcStepIndicator extends StatelessWidget {
             ],
           ),
 
-          Text(
-            stepLabels[currentStepIndex],
-            style: theme.labelMedium!.copyWith(
-              color: AppColors.brandPalette.shade700,
-              fontWeight: FontWeight.w600,
+          SizedBox(
+            height: labelHeight,
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                stepLabels[currentStepIndex],
+                style: theme.labelMedium!.copyWith(
+                  color: AppColors.brandPalette.shade700,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],

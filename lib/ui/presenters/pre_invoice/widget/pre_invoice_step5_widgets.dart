@@ -38,6 +38,8 @@ class PreInvoiceStep5InfoRow extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
+  final Color? labelColor;
+  final FontWeight valueWeight;
   final bool isFinalPrice;
   final bool isPrice;
 
@@ -46,6 +48,8 @@ class PreInvoiceStep5InfoRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.valueColor,
+    this.labelColor,
+    this.valueWeight = FontWeight.w600,
     this.isFinalPrice = false,
     this.isPrice = false,
   });
@@ -58,12 +62,15 @@ class PreInvoiceStep5InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: theme.bodyMedium!.copyWith(
-              color: AppColors.grayPalette.shade600,
+          Expanded(
+            child: Text(
+              label,
+              style: theme.bodyMedium!.copyWith(
+                color: labelColor ?? AppColors.grayPalette.shade600,
+              ),
             ),
           ),
+          const SizedBox(width: 8),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -71,7 +78,7 @@ class PreInvoiceStep5InfoRow extends StatelessWidget {
                 value,
                 style: theme.labelMedium!.copyWith(
                   color: valueColor ?? AppColors.grayPalette.shade900,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: valueWeight,
                 ),
               ),
               if (isPrice) ...[
@@ -303,6 +310,25 @@ class PreInvoiceStep5CustomerInfo extends StatelessWidget {
               color: AppColors.grayPalette.shade900,
             ),
           ),
+          RtcDivider(color: AppColors.grayPalette.shade200, height: .5),
+          PreInvoiceStep5InfoRow(
+            label: S.current.deliveryDestination,
+            value: info.isOrderSentToCustomerAddress
+                ? S.current.customerDeliveryAddress
+                : S.current.storeDeliveryAddress,
+          ),
+          if (info.isOrderSentToCustomerAddress && info.isOtherRecipient) ...[
+            RtcDivider(color: AppColors.grayPalette.shade200, height: .5),
+            PreInvoiceStep5InfoRow(
+              label: S.current.recipientFullName,
+              value: info.recipientName,
+            ),
+            RtcDivider(color: AppColors.grayPalette.shade200, height: .5),
+            PreInvoiceStep5InfoRow(
+              label: S.current.recipientNationalId,
+              value: info.recipientNationalId,
+            ),
+          ],
         ],
       ),
     );
@@ -417,6 +443,13 @@ class PreInvoiceStep5FinancialSummary extends StatelessWidget {
             label: S.current.totalDiscounts,
             value: state.totalDiscounts,
             isPrice: true,
+          ),
+          PreInvoiceStep5InfoRow(
+            label: S.current.consumerFinalAmount,
+            labelColor: AppColors.grayPalette.shade700,
+            valueWeight: FontWeight.w400,
+            value: state.consumerFinalAmount ?? '—',
+            isPrice: state.consumerFinalAmount != null,
           ),
           RtcDivider(
             height: 0.5,

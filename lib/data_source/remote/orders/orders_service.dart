@@ -11,6 +11,7 @@ abstract class OrdersService {
   @GET('orders/orders')
   Future<OrderListResponse> getOrders({
     @Query('agent') String? agentId,
+    @Query('store') String? storeId,
     @Query('customer') String? customerId,
     @Query('status') List<String>? status,
     @Query('sub_plan') String? subPlanId,

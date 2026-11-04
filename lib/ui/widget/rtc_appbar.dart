@@ -17,6 +17,7 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showShadow;
   final bool hideBackIcon;
   final Color backgroundColor;
+  final double toolbarHeight;
 
   const RtcAppBar({
     super.key,
@@ -33,11 +34,13 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showShadow = true,
     this.hideBackIcon = false,
     this.backgroundColor = Colors.white,
+    this.toolbarHeight = kToolbarHeight,
   });
 
   @override
   Widget build(BuildContext context) {
     final Widget appBar = AppBar(
+      toolbarHeight: toolbarHeight,
       centerTitle: centerTitle,
       elevation: elevation ?? 0,
       scrolledUnderElevation: 0,
@@ -87,5 +90,5 @@ class RtcAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize =>
-      Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
+      Size.fromHeight(toolbarHeight + (bottom?.preferredSize.height ?? 0.0));
 }

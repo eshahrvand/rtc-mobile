@@ -11,6 +11,7 @@ import '../../../router/app_route.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'rtc_order_item.dart';
+import 'order_refund_widgets.dart';
 
 class OrdersUiHelpers {
   /// Resolves the orders list body based on the current state.
@@ -93,7 +94,7 @@ class OrdersUiHelpers {
             )
           else
             const SizedBox.shrink(),
-          RtcStatusBadge(status: order.status, isPrimary: true),
+          Flexible(child: OrderStatusBadges(order: order)),
         ],
       ),
     );

@@ -1,12 +1,16 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'dart:async';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../locator.dart';
 import '../../../../repository/report/commission_report_repository.dart';
+import '../../../../repository/workspace/workspace_repository.dart';
+import '../../../../core/models/workspace_models.dart';
+import '../../../../generated/l10n.dart';
 import 'commission_report_state.dart';
 
-class CommissionReportCubit extends Cubit<CommissionReportState> {
+class CommissionReportCubit extends MountedCubit<CommissionReportState> {
   CommissionReportCubit() : super(const CommissionReportState());
 
   final _repository = sl<CommissionReportRepository>();
@@ -45,6 +49,42 @@ class CommissionReportCubit extends Cubit<CommissionReportState> {
     reload();
   }
 
+  void selectStore(String? id) {
+    if (state.selectedStoreId == id) return;
+    emit(state.copyWith(selectedStoreId: id));
+    reload();
+  }
+
+  void loadStores() {
+    if (state.isStoreOptionsLoading) return;
+    emit(state.copyWith(isStoreOptionsLoading: true, storeOptionsError: ''));
+    final workspace = sl<WorkspaceRepository>();
+    (workspace.loadBranches?.call() ??
+            workspace.unavailable<List<BranchInfo>>())
+        .then((stores) {
+          if (!isClosed) {
+            emit(
+              state.copyWith(
+                storeOptions: stores,
+                isStoreOptionsLoading: false,
+              ),
+            );
+          }
+        })
+        .catchError((Object error) {
+          if (!isClosed) {
+            emit(
+              state.copyWith(
+                isStoreOptionsLoading: false,
+                storeOptionsError: error is WorkspaceServicePending
+                    ? S.current.workspaceServicePending
+                    : ErrorHandler.getMessage(error),
+              ),
+            );
+          }
+        });
+  }
+
   void reload() => _reload();
 
   void _reload({bool debounce = false}) {
@@ -79,6 +119,7 @@ class CommissionReportCubit extends Cubit<CommissionReportState> {
         .getReport(
           year: state.selectedYear,
           month: state.selectedMonth,
+          storeId: state.selectedStoreId,
           search: query.isEmpty ? null : query,
         )
         .then((page) {
@@ -118,6 +159,7 @@ class CommissionReportCubit extends Cubit<CommissionReportState> {
         .getReport(
           year: state.selectedYear,
           month: state.selectedMonth,
+          storeId: state.selectedStoreId,
           search: query.isEmpty ? null : query,
           page: nextPage,
           includeSummary: false,

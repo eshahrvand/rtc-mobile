@@ -27,6 +27,7 @@ class RtcButton extends StatefulWidget {
   final RtcButtonSize size;
   final Color? borderColor;
   final String? analyticsId;
+  final bool fitTitle;
 
   const RtcButton({
     super.key,
@@ -47,6 +48,7 @@ class RtcButton extends StatefulWidget {
     this.size = RtcButtonSize.medium,
     this.borderColor,
     this.analyticsId,
+    this.fitTitle = false,
   });
 
   @override
@@ -120,15 +122,15 @@ class _RtcButtonState extends State<RtcButton> {
     final List<BoxShadow> shadows = widget.borderColor != null
         ? AppColors.mediumShadow
         : (active
-            ? AppColors.primaryShadow
-            : [
-                const BoxShadow(
-                  color: Color(0x0D0A0D12),
-                  offset: Offset(0, 1),
-                  blurRadius: 2,
-                  spreadRadius: 0,
-                ),
-              ]);
+              ? AppColors.primaryShadow
+              : [
+                  const BoxShadow(
+                    color: Color(0x0D0A0D12),
+                    offset: Offset(0, 1),
+                    blurRadius: 2,
+                    spreadRadius: 0,
+                  ),
+                ]);
 
     final Color bgColor = active
         ? (widget.backgroundColor ?? AppColors.brandPalette.shade600)
@@ -181,53 +183,68 @@ class _RtcButtonState extends State<RtcButton> {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                    color: active ? Colors.white : AppColors.grayPalette.shade400,
+                    color: active
+                        ? Colors.white
+                        : AppColors.grayPalette.shade400,
                     strokeWidth: 2.5,
                   ),
                 )
               : isLoadingBtm!
-                  ? SizedBox(
-                      height: 18,
-                      width: 20,
-                      child: LoadingIndicator(
-                        indicatorType: Indicator.ballPulseSync,
-                        colors: [
-                          active
-                              ? AppColors.brandPalette.shade600
-                              : AppColors.grayPalette.shade400,
-                        ],
-                        strokeWidth: 4.0,
+              ? SizedBox(
+                  height: 18,
+                  width: 20,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballPulseSync,
+                    colors: [
+                      active
+                          ? AppColors.brandPalette.shade600
+                          : AppColors.grayPalette.shade400,
+                    ],
+                    strokeWidth: 4.0,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (widget.leftIcon != null)
+                      RtcImage(
+                        image: widget.leftIcon ?? "",
+                        color:
+                            widget.leftIconColor ??
+                            (active
+                                ? AppColors.brandPalette.shade600
+                                : AppColors.grayPalette.shade400),
                       ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (widget.leftIcon != null)
-                          RtcImage(
-                            image: widget.leftIcon ?? "",
-                            color: widget.leftIconColor ??
-                                (active
-                                    ? AppColors.brandPalette.shade600
-                                    : AppColors.grayPalette.shade400),
+                    if (widget.leftIcon != null)
+                      SizedBox(width: active ? 10 : 8),
+                    if (widget.fitTitle)
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            widget.title ?? '',
+                            style: widget.styleBtn ?? _getTextStyle(context),
                           ),
-                        if (widget.leftIcon != null)
-                          SizedBox(width: active ? 10 : 8),
-                        Text(
-                          widget.title ?? "",
-                          style: widget.styleBtn ?? _getTextStyle(context),
                         ),
-                        if (widget.rightIcon != null)
-                          SizedBox(width: active ? 10 : 8),
-                        if (widget.rightIcon != null)
-                          RtcImage(
-                            image: widget.rightIcon ?? "",
-                            color: widget.rightIconColor ??
-                                (active
-                                    ? AppColors.brandPalette.shade600
-                                    : AppColors.grayPalette.shade400),
-                          ),
-                      ],
-                    ),
+                      )
+                    else
+                      Text(
+                        widget.title ?? "",
+                        style: widget.styleBtn ?? _getTextStyle(context),
+                      ),
+                    if (widget.rightIcon != null)
+                      SizedBox(width: active ? 10 : 8),
+                    if (widget.rightIcon != null)
+                      RtcImage(
+                        image: widget.rightIcon ?? "",
+                        color:
+                            widget.rightIconColor ??
+                            (active
+                                ? AppColors.brandPalette.shade600
+                                : AppColors.grayPalette.shade400),
+                      ),
+                  ],
+                ),
         ),
       ),
     );

@@ -23,6 +23,7 @@ import 'order_tab_details.dart';
 import 'order_tab_financial.dart';
 import 'order_tab_history.dart';
 import 'orders_ui_helpers.dart';
+import 'order_refund_widgets.dart';
 
 class OrderDetailView extends StatefulWidget {
   final String orderId;
@@ -47,7 +48,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _pageController = PageController(initialPage: context.read<OrdersCubit>().state.selectedTabIndex);
     OrderDetailScreenTracker.currentlyOpenOrderId = widget.orderId;
     OrderDetailScreenTracker.activeInstanceToken = hashCode;
   }
@@ -225,6 +226,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 onBack: () => _handleBackNavigation(context),
                 backIconPath: '$baseImage/angle-right.svg',
                 actions: [
+                  OrderRefundAction(order: order),
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child:

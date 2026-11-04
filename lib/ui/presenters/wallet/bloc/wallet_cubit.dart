@@ -1,4 +1,5 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/bloc/mounted_cubit.dart';
+
 import '../../../../core/models/wallet_model.dart';
 import '../../../../core/utils/network_helper.dart';
 import '../../../../config/errorhandler.dart';
@@ -6,7 +7,7 @@ import '../../../../locator.dart';
 import '../../../../repository/wallet/wallet_repository.dart';
 import 'wallet_state.dart';
 
-class WalletCubit extends Cubit<WalletState> {
+class WalletCubit extends MountedCubit<WalletState> {
   final _repository = sl<WalletRepository>();
 
   WalletCubit() : super(const WalletState());

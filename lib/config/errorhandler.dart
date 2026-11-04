@@ -66,6 +66,11 @@ final Map<String, _MessageFn> _errorMessages = <String, _MessageFn>{
   'server_error': (_) => 'خطای سرور رخ داد — لطفاً بعداً دوباره تلاش کنید',
   'network_error': (_) => 'اتصال به سرور برقرار نشد — اینترنت یا آدرس سرور را بررسی کنید',
 
+  // --- privacy policy ---
+  'policy_acceptance_required': (_) => 'برای ادامه، نسخه جدید قوانین و مقررات را تایید کنید',
+  'agent_policy_pending': (_) => 'مدیر نمایندگی هنوز نسخه جدید قوانین و مقررات را تایید نکرده است',
+  'policy_version_outdated': (_) => 'نسخه جدیدتری از قوانین و مقررات منتشر شده است؛ صفحه را دوباره بارگذاری کنید',
+
   // --- accounts / OTP ---
   'otp_expired': (_) => 'کد تأیید منقضی شده است — کد جدید دریافت کنید',
   'otp_invalid': (_) => 'کد تأیید واردشده نادرست است',
@@ -201,6 +206,7 @@ class ErrorHandler {
 
   /// Accepts any error and returns a localized Persian message.
   static String getMessage(dynamic error, {StackTrace? stackTrace}) {
+    if (error is DioException && error.requestOptions.extra['policyGated'] == true) return '';
     // Automatically capture unhandled or non-API errors to Sentry
     if (error is! ApiError) {
       Sentry.captureException(error, stackTrace: stackTrace);

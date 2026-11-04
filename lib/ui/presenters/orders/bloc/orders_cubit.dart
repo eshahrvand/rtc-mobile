@@ -1,20 +1,23 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'package:cross_file/cross_file.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_native_html_to_pdf/flutter_native_html_to_pdf.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
 import '../../../../config/errorhandler.dart';
 import '../../../../core/enums/order_status.dart';
 import '../../../../core/models/order_model.dart';
+import '../../../../core/models/workspace_models.dart';
+import '../../workspace/bloc/workspace_state.dart';
 import '../../../../core/utils/id_formatter.dart';
+import '../../../../core/service/html_document_exporter.dart';
 import '../../../../generated/l10n.dart';
 import '../../../../locator.dart';
 import '../../../../repository/orders/orders_repository.dart';
+import '../../../../repository/workspace/workspace_repository.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
 import '../../../../repository/plans/plans_repository.dart';
 import '../../../../repository/media/media_repository.dart';
 import '../../../../repository/dashboard/dashboard_repository.dart';
@@ -23,26 +26,46 @@ import '../../media_picker/media_picker.dart';
 import '../mapper/order_mapper.dart';
 import 'orders_state.dart';
 
-const _downloadsChannel = MethodChannel('com.rtc_mobile/downloads');
-
-Future<String?> _saveToDownloads(String fileName, Uint8List bytes) async {
-  try {
-    final path = await _downloadsChannel.invokeMethod<String>(
-      'saveToDownloads',
-      {'fileName': fileName, 'bytes': bytes},
-    );
-    return path;
-  } on PlatformException catch (e) {
-    return null;
+class OrdersCubit extends MountedCubit<OrdersState> {
+  String? get storeId => state.selectedStoreId;
+  void filterByStore(String? id) {
+    if (state.selectedStoreId == id) return;
+    emit(state.copyWith(selectedStoreId: id));
+    fetchOrders();
   }
-}
 
-class OrdersCubit extends Cubit<OrdersState> {
+  void loadStoreOptions() {
+    if (state.isStoreOptionsLoading ||
+        !sl<WorkspaceCubit>().state.canManageBranches)
+      return;
+    emit(state.copyWith(isStoreOptionsLoading: true));
+    final repo = sl<WorkspaceRepository>();
+    (repo.loadBranches?.call() ?? repo.unavailable<List<BranchInfo>>())
+        .then(
+          (branches) => emit(
+            state.copyWith(
+              storeOptions: branches,
+              isStoreOptionsLoading: false,
+            ),
+          ),
+        )
+        .catchError(
+          (Object error) => emit(
+            state.copyWith(
+              isStoreOptionsLoading: false,
+              status: OrdersRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(error),
+            ),
+          ),
+        );
+  }
+
   final _ordersRepo = sl<OrdersRepository>();
   final _plansRepo = sl<PlansRepository>();
   final _mediaRepo = sl<MediaRepository>();
   final _dashboardRepo = sl<DashboardRepository>();
 
+  int _ordersRequest = 0;
   Timer? _searchTimer;
   Timer? _settlementTimer;
   Timer? _clearanceOtpTimer;
@@ -51,7 +74,9 @@ class OrdersCubit extends Cubit<OrdersState> {
   static StreamSubscription? _globalLinkSub;
   StreamSubscription? _instanceLinkSub;
 
-  OrdersCubit() : super(const OrdersState()) {
+  OrdersCubit({OrdersState? initialState, bool listenToLinks = true})
+    : super(initialState ?? const OrdersState()) {
+    if (!listenToLinks) return;
     _instanceLinkSub = _linkController.stream.listen(_handleIncomingUri);
     _ensureGlobalLinkListener();
   }
@@ -147,6 +172,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void fetchOrders({OrdersState? rollbackState}) {
+    final request = ++_ordersRequest;
     emit(
       state.copyWith(
         status: OrdersRequestStatus.loading,
@@ -160,6 +186,7 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     _ordersRepo
         .getOrders(
+          storeId: state.selectedStoreId,
           status: state.selectedStatusIds.isEmpty
               ? null
               : state.selectedStatusIds,
@@ -170,6 +197,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           page: 1,
         )
         .then((response) {
+          if (isClosed || request != _ordersRequest) return;
           final orders = response.results
               .map((dto) => OrderMapper.mapToSummary(dto))
               .toList();
@@ -184,6 +212,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
+          if (isClosed || request != _ordersRequest) return null;
           final orders = state.allOrders;
           emit(
             state.copyWith(
@@ -206,12 +235,14 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     emit(state.copyWith(isPaginationLoading: true));
 
+    final request = _ordersRequest;
     final nextPage = state.currentPage + 1;
     final createdAfter = _formatGregorianDate(state.startDate);
     final createdBefore = _formatGregorianDate(state.endDate);
 
     _ordersRepo
         .getOrders(
+          storeId: state.selectedStoreId,
           status: state.selectedStatusIds.isEmpty
               ? null
               : state.selectedStatusIds,
@@ -222,6 +253,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           page: nextPage,
         )
         .then((response) {
+          if (isClosed || request != _ordersRequest) return;
           final newOrders = response.results
               .map((dto) => OrderMapper.mapToSummary(dto))
               .toList();
@@ -240,6 +272,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
         })
         .catchError((e) {
+          if (isClosed || request != _ordersRequest) return null;
           emit(state.copyWith(isPaginationLoading: false));
           return null;
         });
@@ -380,6 +413,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         isSearchActive: false,
         selectedStatusIds: [],
         selectedSubPlanId: null,
+        selectedStoreId: null,
         startDate: null,
         endDate: null,
         selectedDateOptionId: null,
@@ -451,46 +485,20 @@ class OrdersCubit extends Cubit<OrdersState> {
 
     return _ordersRepo
         .getPreInvoiceHtml(orderId)
-        .then((html) async {
-          final tempDir = await getTemporaryDirectory();
-          final displayId = IdFormatter.formatDisplayId(orderId);
-          final targetName = 'pre_invoice_$displayId';
-
-          final converter = HtmlToPdfConverter();
-          final generatedFile = await converter.convertHtmlToPdf(
-            html: html,
-            targetDirectory: tempDir.path,
-            targetName: targetName,
+        .then(
+          (html) => HtmlDocumentExporter.generateAndSave(
+            html,
+            'pre_invoice_${IdFormatter.formatDisplayId(orderId)}',
+          ),
+        )
+        .then((result) {
+          emit(
+            state.copyWith(
+              isPrinting: false,
+              printStatus: PrintStatus.success,
+              lastPrintedFilePath: result.generatedPath,
+            ),
           );
-
-          if (generatedFile != null) {
-            final bytes = await generatedFile.readAsBytes();
-
-            // Saves directly to public Downloads folder:
-            // - Android < 10  → Environment.DIRECTORY_DOWNLOADS (direct write)
-            // - Android 10+   → MediaStore.Downloads (no storage permission needed)
-            // No picker dialog is shown.
-            final savedPath = await _saveToDownloads(targetName, bytes);
-
-            if (savedPath != null && savedPath.isNotEmpty) {
-              emit(
-                state.copyWith(
-                  isPrinting: false,
-                  printStatus: PrintStatus.success,
-                  lastPrintedFilePath: generatedFile.path,
-                ),
-              );
-            } else {
-              emit(
-                state.copyWith(
-                  isPrinting: false,
-                  printStatus: PrintStatus.error,
-                  errorMessage: 'Failed to save file to Downloads.',
-                ),
-              );
-            }
-          }
-
           Future.delayed(const Duration(seconds: 1), () {
             if (!isClosed)
               emit(state.copyWith(printStatus: PrintStatus.initial));
@@ -536,10 +544,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
 
           emit(
-            state.copyWith(
-              tolerance: tol,
-              toleranceCheckEnabled: isEnabled,
-            ),
+            state.copyWith(tolerance: tol, toleranceCheckEnabled: isEnabled),
           );
 
           if (isEnabled) {
@@ -569,8 +574,11 @@ class OrdersCubit extends Cubit<OrdersState> {
                   status: OrdersRequestStatus.success,
                   clearanceStep: ClearanceStep.amountEntered,
                   clearanceAmount: amountStr,
-                  orderAmount: state.selectedOrder!.financialSummary.finalAmount,
-                  excessAmount: (amount - orderAmountVal).abs().toStringAsFixed(0),
+                  orderAmount:
+                      state.selectedOrder!.financialSummary.finalAmount,
+                  excessAmount: (amount - orderAmountVal).abs().toStringAsFixed(
+                    0,
+                  ),
                   isOutOfTolerance: true,
                 ),
               );
@@ -581,7 +589,9 @@ class OrdersCubit extends Cubit<OrdersState> {
           return _ordersRepo
               .disburseInitiate(state.selectedOrder!.id, amount)
               .then((response) {
-                debugPrint('>>OrdersCubit: disburseInitiate response -> $response');
+                debugPrint(
+                  '>>OrdersCubit: disburseInitiate response -> $response',
+                );
                 final type = (response is Map) ? response['type'] : 'offline';
                 final mobile = (response is Map) ? response['mobile'] : null;
                 final redirectUrl = (response is Map)
@@ -592,13 +602,16 @@ class OrdersCubit extends Cubit<OrdersState> {
 
                 final diff = amount - orderAmountVal;
                 final excess = diff > 0 ? diff.toStringAsFixed(0) : null;
-                final wallet = (response is Map) ? response['wallet_name'] : null;
+                final wallet = (response is Map)
+                    ? response['wallet_name']
+                    : null;
 
                 emit(
                   state.copyWith(
                     status: OrdersRequestStatus.success,
-                    gatewayType:
-                        isOnline ? GatewayType.online : GatewayType.offline,
+                    gatewayType: isOnline
+                        ? GatewayType.online
+                        : GatewayType.offline,
                     disbursementGatewayType: type,
                     disbursementMobile: mobile,
                     disbursementRedirectUrl: redirectUrl,
@@ -795,10 +808,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
 
           emit(
-            state.copyWith(
-              tolerance: tol,
-              toleranceCheckEnabled: isEnabled,
-            ),
+            state.copyWith(tolerance: tol, toleranceCheckEnabled: isEnabled),
           );
 
           if (method == 'wallet' && isEnabled && tol == null) {
@@ -823,7 +833,9 @@ class OrdersCubit extends Cubit<OrdersState> {
                 amount: finalAmount,
               )
               .then((response) {
-                debugPrint('>>OrdersCubit: settleInitiate response -> $response');
+                debugPrint(
+                  '>>OrdersCubit: settleInitiate response -> $response',
+                );
                 final type = response['type'];
                 final walletName =
                     (type == 'wallet' && response['wallet_name'] != null)
@@ -967,7 +979,9 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void selectSettlementMethod(String method) {
-    debugPrint('>>OrdersCubit: selectSettlementMethod called -> method: $method');
+    debugPrint(
+      '>>OrdersCubit: selectSettlementMethod called -> method: $method',
+    );
     emit(
       state.copyWith(
         settlementMethod: method,

@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../customers/model/customer_dto_model.dart';
 import '../../wallet/model/wallet_dto_model.dart';
 import '../../catalog/model/product_dto_model.dart';
+import '../../workspace/account_contracts.dart';
 
 part 'order_dto_model.freezed.dart';
 
@@ -28,6 +29,13 @@ class OrderDtoModel with _$OrderDtoModel {
     @JsonKey(name: 'sub_plan') required WalletSubPlanDtoModel subPlan,
     required String status,
     required double total,
+    StoreReferenceDto? store,
+    @JsonKey(name: 'created_by') OrderCreatorDto? createdBy,
+    @JsonKey(name: 'base_total') double? baseTotal,
+    @JsonKey(name: 'settlement_amount') double? settlementAmount,
+    @JsonKey(name: 'wallet_enabled') bool? walletEnabled,
+    @JsonKey(name: 'receiver_full_name') String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id') String? receiverNationalId,
     @JsonKey(name: 'created_at') required String createdAt,
     @JsonKey(name: 'updated_at') String? updatedAt,
     List<OrderLineDtoModel>? lines,
@@ -171,6 +179,10 @@ class OrderProductSummaryDtoModel with _$OrderProductSummaryDtoModel {
 @freezed
 class OrderCreateRequest with _$OrderCreateRequest {
   const factory OrderCreateRequest({
+    @JsonKey(name: 'agent', includeIfNull: false) String? agentId,
+    @JsonKey(name: 'store', includeIfNull: false) String? storeId,
+    @JsonKey(name: 'receiver_full_name', includeIfNull: false) String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id', includeIfNull: false) String? receiverNationalId,
     @JsonKey(name: 'customer') required String customerId,
     @JsonKey(name: 'sub_plan') required String subPlanId,
     required List<OrderLineRequest> lines,

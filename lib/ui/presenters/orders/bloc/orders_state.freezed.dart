@@ -36,6 +36,9 @@ mixin _$OrdersState {
   bool get isClearanceSectionExpanded => throw _privateConstructorUsedError;
   List<String> get selectedStatusIds => throw _privateConstructorUsedError;
   String? get selectedSubPlanId => throw _privateConstructorUsedError;
+  String? get selectedStoreId => throw _privateConstructorUsedError;
+  List<BranchInfo> get storeOptions => throw _privateConstructorUsedError;
+  bool get isStoreOptionsLoading => throw _privateConstructorUsedError;
   List<SubPlanDtoModel> get subPlans => throw _privateConstructorUsedError;
   Jalali? get startDate => throw _privateConstructorUsedError;
   Jalali? get endDate => throw _privateConstructorUsedError;
@@ -127,6 +130,9 @@ abstract class $OrdersStateCopyWith<$Res> {
     bool isClearanceSectionExpanded,
     List<String> selectedStatusIds,
     String? selectedSubPlanId,
+    String? selectedStoreId,
+    List<BranchInfo> storeOptions,
+    bool isStoreOptionsLoading,
     List<SubPlanDtoModel> subPlans,
     Jalali? startDate,
     Jalali? endDate,
@@ -208,6 +214,9 @@ class _$OrdersStateCopyWithImpl<$Res, $Val extends OrdersState>
     Object? isClearanceSectionExpanded = null,
     Object? selectedStatusIds = null,
     Object? selectedSubPlanId = freezed,
+    Object? selectedStoreId = freezed,
+    Object? storeOptions = null,
+    Object? isStoreOptionsLoading = null,
     Object? subPlans = null,
     Object? startDate = freezed,
     Object? endDate = freezed,
@@ -328,6 +337,18 @@ class _$OrdersStateCopyWithImpl<$Res, $Val extends OrdersState>
                 ? _value.selectedSubPlanId
                 : selectedSubPlanId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            selectedStoreId: freezed == selectedStoreId
+                ? _value.selectedStoreId
+                : selectedStoreId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            storeOptions: null == storeOptions
+                ? _value.storeOptions
+                : storeOptions // ignore: cast_nullable_to_non_nullable
+                      as List<BranchInfo>,
+            isStoreOptionsLoading: null == isStoreOptionsLoading
+                ? _value.isStoreOptionsLoading
+                : isStoreOptionsLoading // ignore: cast_nullable_to_non_nullable
+                      as bool,
             subPlans: null == subPlans
                 ? _value.subPlans
                 : subPlans // ignore: cast_nullable_to_non_nullable
@@ -542,6 +563,9 @@ abstract class _$$OrdersStateImplCopyWith<$Res>
     bool isClearanceSectionExpanded,
     List<String> selectedStatusIds,
     String? selectedSubPlanId,
+    String? selectedStoreId,
+    List<BranchInfo> storeOptions,
+    bool isStoreOptionsLoading,
     List<SubPlanDtoModel> subPlans,
     Jalali? startDate,
     Jalali? endDate,
@@ -622,6 +646,9 @@ class __$$OrdersStateImplCopyWithImpl<$Res>
     Object? isClearanceSectionExpanded = null,
     Object? selectedStatusIds = null,
     Object? selectedSubPlanId = freezed,
+    Object? selectedStoreId = freezed,
+    Object? storeOptions = null,
+    Object? isStoreOptionsLoading = null,
     Object? subPlans = null,
     Object? startDate = freezed,
     Object? endDate = freezed,
@@ -742,6 +769,18 @@ class __$$OrdersStateImplCopyWithImpl<$Res>
             ? _value.selectedSubPlanId
             : selectedSubPlanId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        selectedStoreId: freezed == selectedStoreId
+            ? _value.selectedStoreId
+            : selectedStoreId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        storeOptions: null == storeOptions
+            ? _value._storeOptions
+            : storeOptions // ignore: cast_nullable_to_non_nullable
+                  as List<BranchInfo>,
+        isStoreOptionsLoading: null == isStoreOptionsLoading
+            ? _value.isStoreOptionsLoading
+            : isStoreOptionsLoading // ignore: cast_nullable_to_non_nullable
+                  as bool,
         subPlans: null == subPlans
             ? _value._subPlans
             : subPlans // ignore: cast_nullable_to_non_nullable
@@ -949,6 +988,9 @@ class _$OrdersStateImpl implements _OrdersState {
     this.isClearanceSectionExpanded = true,
     final List<String> selectedStatusIds = const [],
     this.selectedSubPlanId,
+    this.selectedStoreId,
+    final List<BranchInfo> storeOptions = const [],
+    this.isStoreOptionsLoading = false,
     final List<SubPlanDtoModel> subPlans = const [],
     this.startDate,
     this.endDate,
@@ -998,6 +1040,7 @@ class _$OrdersStateImpl implements _OrdersState {
        _filteredOrders = filteredOrders,
        _selectedBadges = selectedBadges,
        _selectedStatusIds = selectedStatusIds,
+       _storeOptions = storeOptions,
        _subPlans = subPlans,
        _pendingNavigation = pendingNavigation,
        _settlementDocs = settlementDocs;
@@ -1079,6 +1122,20 @@ class _$OrdersStateImpl implements _OrdersState {
 
   @override
   final String? selectedSubPlanId;
+  @override
+  final String? selectedStoreId;
+  final List<BranchInfo> _storeOptions;
+  @override
+  @JsonKey()
+  List<BranchInfo> get storeOptions {
+    if (_storeOptions is EqualUnmodifiableListView) return _storeOptions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_storeOptions);
+  }
+
+  @override
+  @JsonKey()
+  final bool isStoreOptionsLoading;
   final List<SubPlanDtoModel> _subPlans;
   @override
   @JsonKey()
@@ -1223,7 +1280,7 @@ class _$OrdersStateImpl implements _OrdersState {
 
   @override
   String toString() {
-    return 'OrdersState(status: $status, errorMessage: $errorMessage, allOrders: $allOrders, filteredOrders: $filteredOrders, searchQuery: $searchQuery, isSearchActive: $isSearchActive, selectedBadges: $selectedBadges, selectedOrder: $selectedOrder, selectedTabIndex: $selectedTabIndex, isCreditPlanExpanded: $isCreditPlanExpanded, isFinancialSectionExpanded: $isFinancialSectionExpanded, isProductsExpanded: $isProductsExpanded, isCustomerInfoExpanded: $isCustomerInfoExpanded, isDocumentsExpanded: $isDocumentsExpanded, isFinancialSummaryExpanded: $isFinancialSummaryExpanded, isClearanceSectionExpanded: $isClearanceSectionExpanded, selectedStatusIds: $selectedStatusIds, selectedSubPlanId: $selectedSubPlanId, subPlans: $subPlans, startDate: $startDate, endDate: $endDate, selectedDateOptionId: $selectedDateOptionId, deepLinkPaymentOutcome: $deepLinkPaymentOutcome, pendingNavigation: $pendingNavigation, clearanceStep: $clearanceStep, clearanceAmount: $clearanceAmount, disburseOperation: $disburseOperation, excessAmount: $excessAmount, gatewayType: $gatewayType, walletName: $walletName, uploadedClearanceDoc: $uploadedClearanceDoc, uploadedClearanceDocId: $uploadedClearanceDocId, orderAmount: $orderAmount, isOutOfTolerance: $isOutOfTolerance, tolerance: $tolerance, toleranceCheckEnabled: $toleranceCheckEnabled, settlementStep: $settlementStep, settlementOperation: $settlementOperation, settlementMethod: $settlementMethod, settlementRedirectUrl: $settlementRedirectUrl, settlementReservedAmount: $settlementReservedAmount, settlementBankAccount: $settlementBankAccount, settlementBankName: $settlementBankName, settlementAccountHolder: $settlementAccountHolder, settlementTrackingCode: $settlementTrackingCode, settlementDocs: $settlementDocs, isWalletBalanceSufficient: $isWalletBalanceSufficient, isSettlementCompleted: $isSettlementCompleted, settlementCountdown: $settlementCountdown, isSettlementTimerActive: $isSettlementTimerActive, clearanceOtpCountdown: $clearanceOtpCountdown, isClearanceOtpTimerActive: $isClearanceOtpTimerActive, settlementMobile: $settlementMobile, disbursementMobile: $disbursementMobile, disbursementRedirectUrl: $disbursementRedirectUrl, disbursementGatewayType: $disbursementGatewayType, isPrinting: $isPrinting, printStatus: $printStatus, lastPrintedFilePath: $lastPrintedFilePath, currentPage: $currentPage, totalCount: $totalCount, isPaginationLoading: $isPaginationLoading, hasMoreData: $hasMoreData)';
+    return 'OrdersState(status: $status, errorMessage: $errorMessage, allOrders: $allOrders, filteredOrders: $filteredOrders, searchQuery: $searchQuery, isSearchActive: $isSearchActive, selectedBadges: $selectedBadges, selectedOrder: $selectedOrder, selectedTabIndex: $selectedTabIndex, isCreditPlanExpanded: $isCreditPlanExpanded, isFinancialSectionExpanded: $isFinancialSectionExpanded, isProductsExpanded: $isProductsExpanded, isCustomerInfoExpanded: $isCustomerInfoExpanded, isDocumentsExpanded: $isDocumentsExpanded, isFinancialSummaryExpanded: $isFinancialSummaryExpanded, isClearanceSectionExpanded: $isClearanceSectionExpanded, selectedStatusIds: $selectedStatusIds, selectedSubPlanId: $selectedSubPlanId, selectedStoreId: $selectedStoreId, storeOptions: $storeOptions, isStoreOptionsLoading: $isStoreOptionsLoading, subPlans: $subPlans, startDate: $startDate, endDate: $endDate, selectedDateOptionId: $selectedDateOptionId, deepLinkPaymentOutcome: $deepLinkPaymentOutcome, pendingNavigation: $pendingNavigation, clearanceStep: $clearanceStep, clearanceAmount: $clearanceAmount, disburseOperation: $disburseOperation, excessAmount: $excessAmount, gatewayType: $gatewayType, walletName: $walletName, uploadedClearanceDoc: $uploadedClearanceDoc, uploadedClearanceDocId: $uploadedClearanceDocId, orderAmount: $orderAmount, isOutOfTolerance: $isOutOfTolerance, tolerance: $tolerance, toleranceCheckEnabled: $toleranceCheckEnabled, settlementStep: $settlementStep, settlementOperation: $settlementOperation, settlementMethod: $settlementMethod, settlementRedirectUrl: $settlementRedirectUrl, settlementReservedAmount: $settlementReservedAmount, settlementBankAccount: $settlementBankAccount, settlementBankName: $settlementBankName, settlementAccountHolder: $settlementAccountHolder, settlementTrackingCode: $settlementTrackingCode, settlementDocs: $settlementDocs, isWalletBalanceSufficient: $isWalletBalanceSufficient, isSettlementCompleted: $isSettlementCompleted, settlementCountdown: $settlementCountdown, isSettlementTimerActive: $isSettlementTimerActive, clearanceOtpCountdown: $clearanceOtpCountdown, isClearanceOtpTimerActive: $isClearanceOtpTimerActive, settlementMobile: $settlementMobile, disbursementMobile: $disbursementMobile, disbursementRedirectUrl: $disbursementRedirectUrl, disbursementGatewayType: $disbursementGatewayType, isPrinting: $isPrinting, printStatus: $printStatus, lastPrintedFilePath: $lastPrintedFilePath, currentPage: $currentPage, totalCount: $totalCount, isPaginationLoading: $isPaginationLoading, hasMoreData: $hasMoreData)';
   }
 
   @override
@@ -1286,6 +1343,14 @@ class _$OrdersStateImpl implements _OrdersState {
             ) &&
             (identical(other.selectedSubPlanId, selectedSubPlanId) ||
                 other.selectedSubPlanId == selectedSubPlanId) &&
+            (identical(other.selectedStoreId, selectedStoreId) ||
+                other.selectedStoreId == selectedStoreId) &&
+            const DeepCollectionEquality().equals(
+              other._storeOptions,
+              _storeOptions,
+            ) &&
+            (identical(other.isStoreOptionsLoading, isStoreOptionsLoading) ||
+                other.isStoreOptionsLoading == isStoreOptionsLoading) &&
             const DeepCollectionEquality().equals(other._subPlans, _subPlans) &&
             (identical(other.startDate, startDate) ||
                 other.startDate == startDate) &&
@@ -1422,6 +1487,9 @@ class _$OrdersStateImpl implements _OrdersState {
     isClearanceSectionExpanded,
     const DeepCollectionEquality().hash(_selectedStatusIds),
     selectedSubPlanId,
+    selectedStoreId,
+    const DeepCollectionEquality().hash(_storeOptions),
+    isStoreOptionsLoading,
     const DeepCollectionEquality().hash(_subPlans),
     startDate,
     endDate,
@@ -1498,6 +1566,9 @@ abstract class _OrdersState implements OrdersState {
     final bool isClearanceSectionExpanded,
     final List<String> selectedStatusIds,
     final String? selectedSubPlanId,
+    final String? selectedStoreId,
+    final List<BranchInfo> storeOptions,
+    final bool isStoreOptionsLoading,
     final List<SubPlanDtoModel> subPlans,
     final Jalali? startDate,
     final Jalali? endDate,
@@ -1581,6 +1652,12 @@ abstract class _OrdersState implements OrdersState {
   List<String> get selectedStatusIds;
   @override
   String? get selectedSubPlanId;
+  @override
+  String? get selectedStoreId;
+  @override
+  List<BranchInfo> get storeOptions;
+  @override
+  bool get isStoreOptionsLoading;
   @override
   List<SubPlanDtoModel> get subPlans;
   @override

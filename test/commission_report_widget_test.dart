@@ -9,6 +9,8 @@ import 'package:rtc_mobile/core/service/analytics_service.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/locator.dart';
 import 'package:rtc_mobile/repository/report/commission_report_repository.dart';
+import 'package:rtc_mobile/repository/workspace/workspace_repository.dart';
+import 'package:rtc_mobile/core/models/workspace_models.dart';
 import 'package:rtc_mobile/ui/presenters/commission_report/bloc/commission_report_cubit.dart';
 import 'package:rtc_mobile/ui/presenters/commission_report/commission_report.dart';
 import 'package:rtc_mobile/ui/presenters/products/widget/filter_bottom_sheet.dart';
@@ -39,8 +41,33 @@ void main() {
   setUp(() {
     api = CommissionTestApi();
     sl.registerSingleton<CommissionReportRepository>(api.repository());
+    sl.registerSingleton<WorkspaceRepository>(
+      WorkspaceRepository(
+        loadBranches: () => Future.value([
+          const BranchInfo(
+            id: 'store-1',
+            name: 'تهران - ارگ',
+            province: 'تهران',
+            city: 'تهران',
+            postalCode: '',
+            address: '',
+          ),
+          const BranchInfo(
+            id: 'store-2',
+            name: 'مشهد - ارگ',
+            province: 'خراسان',
+            city: 'مشهد',
+            postalCode: '',
+            address: '',
+          ),
+        ]),
+      ),
+    );
   });
-  tearDown(() => sl.unregister<CommissionReportRepository>());
+  tearDown(() async {
+    await sl.unregister<CommissionReportRepository>();
+    await sl.unregister<WorkspaceRepository>();
+  });
   tearDownAll(() => sl.reset());
 
   Finder chip(int id) => find.byWidgetPredicate(
@@ -92,35 +119,65 @@ void main() {
   }
 
   testWidgets(
-    'renders API count and summary; store stays visible but disabled',
+    'branch selection filters commission list, summary and pagination',
     (tester) async {
-      await openReport(tester);
-      expect(find.text(S.current.resultsCountLabel(123)), findsOneWidget);
-      expect(find.text('2,000,000,000'), findsOneWidget);
-      expect(find.text(S.current.commissionStoreFilter), findsOneWidget);
-      for (final id in [2, 3]) {
-        expect(tester.widget<RtcChipItem>(chip(id)).isSelected, isFalse);
-      }
-      expect(tester.widget<RtcChipItem>(chip(2)).chip.label, S.current.year);
-      expect(tester.widget<RtcChipItem>(chip(3)).chip.label, S.current.month);
-      final blocker = find.ancestor(
-        of: chip(1),
-        matching: find.byType(IgnorePointer),
-      );
-      expect(
-        tester
-            .widgetList<IgnorePointer>(blocker)
-            .any((widget) => widget.ignoring),
-        isTrue,
-      );
-      await tester.tap(chip(1), warnIfMissed: false);
+      final cubit = await openReport(tester);
+      await tester.tap(chip(1));
       await tester.pumpAndSettle();
-      expect(find.byType(FilterBottomSheet), findsNothing);
-      expect(api.requests.length, 2);
-      await capture(tester, 'report');
+      expect(find.byType(FilterBottomSheet), findsOneWidget);
+      await tester.tap(find.text('تهران - ارگ'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(S.current.applyFilter));
+      await tester.pumpAndSettle();
+      expect(cubit.state.selectedStoreId, 'store-1');
+      expect(tester.widget<RtcChipItem>(chip(1)).isSelected, isTrue);
+      for (final request in api.requests.skip(2))
+        expect(request.queryParameters['store'], 'store-1');
+      cubit.fetchNextPage();
+      await tester.pumpAndSettle();
+      expect(api.requests.last.queryParameters['store'], 'store-1');
+      expect(api.requests.last.queryParameters['page'], 2);
+      cubit.selectStore(null);
+      await tester.pumpAndSettle();
+      expect(cubit.state.selectedStoreId, isNull);
+      expect(api.requests.last.queryParameters.containsKey('store'), isFalse);
+      expect(tester.widget<RtcChipItem>(chip(1)).isSelected, isFalse);
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('renders API count and summary; branch is enabled', (
+    tester,
+  ) async {
+    await openReport(tester);
+    expect(find.text(S.current.resultsCountLabel(123)), findsOneWidget);
+    expect(find.text('2,000,000,000'), findsOneWidget);
+    expect(S.current.commissionStoreFilter, 'شعبه');
+    expect(find.text('فروشگاه'), findsNothing);
+    expect(find.text(S.current.commissionStoreFilter), findsOneWidget);
+    for (final id in [2, 3]) {
+      expect(tester.widget<RtcChipItem>(chip(id)).isSelected, isFalse);
+    }
+    expect(tester.widget<RtcChipItem>(chip(2)).chip.label, S.current.year);
+    expect(tester.widget<RtcChipItem>(chip(3)).chip.label, S.current.month);
+    final blocker = find.ancestor(
+      of: chip(1),
+      matching: find.byType(IgnorePointer),
+    );
+    expect(
+      tester
+          .widgetList<IgnorePointer>(blocker)
+          .any((widget) => widget.ignoring),
+      isFalse,
+    );
+    await tester.tap(chip(1), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(find.byType(FilterBottomSheet), findsOneWidget);
+    expect(find.text('تهران - ارگ'), findsOneWidget);
+    expect(api.requests.length, 2);
+    await capture(tester, 'report');
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'year/month keep their labels; apply selects and clear deselects only its chip',

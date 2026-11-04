@@ -119,6 +119,16 @@ class OrderMapper {
       id: dto.id,
       status: dto.status,
       remainingTime: remainingTimeStr,
+      storeId: dto.store?.id,
+      storeName: dto.store?.name,
+      receiverFullName: dto.receiverFullName,
+      receiverNationalId: dto.receiverNationalId,
+      deliveryToAgent: dto.deliveryToAgent,
+      createdById: dto.createdBy?.id,
+      createdByName: dto.createdBy == null
+          ? null
+          : '${dto.createdBy!.firstName} ${dto.createdBy!.lastName}'.trim(),
+      createdByRole: dto.createdBy?.role,
       isSettled:
           OrderStatus.fromString(dto.status) == OrderStatus.approved ||
           OrderStatus.fromString(dto.status) == OrderStatus.rejected,

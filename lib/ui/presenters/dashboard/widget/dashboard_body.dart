@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/ui/router/app_route.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import '../../../../generated/l10n.dart';
+import '../../../../core/models/workspace_models.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
+import '../../workspace/bloc/workspace_state.dart';
 import '../../../widget/rtc_bar_chart_card.dart';
 import '../../../widget/rtc_line_chart_card.dart';
 import '../../../widget/rtc_message_card.dart';
@@ -15,6 +18,7 @@ import '../bloc/dashboard_state.dart';
 import 'dashboard_quick_access_grid.dart';
 import 'dashboard_recent_orders_header.dart';
 import 'dashboard_ui_helpers.dart';
+import 'home_banner_carousel.dart';
 
 class DashboardBody extends StatelessWidget {
   const DashboardBody({super.key});
@@ -76,9 +80,14 @@ class DashboardBody extends StatelessWidget {
               children: [
                 const SizedBox(height: 16.0),
                 DashboardQuickAccessGrid(items: state.quickAccessItems),
-                RtcMessageCard(
-                  message: state.messageText,
-                  iconPath: state.messageIconPath,
+                BlocSelector<WorkspaceCubit, WorkspaceState, AccountRole>(
+                  selector: (workspace) => workspace.role,
+                  builder: (context, role) => role == AccountRole.agent
+                      ? RtcMessageCard(
+                          message: state.messageText,
+                          iconPath: state.messageIconPath,
+                        )
+                      : const SizedBox.shrink(),
                 ),
                 RtcPreInvoiceCard(
                   onTap: () => context.push(AppRoutes.preInvoice),
@@ -88,6 +97,7 @@ class DashboardBody extends StatelessWidget {
                     line1Data: state.lineChartData.first.line1Data,
                     line2Data: state.lineChartData.first.line2Data,
                   ),
+                const HomeBannerCarousel(),
                 RtcPieChartCard(
                   title: state.pieChart1Title,
                   data: state.pieChart1Data,

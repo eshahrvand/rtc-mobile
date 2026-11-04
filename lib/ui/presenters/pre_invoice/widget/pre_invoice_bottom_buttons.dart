@@ -52,9 +52,9 @@ class PreInvoiceBottomButtons extends StatelessWidget {
                 title: S.current.back,
                 backgroundColor: AppColors.grayPalette.shade50,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.grayPalette.shade700,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.grayPalette.shade700,
+                ),
                 onPressed: () => cubit.exitEditMode(),
                 borderColor: AppColors.grayPalette.shade300,
               ),
@@ -62,10 +62,13 @@ class PreInvoiceBottomButtons extends StatelessWidget {
             Expanded(
               child: RtcButton(
                 title: S.current.save,
+                isActive:
+                    state.currentStep != PreInvoiceStep.customerInfo ||
+                    state.isCurrentStepValid,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
                 onPressed: () => cubit.exitEditMode(),
               ),
             ),
@@ -91,9 +94,9 @@ class PreInvoiceBottomButtons extends StatelessWidget {
                 title: S.current.submitPreInvoice,
                 backgroundColor: AppColors.brandPalette.shade50,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.brandPalette.shade700,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.brandPalette.shade700,
+                ),
                 isLoading: state.isSubmittingAndClearing,
                 onPressed: () => cubit.submitAndClear(),
                 borderColor: AppColors.brandPalette.shade50,
@@ -103,9 +106,9 @@ class PreInvoiceBottomButtons extends StatelessWidget {
               child: RtcButton(
                 title: S.current.submitAndClearCart,
                 styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
                 isLoading: state.isSubmittingPreInvoice,
                 onPressed: () => cubit.submitPreInvoice(),
               ),
@@ -117,7 +120,7 @@ class PreInvoiceBottomButtons extends StatelessWidget {
   }
 
   Widget _buildStandardStepButtons(BuildContext context) {
-    final isActive = state.isCurrentStepValid;
+    final isActive = cubit.canContinue;
     final isLoading = state.isNextStepLoading;
     final title = PreInvoiceUiHelpers.resolveNextStepTitle(state);
 
@@ -137,11 +140,11 @@ class PreInvoiceBottomButtons extends StatelessWidget {
                 child: RtcButton(
                   title: title,
                   styleBtn: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        color: isActive
-                            ? Colors.white
-                            : AppColors.grayPalette.shade300,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: isActive
+                        ? Colors.white
+                        : AppColors.grayPalette.shade300,
+                    fontWeight: FontWeight.w600,
+                  ),
                   isActive: isActive,
                   isLoading: isLoading,
                   onPressed: () => _handleNextStep(),
@@ -180,6 +183,7 @@ class PreInvoiceBottomButtons extends StatelessWidget {
 
   void _handleNextStep() {
     final nextStep = switch (state.currentStep) {
+      PreInvoiceStep.branch => PreInvoiceStep.creditPlan,
       PreInvoiceStep.creditPlan => PreInvoiceStep.products,
       PreInvoiceStep.products => PreInvoiceStep.customerInfo,
       PreInvoiceStep.customerInfo => PreInvoiceStep.documents,

@@ -18,6 +18,7 @@ class MediaPickerBottomSheet {
     BuildContext context, {
     bool isMultiSelection = false,
     bool showCameraOverlay = true,
+    bool imagesOnly = false,
   }) async {
     final result = await AvatMediaPicker.pick(
       context,
@@ -26,7 +27,7 @@ class MediaPickerBottomSheet {
         showNationalCardOverlay: showCameraOverlay,
         allowCamera: true,
         allowGallery: true,
-        allowPdfOrFile: true,
+        allowPdfOrFile: !imagesOnly,
         allowedFileExtensions: ['pdf'],
         theme: AvatMediaPickerThemeData.fa().copyWith(
           primaryColor: AppColors.brandPalette.shade500,

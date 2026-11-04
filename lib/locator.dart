@@ -26,6 +26,10 @@ import 'repository/product/product_repository.dart';
 import 'repository/report/report_repository.dart';
 import 'repository/report/commission_report_repository.dart';
 import 'repository/wallet/wallet_repository.dart';
+import 'repository/workspace/workspace_repository.dart';
+import 'ui/presenters/workspace/bloc/workspace_cubit.dart';
+import 'data_source/remote/workspace/workspace_service.dart';
+import 'data_source/remote/profile/model/user_profile_dto_model.dart';
 
 final sl = GetIt.instance;
 
@@ -38,7 +42,20 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => Prefs(sl()));
 
   // Network
-  sl.registerLazySingleton(() => ServiceUtil.createDio(sl()));
+  sl.registerLazySingleton(
+    () => ServiceUtil.createDio(
+      sl(),
+      isTermsRequired: (error) =>
+          sl<WorkspaceRepository>().isTermsRequiredResponse?.call(
+            error.response?.data,
+          ) ??
+          false,
+      onSignedOut: () => sl<WorkspaceCubit>().reset(),
+      onPolicyBlocked: (code) => sl<WorkspaceCubit>().blockPolicy(code),
+      onAccountMe: (json) =>
+          sl<WorkspaceCubit>().setProfile(UserProfileDtoModel.fromJson(json)),
+    ),
+  );
 
   // Analytics
   sl.registerLazySingleton(() => AnalyticsService(FirebaseAnalytics.instance));
@@ -73,4 +90,7 @@ Future<void> initLocator() async {
   sl.registerLazySingleton(() => MediaRepository(sl()));
   sl.registerLazySingleton(() => ReportRepository(sl()));
   sl.registerLazySingleton(() => CommissionReportRepository(sl()));
+  sl.registerLazySingleton(() => WorkspaceService(sl()));
+  sl.registerLazySingleton(() => WorkspaceRepository.remote(sl()));
+  sl.registerLazySingleton(() => WorkspaceCubit(sl()));
 }

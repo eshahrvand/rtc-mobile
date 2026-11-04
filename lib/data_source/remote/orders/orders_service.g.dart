@@ -20,6 +20,7 @@ class _OrdersService implements OrdersService {
   @override
   Future<OrderListResponse> getOrders({
     String? agentId,
+    String? storeId,
     String? customerId,
     List<String>? status,
     String? subPlanId,
@@ -33,6 +34,7 @@ class _OrdersService implements OrdersService {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'agent': agentId,
+      r'store': storeId,
       r'customer': customerId,
       r'status': status,
       r'sub_plan': subPlanId,

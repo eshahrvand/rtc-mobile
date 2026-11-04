@@ -1,4 +1,5 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/bloc/mounted_cubit.dart';
+
 import 'package:intl/intl.dart';
 import '../../../../core/models/product_detail_model.dart';
 import '../../../../config/errorhandler.dart';
@@ -7,7 +8,7 @@ import '../../../../repository/product/product_repository.dart';
 import '../../../../locator.dart';
 import 'product_detail_state.dart';
 
-class ProductDetailCubit extends Cubit<ProductDetailState> {
+class ProductDetailCubit extends MountedCubit<ProductDetailState> {
   ProductDetailCubit() : super(const ProductDetailState());
 
   final _productRepo = sl<ProductRepository>();

@@ -30,6 +30,7 @@ class RtcPalette extends MaterialColor {
 
 class AppColors {
   AppColors._();
+  static const workspaceTextStrong = Color(0xFF181D27);
 
   static const RtcPalette grayPalette = RtcPalette(0xFF717680, <int, Color>{
     20: Color(0xFF333333),

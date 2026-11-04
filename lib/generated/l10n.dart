@@ -2022,6 +2022,571 @@ class S {
   String get commissionLoadMore {
     return Intl.message('', name: 'commissionLoadMore', desc: '', args: []);
   }
+
+  /// ``
+  String get workspaceServicePending {
+    return Intl.message(
+      '',
+      name: 'workspaceServicePending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get retryWorkspace {
+    return Intl.message('', name: 'retryWorkspace', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsTitle {
+    return Intl.message('', name: 'termsTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsPublishedAt {
+    return Intl.message('', name: 'termsPublishedAt', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsAcceptedAt {
+    return Intl.message('', name: 'termsAcceptedAt', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsUpdateTitle {
+    return Intl.message('', name: 'termsUpdateTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsEmployeeTitle {
+    return Intl.message('', name: 'termsEmployeeTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsEmployeeExplanation {
+    return Intl.message(
+      '',
+      name: 'termsEmployeeExplanation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get termsAgentExplanation {
+    return Intl.message('', name: 'termsAgentExplanation', desc: '', args: []);
+  }
+
+  /// ``
+  String get termsAgreement {
+    return Intl.message('', name: 'termsAgreement', desc: '', args: []);
+  }
+
+  /// ``
+  String get exitWorkspace {
+    return Intl.message('', name: 'exitWorkspace', desc: '', args: []);
+  }
+
+  /// ``
+  String get downloadTerms {
+    return Intl.message('', name: 'downloadTerms', desc: '', args: []);
+  }
+
+  /// ``
+  String get recheckTerms {
+    return Intl.message('', name: 'recheckTerms', desc: '', args: []);
+  }
+
+  /// ``
+  String get confirmNewTerms {
+    return Intl.message('', name: 'confirmNewTerms', desc: '', args: []);
+  }
+
+  /// ``
+  String get userInformation {
+    return Intl.message('', name: 'userInformation', desc: '', args: []);
+  }
+
+  /// ``
+  String get agencyInformation {
+    return Intl.message('', name: 'agencyInformation', desc: '', args: []);
+  }
+
+  /// ``
+  String get agencyType {
+    return Intl.message('', name: 'agencyType', desc: '', args: []);
+  }
+
+  /// ``
+  String get legalAgency {
+    return Intl.message('', name: 'legalAgency', desc: '', args: []);
+  }
+
+  /// ``
+  String get naturalAgency {
+    return Intl.message('', name: 'naturalAgency', desc: '', args: []);
+  }
+
+  /// ``
+  String get fullNameLabel {
+    return Intl.message('', name: 'fullNameLabel', desc: '', args: []);
+  }
+
+  /// ``
+  String get agentName {
+    return Intl.message('', name: 'agentName', desc: '', args: []);
+  }
+
+  /// ``
+  String get mobileLabel {
+    return Intl.message('', name: 'mobileLabel', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeePosition {
+    return Intl.message('', name: 'employeePosition', desc: '', args: []);
+  }
+
+  /// ``
+  String get locationInformation {
+    return Intl.message('', name: 'locationInformation', desc: '', args: []);
+  }
+
+  /// ``
+  String get financialCreditInformation {
+    return Intl.message(
+      '',
+      name: 'financialCreditInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get walletCreditLimit {
+    return Intl.message('', name: 'walletCreditLimit', desc: '', args: []);
+  }
+
+  /// ``
+  String get rialLabel {
+    return Intl.message('', name: 'rialLabel', desc: '', args: []);
+  }
+
+  /// ``
+  String get organizationInformation {
+    return Intl.message(
+      '',
+      name: 'organizationInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get editProfilePhoto {
+    return Intl.message('', name: 'editProfilePhoto', desc: '', args: []);
+  }
+
+  /// ``
+  String get branchManagement {
+    return Intl.message('', name: 'branchManagement', desc: '', args: []);
+  }
+
+  /// ``
+  String get searchBranchHint {
+    return Intl.message('', name: 'searchBranchHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get branchAccessDenied {
+    return Intl.message('', name: 'branchAccessDenied', desc: '', args: []);
+  }
+
+  /// ``
+  String get noBranchesFound {
+    return Intl.message('', name: 'noBranchesFound', desc: '', args: []);
+  }
+
+  /// ``
+  String get branchInformation {
+    return Intl.message('', name: 'branchInformation', desc: '', args: []);
+  }
+
+  /// ``
+  String get branchUsers {
+    return Intl.message('', name: 'branchUsers', desc: '', args: []);
+  }
+
+  /// ``
+  String get statusLabel {
+    return Intl.message('', name: 'statusLabel', desc: '', args: []);
+  }
+
+  /// ``
+  String get addBranchUser {
+    return Intl.message('', name: 'addBranchUser', desc: '', args: []);
+  }
+
+  /// ``
+  String get noBranchUsers {
+    return Intl.message('', name: 'noBranchUsers', desc: '', args: []);
+  }
+
+  /// ``
+  String get addBranchUserTitle {
+    return Intl.message('', name: 'addBranchUserTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get editBranchUserTitle {
+    return Intl.message('', name: 'editBranchUserTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get deleteBranchUser {
+    return Intl.message('', name: 'deleteBranchUser', desc: '', args: []);
+  }
+
+  /// ``
+  String deleteBranchUserMessage(String name) {
+    return Intl.message(
+      '',
+      name: 'deleteBranchUserMessage',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// ``
+  String get confirmDeleteBranchUser {
+    return Intl.message(
+      '',
+      name: 'confirmDeleteBranchUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get cancelWorkspace {
+    return Intl.message('', name: 'cancelWorkspace', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeeFirstNameHint {
+    return Intl.message('', name: 'employeeFirstNameHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeeLastNameHint {
+    return Intl.message('', name: 'employeeLastNameHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeeNationalIdHint {
+    return Intl.message('', name: 'employeeNationalIdHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeeMobileHint {
+    return Intl.message('', name: 'employeeMobileHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeePositionRequired {
+    return Intl.message(
+      '',
+      name: 'employeePositionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get employeePositionHint {
+    return Intl.message('', name: 'employeePositionHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get shopAccountant {
+    return Intl.message('', name: 'shopAccountant', desc: '', args: []);
+  }
+
+  /// ``
+  String get shopSupervisor {
+    return Intl.message('', name: 'shopSupervisor', desc: '', args: []);
+  }
+
+  /// ``
+  String get saveBranchUser {
+    return Intl.message('', name: 'saveBranchUser', desc: '', args: []);
+  }
+
+  /// ``
+  String get saveBranchUserChanges {
+    return Intl.message('', name: 'saveBranchUserChanges', desc: '', args: []);
+  }
+
+  /// ``
+  String get branchUserInformation {
+    return Intl.message('', name: 'branchUserInformation', desc: '', args: []);
+  }
+
+  /// ``
+  String get viewProducts {
+    return Intl.message('', name: 'viewProducts', desc: '', args: []);
+  }
+
+  /// ``
+  String get myOrders {
+    return Intl.message('', name: 'myOrders', desc: '', args: []);
+  }
+
+  /// ``
+  String get workspaceReports {
+    return Intl.message('', name: 'workspaceReports', desc: '', args: []);
+  }
+
+  /// ``
+  String get workspaceSales {
+    return Intl.message('', name: 'workspaceSales', desc: '', args: []);
+  }
+
+  /// ``
+  String get workspacePlans {
+    return Intl.message('', name: 'workspacePlans', desc: '', args: []);
+  }
+
+  /// ``
+  String get workspaceCategories {
+    return Intl.message('', name: 'workspaceCategories', desc: '', args: []);
+  }
+
+  /// ``
+  String get workspaceProducts {
+    return Intl.message('', name: 'workspaceProducts', desc: '', args: []);
+  }
+
+  /// ``
+  String get salesAgent {
+    return Intl.message('', name: 'salesAgent', desc: '', args: []);
+  }
+
+  /// ``
+  String get refundRequestTitle {
+    return Intl.message('', name: 'refundRequestTitle', desc: '', args: []);
+  }
+
+  /// ``
+  String get refundAwaitingReview {
+    return Intl.message('', name: 'refundAwaitingReview', desc: '', args: []);
+  }
+
+  /// ``
+  String get refundRequestMessage {
+    return Intl.message('', name: 'refundRequestMessage', desc: '', args: []);
+  }
+
+  /// ``
+  String get confirmRefundRequest {
+    return Intl.message('', name: 'confirmRefundRequest', desc: '', args: []);
+  }
+
+  /// ``
+  String get receiveByAnotherPerson {
+    return Intl.message('', name: 'receiveByAnotherPerson', desc: '', args: []);
+  }
+
+  /// ``
+  String get recipientNameRequired {
+    return Intl.message('', name: 'recipientNameRequired', desc: '', args: []);
+  }
+
+  /// ``
+  String get recipientNameHint {
+    return Intl.message('', name: 'recipientNameHint', desc: '', args: []);
+  }
+
+  /// ``
+  String get recipientNationalIdRequired {
+    return Intl.message(
+      '',
+      name: 'recipientNationalIdRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get recipientNationalIdHint {
+    return Intl.message(
+      '',
+      name: 'recipientNationalIdHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get deliveryDestination {
+    return Intl.message('', name: 'deliveryDestination', desc: '', args: []);
+  }
+
+  /// ``
+  String get customerDeliveryAddress {
+    return Intl.message(
+      '',
+      name: 'customerDeliveryAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get storeDeliveryAddress {
+    return Intl.message('', name: 'storeDeliveryAddress', desc: '', args: []);
+  }
+
+  /// ``
+  String get recipientFullName {
+    return Intl.message('', name: 'recipientFullName', desc: '', args: []);
+  }
+
+  /// ``
+  String get recipientNationalId {
+    return Intl.message('', name: 'recipientNationalId', desc: '', args: []);
+  }
+
+  /// ``
+  String get branchStoreName {
+    return Intl.message('', name: 'branchStoreName', desc: '', args: []);
+  }
+
+  /// ``
+  String get inactiveBranchStatus {
+    return Intl.message('', name: 'inactiveBranchStatus', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeeMobileRequired {
+    return Intl.message('', name: 'employeeMobileRequired', desc: '', args: []);
+  }
+
+  /// ``
+  String get employeeFirstNameRequired {
+    return Intl.message(
+      '',
+      name: 'employeeFirstNameRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get employeeLastNameRequired {
+    return Intl.message(
+      '',
+      name: 'employeeLastNameRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get employeeNationalIdRequired {
+    return Intl.message(
+      '',
+      name: 'employeeNationalIdRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get selectInvoiceBranch {
+    return Intl.message('', name: 'selectInvoiceBranch', desc: '', args: []);
+  }
+
+  /// ``
+  String get selectInvoiceBranchPrompt {
+    return Intl.message(
+      '',
+      name: 'selectInvoiceBranchPrompt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get selectInvoiceBranchHint {
+    return Intl.message(
+      '',
+      name: 'selectInvoiceBranchHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String get consumerFinalAmount {
+    return Intl.message('', name: 'consumerFinalAmount', desc: '', args: []);
+  }
+
+  /// ``
+  String get noPublishedPolicies {
+    return Intl.message('', name: 'noPublishedPolicies', desc: '', args: []);
+  }
+
+  /// ``
+  String policyVersionLabel(String version, String month) {
+    return Intl.message(
+      '',
+      name: 'policyVersionLabel',
+      desc: '',
+      args: [version, month],
+    );
+  }
+
+  /// ``
+  String policyPublishedIntro(String date) {
+    return Intl.message(
+      '',
+      name: 'policyPublishedIntro',
+      desc: '',
+      args: [date],
+    );
+  }
+
+  /// ``
+  String get storeUserPosition {
+    return Intl.message('', name: 'storeUserPosition', desc: '', args: []);
+  }
+
+  /// ``
+  String get orderBranchFilter {
+    return Intl.message('', name: 'orderBranchFilter', desc: '', args: []);
+  }
+
+  /// ``
+  String get policyDownloadedSuccess {
+    return Intl.message(
+      '',
+      name: 'policyDownloadedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ``
+  String termsAgentDatedExplanation(String date) {
+    return Intl.message(
+      '',
+      name: 'termsAgentDatedExplanation',
+      desc: '',
+      args: [date],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

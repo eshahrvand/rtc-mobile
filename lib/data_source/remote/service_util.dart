@@ -6,7 +6,14 @@ import '../../ui/router/router.dart';
 import '../local/prefs/prefs.dart';
 
 class ServiceUtil {
-  static Dio createDio(Prefs prefs) {
+  static Dio createDio(
+    Prefs prefs, {
+    bool Function(DioException error)? isTermsRequired,
+    void Function()? onTermsRequired,
+    void Function()? onSignedOut,
+    void Function(String code)? onPolicyBlocked,
+    void Function(Map<String, dynamic> json)? onAccountMe,
+  }) {
     final dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -26,9 +33,33 @@ class ServiceUtil {
           return handler.next(options);
         },
         onResponse: (response, handler) {
+          if (response.requestOptions.uri.path
+                  .replaceAll(RegExp(r'/+$'), '')
+                  .endsWith('/accounts/me') &&
+              response.data is Map) {
+            // Ignore an old session's response after logout/account switch.
+            final currentToken = prefs.accessToken;
+            if (currentToken != null &&
+                response.requestOptions.headers['Authorization'] ==
+                    'Bearer $currentToken') {
+              onAccountMe?.call(
+                Map<String, dynamic>.from(response.data as Map),
+              );
+            }
+          }
           return handler.next(response);
         },
         onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 403 &&
+              (isTermsRequired?.call(e) ?? false)) {
+            e.requestOptions.extra['policyGated'] = true;
+            final data = e.response?.data;
+            final code = data is Map && data['error'] is Map
+                ? data['error']['code']
+                : null;
+            if (code is String) onPolicyBlocked?.call(code);
+            onTermsRequired?.call();
+          }
           if (e.response?.statusCode == 401) {
             final refreshToken = prefs.refreshToken;
             if (refreshToken != null) {
@@ -55,6 +86,7 @@ class ServiceUtil {
                 await prefs.saveTokens(access: newAccess, refresh: refresh);
               } catch (refreshError) {
                 await prefs.clearTokens();
+                onSignedOut?.call();
                 router.go(AppRoutes.auth);
                 return handler.next(e);
               }
@@ -73,6 +105,7 @@ class ServiceUtil {
               }
             } else {
               await prefs.clearTokens();
+              onSignedOut?.call();
 
               router.go(AppRoutes.auth);
               return handler.next(e);

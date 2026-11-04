@@ -47,6 +47,10 @@ class OrderDetailModel {
   final List<SettlementRecordModel> settlementRecords;
   final String? assignedSalesReviewer;
   final String? assignedFinanceReviewer;
+  final bool refundRequested;
+  final String? storeId, storeName, receiverFullName, receiverNationalId;
+  final bool? deliveryToAgent;
+  final String? createdById, createdByName, createdByRole;
 
   OrderDetailModel({
     required this.id,
@@ -66,6 +70,15 @@ class OrderDetailModel {
     this.settlementRecords = const [],
     this.assignedSalesReviewer,
     this.assignedFinanceReviewer,
+    this.refundRequested = false,
+    this.storeId,
+    this.storeName,
+    this.receiverFullName,
+    this.receiverNationalId,
+    this.deliveryToAgent,
+    this.createdById,
+    this.createdByName,
+    this.createdByRole,
   });
 }
 
@@ -199,10 +212,7 @@ class OrderHistoryModel {
   final String label;
   final String value;
 
-  OrderHistoryModel({
-    required this.label,
-    required this.value,
-  });
+  OrderHistoryModel({required this.label, required this.value});
 }
 
 class OrderPaymentModel {

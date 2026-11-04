@@ -1,5 +1,6 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'dart:async';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:sms_autofill/sms_autofill.dart';
 
 import '../../../../config/errorhandler.dart';
@@ -7,7 +8,7 @@ import '../../../../locator.dart';
 import '../../../../repository/auth/auth_repository.dart';
 import 'auth_state.dart';
 
-class AuthCubit extends Cubit<AuthState> {
+class AuthCubit extends MountedCubit<AuthState> {
   AuthCubit() : super(const AuthState());
 
   final _repo = sl<AuthRepository>();

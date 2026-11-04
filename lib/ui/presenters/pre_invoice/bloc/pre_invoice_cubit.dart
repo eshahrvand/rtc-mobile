@@ -1,6 +1,7 @@
+import '../../../../core/bloc/mounted_cubit.dart';
 import 'dart:async';
 import 'package:cross_file/cross_file.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:intl/intl.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../../../config/constants.dart';
@@ -23,8 +24,12 @@ import '../../../../data_source/remote/customers/model/customer_dto_model.dart';
 import '../../../../config/errorhandler.dart';
 import '../../media_picker/media_picker.dart';
 import 'pre_invoice_state.dart';
+import 'pre_invoice_branch_cubit.dart';
+import '../../../../repository/workspace/workspace_repository.dart';
+import '../../../../core/models/workspace_models.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
 
-class PreInvoiceCubit extends Cubit<PreInvoiceState> {
+class PreInvoiceCubit extends MountedCubit<PreInvoiceState> {
   final _plansRepo = sl<PlansRepository>();
   final _productRepo = sl<ProductRepository>();
   final _customerRepo = sl<CustomersRepository>();
@@ -32,7 +37,41 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   final _ordersRepo = sl<OrdersRepository>();
   Timer? _debounce;
 
-  PreInvoiceCubit() : super(const PreInvoiceState());
+  final PreInvoiceBranchCubit branchSelection;
+
+  PreInvoiceCubit({
+    PreInvoiceState? initialState,
+    AccountRole? role,
+    List<BranchInfo>? branches,
+    BranchInfo? assignedBranch,
+  }) : branchSelection = PreInvoiceBranchCubit(
+         role: role ?? sl<WorkspaceCubit>().state.role,
+         branches: branches ?? sl<WorkspaceCubit>().state.branches,
+         assignedBranch: assignedBranch,
+       ),
+       super(initialState ?? const PreInvoiceState()) {
+    if (initialState == null && branchSelection.state.requiresSelection) {
+      emit(state.copyWith(currentStep: PreInvoiceStep.branch));
+    }
+  }
+
+  List<PreInvoiceStep> get steps => PreInvoiceStep.values
+      .where(
+        (step) =>
+            step != PreInvoiceStep.branch ||
+            branchSelection.state.requiresSelection,
+      )
+      .toList();
+  bool get isFirstStep => state.currentStep == steps.first;
+  bool get canContinue => state.currentStep == PreInvoiceStep.branch
+      ? branchSelection.state.selected != null &&
+            state.status != PreInvoiceRequestStatus.loading
+      : state.isCurrentStepValid;
+
+  void previousStep() {
+    final index = steps.indexOf(state.currentStep);
+    if (index > 0) goToStep(steps[index - 1]);
+  }
 
   // ─── Setup & Navigation ────────────────────────────────────────────
 
@@ -62,68 +101,108 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       return const CategoryListResponse(count: 0, results: []);
     });
 
-    Future.wait([subPlansFuture, brandsFuture, categoriesFuture]).then<void>((
-      results,
-    ) {
-      try {
-        final subPlansResponse = results[0] as SubPlanListResponse;
-        final brandsResponse = results[1] as BrandListResponse;
-        final categoriesResponse = results[2] as CategoryListResponse;
+    final branchLoader = sl<WorkspaceRepository>().loadBranches;
+    final branchesFuture =
+        branchSelection.state.role == AccountRole.agent && branchLoader != null
+        ? branchLoader()
+        : Future.value(branchSelection.state.branches);
 
-        final plans = subPlansResponse.results
-            .map((dto) => _mapToCreditPlanModel(dto))
-            .toList();
+    Future.wait([
+          subPlansFuture,
+          brandsFuture,
+          categoriesFuture,
+          branchesFuture,
+        ])
+        .then<void>((results) {
+          try {
+            if (isClosed) return;
+            branchSelection.updateBranches(results[3] as List<BranchInfo>);
+            final subPlansResponse = results[0] as SubPlanListResponse;
+            final brandsResponse = results[1] as BrandListResponse;
+            final categoriesResponse = results[2] as CategoryListResponse;
 
-        final chips = [
-          PreInvoiceChipModel(
-            id: 1,
-            label: S.current.category,
-            opensBottomSheet: true,
-          ),
-          PreInvoiceChipModel(
-            id: 4,
-            label: S.current.brand,
-            opensBottomSheet: true,
-          ),
-          PreInvoiceChipModel(
-            id: 2,
-            label: S.current.plan,
-            opensBottomSheet: true,
-          ),
-          PreInvoiceChipModel(id: 3, label: S.current.onlyAvailableProducts),
-        ];
+            final plans = subPlansResponse.results
+                .map((dto) => _mapToCreditPlanModel(dto))
+                .toList();
 
-        emit(
-          state.copyWith(
-            status: PreInvoiceRequestStatus.success,
-            creditPlans: plans,
-            hasMoreCreditPlans: subPlansResponse.next != null,
-            currentCreditPlanPage: 1,
-            filterChips: chips,
-            availableBrands: brandsResponse.results,
-            hasMoreBrands: brandsResponse.next != null,
-            currentBrandPage: 1,
-            availableCategories: categoriesResponse.results,
-            hasMoreCategories: categoriesResponse.next != null,
-            currentCategoryPage: 1,
-          ),
-        );
-      } catch (e, stackTrace) {
-        emit(
-          state.copyWith(
-            status: PreInvoiceRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e, stackTrace: stackTrace),
-          ),
-        );
-      }
-    });
+            final chips = [
+              PreInvoiceChipModel(
+                id: 1,
+                label: S.current.category,
+                opensBottomSheet: true,
+              ),
+              PreInvoiceChipModel(
+                id: 4,
+                label: S.current.brand,
+                opensBottomSheet: true,
+              ),
+              PreInvoiceChipModel(
+                id: 2,
+                label: S.current.plan,
+                opensBottomSheet: true,
+              ),
+              PreInvoiceChipModel(
+                id: 3,
+                label: S.current.onlyAvailableProducts,
+              ),
+            ];
+
+            emit(
+              state.copyWith(
+                status: PreInvoiceRequestStatus.success,
+                currentStep: branchSelection.state.requiresSelection
+                    ? PreInvoiceStep.branch
+                    : PreInvoiceStep.creditPlan,
+                creditPlans: plans,
+                hasMoreCreditPlans: subPlansResponse.next != null,
+                currentCreditPlanPage: 1,
+                filterChips: chips,
+                availableBrands: brandsResponse.results,
+                hasMoreBrands: brandsResponse.next != null,
+                currentBrandPage: 1,
+                availableCategories: categoriesResponse.results,
+                hasMoreCategories: categoriesResponse.next != null,
+                currentCategoryPage: 1,
+              ),
+            );
+          } catch (e, stackTrace) {
+            emit(
+              state.copyWith(
+                status: PreInvoiceRequestStatus.error,
+                errorMessage: ErrorHandler.getMessage(
+                  e,
+                  stackTrace: stackTrace,
+                ),
+              ),
+            );
+          }
+        })
+        .catchError((Object error, StackTrace stackTrace) {
+          if (isClosed) return;
+          emit(
+            state.copyWith(
+              status: PreInvoiceRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(
+                error,
+                stackTrace: stackTrace,
+              ),
+            ),
+          );
+        });
   }
 
   void goToStep(PreInvoiceStep step) {
+    if (!steps.contains(step)) return;
+    if (branchSelection.state.requiresSelection &&
+        step != PreInvoiceStep.branch &&
+        branchSelection.state.selected == null) {
+      return;
+    }
     if (step == PreInvoiceStep.products && state.selectedCreditPlanId != null) {
       _loadProducts();
     }
     if (step == PreInvoiceStep.documents && state.customerInfo != null) {
+      if (!state.isDeliveryRecipientValid) return;
       _submitCustomerInfo();
       return;
     }
@@ -139,6 +218,9 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   }
 
   void exitEditMode() {
+    if (state.currentStep == PreInvoiceStep.customerInfo &&
+        !state.isCurrentStepValid)
+      return;
     emit(state.copyWith(currentStep: PreInvoiceStep.review, isEditMode: false));
   }
 
@@ -408,6 +490,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
           imageUrl: product.imageUrl,
           price: product.price,
           oldPrice: product.oldPrice,
+          consumerUnitPrice: product.consumerUnitPrice,
           discount: product.discount,
           quantity: 1,
         ),
@@ -599,7 +682,30 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
         updated = updated.copyWith(address: value);
         break;
       case 'isOrderSentToCustomerAddress':
-        updated = updated.copyWith(isOrderSentToCustomerAddress: value);
+        updated = updated.copyWith(
+          isOrderSentToCustomerAddress: value,
+          isOtherRecipient: value ? updated.isOtherRecipient : false,
+          recipientName: value ? updated.recipientName : '',
+          recipientNationalId: value ? updated.recipientNationalId : '',
+        );
+        break;
+      case 'isOtherRecipient':
+        updated = updated.copyWith(
+          isOtherRecipient: value,
+          recipientName: value ? updated.recipientName : '',
+          recipientNationalId: value ? updated.recipientNationalId : '',
+        );
+        break;
+      case 'recipientName':
+        updated = updated.copyWith(recipientName: value);
+        break;
+      case 'recipientNationalId':
+        const digits = '۰۱۲۳۴۵۶۷۸۹';
+        final normalized = (value as String)
+            .split('')
+            .map((c) => digits.contains(c) ? digits.indexOf(c).toString() : c)
+            .join();
+        updated = updated.copyWith(recipientNationalId: normalized);
         break;
     }
     emit(state.copyWith(customerInfo: updated));
@@ -803,6 +909,10 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
       return;
     }
 
+    if (branchSelection.state.requiresSelection &&
+        branchSelection.state.selected == null)
+      return;
+
     emit(
       state.copyWith(
         status: PreInvoiceRequestStatus.loading,
@@ -812,11 +922,22 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
     );
 
     final request = OrderCreateRequest(
+      storeId: branchSelection.state.selected?.id,
+      receiverFullName:
+          state.customerInfo!.isOrderSentToCustomerAddress &&
+              state.customerInfo!.isOtherRecipient
+          ? state.customerInfo!.recipientName
+          : null,
+      receiverNationalId:
+          state.customerInfo!.isOrderSentToCustomerAddress &&
+              state.customerInfo!.isOtherRecipient
+          ? state.customerInfo!.recipientNationalId
+          : null,
       customerId: state.customerInfo!.id!,
       subPlanId: state.selectedCreditPlanId!,
       lines: _buildOrderLines(),
       documents: _buildOrderDocuments(),
-      deliveryToAgent: true,
+      deliveryToAgent: !state.customerInfo!.isOrderSentToCustomerAddress,
     );
 
     _ordersRepo
@@ -963,6 +1084,7 @@ class PreInvoiceCubit extends Cubit<PreInvoiceState> {
   @override
   Future<void> close() {
     _debounce?.cancel();
+    branchSelection.close();
     return super.close();
   }
 }

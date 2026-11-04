@@ -283,6 +283,15 @@ mixin _$UserProfileDtoModel {
   CityProvinceDtoModel? get province => throw _privateConstructorUsedError;
   CityProvinceDtoModel? get city => throw _privateConstructorUsedError;
   String? get address => throw _privateConstructorUsedError;
+  @JsonKey(name: 'postal_code')
+  String? get postalCode => throw _privateConstructorUsedError;
+  @JsonKey(name: 'stores_count')
+  int? get storesCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'wallet_enabled')
+  bool? get walletEnabled => throw _privateConstructorUsedError;
+  @JsonKey(name: 'policy_status')
+  PolicyStatusDto? get policyStatus => throw _privateConstructorUsedError;
+  List<ProfileDocumentDto>? get documents => throw _privateConstructorUsedError;
   @JsonKey(name: 'credit_limit')
   double? get creditLimit => throw _privateConstructorUsedError;
   double? get tolerance => throw _privateConstructorUsedError;
@@ -336,6 +345,11 @@ abstract class $UserProfileDtoModelCopyWith<$Res> {
     CityProvinceDtoModel? province,
     CityProvinceDtoModel? city,
     String? address,
+    @JsonKey(name: 'postal_code') String? postalCode,
+    @JsonKey(name: 'stores_count') int? storesCount,
+    @JsonKey(name: 'wallet_enabled') bool? walletEnabled,
+    @JsonKey(name: 'policy_status') PolicyStatusDto? policyStatus,
+    List<ProfileDocumentDto>? documents,
     @JsonKey(name: 'credit_limit') double? creditLimit,
     double? tolerance,
     @JsonKey(name: 'tolerance_check_enabled') bool? toleranceCheckEnabled,
@@ -385,6 +399,11 @@ class _$UserProfileDtoModelCopyWithImpl<$Res, $Val extends UserProfileDtoModel>
     Object? province = freezed,
     Object? city = freezed,
     Object? address = freezed,
+    Object? postalCode = freezed,
+    Object? storesCount = freezed,
+    Object? walletEnabled = freezed,
+    Object? policyStatus = freezed,
+    Object? documents = freezed,
     Object? creditLimit = freezed,
     Object? tolerance = freezed,
     Object? toleranceCheckEnabled = freezed,
@@ -462,6 +481,26 @@ class _$UserProfileDtoModelCopyWithImpl<$Res, $Val extends UserProfileDtoModel>
                 ? _value.address
                 : address // ignore: cast_nullable_to_non_nullable
                       as String?,
+            postalCode: freezed == postalCode
+                ? _value.postalCode
+                : postalCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            storesCount: freezed == storesCount
+                ? _value.storesCount
+                : storesCount // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            walletEnabled: freezed == walletEnabled
+                ? _value.walletEnabled
+                : walletEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            policyStatus: freezed == policyStatus
+                ? _value.policyStatus
+                : policyStatus // ignore: cast_nullable_to_non_nullable
+                      as PolicyStatusDto?,
+            documents: freezed == documents
+                ? _value.documents
+                : documents // ignore: cast_nullable_to_non_nullable
+                      as List<ProfileDocumentDto>?,
             creditLimit: freezed == creditLimit
                 ? _value.creditLimit
                 : creditLimit // ignore: cast_nullable_to_non_nullable
@@ -590,6 +629,11 @@ abstract class _$$UserProfileDtoModelImplCopyWith<$Res>
     CityProvinceDtoModel? province,
     CityProvinceDtoModel? city,
     String? address,
+    @JsonKey(name: 'postal_code') String? postalCode,
+    @JsonKey(name: 'stores_count') int? storesCount,
+    @JsonKey(name: 'wallet_enabled') bool? walletEnabled,
+    @JsonKey(name: 'policy_status') PolicyStatusDto? policyStatus,
+    List<ProfileDocumentDto>? documents,
     @JsonKey(name: 'credit_limit') double? creditLimit,
     double? tolerance,
     @JsonKey(name: 'tolerance_check_enabled') bool? toleranceCheckEnabled,
@@ -642,6 +686,11 @@ class __$$UserProfileDtoModelImplCopyWithImpl<$Res>
     Object? province = freezed,
     Object? city = freezed,
     Object? address = freezed,
+    Object? postalCode = freezed,
+    Object? storesCount = freezed,
+    Object? walletEnabled = freezed,
+    Object? policyStatus = freezed,
+    Object? documents = freezed,
     Object? creditLimit = freezed,
     Object? tolerance = freezed,
     Object? toleranceCheckEnabled = freezed,
@@ -719,6 +768,26 @@ class __$$UserProfileDtoModelImplCopyWithImpl<$Res>
             ? _value.address
             : address // ignore: cast_nullable_to_non_nullable
                   as String?,
+        postalCode: freezed == postalCode
+            ? _value.postalCode
+            : postalCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        storesCount: freezed == storesCount
+            ? _value.storesCount
+            : storesCount // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        walletEnabled: freezed == walletEnabled
+            ? _value.walletEnabled
+            : walletEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        policyStatus: freezed == policyStatus
+            ? _value.policyStatus
+            : policyStatus // ignore: cast_nullable_to_non_nullable
+                  as PolicyStatusDto?,
+        documents: freezed == documents
+            ? _value._documents
+            : documents // ignore: cast_nullable_to_non_nullable
+                  as List<ProfileDocumentDto>?,
         creditLimit: freezed == creditLimit
             ? _value.creditLimit
             : creditLimit // ignore: cast_nullable_to_non_nullable
@@ -784,6 +853,11 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
     this.province,
     this.city,
     this.address,
+    @JsonKey(name: 'postal_code') this.postalCode,
+    @JsonKey(name: 'stores_count') this.storesCount,
+    @JsonKey(name: 'wallet_enabled') this.walletEnabled,
+    @JsonKey(name: 'policy_status') this.policyStatus,
+    final List<ProfileDocumentDto>? documents,
     @JsonKey(name: 'credit_limit') this.creditLimit,
     this.tolerance,
     @JsonKey(name: 'tolerance_check_enabled') this.toleranceCheckEnabled,
@@ -794,7 +868,7 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
     @JsonKey(name: 'sales_last_30_days') this.salesLast30Days,
     @JsonKey(name: 'total_sales') this.totalSales,
     @JsonKey(name: 'wallet_balance') this.walletBalance,
-  });
+  }) : _documents = documents;
 
   factory _$UserProfileDtoModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserProfileDtoModelImplFromJson(json);
@@ -840,6 +914,28 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
   @override
   final String? address;
   @override
+  @JsonKey(name: 'postal_code')
+  final String? postalCode;
+  @override
+  @JsonKey(name: 'stores_count')
+  final int? storesCount;
+  @override
+  @JsonKey(name: 'wallet_enabled')
+  final bool? walletEnabled;
+  @override
+  @JsonKey(name: 'policy_status')
+  final PolicyStatusDto? policyStatus;
+  final List<ProfileDocumentDto>? _documents;
+  @override
+  List<ProfileDocumentDto>? get documents {
+    final value = _documents;
+    if (value == null) return null;
+    if (_documents is EqualUnmodifiableListView) return _documents;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
   @JsonKey(name: 'credit_limit')
   final double? creditLimit;
   @override
@@ -870,7 +966,7 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
 
   @override
   String toString() {
-    return 'UserProfileDtoModel(id: $id, mobile: $mobile, role: $role, firstName: $firstName, lastName: $lastName, email: $email, isActive: $isActive, dateJoined: $dateJoined, updatedAt: $updatedAt, avatar: $avatar, agentType: $agentType, nationalCode: $nationalCode, insuranceId: $insuranceId, province: $province, city: $city, address: $address, creditLimit: $creditLimit, tolerance: $tolerance, toleranceCheckEnabled: $toleranceCheckEnabled, agentCode: $agentCode, storeName: $storeName, manager: $manager, completedOrdersCount: $completedOrdersCount, salesLast30Days: $salesLast30Days, totalSales: $totalSales, walletBalance: $walletBalance)';
+    return 'UserProfileDtoModel(id: $id, mobile: $mobile, role: $role, firstName: $firstName, lastName: $lastName, email: $email, isActive: $isActive, dateJoined: $dateJoined, updatedAt: $updatedAt, avatar: $avatar, agentType: $agentType, nationalCode: $nationalCode, insuranceId: $insuranceId, province: $province, city: $city, address: $address, postalCode: $postalCode, storesCount: $storesCount, walletEnabled: $walletEnabled, policyStatus: $policyStatus, documents: $documents, creditLimit: $creditLimit, tolerance: $tolerance, toleranceCheckEnabled: $toleranceCheckEnabled, agentCode: $agentCode, storeName: $storeName, manager: $manager, completedOrdersCount: $completedOrdersCount, salesLast30Days: $salesLast30Days, totalSales: $totalSales, walletBalance: $walletBalance)';
   }
 
   @override
@@ -903,6 +999,18 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
                 other.province == province) &&
             (identical(other.city, city) || other.city == city) &&
             (identical(other.address, address) || other.address == address) &&
+            (identical(other.postalCode, postalCode) ||
+                other.postalCode == postalCode) &&
+            (identical(other.storesCount, storesCount) ||
+                other.storesCount == storesCount) &&
+            (identical(other.walletEnabled, walletEnabled) ||
+                other.walletEnabled == walletEnabled) &&
+            (identical(other.policyStatus, policyStatus) ||
+                other.policyStatus == policyStatus) &&
+            const DeepCollectionEquality().equals(
+              other._documents,
+              _documents,
+            ) &&
             (identical(other.creditLimit, creditLimit) ||
                 other.creditLimit == creditLimit) &&
             (identical(other.tolerance, tolerance) ||
@@ -944,6 +1052,11 @@ class _$UserProfileDtoModelImpl implements _UserProfileDtoModel {
     province,
     city,
     address,
+    postalCode,
+    storesCount,
+    walletEnabled,
+    policyStatus,
+    const DeepCollectionEquality().hash(_documents),
     creditLimit,
     tolerance,
     toleranceCheckEnabled,
@@ -991,6 +1104,11 @@ abstract class _UserProfileDtoModel implements UserProfileDtoModel {
     final CityProvinceDtoModel? province,
     final CityProvinceDtoModel? city,
     final String? address,
+    @JsonKey(name: 'postal_code') final String? postalCode,
+    @JsonKey(name: 'stores_count') final int? storesCount,
+    @JsonKey(name: 'wallet_enabled') final bool? walletEnabled,
+    @JsonKey(name: 'policy_status') final PolicyStatusDto? policyStatus,
+    final List<ProfileDocumentDto>? documents,
     @JsonKey(name: 'credit_limit') final double? creditLimit,
     final double? tolerance,
     @JsonKey(name: 'tolerance_check_enabled') final bool? toleranceCheckEnabled,
@@ -1046,6 +1164,20 @@ abstract class _UserProfileDtoModel implements UserProfileDtoModel {
   CityProvinceDtoModel? get city;
   @override
   String? get address;
+  @override
+  @JsonKey(name: 'postal_code')
+  String? get postalCode;
+  @override
+  @JsonKey(name: 'stores_count')
+  int? get storesCount;
+  @override
+  @JsonKey(name: 'wallet_enabled')
+  bool? get walletEnabled;
+  @override
+  @JsonKey(name: 'policy_status')
+  PolicyStatusDto? get policyStatus;
+  @override
+  List<ProfileDocumentDto>? get documents;
   @override
   @JsonKey(name: 'credit_limit')
   double? get creditLimit;

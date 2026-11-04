@@ -1,226 +1,191 @@
+import '../../../theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rtc_mobile/ui/presenters/dashboard/widget/profile_header.dart';
-import '../../../../config/constants.dart';
-import 'package:rtc_mobile/ui/router/app_route.dart';
-import 'package:rtc_mobile/ui/theme/colors.dart';
-import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
-import 'package:rtc_mobile/ui/widget/rtc_credit_limit_field.dart';
-import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
-import 'package:rtc_mobile/ui/widget/rtc_image.dart';
-import 'package:rtc_mobile/ui/widget/rtc_text_field.dart';
-import '../../../../generated/l10n.dart';
+import '../../../../core/models/workspace_models.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data_source/remote/profile/model/user_profile_dto_model.dart';
+import '../../../../generated/l10n.dart';
+import '../../../../config/snackbar.dart';
+import '../../../router/app_route.dart';
+import '../../../widget/rtc_appbar.dart';
+import '../../../widget/rtc_info_row.dart';
+import '../../../widget/rtc_image.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
+import '../../workspace/bloc/workspace_state.dart';
+import 'profile_avatar.dart';
 
 class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key, this.userProfile});
   final UserProfileDtoModel? userProfile;
 
-  const ProfileScreen({super.key, this.userProfile});
-
   @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context).textTheme;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: RtcAppBar(
-        title: S.current.profile,
-        onBack: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go(AppRoutes.dashboard);
-          }
-        },
-        backIconPath: "$baseImage/angle-right.svg",
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              profileHeader(context, userProfile),
-              SizedBox(height: 64),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 24,
-                ),
-                child: Column(
-                  spacing: 12,
+  Widget build(
+    BuildContext context,
+  ) => BlocConsumer<WorkspaceCubit, WorkspaceState>(
+    listenWhen: (previous, current) =>
+        previous.avatarStatus != current.avatarStatus,
+    listener: (context, state) {
+      if (state.avatarStatus == WorkspaceStatus.error) {
+        rtcSnackBar(
+          context: context,
+          type: SnackBarType.error,
+          message: state.errorMessage,
+        );
+      }
+    },
+    builder: (context, state) {
+      final profile = state.profile ?? userProfile;
+      final employee = state.role == AccountRole.employee;
+      final legal = profile?.agentType != 'natural';
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: RtcAppBar(
+          toolbarHeight: 64,
+          titleStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.grayPalette.shade800,
+          ),
+          title: S.current.profile,
+          backIconPath: 'assets/images/angle-right.svg',
+          onBack: () => context.canPop()
+              ? context.pop()
+              : context.go(AppRoutes.dashboard),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const ProfileAvatar(),
+                RtcInfoSection(
+                  title: employee
+                      ? S.current.userInformation
+                      : S.current.agencyInformation,
+                  icon: 'assets/images/workspace_user_info.svg',
                   children: [
-                    RtcTextField(
-                      labelText: S.current.phoneNumber,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-
+                    if (!employee) ...[
+                      RtcInfoRow(
+                        label: S.current.agencyType,
+                        value: legal
+                            ? S.current.legalAgency
+                            : S.current.naturalAgency,
                       ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.mobile ?? '',
+                      RtcInfoRow(
+                        label: S.current.agencyCode,
+                        value: profile?.agentCode ?? '',
                       ),
+                    ],
+                    RtcInfoRow(
+                      label: employee
+                          ? S.current.fullNameLabel
+                          : legal
+                          ? S.current.companyName
+                          : S.current.agentName,
+                      value: legal && !employee
+                          ? state.companyName
+                          : '${profile?.firstName ?? ''} ${profile?.lastName ?? ''}'
+                                .trim(),
                     ),
-                    RtcTextField(
-                      labelText: userProfile?.agentType == 'natural'
-                          ? S.current.nationalId
-                          : S.current.legalId,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.nationalCode ?? '',
-                      ),
+                    RtcInfoRow(
+                      label: legal && !employee
+                          ? S.current.legalId
+                          : S.current.nationalId,
+                      value: profile?.nationalCode ?? '',
                     ),
-                    RtcTextField(
-                      labelText: S.current.email,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.email ?? '',
-                      ),
+                    RtcInfoRow(
+                      label: S.current.mobileLabel,
+                      value: profile?.mobile ?? '',
                     ),
-                    RtcTextField(
-                      labelText: S.current.agencyCode,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
+                    if (employee)
+                      RtcInfoRow(
+                        label: S.current.employeePosition,
+                        value: state.position,
+                      )
+                    else
+                      RtcInfoRow(
+                        label: S.current.email,
+                        value: profile?.email ?? '',
                       ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.agentCode ?? '',
-                      ),
-                    ),
-                    RtcTextField(
-                      labelText: S.current.storeName,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.storeName ?? '',
-                      ),
-                    ),
-                    RtcTextField(
-                      labelText: S.current.workshopCode,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.insuranceId ?? '',
-                      ),
-                    ),
-                    RtcDivider(
-                      color: AppColors.grayPalette.shade200,
-                      height: 1,
-                    ),
-                    RtcTextField(
-                      labelText: S.current.province,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.province?.name ?? "",
-                      ),
-                    ),
-                    RtcTextField(
-                      labelText: S.current.city,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text: userProfile?.city?.name ?? '',
-                      ),
-                    ),
-                    RtcTextField(
-                      labelText: S.current.address,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      maxLines: 3,
-                      controller: TextEditingController(
-                        text: userProfile?.address ?? '',
-                      ),
-                    ),
-                    RtcDivider(
-                      color: AppColors.grayPalette.shade200,
-                      height: 1,
-                    ),
-                    RtcCreditLimitField(
-                      labelText: S.current.creditLimit,
-                      value:
-                          userProfile?.creditLimit?.toStringAsFixed(0) ?? '۰',
-                      helper: Row(
-                        spacing: 8,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          RtcImage(
-                            image: "$baseImage/alert.svg",
-                            width: 14,
-                            height: 14,
-                            color: AppColors.grayPalette.shade600,
-                          ),
-
-                          Text(
-                            S.current.creditLimitHelper,
-                            style: theme.bodyMedium!.copyWith(
-                              color: AppColors.grayPalette.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                    ),
-                    RtcDivider(
-                      color: AppColors.grayPalette.shade200,
-                      height: 1,
-                    ),
-                    RtcTextField(
-                      labelText: S.current.regionalManager,
-                      labelStyle: theme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grayPalette.shade700,
-                      ),
-                      readOnly: true,
-                      isSetReadOnlyColor :true,
-                      controller: TextEditingController(
-                        text:
-                            userProfile != null && userProfile!.manager != null
-                            ? '${userProfile!.manager?.firstName} ${userProfile!.manager?.lastName}'
-                            : '',
-                      ),
-                    ),
                   ],
                 ),
-              ),
-              SizedBox(height: 16),
-            ],
+                if (!employee) ...[
+                  RtcInfoSection(
+                    title: S.current.locationInformation,
+                    icon: 'assets/images/workspace_store.svg',
+                    children: [
+                      RtcInfoRow(
+                        label: S.current.province,
+                        value: profile?.province?.name ?? '',
+                      ),
+                      RtcInfoRow(
+                        label: S.current.city,
+                        value: profile?.city?.name ?? '',
+                      ),
+                      RtcInfoRow(
+                        label: S.current.workshopCode,
+                        value: profile?.insuranceId ?? '',
+                      ),
+                      RtcInfoRow(
+                        label: S.current.postalCodeLabel,
+                        value: state.postalCode,
+                      ),
+                      RtcInfoRow(
+                        label: S.current.address,
+                        value: profile?.address ?? '',
+                        multiline: true,
+                      ),
+                    ],
+                  ),
+                  RtcInfoSection(
+                    title: S.current.financialCreditInformation,
+                    icon: 'assets/images/workspace_money_transfer_home.svg',
+                    children: [
+                      RtcInfoRow(
+                        label: S.current.walletCreditLimit,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              CurrencyFormatter.format(
+                                profile?.creditLimit ?? 0,
+                              ),
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.workspaceTextStrong,
+                                  ),
+                            ),
+                            const SizedBox(width: 4),
+                            const RtcImage(
+                              image: 'assets/images/rial.svg',
+                              width: 24,
+                              height: 24,
+                              boxFit: BoxFit.contain,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  RtcInfoSection(
+                    title: S.current.organizationInformation,
+                    icon: 'assets/images/workspace_representative.svg',
+                    children: [
+                      RtcInfoRow(
+                        label: S.current.regionalManager,
+                        value:
+                            '${profile?.manager?.firstName ?? ''} ${profile?.manager?.lastName ?? ''}'
+                                .trim(),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-
+      );
+    },
+  );
 }

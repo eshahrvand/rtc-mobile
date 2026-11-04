@@ -1,4 +1,5 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/bloc/mounted_cubit.dart';
+
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
 import '../../../../data_source/remote/orders/model/order_dto_model.dart';
@@ -10,10 +11,11 @@ import '../../../../config/errorhandler.dart';
 import '../mapper/dashboard_mapper.dart';
 import '../../orders/mapper/order_mapper.dart';
 import 'dashboard_state.dart';
+import '../../workspace/bloc/workspace_cubit.dart';
 
-class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit({int initialIndex = 0})
-    : super(DashboardState(selectedNavIndex: initialIndex));
+class DashboardCubit extends MountedCubit<DashboardState> {
+  DashboardCubit({int initialIndex = 0, DashboardState? initialState})
+    : super(initialState ?? DashboardState(selectedNavIndex: initialIndex));
 
   final _dashboardRepo = sl<DashboardRepository>();
   final _ordersRepo = sl<OrdersRepository>();
@@ -25,10 +27,15 @@ class DashboardCubit extends Cubit<DashboardState> {
     _dashboardRepo
         .getMyProfile()
         .then((profile) {
+          if (isClosed) return;
+          sl<WorkspaceCubit>().setProfile(profile, applyPolicy: false);
+          if (sl<WorkspaceCubit>().state.termsRequired) return;
+          sl<WorkspaceCubit>().loadHomeBanners();
           emit(state.copyWith(userProfile: profile));
           _loadDashboardData();
         })
         .catchError((Object e) {
+          if (isClosed || sl<WorkspaceCubit>().state.termsRequired) return;
           _loadDashboardData();
           emit(state.copyWith(
             status: DashboardRequestStatus.error,

@@ -265,6 +265,19 @@ mixin _$OrderDtoModel {
   WalletSubPlanDtoModel get subPlan => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   double get total => throw _privateConstructorUsedError;
+  StoreReferenceDto? get store => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_by')
+  OrderCreatorDto? get createdBy => throw _privateConstructorUsedError;
+  @JsonKey(name: 'base_total')
+  double? get baseTotal => throw _privateConstructorUsedError;
+  @JsonKey(name: 'settlement_amount')
+  double? get settlementAmount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'wallet_enabled')
+  bool? get walletEnabled => throw _privateConstructorUsedError;
+  @JsonKey(name: 'receiver_full_name')
+  String? get receiverFullName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'receiver_national_id')
+  String? get receiverNationalId => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   String get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
@@ -317,6 +330,13 @@ abstract class $OrderDtoModelCopyWith<$Res> {
     @JsonKey(name: 'sub_plan') WalletSubPlanDtoModel subPlan,
     String status,
     double total,
+    StoreReferenceDto? store,
+    @JsonKey(name: 'created_by') OrderCreatorDto? createdBy,
+    @JsonKey(name: 'base_total') double? baseTotal,
+    @JsonKey(name: 'settlement_amount') double? settlementAmount,
+    @JsonKey(name: 'wallet_enabled') bool? walletEnabled,
+    @JsonKey(name: 'receiver_full_name') String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id') String? receiverNationalId,
     @JsonKey(name: 'created_at') String createdAt,
     @JsonKey(name: 'updated_at') String? updatedAt,
     List<OrderLineDtoModel>? lines,
@@ -361,6 +381,13 @@ class _$OrderDtoModelCopyWithImpl<$Res, $Val extends OrderDtoModel>
     Object? subPlan = null,
     Object? status = null,
     Object? total = null,
+    Object? store = freezed,
+    Object? createdBy = freezed,
+    Object? baseTotal = freezed,
+    Object? settlementAmount = freezed,
+    Object? walletEnabled = freezed,
+    Object? receiverFullName = freezed,
+    Object? receiverNationalId = freezed,
     Object? createdAt = null,
     Object? updatedAt = freezed,
     Object? lines = freezed,
@@ -398,6 +425,34 @@ class _$OrderDtoModelCopyWithImpl<$Res, $Val extends OrderDtoModel>
                 ? _value.total
                 : total // ignore: cast_nullable_to_non_nullable
                       as double,
+            store: freezed == store
+                ? _value.store
+                : store // ignore: cast_nullable_to_non_nullable
+                      as StoreReferenceDto?,
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as OrderCreatorDto?,
+            baseTotal: freezed == baseTotal
+                ? _value.baseTotal
+                : baseTotal // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            settlementAmount: freezed == settlementAmount
+                ? _value.settlementAmount
+                : settlementAmount // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            walletEnabled: freezed == walletEnabled
+                ? _value.walletEnabled
+                : walletEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            receiverFullName: freezed == receiverFullName
+                ? _value.receiverFullName
+                : receiverFullName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            receiverNationalId: freezed == receiverNationalId
+                ? _value.receiverNationalId
+                : receiverNationalId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -523,6 +578,13 @@ abstract class _$$OrderDtoModelImplCopyWith<$Res>
     @JsonKey(name: 'sub_plan') WalletSubPlanDtoModel subPlan,
     String status,
     double total,
+    StoreReferenceDto? store,
+    @JsonKey(name: 'created_by') OrderCreatorDto? createdBy,
+    @JsonKey(name: 'base_total') double? baseTotal,
+    @JsonKey(name: 'settlement_amount') double? settlementAmount,
+    @JsonKey(name: 'wallet_enabled') bool? walletEnabled,
+    @JsonKey(name: 'receiver_full_name') String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id') String? receiverNationalId,
     @JsonKey(name: 'created_at') String createdAt,
     @JsonKey(name: 'updated_at') String? updatedAt,
     List<OrderLineDtoModel>? lines,
@@ -570,6 +632,13 @@ class __$$OrderDtoModelImplCopyWithImpl<$Res>
     Object? subPlan = null,
     Object? status = null,
     Object? total = null,
+    Object? store = freezed,
+    Object? createdBy = freezed,
+    Object? baseTotal = freezed,
+    Object? settlementAmount = freezed,
+    Object? walletEnabled = freezed,
+    Object? receiverFullName = freezed,
+    Object? receiverNationalId = freezed,
     Object? createdAt = null,
     Object? updatedAt = freezed,
     Object? lines = freezed,
@@ -607,6 +676,34 @@ class __$$OrderDtoModelImplCopyWithImpl<$Res>
             ? _value.total
             : total // ignore: cast_nullable_to_non_nullable
                   as double,
+        store: freezed == store
+            ? _value.store
+            : store // ignore: cast_nullable_to_non_nullable
+                  as StoreReferenceDto?,
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as OrderCreatorDto?,
+        baseTotal: freezed == baseTotal
+            ? _value.baseTotal
+            : baseTotal // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        settlementAmount: freezed == settlementAmount
+            ? _value.settlementAmount
+            : settlementAmount // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        walletEnabled: freezed == walletEnabled
+            ? _value.walletEnabled
+            : walletEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        receiverFullName: freezed == receiverFullName
+            ? _value.receiverFullName
+            : receiverFullName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        receiverNationalId: freezed == receiverNationalId
+            ? _value.receiverNationalId
+            : receiverNationalId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -677,6 +774,13 @@ class _$OrderDtoModelImpl implements _OrderDtoModel {
     @JsonKey(name: 'sub_plan') required this.subPlan,
     required this.status,
     required this.total,
+    this.store,
+    @JsonKey(name: 'created_by') this.createdBy,
+    @JsonKey(name: 'base_total') this.baseTotal,
+    @JsonKey(name: 'settlement_amount') this.settlementAmount,
+    @JsonKey(name: 'wallet_enabled') this.walletEnabled,
+    @JsonKey(name: 'receiver_full_name') this.receiverFullName,
+    @JsonKey(name: 'receiver_national_id') this.receiverNationalId,
     @JsonKey(name: 'created_at') required this.createdAt,
     @JsonKey(name: 'updated_at') this.updatedAt,
     final List<OrderLineDtoModel>? lines,
@@ -713,6 +817,26 @@ class _$OrderDtoModelImpl implements _OrderDtoModel {
   final String status;
   @override
   final double total;
+  @override
+  final StoreReferenceDto? store;
+  @override
+  @JsonKey(name: 'created_by')
+  final OrderCreatorDto? createdBy;
+  @override
+  @JsonKey(name: 'base_total')
+  final double? baseTotal;
+  @override
+  @JsonKey(name: 'settlement_amount')
+  final double? settlementAmount;
+  @override
+  @JsonKey(name: 'wallet_enabled')
+  final bool? walletEnabled;
+  @override
+  @JsonKey(name: 'receiver_full_name')
+  final String? receiverFullName;
+  @override
+  @JsonKey(name: 'receiver_national_id')
+  final String? receiverNationalId;
   @override
   @JsonKey(name: 'created_at')
   final String createdAt;
@@ -796,7 +920,7 @@ class _$OrderDtoModelImpl implements _OrderDtoModel {
 
   @override
   String toString() {
-    return 'OrderDtoModel(id: $id, customer: $customer, subPlan: $subPlan, status: $status, total: $total, createdAt: $createdAt, updatedAt: $updatedAt, lines: $lines, documents: $documents, rejectionNote: $rejectionNote, settlementTrackingCode: $settlementTrackingCode, deliveryToAgent: $deliveryToAgent, agent: $agent, payments: $payments, remainingTime: $remainingTime, disbursementRecords: $disbursementRecords, settlementRecords: $settlementRecords, assignedSalesReviewer: $assignedSalesReviewer, assignedFinanceReviewer: $assignedFinanceReviewer)';
+    return 'OrderDtoModel(id: $id, customer: $customer, subPlan: $subPlan, status: $status, total: $total, store: $store, createdBy: $createdBy, baseTotal: $baseTotal, settlementAmount: $settlementAmount, walletEnabled: $walletEnabled, receiverFullName: $receiverFullName, receiverNationalId: $receiverNationalId, createdAt: $createdAt, updatedAt: $updatedAt, lines: $lines, documents: $documents, rejectionNote: $rejectionNote, settlementTrackingCode: $settlementTrackingCode, deliveryToAgent: $deliveryToAgent, agent: $agent, payments: $payments, remainingTime: $remainingTime, disbursementRecords: $disbursementRecords, settlementRecords: $settlementRecords, assignedSalesReviewer: $assignedSalesReviewer, assignedFinanceReviewer: $assignedFinanceReviewer)';
   }
 
   @override
@@ -810,6 +934,19 @@ class _$OrderDtoModelImpl implements _OrderDtoModel {
             (identical(other.subPlan, subPlan) || other.subPlan == subPlan) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.total, total) || other.total == total) &&
+            (identical(other.store, store) || other.store == store) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.baseTotal, baseTotal) ||
+                other.baseTotal == baseTotal) &&
+            (identical(other.settlementAmount, settlementAmount) ||
+                other.settlementAmount == settlementAmount) &&
+            (identical(other.walletEnabled, walletEnabled) ||
+                other.walletEnabled == walletEnabled) &&
+            (identical(other.receiverFullName, receiverFullName) ||
+                other.receiverFullName == receiverFullName) &&
+            (identical(other.receiverNationalId, receiverNationalId) ||
+                other.receiverNationalId == receiverNationalId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -855,6 +992,13 @@ class _$OrderDtoModelImpl implements _OrderDtoModel {
     subPlan,
     status,
     total,
+    store,
+    createdBy,
+    baseTotal,
+    settlementAmount,
+    walletEnabled,
+    receiverFullName,
+    receiverNationalId,
     createdAt,
     updatedAt,
     const DeepCollectionEquality().hash(_lines),
@@ -892,6 +1036,13 @@ abstract class _OrderDtoModel implements OrderDtoModel {
     @JsonKey(name: 'sub_plan') required final WalletSubPlanDtoModel subPlan,
     required final String status,
     required final double total,
+    final StoreReferenceDto? store,
+    @JsonKey(name: 'created_by') final OrderCreatorDto? createdBy,
+    @JsonKey(name: 'base_total') final double? baseTotal,
+    @JsonKey(name: 'settlement_amount') final double? settlementAmount,
+    @JsonKey(name: 'wallet_enabled') final bool? walletEnabled,
+    @JsonKey(name: 'receiver_full_name') final String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id') final String? receiverNationalId,
     @JsonKey(name: 'created_at') required final String createdAt,
     @JsonKey(name: 'updated_at') final String? updatedAt,
     final List<OrderLineDtoModel>? lines,
@@ -927,6 +1078,26 @@ abstract class _OrderDtoModel implements OrderDtoModel {
   String get status;
   @override
   double get total;
+  @override
+  StoreReferenceDto? get store;
+  @override
+  @JsonKey(name: 'created_by')
+  OrderCreatorDto? get createdBy;
+  @override
+  @JsonKey(name: 'base_total')
+  double? get baseTotal;
+  @override
+  @JsonKey(name: 'settlement_amount')
+  double? get settlementAmount;
+  @override
+  @JsonKey(name: 'wallet_enabled')
+  bool? get walletEnabled;
+  @override
+  @JsonKey(name: 'receiver_full_name')
+  String? get receiverFullName;
+  @override
+  @JsonKey(name: 'receiver_national_id')
+  String? get receiverNationalId;
   @override
   @JsonKey(name: 'created_at')
   String get createdAt;
@@ -3325,6 +3496,14 @@ OrderCreateRequest _$OrderCreateRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$OrderCreateRequest {
+  @JsonKey(name: 'agent', includeIfNull: false)
+  String? get agentId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'store', includeIfNull: false)
+  String? get storeId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+  String? get receiverFullName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+  String? get receiverNationalId => throw _privateConstructorUsedError;
   @JsonKey(name: 'customer')
   String get customerId => throw _privateConstructorUsedError;
   @JsonKey(name: 'sub_plan')
@@ -3353,6 +3532,12 @@ abstract class $OrderCreateRequestCopyWith<$Res> {
   ) = _$OrderCreateRequestCopyWithImpl<$Res, OrderCreateRequest>;
   @useResult
   $Res call({
+    @JsonKey(name: 'agent', includeIfNull: false) String? agentId,
+    @JsonKey(name: 'store', includeIfNull: false) String? storeId,
+    @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+    String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+    String? receiverNationalId,
     @JsonKey(name: 'customer') String customerId,
     @JsonKey(name: 'sub_plan') String subPlanId,
     List<OrderLineRequest> lines,
@@ -3376,6 +3561,10 @@ class _$OrderCreateRequestCopyWithImpl<$Res, $Val extends OrderCreateRequest>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? agentId = freezed,
+    Object? storeId = freezed,
+    Object? receiverFullName = freezed,
+    Object? receiverNationalId = freezed,
     Object? customerId = null,
     Object? subPlanId = null,
     Object? lines = null,
@@ -3384,6 +3573,22 @@ class _$OrderCreateRequestCopyWithImpl<$Res, $Val extends OrderCreateRequest>
   }) {
     return _then(
       _value.copyWith(
+            agentId: freezed == agentId
+                ? _value.agentId
+                : agentId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            storeId: freezed == storeId
+                ? _value.storeId
+                : storeId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            receiverFullName: freezed == receiverFullName
+                ? _value.receiverFullName
+                : receiverFullName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            receiverNationalId: freezed == receiverNationalId
+                ? _value.receiverNationalId
+                : receiverNationalId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             customerId: null == customerId
                 ? _value.customerId
                 : customerId // ignore: cast_nullable_to_non_nullable
@@ -3420,6 +3625,12 @@ abstract class _$$OrderCreateRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    @JsonKey(name: 'agent', includeIfNull: false) String? agentId,
+    @JsonKey(name: 'store', includeIfNull: false) String? storeId,
+    @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+    String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+    String? receiverNationalId,
     @JsonKey(name: 'customer') String customerId,
     @JsonKey(name: 'sub_plan') String subPlanId,
     List<OrderLineRequest> lines,
@@ -3442,6 +3653,10 @@ class __$$OrderCreateRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? agentId = freezed,
+    Object? storeId = freezed,
+    Object? receiverFullName = freezed,
+    Object? receiverNationalId = freezed,
     Object? customerId = null,
     Object? subPlanId = null,
     Object? lines = null,
@@ -3450,6 +3665,22 @@ class __$$OrderCreateRequestImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$OrderCreateRequestImpl(
+        agentId: freezed == agentId
+            ? _value.agentId
+            : agentId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        storeId: freezed == storeId
+            ? _value.storeId
+            : storeId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        receiverFullName: freezed == receiverFullName
+            ? _value.receiverFullName
+            : receiverFullName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        receiverNationalId: freezed == receiverNationalId
+            ? _value.receiverNationalId
+            : receiverNationalId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         customerId: null == customerId
             ? _value.customerId
             : customerId // ignore: cast_nullable_to_non_nullable
@@ -3479,6 +3710,12 @@ class __$$OrderCreateRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$OrderCreateRequestImpl implements _OrderCreateRequest {
   const _$OrderCreateRequestImpl({
+    @JsonKey(name: 'agent', includeIfNull: false) this.agentId,
+    @JsonKey(name: 'store', includeIfNull: false) this.storeId,
+    @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+    this.receiverFullName,
+    @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+    this.receiverNationalId,
     @JsonKey(name: 'customer') required this.customerId,
     @JsonKey(name: 'sub_plan') required this.subPlanId,
     required final List<OrderLineRequest> lines,
@@ -3490,6 +3727,18 @@ class _$OrderCreateRequestImpl implements _OrderCreateRequest {
   factory _$OrderCreateRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrderCreateRequestImplFromJson(json);
 
+  @override
+  @JsonKey(name: 'agent', includeIfNull: false)
+  final String? agentId;
+  @override
+  @JsonKey(name: 'store', includeIfNull: false)
+  final String? storeId;
+  @override
+  @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+  final String? receiverFullName;
+  @override
+  @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+  final String? receiverNationalId;
   @override
   @JsonKey(name: 'customer')
   final String customerId;
@@ -3518,7 +3767,7 @@ class _$OrderCreateRequestImpl implements _OrderCreateRequest {
 
   @override
   String toString() {
-    return 'OrderCreateRequest(customerId: $customerId, subPlanId: $subPlanId, lines: $lines, documents: $documents, deliveryToAgent: $deliveryToAgent)';
+    return 'OrderCreateRequest(agentId: $agentId, storeId: $storeId, receiverFullName: $receiverFullName, receiverNationalId: $receiverNationalId, customerId: $customerId, subPlanId: $subPlanId, lines: $lines, documents: $documents, deliveryToAgent: $deliveryToAgent)';
   }
 
   @override
@@ -3526,6 +3775,12 @@ class _$OrderCreateRequestImpl implements _OrderCreateRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OrderCreateRequestImpl &&
+            (identical(other.agentId, agentId) || other.agentId == agentId) &&
+            (identical(other.storeId, storeId) || other.storeId == storeId) &&
+            (identical(other.receiverFullName, receiverFullName) ||
+                other.receiverFullName == receiverFullName) &&
+            (identical(other.receiverNationalId, receiverNationalId) ||
+                other.receiverNationalId == receiverNationalId) &&
             (identical(other.customerId, customerId) ||
                 other.customerId == customerId) &&
             (identical(other.subPlanId, subPlanId) ||
@@ -3543,6 +3798,10 @@ class _$OrderCreateRequestImpl implements _OrderCreateRequest {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    agentId,
+    storeId,
+    receiverFullName,
+    receiverNationalId,
     customerId,
     subPlanId,
     const DeepCollectionEquality().hash(_lines),
@@ -3569,6 +3828,12 @@ class _$OrderCreateRequestImpl implements _OrderCreateRequest {
 
 abstract class _OrderCreateRequest implements OrderCreateRequest {
   const factory _OrderCreateRequest({
+    @JsonKey(name: 'agent', includeIfNull: false) final String? agentId,
+    @JsonKey(name: 'store', includeIfNull: false) final String? storeId,
+    @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+    final String? receiverFullName,
+    @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+    final String? receiverNationalId,
     @JsonKey(name: 'customer') required final String customerId,
     @JsonKey(name: 'sub_plan') required final String subPlanId,
     required final List<OrderLineRequest> lines,
@@ -3579,6 +3844,18 @@ abstract class _OrderCreateRequest implements OrderCreateRequest {
   factory _OrderCreateRequest.fromJson(Map<String, dynamic> json) =
       _$OrderCreateRequestImpl.fromJson;
 
+  @override
+  @JsonKey(name: 'agent', includeIfNull: false)
+  String? get agentId;
+  @override
+  @JsonKey(name: 'store', includeIfNull: false)
+  String? get storeId;
+  @override
+  @JsonKey(name: 'receiver_full_name', includeIfNull: false)
+  String? get receiverFullName;
+  @override
+  @JsonKey(name: 'receiver_national_id', includeIfNull: false)
+  String? get receiverNationalId;
   @override
   @JsonKey(name: 'customer')
   String get customerId;
