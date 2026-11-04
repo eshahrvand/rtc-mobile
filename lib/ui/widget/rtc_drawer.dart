@@ -90,10 +90,11 @@ class RtcDrawer extends StatelessWidget {
                   onTap: () =>
                       navigate(AppRoutes.reports, extra: ReportStep.sales),
                 ),
-                _DrawerSubItem(
-                  title: S.current.commissionDrawerTitle,
-                  onTap: () => navigate(AppRoutes.commissionReport),
-                ),
+                if (state.role == AccountRole.agent)
+                  _DrawerSubItem(
+                    title: S.current.commissionDrawerTitle,
+                    onTap: () => navigate(AppRoutes.commissionReport),
+                  ),
                 _DrawerSubItem(
                   title: S.current.workspacePlans,
                   onTap: () =>

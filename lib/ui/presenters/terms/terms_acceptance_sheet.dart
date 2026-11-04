@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../config/snackbar.dart';
 import '../../../core/models/workspace_models.dart';
 import '../../../generated/l10n.dart';
 import '../../theme/colors.dart';
@@ -18,7 +19,16 @@ class TermsAcceptanceSheet extends StatelessWidget {
   @override
   Widget build(
     BuildContext context,
-  ) => BlocBuilder<WorkspaceCubit, WorkspaceState>(
+  ) => BlocConsumer<WorkspaceCubit, WorkspaceState>(
+    listenWhen: (previous, current) =>
+        !previous.policyDownloadSaved &&
+        current.policyDownloadSaved &&
+        current.role == AccountRole.agent,
+    listener: (context, state) => rtcSnackBar(
+      context: context,
+      type: SnackBarType.success,
+      message: S.current.policyDownloadedSuccess,
+    ),
     builder: (context, state) {
       final cubit = context.read<WorkspaceCubit>();
       final employee = state.role == AccountRole.employee;
@@ -136,13 +146,6 @@ class TermsAcceptanceSheet extends StatelessWidget {
               RtcButton(
                 title: S.current.retryWorkspace,
                 onPressed: cubit.loadTerms,
-              ),
-            ],
-            if (state.policyDownloadSaved) ...[
-              const SizedBox(height: 12),
-              Text(
-                S.current.policyDownloadedSuccess,
-                style: TextStyle(color: AppColors.successPalette.shade700),
               ),
             ],
             if (state.errorMessage.isNotEmpty) ...[

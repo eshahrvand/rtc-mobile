@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rtc_mobile/core/models/workspace_models.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/locator.dart';
+import 'package:rtc_mobile/repository/workspace/workspace_repository.dart';
 import 'package:rtc_mobile/main_ui_preview.dart';
 import 'package:rtc_mobile/ui/preview/workspace_preview_app.dart';
 import 'package:rtc_mobile/ui/preview/workspace_preview_data.dart';
@@ -199,6 +201,59 @@ void main() {
     expect(cubit.state.termsRequired, isFalse);
   });
 
+  testWidgets(
+    'policy PDF downloads before acceptance and shows success in the gate overlay',
+    (tester) async {
+      final saved = Completer<String>();
+      var downloads = 0;
+      await sl.unregister<WorkspaceCubit>();
+      final cubit = WorkspaceCubit(
+        WorkspaceRepository(
+          loadPolicyHtml: (id) {
+            expect(id, 'policy-3');
+            downloads++;
+            return Future.value('<html>قوانین</html>');
+          },
+        ),
+        exportHtml: (_, _) => saved.future,
+      );
+      sl.registerSingleton<WorkspaceCubit>(
+        cubit,
+        dispose: (value) => value.close(),
+      );
+      await mount(tester);
+      cubit.requireTerms(
+        document: const TermsDocument(
+          id: 'policy-3',
+          version: '3',
+          versionLabel: 'نسخه ۳',
+          markdown: 'قوانین',
+          publishedAt: '',
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(cubit.state.termsChecked, isFalse);
+      expect(find.byType(WorkspacePreviewGallery), findsNothing);
+      await tester.tap(find.widgetWithText(RtcButton, S.current.downloadTerms));
+      await tester.pump();
+      expect(cubit.state.policyDownloadLoading, isTrue);
+      saved.complete('/Download/privacy_policy_policy-3.pdf');
+      await tester.pumpAndSettle();
+      expect(downloads, 1);
+      expect(cubit.state.policyDownloadLoading, isFalse);
+      expect(cubit.state.policyDownloadSaved, isTrue);
+      expect(cubit.state.termsRequired, isTrue);
+      expect(cubit.state.termsChecked, isFalse);
+      expect(find.text(S.current.policyDownloadedSuccess), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pump(const Duration(seconds: 4));
+      expect(find.text(S.current.policyDownloadedSuccess), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(cubit.state.termsRequired, isTrue);
+    },
+  );
+
   testWidgets('terms page, drawer and service-sized banners render', (
     tester,
   ) async {
@@ -235,9 +290,19 @@ void main() {
     tester.state<ScaffoldState>(find.byType(Scaffold).last).openDrawer();
     await tester.pumpAndSettle();
     await capture(tester, 'drawer_agent');
+    await tester.tap(find.text(S.current.workspaceReports));
+    await tester.pumpAndSettle();
+    expect(find.text(S.current.commissionDrawerTitle), findsOneWidget);
     setPreviewRole(sl<WorkspaceCubit>(), data, AccountRole.employee);
     await tester.pumpAndSettle();
     expect(find.text(S.current.branchManagement), findsNothing);
+    expect(find.text(S.current.commissionDrawerTitle), findsNothing);
+    if (find.text(S.current.workspaceSales).evaluate().isEmpty) {
+      await tester.tap(find.text(S.current.workspaceReports));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text(S.current.commissionDrawerTitle), findsNothing);
+    expect(find.text(S.current.workspaceSales), findsOneWidget);
     await capture(tester, 'drawer_employee');
   });
 
@@ -606,21 +671,19 @@ void main() {
   });
 
   testWidgets(
-    'refund keeps previous status and hides action only after success',
+    'refund is hidden for agents and employees until the service is available',
     (tester) async {
       await mount(tester);
       router(tester).push('/preview/order');
       await tester.pumpAndSettle();
-      await capture(tester, 'refund_before');
-      await tester.tap(find.byTooltip(S.current.refundRequestTitle));
-      await tester.pumpAndSettle();
-      await capture(tester, 'refund_confirmation');
-      await tester.tap(find.text(S.current.confirmRefundRequest));
-      await tester.pumpAndSettle();
-      expect(find.byTooltip(S.current.refundRequestTitle), findsNothing);
-      expect(find.text(S.current.refundAwaitingReview), findsOneWidget);
-      expect(find.byType(OrderRefundBadge), findsOneWidget);
-      await capture(tester, 'refund_after');
+      for (final role in AccountRole.values) {
+        setPreviewRole(sl<WorkspaceCubit>(), data, role);
+        await tester.pumpAndSettle();
+        expect(find.byTooltip(S.current.refundRequestTitle), findsNothing);
+        expect(find.text(S.current.refundAwaitingReview), findsNothing);
+        expect(find.byType(OrderRefundBadge), findsNothing);
+        await capture(tester, 'refund_hidden_${role.name}');
+      }
     },
   );
   testWidgets(

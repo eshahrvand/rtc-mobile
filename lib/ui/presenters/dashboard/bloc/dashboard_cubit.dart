@@ -1,4 +1,5 @@
 import '../../../../core/bloc/mounted_cubit.dart';
+import '../../../../core/models/workspace_models.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../../data_source/remote/dashboard/model/dashboard_dto_model.dart';
@@ -37,22 +38,28 @@ class DashboardCubit extends MountedCubit<DashboardState> {
         .catchError((Object e) {
           if (isClosed || sl<WorkspaceCubit>().state.termsRequired) return;
           _loadDashboardData();
-          emit(state.copyWith(
-            status: DashboardRequestStatus.error,
-            errorMessage: ErrorHandler.getMessage(e),
-          ));
+          emit(
+            state.copyWith(
+              status: DashboardRequestStatus.error,
+              errorMessage: ErrorHandler.getMessage(e),
+            ),
+          );
         });
   }
 
   void _loadAppInfo() {
-    PackageInfo.fromPlatform().then((info) {
-      if (!isClosed) {
-        emit(state.copyWith(
-          appVersion: info.version,
-          buildNumber: info.buildNumber,
-        ));
-      }
-    }).catchError((_) {});
+    PackageInfo.fromPlatform()
+        .then((info) {
+          if (!isClosed) {
+            emit(
+              state.copyWith(
+                appVersion: info.version,
+                buildNumber: info.buildNumber,
+              ),
+            );
+          }
+        })
+        .catchError((_) {});
   }
 
   void onNavItemSelected(int index) {
@@ -60,6 +67,7 @@ class DashboardCubit extends MountedCubit<DashboardState> {
   }
 
   void _loadDashboardData() {
+    final isAgent = sl<WorkspaceCubit>().state.role == AccountRole.agent;
     Future.wait([
           _dashboardRepo.getSummary(),
           _dashboardRepo.getDailyChart(),
@@ -67,7 +75,7 @@ class DashboardCubit extends MountedCubit<DashboardState> {
           _dashboardRepo.getSubPlanChart(),
           _ordersRepo.getOrders(page: 1, pageSize: 5),
           _dashboardRepo.getOrderStatus(),
-          _dashboardRepo.getCommission(),
+          if (isAgent) _dashboardRepo.getCommission(),
         ])
         .then<void>((results) {
           final summary = results[0] as DashboardSummaryDtoModel;
@@ -76,12 +84,15 @@ class DashboardCubit extends MountedCubit<DashboardState> {
           final subplans = results[3] as List<SubPlanChartDtoModel>;
           final orderResponse = results[4] as OrderListResponse;
           final orderStatuses = results[5] as List<OrderStatusDtoModel>;
-          final commission = results[6] as CommissionDtoModel;
+          final commission = isAgent ? results[6] as CommissionDtoModel : null;
 
           emit(
             state.copyWith(
               status: DashboardRequestStatus.success,
-              quickAccessItems: DashboardMapper.mapQuickAccessItems(summary, commission),
+              quickAccessItems: DashboardMapper.mapQuickAccessItems(
+                summary,
+                commission,
+              ),
               lineChartData: [DashboardMapper.mapLineChartData(dailyChart)],
               pieChart1Title: S.current.orderStatusChartTitle,
               pieChart1Data: DashboardMapper.mapOrderStatusChart(orderStatuses),
@@ -89,16 +100,24 @@ class DashboardCubit extends MountedCubit<DashboardState> {
               pieChart2Data: DashboardMapper.mapCategoryChart(categories),
               barChartTitle: S.current.plansSalesChartTitle,
               barChartData: DashboardMapper.mapSubPlanChart(subplans),
-              recentOrders: orderResponse.results.map((dto) => OrderMapper.mapToSummary(dto)).toList(),
+              recentOrders: orderResponse.results
+                  .map((dto) => OrderMapper.mapToSummary(dto))
+                  .toList(),
               commission: commission,
-              messageText: DashboardMapper.formatCommissionMessage(commission),
+              messageText: commission == null
+                  ? ''
+                  : DashboardMapper.formatCommissionMessage(commission),
               messageIconPath: 'assets/images/alert.svg',
             ),
           );
         })
-        .catchError((e) => emit(state.copyWith(
+        .catchError(
+          (e) => emit(
+            state.copyWith(
               status: DashboardRequestStatus.error,
               errorMessage: ErrorHandler.getMessage(e),
-            )));
+            ),
+          ),
+        );
   }
 }

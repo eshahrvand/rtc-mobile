@@ -12,6 +12,9 @@ import '../../../widget/rtc_status_badge.dart';
 import '../../workspace/bloc/workspace_cubit.dart';
 import '../../workspace/bloc/workspace_state.dart';
 
+// Keep refund UI hidden for both roles until the backend contract is available.
+const bool _refundUiEnabled = false;
+
 class OrderRefundAction extends StatelessWidget {
   const OrderRefundAction({super.key, required this.order});
   final OrderDetailModel order;
@@ -22,7 +25,8 @@ class OrderRefundAction extends StatelessWidget {
           final eligible =
               order.orderStatus == OrderStatus.awaitingSettlement ||
               order.orderStatus == OrderStatus.underReview;
-          if (!eligible ||
+          if (!_refundUiEnabled ||
+              !eligible ||
               order.refundRequested ||
               state.refundRequestedIds.contains(order.id)) {
             return const SizedBox.shrink();
@@ -51,8 +55,9 @@ class OrderRefundBadge extends StatelessWidget {
   Widget build(BuildContext context) =>
       BlocBuilder<WorkspaceCubit, WorkspaceState>(
         builder: (context, state) {
-          if (!order.refundRequested &&
-              !state.refundRequestedIds.contains(order.id)) {
+          if (!_refundUiEnabled ||
+              (!order.refundRequested &&
+                  !state.refundRequestedIds.contains(order.id))) {
             return const SizedBox.shrink();
           }
           return Container(
@@ -98,8 +103,9 @@ class OrderStatusBadges extends StatelessWidget {
           spacing: 8,
           runSpacing: 6,
           children: [
-            if (order.refundRequested ||
-                state.refundRequestedIds.contains(order.id))
+            if (_refundUiEnabled &&
+                (order.refundRequested ||
+                    state.refundRequestedIds.contains(order.id)))
               OrderRefundBadge(order: order),
             RtcStatusBadge(status: order.status, isPrimary: true),
           ],

@@ -58,6 +58,8 @@ Slider, Refund and consumer pricing remain pending. Own-profile avatar upload
 uses `POST /media/images` with `user_avatar`; backend attaches it to the current
 account. Other employees' photos are read-only. Production does not use guessed endpoints or successful mock responses.
 Profile/schema/permission questions are detailed in the Persian report.
+Refund actions and badges are temporarily hidden for both roles until its
+service is available. Employees do not see commission reports in the drawer.
 
 ## Isolated preview
 

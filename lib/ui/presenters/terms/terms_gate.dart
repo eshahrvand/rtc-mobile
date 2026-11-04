@@ -36,30 +36,43 @@ class _TermsGateState extends State<TermsGate> with WidgetsBindingObserver {
   ) => BlocBuilder<WorkspaceCubit, WorkspaceState>(
     builder: (context, state) => !state.termsRequired
         ? widget.child
-        : PopScope(
-            canPop: false,
-            child: Material(
-              color: Colors.white,
-              child: SafeArea(
-                child: ColoredBox(
-                  color: AppColors.grayPalette.shade700.withValues(alpha: .55),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: (constraints.maxHeight - 4).clamp(
-                            0,
-                            double.infinity,
+        // The app router is unmounted while locked. Keep a local Navigator so
+        // the gate still has an Overlay for download snackbars and tooltips.
+        : Navigator(
+            onDidRemovePage: (_) {},
+            pages: [
+              MaterialPage<void>(
+                child: PopScope(
+                  canPop: false,
+                  child: Material(
+                    color: Colors.white,
+                    child: SafeArea(
+                      child: ColoredBox(
+                        color: AppColors.grayPalette.shade700.withValues(
+                          alpha: .55,
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: (constraints.maxHeight - 4).clamp(
+                                  0,
+                                  double.infinity,
+                                ),
+                              ),
+                              child: TermsAcceptanceSheet(
+                                onLogout: widget.onLogout,
+                              ),
+                            ),
                           ),
                         ),
-                        child: TermsAcceptanceSheet(onLogout: widget.onLogout),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
   );
 }
