@@ -6,6 +6,20 @@ class WorkspaceService {
   WorkspaceService(this.dio);
   final Dio dio;
 
+  Future<Map<String, dynamic>?> activeSlider() => dio
+      .get<dynamic>('content/sliders/active')
+      .then<Map<String, dynamic>?>((response) {
+        final data = response.data;
+        if (data == null || data == '') return null;
+        return Map<String, dynamic>.from(data as Map);
+      })
+      .catchError((Object error) {
+        if (error is DioException && error.response?.statusCode == 404) {
+          return null;
+        }
+        throw error;
+      });
+
   Future<UserProfileDtoModel> getMe() => dio
       .get<Map<String, dynamic>>('accounts/me')
       .then((response) => UserProfileDtoModel.fromJson(response.data!));

@@ -3,6 +3,58 @@ import '../../core/utils/date_time_utils.dart';
 import '../../generated/l10n.dart';
 
 class WorkspaceMapper {
+  static List<HomeBanner> slider(Map<String, dynamic>? json) {
+    final slides = json?['slides'];
+    if (slides is! List || slides.isEmpty) return [];
+    final sorted = slides.whereType<Map>().toList()
+      ..sort(
+        (a, b) => ((a['position'] as num?) ?? 0).compareTo(
+          (b['position'] as num?) ?? 0,
+        ),
+      );
+    return sorted
+        .map((slide) {
+          final image = slide['image'];
+          if (image is! Map) return null;
+          final file = image['file'];
+          final width = image['width'];
+          final height = image['height'];
+          if (file is! String ||
+              file.trim().isEmpty ||
+              width is! num ||
+              height is! num ||
+              !width.isFinite ||
+              !height.isFinite ||
+              width <= 0 ||
+              height <= 0) {
+            return null;
+          }
+          final action = slide['action_type'];
+          final rawUrl = slide['action_url'];
+          final uri = action == 'url' && rawUrl is String
+              ? Uri.tryParse(rawUrl)
+              : null;
+          return HomeBanner(
+            id: slide['id'] as String,
+            image: file,
+            height: height.toDouble(),
+            imageWidth: width.toDouble(),
+            description: json?['title'] as String? ?? '',
+            link:
+                uri != null &&
+                    const {'http', 'https'}.contains(uri.scheme) &&
+                    uri.host.isNotEmpty
+                ? uri
+                : null,
+            screen: action == 'screen'
+                ? slide['action_screen'] as String?
+                : null,
+          );
+        })
+        .whereType<HomeBanner>()
+        .toList();
+  }
+
   static TermsDocument policy(Map<String, dynamic> json) {
     final clauses = json['clauses'];
     final String markdown;

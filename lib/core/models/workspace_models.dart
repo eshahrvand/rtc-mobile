@@ -28,7 +28,9 @@ class HomeBanner {
     required this.id,
     required this.image,
     required this.height,
+    this.imageWidth,
     this.link,
+    this.screen,
     this.description = '',
     this.imageAlignmentX = 0,
     this.imageScale = 1,
@@ -36,7 +38,9 @@ class HomeBanner {
   final String id;
   final String image;
   final double height;
+  final double? imageWidth;
   final Uri? link;
+  final String? screen;
   final String description;
   final double imageAlignmentX;
   final double imageScale;

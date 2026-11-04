@@ -31,6 +31,7 @@ class WorkspaceRepository {
     WorkspaceService service,
   ) => WorkspaceRepository(
     loadMe: service.getMe,
+    loadBanners: () => service.activeSlider().then(WorkspaceMapper.slider),
     // Backend confirms user_avatar uploads attach to the authenticated user.
     uploadAvatar: (file) => MediaService(service.dio)
         .uploadImage(imageGroup: 'user_avatar', xFile: file)

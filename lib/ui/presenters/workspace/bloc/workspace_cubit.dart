@@ -20,6 +20,7 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
   final Future<String> Function(String html, String name) exportHtml;
   final WorkspaceRepository repository;
   int _employeeRequest = 0;
+  int _bannerRequest = 0;
   int _branchRequest = 0;
   Timer? _branchSearchTimer;
   int _termsRequest = 0;
@@ -102,13 +103,20 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
 
   void loadHomeBanners() {
     final epoch = _epoch;
+    final request = ++_bannerRequest;
     final load = repository.loadBanners;
     if (load == null) return;
     load()
         .then((items) {
-          if (_active(epoch)) emit(state.copyWith(banners: items));
+          if (_active(epoch) && request == _bannerRequest) {
+            emit(state.copyWith(banners: items));
+          }
         })
-        .catchError((Object _) {});
+        .catchError((Object _) {
+          if (_active(epoch) && request == _bannerRequest) {
+            emit(state.copyWith(banners: []));
+          }
+        });
   }
 
   void loadTerms() {

@@ -29,6 +29,11 @@ For current backend gaps and contract questions, see
 - Order DTOs retain store, creator, receiver and new financial/wallet fields.
   Creation sends selected store and optional alternate receiver. The list's
   branch filter is reflected in its UI and persists through pagination.
+- Active home slides use `GET /content/sliders/active` for both roles, sorted by
+  position and sized using the supplied image aspect ratio. Empty/null/204/404
+  responses hide the entire section. HTTP(S) URL actions open the external
+  browser; `screen=orders` selects the existing orders tab. Other screen values
+  are intentionally inactive until supplied by the backend/product owner.
 
 ## UI behavior
 
@@ -51,10 +56,13 @@ For current backend gaps and contract questions, see
   query on both list and summary, preserved for pagination.
 - Position choices currently come from the three documented Swagger enums.
   No dynamic choices endpoint has been supplied.
+- Carousel cards keep 16 px corners, the existing `primaryShadow`, and a subtle
+  border. The carousel extends through the dashboard side padding to reveal the
+  adjacent slide (329 px image with a 12 px gap at the 375 px design width).
 
 ## Pending backend contracts
 
-Slider, Refund and consumer pricing remain pending. Own-profile avatar upload
+Refund and consumer pricing remain pending. Own-profile avatar upload
 uses `POST /media/images` with `user_avatar`; backend attaches it to the current
 account. Other employees' photos are read-only. Production does not use guessed endpoints or successful mock responses.
 Profile/schema/permission questions are detailed in the Persian report.
@@ -74,10 +82,15 @@ unchanged. `/preview/invoice?branch=true&branches=1` shows the single-branch cas
 
 ## Validation and code generation
 
-Latest follow-up validation ran only the nine tests related to avatar upload,
+Latest slider validation ran 14 related tests: seven backend contract/state
+tests, six carousel widget tests and the existing dashboard banner render test.
+All passed, including external-browser actions, the orders tab for both roles,
+empty responses, aspect-ratio sizing, adjacent-slide visibility and styling.
+The full application suite was not run, as requested.
+
+Earlier follow-up validation passed nine tests related to avatar upload,
 own-profile picker, read-only employee photo, invoice branch selection and
-commission branch filtering. All nine passed. The full application suite was
-not run in this follow-up, as requested.
+commission branch filtering.
 
 The broader command below documents coverage from earlier integration work:
 
