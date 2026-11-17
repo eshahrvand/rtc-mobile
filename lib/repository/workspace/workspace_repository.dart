@@ -35,7 +35,7 @@ class WorkspaceRepository {
         loadBanners: () => service.activeSlider().then(WorkspaceMapper.slider),
         uploadAvatar: (file, userId) => MediaService(service.dio)
             .uploadImage(imageGroup: 'user_avatar', xFile: file)
-            .then((image) => service.setAvatar(userId, image.id)),
+            .then((image) => service.setAvatar(image.id)),
         loadTerms: () => service.currentPolicy().then(
           (json) => json == null ? null : WorkspaceMapper.policy(json),
         ),

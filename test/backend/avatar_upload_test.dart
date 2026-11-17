@@ -84,7 +84,8 @@ void main() {
         expect(form.files.single.value.filename, endsWith('.jpg'));
         expect(form.files.single.value.length, bytes.length);
         expect(adapter.requests.last.method, 'PATCH');
-        expect(adapter.requests.last.path, 'accounts/users/user-1');
+        expect(adapter.requests.last.path, 'accounts/me');
+        expect(adapter.requests.last.uri.path, '/api/v1/accounts/me');
         expect(adapter.requests.last.data, {'avatar': 'image-id'});
       },
     );

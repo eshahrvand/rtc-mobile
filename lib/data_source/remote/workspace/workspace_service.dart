@@ -6,9 +6,9 @@ class WorkspaceService {
   WorkspaceService(this.dio);
   final Dio dio;
 
-  Future<String> setAvatar(String userId, String imageId) => dio
+  Future<String> setAvatar(String imageId) => dio
       .patch<Map<String, dynamic>>(
-        'accounts/users/${Uri.encodeComponent(userId)}',
+        'accounts/me',
         data: {'avatar': imageId},
       )
       .then((response) => (response.data!['avatar'] as Map)['file'] as String);
