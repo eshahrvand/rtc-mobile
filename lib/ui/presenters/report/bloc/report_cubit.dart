@@ -229,7 +229,7 @@ class ReportCubit extends MountedCubit<ReportState> {
     if (chip.id == 1) onPlanSelected(null);
     if (chip.id == 2) onCategorySelected(null);
     if (chip.id == 3) onParentCategorySelected(null);
-    if (chip.id == 4) onClearFilters(); // For date
+    if (chip.id == 4) onClearDateFilter(); // For date
   }
 
   void onSearchChanged(String query) {
@@ -269,6 +269,17 @@ class ReportCubit extends MountedCubit<ReportState> {
   void onDateFilterApplied(Jalali? start, Jalali? end, String? optionId) {
     emit(
       state.copyWith(startDate: start, endDate: end, dateOptionId: optionId),
+    );
+    _fetchData(state.step);
+  }
+
+  void onClearDateFilter() {
+    emit(
+      state.copyWith(
+        startDate: null,
+        endDate: null,
+        dateOptionId: null,
+      ),
     );
     _fetchData(state.step);
   }

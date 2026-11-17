@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../generated/l10n.dart';
 import 'bloc/report_cubit.dart';
 import 'bloc/report_state.dart';
@@ -115,7 +116,7 @@ class _ReportScreenState extends State<ReportScreen> {
       initialEndDate: state.endDate,
       initialOptionId: state.dateOptionId,
       onApply: cubit.onDateFilterApplied,
-      onClear: cubit.onClearFilters,
+      onClear: cubit.onClearDateFilter,
     );
   }
 
@@ -137,6 +138,7 @@ class _ReportScreenState extends State<ReportScreen> {
               scaffoldKey: _scaffoldKey,
               searchHint: S.current.reportSearchHint,
               showDrawerIcon: false,
+              onBack: () => context.pop(),
             ),
             body: Column(
               children: [

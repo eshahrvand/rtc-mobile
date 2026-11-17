@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'rtc_appbar.dart';
 import 'rtc_image.dart';
@@ -149,11 +150,14 @@ class _RtcSearchAppBarState extends State<RtcSearchAppBar> {
       );
     }
 
+    final effectiveOnBack = widget.onBack ??
+        (!widget.showDrawerIcon ? () => context.pop() : null);
+
     // NORMAL UI: Keep the high-fidelity RtcAppBar
     return RtcAppBar(
       showShadow: widget.showShadow,
       toolbarHeight: widget.toolbarHeight,
-      onBack: widget.onBack,
+      onBack: effectiveOnBack,
       backIconPath: '$baseImage/angle-right.svg',
       centerTitle: true,
       leading: widget.showDrawerIcon
