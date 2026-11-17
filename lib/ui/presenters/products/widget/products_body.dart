@@ -146,6 +146,10 @@ class _ProductsBodyState extends State<ProductsBody> {
                   if (chip.id == 3) return state.isOnlyAvailable;
                   return false;
                 },
+                selectedCount: (index, chip) {
+                  if (chip.id == 1) return state.selectedCategoryIds.length;
+                  return null;
+                },
                 onChipTap: (index, chip) => cubit.onChipTap(chip),
                 onChipClose: (index, chip) => cubit.onChipClose(chip),
               ),

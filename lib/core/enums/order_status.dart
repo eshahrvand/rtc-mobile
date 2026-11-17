@@ -7,6 +7,7 @@ enum OrderStatus {
   underReview,
   awaitingSettlement,
   expired,
+  canceled,
   unknown;
 
   /// Parses the raw English string received from the server.
@@ -25,6 +26,10 @@ enum OrderStatus {
         return OrderStatus.awaitingSettlement;
       case 'expired':
         return OrderStatus.expired;
+      case 'cancel':
+      case 'canceled':
+      case 'cancelled':
+        return OrderStatus.canceled;
       default:
         return OrderStatus.unknown;
     }
@@ -45,6 +50,8 @@ enum OrderStatus {
         return S.current.statusWaitingSettlement;
       case OrderStatus.expired:
         return S.current.statusExpired;
+      case OrderStatus.canceled:
+        return 'لغو شده';
       case OrderStatus.unknown:
         return '';
     }

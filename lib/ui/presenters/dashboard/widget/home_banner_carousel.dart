@@ -113,13 +113,15 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
           final height = banner.imageWidth == null
               ? banner.height
               : imageWidth * banner.height / banner.imageWidth!;
+          final hasMultipleBanners = banners.length > 1;
+          final totalHeight = height + 18 + (hasMultipleBanners ? 16 : 0);
           return SizedBox(
-            height: height + 52,
+            height: totalHeight,
             child: OverflowBox(
               minWidth: viewportWidth,
               maxWidth: viewportWidth,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18),
+                padding: const EdgeInsets.only(top: 18),
                 child: Column(
                   children: [
                     SizedBox(
@@ -128,6 +130,9 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                         clipBehavior: Clip.none,
                         controller: _pages,
                         itemCount: banners.length,
+                        physics: hasMultipleBanners
+                            ? null
+                            : const NeverScrollableScrollPhysics(),
                         onPageChanged: (index) =>
                             setState(() => _index = index),
                         itemBuilder: (context, i) => Padding(
@@ -177,33 +182,35 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        banners.length,
-                        (i) => GestureDetector(
-                          onTap: () => _pages.animateToPage(
-                            i,
-                            duration: const Duration(milliseconds: 250),
-                            curve: Curves.easeInOut,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 3),
-                            child: Container(
-                              width: i == index ? 14 : 6,
-                              height: 6,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: i == index
-                                    ? AppColors.grayPalette.shade700
-                                    : AppColors.grayPalette.shade200,
+                    if (hasMultipleBanners) ...[
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          banners.length,
+                          (i) => GestureDetector(
+                            onTap: () => _pages.animateToPage(
+                              i,
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInOut,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 3),
+                              child: Container(
+                                width: i == index ? 14 : 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: i == index
+                                      ? AppColors.grayPalette.shade700
+                                      : AppColors.grayPalette.shade200,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

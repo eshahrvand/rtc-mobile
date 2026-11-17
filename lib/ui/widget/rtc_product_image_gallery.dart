@@ -48,15 +48,21 @@ class RtcProductImageGallery extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        AnimatedSmoothIndicator(
-          activeIndex: selectedIndex,
-          count: effectiveImages.length,
-          effect: ExpandingDotsEffect(
-            dotHeight: 6,
-            dotWidth: 6,
-            spacing: 6,
-            activeDotColor: AppColors.brandPalette.shade500,
-            dotColor: AppColors.grayPalette.shade200,
+        Visibility(
+          visible: effectiveImages.length > 1,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: AnimatedSmoothIndicator(
+            activeIndex: selectedIndex,
+            count: effectiveImages.length,
+            effect: ExpandingDotsEffect(
+              dotHeight: 6,
+              dotWidth: 6,
+              spacing: 6,
+              activeDotColor: AppColors.brandPalette.shade500,
+              dotColor: AppColors.grayPalette.shade200,
+            ),
           ),
         ),
       ],

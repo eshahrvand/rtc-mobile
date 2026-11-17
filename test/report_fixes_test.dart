@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:rtc_mobile/core/models/product_chip_model.dart';
 import 'package:rtc_mobile/core/models/report_item_model.dart';
+import 'package:rtc_mobile/data_source/remote/catalog/model/category_dto_model.dart';
+import 'package:rtc_mobile/data_source/remote/plans/model/plan_dto_model.dart';
+import 'package:rtc_mobile/data_source/remote/report/model/report_dto_model.dart';
 import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/locator.dart';
 import 'package:rtc_mobile/repository/plans/plans_repository.dart';
@@ -12,12 +15,13 @@ import 'package:rtc_mobile/ui/presenters/report/bloc/report_cubit.dart';
 import 'package:rtc_mobile/ui/presenters/report/bloc/report_step.dart';
 import 'package:rtc_mobile/ui/presenters/report/widget/report_summary_card.dart';
 import 'package:rtc_mobile/ui/theme/colors.dart';
+import 'package:rtc_mobile/ui/widget/rtc_empty_state.dart';
 import 'package:rtc_mobile/ui/widget/rtc_inner_shadow.dart';
 import 'package:rtc_mobile/ui/widget/rtc_search_appbar.dart';
 
 class FakeReportRepo extends Fake implements ReportRepository {
   @override
-  Future<ReportDataBundle> getSalesOverview({
+  Future<ReportDataBundle<SalesOverviewResponse>> getSalesOverview({
     String? dateFrom,
     String? dateTo,
     String? subPlanId,
@@ -25,8 +29,8 @@ class FakeReportRepo extends Fake implements ReportRepository {
     int? page,
     bool includeSummary = true,
   }) async {
-    return ReportDataBundle(
-      response: _FakePaginatedResponse(),
+    return ReportDataBundle<SalesOverviewResponse>(
+      response: const SalesOverviewResponse(count: 0, results: []),
       summary: null,
     );
   }
@@ -41,23 +45,17 @@ class FakeReportRepo extends Fake implements ReportRepository {
   ) => [];
 }
 
-class _FakePaginatedResponse {
-  final int count = 0;
-  final String? next = null;
-  final List results = [];
-}
-
 class FakePlansRepo extends Fake implements PlansRepository {
   @override
-  Future getSubPlans({int? page, String? search}) async {
-    return _FakePaginatedResponse();
+  Future<SubPlanListResponse> getSubPlans({int? page}) async {
+    return const SubPlanListResponse(count: 0, results: []);
   }
 }
 
 class FakeProductRepo extends Fake implements ProductRepository {
   @override
-  Future getCategories({int? page, String? search}) async {
-    return _FakePaginatedResponse();
+  Future<CategoryListResponse> getCategories({int? page}) async {
+    return const CategoryListResponse(count: 0, results: []);
   }
 }
 
@@ -110,7 +108,7 @@ void main() {
 
       expect(find.byType(RtcInnerShadow), findsOneWidget);
       expect(find.text('مبلغ کل فروش'), findsOneWidget);
-      expect(find.text('۲,۰۰۰,۰۰۰'), findsOneWidget);
+      expect(find.text('2,000,000'), findsOneWidget);
     });
   });
 
@@ -191,11 +189,9 @@ void main() {
           ),
         );
 
-        // Back button icon with angle-right.svg should be rendered
         final backButtonFinder = find.byType(GestureDetector);
         expect(backButtonFinder, findsWidgets);
 
-        // Find the back icon container tap
         await tester.tap(find.byWidgetPredicate(
           (widget) =>
               widget is GestureDetector &&
@@ -206,5 +202,22 @@ void main() {
         expect(backTapped, isTrue);
       },
     );
+  });
+
+  group('Issue 4: RtcEmptyState', () {
+    testWidgets('RtcEmptyState renders image and message', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: RtcEmptyState(
+              message: 'گزارشی یافت نشد',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(RtcEmptyState), findsOneWidget);
+      expect(find.text('گزارشی یافت نشد'), findsOneWidget);
+    });
   });
 }

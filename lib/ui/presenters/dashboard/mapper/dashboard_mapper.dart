@@ -153,6 +153,7 @@ class DashboardMapper {
         case OrderStatus.awaitingSettlement:
           label = S.current.statusWaitingSettlement;
           color = AppColors.blueGrayPalette.shade400;
+        case OrderStatus.canceled:
         case OrderStatus.unknown:
           break;
       }

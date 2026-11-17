@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../generated/l10n.dart';
 import '../../../widget/rtc_button.dart';
+import '../../../widget/rtc_empty_state.dart';
 import '../../../widget/rtc_text_button.dart';
 import '../bloc/commission_report_cubit.dart';
 import '../bloc/commission_report_state.dart';
@@ -69,7 +70,9 @@ class _CommissionReportResultsState extends State<CommissionReportResults> {
       );
     }
     if (state.entries.isEmpty) {
-      return Center(child: Text(S.current.noReportFound));
+      return RtcEmptyState(
+        message: S.current.noReportFound,
+      );
     }
     return ListView.builder(
       controller: _scrollController,

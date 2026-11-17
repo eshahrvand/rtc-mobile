@@ -49,6 +49,10 @@ class OrdersBadgeList extends StatelessWidget {
         }
         return false;
       },
+      selectedCount: (index, chip) {
+        if (chip.id == 1) return state.selectedStatusIds.length;
+        return null;
+      },
       onChipTap: (index, chip) {
         if (chip.id == 4) {
           _showStoreFilter(context, cubit, state);
@@ -112,6 +116,7 @@ class OrdersBadgeList extends StatelessWidget {
           OrderStatus.rejected,
           OrderStatus.awaitingSettlement,
           OrderStatus.expired,
+          OrderStatus.canceled,
         ].map((status) {
           String id = '';
           switch (status) {
@@ -132,6 +137,9 @@ class OrdersBadgeList extends StatelessWidget {
               break;
             case OrderStatus.expired:
               id = 'expired';
+              break;
+            case OrderStatus.canceled:
+              id = 'canceled';
               break;
             default:
               id = '';

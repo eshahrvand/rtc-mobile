@@ -10,6 +10,7 @@ import 'widget/report_item_widget.dart';
 import 'widget/report_summary_card.dart';
 import '../../widget/rtc_search_appbar.dart';
 import '../../widget/rtc_chip_list.dart';
+import '../../widget/rtc_empty_state.dart';
 import '../../widget/filter_date_bottomsheet.dart';
 import '../products/widget/filter_bottom_sheet.dart';
 import '../../widget/rtc_divider.dart';
@@ -270,7 +271,9 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Widget _buildReportList(ReportState state) {
     if (state.filteredItems.isEmpty) {
-      return Center(child: Text(S.current.noReportFound));
+      return RtcEmptyState(
+        message: S.current.noReportFound,
+      );
     }
 
     return ListView.builder(

@@ -251,6 +251,11 @@ class _PreInvoiceStep2ViewState extends State<PreInvoiceStep2View> {
                             return state.selectedBrandId != null;
                           return false;
                         },
+                        selectedCount: (index, chip) {
+                          if (chip.id == 1)
+                            return state.selectedCategoryIds.length;
+                          return null;
+                        },
                         onChipTap: (index, chip) {
                           if (chip.id == 1) {
                             _showCategoryFilter(context, cubit, state);

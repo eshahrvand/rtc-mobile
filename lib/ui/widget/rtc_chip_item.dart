@@ -9,6 +9,7 @@ class RtcChipItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final VoidCallback? onClose;
+  final int? selectedCount;
 
   const RtcChipItem({
     super.key,
@@ -16,11 +17,22 @@ class RtcChipItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     this.onClose,
+    this.selectedCount,
   });
+
+  static String _toPersianDigits(int number) {
+    const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    return number.toString().split('').map((char) {
+      final index = int.tryParse(char);
+      return index != null ? farsiDigits[index] : char;
+    }).join('');
+  }
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
+    final effectiveCount = selectedCount ?? chip.selectedCount;
+
     return GestureDetector(
       onTap: () {
         onTap();
@@ -38,14 +50,29 @@ class RtcChipItem extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(isSelected ? 12 : 8, 7, 12, 7),
-              child: Text(
-                chip.label,
-                style: theme.bodyMedium!.copyWith(
-                  color: isSelected
-                      ? Colors.white
-                      : AppColors.grayPalette.shade900,
-                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    chip.label,
+                    style: theme.bodyMedium!.copyWith(
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.grayPalette.shade900,
+                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+                    ),
+                  ),
+                  if (isSelected && effectiveCount != null && effectiveCount > 1) ...[
+                    const SizedBox(width: 4),
+                    Text(
+                      '(${_toPersianDigits(effectiveCount)})',
+                      style: theme.bodyMedium!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             if (isSelected)

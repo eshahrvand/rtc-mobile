@@ -47,6 +47,9 @@ class RtcStatusBadge extends StatelessWidget {
       palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
     } else if (orderStatus == OrderStatus.rejected ||
+        orderStatus == OrderStatus.canceled ||
+        status == 'canceled' ||
+        status == 'cancelled' ||
         status == 'failed' ||
         status == 'ناموفق' ||
         status == S.current.statusFailed) {
