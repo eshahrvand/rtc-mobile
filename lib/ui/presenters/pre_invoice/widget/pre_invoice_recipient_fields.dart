@@ -62,8 +62,9 @@ class RecipientToggle extends StatelessWidget {
   final bool value;
   final VoidCallback onChanged;
   @override
-  Widget build(BuildContext context) => InkWell(
+  Widget build(BuildContext context) => GestureDetector(
     onTap: onChanged,
+    behavior: HitTestBehavior.opaque,
     child: Row(
       children: [
         Semantics(
