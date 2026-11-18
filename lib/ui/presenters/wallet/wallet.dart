@@ -8,6 +8,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_appbar.dart';
 import 'package:rtc_mobile/ui/widget/rtc_divider.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
+import '../../widget/rtc_empty_state.dart';
 import '../../../core/models/wallet_model.dart';
 import 'bloc/wallet_cubit.dart';
 import 'bloc/wallet_state.dart';
@@ -107,30 +108,34 @@ class _WalletView extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 16),
                                   Expanded(
-                                    child: ListView.separated(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 32,
-                                      ),
-                                      itemCount: summary.pockets.length,
-                                      separatorBuilder: (context, index) =>
-                                          const SizedBox(height: 12),
-                                      itemBuilder: (context, index) {
-                                        final pocket = summary.pockets[index];
-                                        return _PocketCard(
-                                          pocket: pocket,
-                                          onTap: () {
-                                            context
-                                                .read<WalletCubit>()
-                                                .selectPocket(pocket);
-                                            context.push(
-                                              AppRoutes.transactionList,
-                                              extra: context
-                                                  .read<WalletCubit>(),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
+                                    child: summary.pockets.isEmpty
+                                        ? RtcEmptyState(
+                                            message: S.current.noItemsFound,
+                                          )
+                                        : ListView.separated(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 32,
+                                            ),
+                                            itemCount: summary.pockets.length,
+                                            separatorBuilder: (context, index) =>
+                                                const SizedBox(height: 12),
+                                            itemBuilder: (context, index) {
+                                              final pocket = summary.pockets[index];
+                                              return _PocketCard(
+                                                pocket: pocket,
+                                                onTap: () {
+                                                  context
+                                                      .read<WalletCubit>()
+                                                      .selectPocket(pocket);
+                                                  context.push(
+                                                    AppRoutes.transactionList,
+                                                    extra: context
+                                                        .read<WalletCubit>(),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
                                   ),
                                 ],
                               ),

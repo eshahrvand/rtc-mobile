@@ -7,9 +7,7 @@ import 'package:rtc_mobile/ui/theme/colors.dart';
 import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 
-import '../../core/enums/order_status.dart';
 import '../../core/models/order_model.dart';
-
 class RtcDashboardOrderItem extends StatelessWidget {
   final OrderSummaryModel order;
   final VoidCallback onTap;
@@ -83,10 +81,7 @@ class RtcDashboardOrderItem extends StatelessWidget {
                       color: AppColors.grayPalette.shade700,
                     ),
                   ),
-                  if (order.orderStatus != OrderStatus.canceled &&
-                      order.status.toLowerCase() != 'canceled' &&
-                      order.status.toLowerCase() != 'cancelled')
-                    RtcStatusBadge(status: order.status, isPrimary: false),
+                  RtcStatusBadge(status: order.status, isPrimary: false),
                 ],
               ),
             ],

@@ -8,6 +8,7 @@ import 'package:rtc_mobile/ui/widget/rtc_image.dart';
 import '../../../../config/constants.dart';
 import '../../../../core/models/order_model.dart';
 import '../../../router/app_route.dart';
+import '../../../widget/rtc_empty_state.dart';
 import '../bloc/orders_cubit.dart';
 import '../bloc/orders_state.dart';
 import 'rtc_order_item.dart';
@@ -20,21 +21,14 @@ class OrdersUiHelpers {
     required OrdersState state,
     ScrollController? scrollController,
   }) {
-    final theme = Theme.of(context).textTheme;
-
     if (state.status == OrdersRequestStatus.loading &&
         state.filteredOrders.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (state.filteredOrders.isEmpty) {
-      return Center(
-        child: Text(
-          S.current.noItemsFound,
-          style: theme.bodyLarge?.copyWith(
-            color: AppColors.grayPalette.shade600,
-          ),
-        ),
+      return RtcEmptyState(
+        message: S.current.noItemsFound,
       );
     }
 

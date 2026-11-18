@@ -16,6 +16,7 @@ import '../products/widget/filter_bottom_sheet.dart';
 import 'bloc/wallet_cubit.dart';
 import 'bloc/wallet_state.dart';
 import 'widget/transaction_details_sheet.dart';
+import '../../widget/rtc_empty_state.dart';
 
 class TransactionListScreen extends StatelessWidget {
   const TransactionListScreen({super.key});
@@ -97,12 +98,8 @@ class TransactionListScreen extends StatelessWidget {
                 child: state.status == WalletRequestStatus.loading
                     ? const Center(child: CircularProgressIndicator())
                     : state.transactions.isEmpty
-                    ? Center(
-                        child: Text(
-                          S.current.noItemsFound,
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(color: AppColors.grayPalette.shade600),
-                        ),
+                    ? RtcEmptyState(
+                        message: S.current.noItemsFound,
                       )
                     : ListView.separated(
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),

@@ -11,18 +11,26 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final bottomInset = mediaQuery.padding.bottom;
+
     return BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
       builder: (context, state) {
         final cubit = context.read<PreInvoiceCubit>();
 
-        return SafeArea(
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: mediaQuery.size.height * 0.85,
+          ),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: SafeArea(
+            top: false,
+            bottom: true,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+              padding: EdgeInsets.fromLTRB(20, 8, 20, bottomInset > 0 ? 12 : 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -37,9 +45,8 @@ class PreInvoiceCartBottomSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   PreInvoiceCartHeader(count: state.totalQuantity),
-                  const SizedBox(height: 34),
-                  SizedBox(
-                    height: state.cartItems.length == 1 ? 120 : null,
+                  const SizedBox(height: 24),
+                  Flexible(
                     child: ListView.separated(
                       shrinkWrap: true,
                       itemCount: state.cartItems.length,

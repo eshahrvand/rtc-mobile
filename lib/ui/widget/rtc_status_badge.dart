@@ -47,9 +47,6 @@ class RtcStatusBadge extends StatelessWidget {
       palette = AppColors.successPalette;
       iconPath = '$baseImage/check_badge.svg';
     } else if (orderStatus == OrderStatus.rejected ||
-        orderStatus == OrderStatus.canceled ||
-        status == 'canceled' ||
-        status == 'cancelled' ||
         status == 'failed' ||
         status == 'ناموفق' ||
         status == S.current.statusFailed) {
@@ -58,11 +55,20 @@ class RtcStatusBadge extends StatelessWidget {
     } else if (orderStatus == OrderStatus.expired) {
       palette = AppColors.grayPalette;
       iconPath = '$baseImage/calendar_badge.svg';
+    } else if (orderStatus == OrderStatus.canceled ||
+        status == 'canceled' ||
+        status == 'cancelled' ||
+        status == 'cancel') {
+      palette = AppColors.grayPalette;
     } else {
       palette = AppColors.grayPalette;
     }
 
-    if (isPrimary) {
+    if (isPrimary ||
+        orderStatus == OrderStatus.canceled ||
+        status == 'canceled' ||
+        status == 'cancelled' ||
+        status == 'cancel') {
       bgColor = palette.shade500;
       textColor = Colors.white;
     } else {

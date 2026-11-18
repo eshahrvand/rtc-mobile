@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rtc_mobile/core/models/product_chip_model.dart';
+import 'package:rtc_mobile/generated/l10n.dart';
 import 'package:rtc_mobile/ui/widget/rtc_chip_item.dart';
+import 'package:rtc_mobile/ui/widget/rtc_status_badge.dart';
 
 void main() {
+  setUpAll(() async {
+    await S.load(const Locale('fa'));
+  });
   group('RtcChipItem multi-select badge tests', () {
     testWidgets('displays only label when count is null or <= 1', (tester) async {
       await tester.pumpWidget(
@@ -75,6 +80,32 @@ void main() {
 
       expect(find.text('دسته بندی'), findsOneWidget);
       expect(find.text('(۳)'), findsNothing);
+    });
+  });
+
+  group('RtcStatusBadge canceled status tests', () {
+    testWidgets('displays "لغو شده" with gray color palette for canceled status', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: RtcStatusBadge(status: 'canceled', isPrimary: false),
+          ),
+        ),
+      );
+
+      expect(find.text('لغو شده'), findsOneWidget);
+    });
+
+    testWidgets('displays "لغو شده" in primary mode with gray color', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: RtcStatusBadge(status: 'canceled', isPrimary: true),
+          ),
+        ),
+      );
+
+      expect(find.text('لغو شده'), findsOneWidget);
     });
   });
 }

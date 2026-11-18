@@ -8,6 +8,7 @@ import '../../../theme/colors.dart';
 import '../bloc/product_cubit.dart';
 import '../bloc/product_state.dart';
 import '../../../widget/rtc_chip_list.dart';
+import '../../../widget/rtc_empty_state.dart';
 import '../../../widget/rtc_product_item.dart';
 import 'filter_bottom_sheet.dart';
 import '../../../../core/models/filter_item.dart';
@@ -158,15 +159,8 @@ class _ProductsBodyState extends State<ProductsBody> {
                         state.allProducts.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : state.filteredProducts.isEmpty
-                    ? Center(
-
-                        child: Text(
-                          S.current.noItemsFound,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(color: AppColors.grayPalette.shade600),
-                        ),
+                    ? RtcEmptyState(
+                        message: S.current.noItemsFound,
                       )
                     : ListView.builder(
                         controller: _scrollController,
