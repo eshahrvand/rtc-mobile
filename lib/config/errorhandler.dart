@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import '../generated/l10n.dart';
 
 /// Shown when a code is missing or not in the map. Never leaks English `detail`.
 const String genericFallback = 'خطایی رخ داد. لطفاً دوباره تلاش کنید';
@@ -164,12 +165,15 @@ class ApiError implements Exception {
     final String code = (envelope?['code'] as String?) ?? _fallbackCodeForStatus(status);
     final Map<String, dynamic> params =
         (envelope?['params'] is Map) ? Map<String, dynamic>.from(envelope!['params']) : {};
-    final dynamic detail = envelope?['detail'];
+    final dynamic detail = envelope != null ? envelope['detail'] : (body is Map ? body : null);
 
     Map<String, List<String>>? fieldErrors;
-    if (status == 400 && detail is Map) {
+    if ((status == 400 || status == 422) && detail is Map) {
       fieldErrors = detail.map(
-        (k, v) => MapEntry(k.toString(), (v as List).map((e) => e.toString()).toList()),
+        (k, v) => MapEntry(
+          k.toString(),
+          (v is List ? v : [v]).map((e) => e.toString()).toList(),
+        ),
       );
     }
 
@@ -242,5 +246,31 @@ class ErrorHandler {
       );
     }
     return null;
+  }
+
+  /// Localizes field-level validation error messages (e.g., from Django REST Framework)
+  static String localizeFieldError(String field, String? rawMessage) {
+    if (rawMessage == null || rawMessage.trim().isEmpty) return '';
+    final lower = rawMessage.toLowerCase().trim();
+    if (lower.contains('already exist')) {
+      if (field == 'mobile') {
+        return S.current.userWithMobileAlreadyExists;
+      } else if (field == 'national_code' || field == 'nationalId') {
+        return S.current.userWithNationalCodeAlreadyExists;
+      }
+      return S.current.fieldAlreadyExists;
+    }
+    if (lower.contains('this field is required') ||
+        lower.contains('field may not be null') ||
+        lower.contains('field may not be blank')) {
+      return 'این فیلد الزامی است';
+    }
+    if (lower.contains('valid') && lower.contains('mobile')) {
+      return 'شماره موبایل وارد شده معتبر نیست';
+    }
+    if (lower.contains('valid') && lower.contains('national')) {
+      return 'کد ملی وارد شده معتبر نیست';
+    }
+    return rawMessage;
   }
 }

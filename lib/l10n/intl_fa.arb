@@ -641,5 +641,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "userWithMobileAlreadyExists": "کاربری با این شماره موبایل قبلاً ثبت شده است",
+  "@userWithMobileAlreadyExists": {},
+  "userWithNationalCodeAlreadyExists": "کاربری با این کد ملی قبلاً ثبت شده است",
+  "@userWithNationalCodeAlreadyExists": {},
+  "fieldAlreadyExists": "این مقدار قبلاً در سامانه ثبت شده است",
+  "@fieldAlreadyExists": {}
 }

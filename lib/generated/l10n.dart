@@ -2587,6 +2587,36 @@ class S {
       args: [date],
     );
   }
+
+  /// `A user with this mobile already exists`
+  String get userWithMobileAlreadyExists {
+    return Intl.message(
+      'A user with this mobile already exists',
+      name: 'userWithMobileAlreadyExists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A user with this national code already exists`
+  String get userWithNationalCodeAlreadyExists {
+    return Intl.message(
+      'A user with this national code already exists',
+      name: 'userWithNationalCodeAlreadyExists',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This value already exists`
+  String get fieldAlreadyExists {
+    return Intl.message(
+      'This value already exists',
+      name: 'fieldAlreadyExists',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

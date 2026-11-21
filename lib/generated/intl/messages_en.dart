@@ -500,6 +500,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "workspaceReports": MessageLookupByLibrary.simpleMessage(""),
     "workspaceSales": MessageLookupByLibrary.simpleMessage(""),
     "workspaceServicePending": MessageLookupByLibrary.simpleMessage(""),
+    "userWithMobileAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "A user with this mobile already exists",
+    ),
+    "userWithNationalCodeAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "A user with this national code already exists",
+    ),
+    "fieldAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "This value already exists",
+    ),
     "year": MessageLookupByLibrary.simpleMessage(""),
   };
 }

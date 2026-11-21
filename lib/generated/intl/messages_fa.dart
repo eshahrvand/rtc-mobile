@@ -839,6 +839,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "workspaceServicePending": MessageLookupByLibrary.simpleMessage(
       "اتصال این بخش به سرویس در انتظار تکمیل است.",
     ),
+    "userWithMobileAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "کاربری با این شماره موبایل قبلاً ثبت شده است",
+    ),
+    "userWithNationalCodeAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "کاربری با این کد ملی قبلاً ثبت شده است",
+    ),
+    "fieldAlreadyExists": MessageLookupByLibrary.simpleMessage(
+      "این مقدار قبلاً در سامانه ثبت شده است",
+    ),
     "year": MessageLookupByLibrary.simpleMessage("سال"),
   };
 }

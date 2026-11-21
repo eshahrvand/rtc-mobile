@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/errorhandler.dart';
 import '../../../generated/l10n.dart';
 import '../../theme/colors.dart';
 import '../../widget/rtc_image.dart';
@@ -55,7 +56,12 @@ class EmployeeEditorBody extends StatelessWidget {
           },
           errorText:
               cubit.nationalIdError ??
-              workspace.employeeFieldErrors['national_code']?.firstOrNull,
+              (workspace.employeeFieldErrors['national_code']?.firstOrNull != null
+                  ? ErrorHandler.localizeFieldError(
+                      'national_code',
+                      workspace.employeeFieldErrors['national_code']!.first,
+                    )
+                  : null),
           maxLength: 10,
           numeric: true,
           enabled: !loading,
@@ -71,7 +77,12 @@ class EmployeeEditorBody extends StatelessWidget {
           },
           errorText:
               cubit.mobileError ??
-              workspace.employeeFieldErrors['mobile']?.firstOrNull,
+              (workspace.employeeFieldErrors['mobile']?.firstOrNull != null
+                  ? ErrorHandler.localizeFieldError(
+                      'mobile',
+                      workspace.employeeFieldErrors['mobile']!.first,
+                    )
+                  : null),
           maxLength: 11,
           numeric: true,
           enabled: !loading,
@@ -128,7 +139,8 @@ class EmployeeEditorBody extends StatelessWidget {
             Text(form.isActive ? S.current.active : S.current.inactive),
           ],
         ),
-        if (workspace.employeeSaveStatus == WorkspaceStatus.error) ...[
+        if (workspace.employeeSaveStatus == WorkspaceStatus.error &&
+            workspace.employeeFieldErrors.isEmpty) ...[
           const SizedBox(height: 12),
           Text(
             workspace.errorMessage,

@@ -149,24 +149,45 @@ class PreInvoiceView extends StatelessWidget {
                 body: SafeArea(
                   child: Column(
                     children: [
-                      if (!state.isEditMode)
-                        RtcStepIndicator(
-                          totalSteps: cubit.steps.length,
-                          currentStepIndex: cubit.steps.indexOf(
-                            state.currentStep,
-                          ),
-                          stepLabels: [
-                            if (branchState.requiresSelection)
-                              S.current.selectInvoiceBranch,
-                            ...PreInvoiceUiHelpers.stepLabels,
-                          ],
-                          horizontalGap: 8,
-                          counterWidth: 90,
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                          labelHeight: 24,
-                        ),
                       Expanded(
-                        child: PreInvoiceStepContent(step: state.currentStep),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Column(
+                              children: [
+                                if (!state.isEditMode)
+                                  Opacity(
+                                    opacity: 0.0,
+                                    child: IgnorePointer(
+                                      child: _buildStepIndicator(
+                                        state,
+                                        cubit,
+                                        branchState,
+                                      ),
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: ClipRect(
+                                    child: PreInvoiceStepContent(
+                                      step: state.currentStep,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (!state.isEditMode)
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                child: _buildStepIndicator(
+                                  state,
+                                  cubit,
+                                  branchState,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                       PreInvoiceBottomButtons(state: state, cubit: cubit),
                     ],
@@ -195,6 +216,25 @@ class PreInvoiceView extends StatelessWidget {
         context.read<PreInvoiceCubit>().hideCart();
       }
     });
+  }
+
+  Widget _buildStepIndicator(
+    PreInvoiceState state,
+    PreInvoiceCubit cubit,
+    PreInvoiceBranchState branchState,
+  ) {
+    return RtcStepIndicator(
+      totalSteps: cubit.steps.length,
+      currentStepIndex: cubit.steps.indexOf(state.currentStep),
+      stepLabels: [
+        if (branchState.requiresSelection) S.current.selectInvoiceBranch,
+        ...PreInvoiceUiHelpers.stepLabels,
+      ],
+      horizontalGap: 8,
+      counterWidth: 90,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+      labelHeight: 24,
+    );
   }
 }
 

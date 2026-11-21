@@ -16,6 +16,7 @@ class PreInvoiceStep3View extends StatefulWidget {
 }
 
 class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _nationalIdController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -23,12 +24,19 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
+  bool _prevOrderSentToCustomer = false;
+  bool _prevOtherRecipient = false;
+
   @override
   void initState() {
     super.initState();
     final cubit = context.read<PreInvoiceCubit>();
     _nationalIdController.text = cubit.state.customerIdQuery;
     _updateOtherControllers(cubit.state.customerInfo);
+    _prevOrderSentToCustomer =
+        cubit.state.customerInfo?.isOrderSentToCustomerAddress == true;
+    _prevOtherRecipient =
+        cubit.state.customerInfo?.isOtherRecipient == true;
   }
 
   void _updateOtherControllers(CustomerInfoModel? customerInfo) {
@@ -53,6 +61,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _nationalIdController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
@@ -68,6 +77,30 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
       listenWhen: (prev, curr) => prev.customerInfo != curr.customerInfo,
       listener: (context, state) {
         _updateOtherControllers(state.customerInfo);
+
+        final nowOrderSent =
+            state.customerInfo?.isOrderSentToCustomerAddress == true;
+        final nowOther =
+            state.customerInfo?.isOtherRecipient == true;
+
+        final shouldScroll =
+            (!_prevOrderSentToCustomer && nowOrderSent) ||
+            (!_prevOtherRecipient && nowOther);
+
+        _prevOrderSentToCustomer = nowOrderSent;
+        _prevOtherRecipient = nowOther;
+
+        if (shouldScroll) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
       },
       child: BlocBuilder<PreInvoiceCubit, PreInvoiceState>(
         builder: (context, state) {
@@ -77,6 +110,7 @@ class _PreInvoiceStep3ViewState extends State<PreInvoiceStep3View> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

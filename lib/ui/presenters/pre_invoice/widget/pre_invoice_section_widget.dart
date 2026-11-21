@@ -8,6 +8,7 @@ class PreInvoiceSectionWidget extends StatelessWidget {
   final Widget child;
   final Widget? trailing;
   final bool showDivider;
+  final BoxBorder? border;
 
   const PreInvoiceSectionWidget({
     super.key,
@@ -16,13 +17,17 @@ class PreInvoiceSectionWidget extends StatelessWidget {
     required this.child,
     this.trailing,
     this.showDivider = true,
+    this.border,
   });
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).textTheme;
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: border,
+      ),
       child: Column(
         children: [
           Padding(

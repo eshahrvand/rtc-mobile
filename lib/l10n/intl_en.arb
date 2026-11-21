@@ -641,5 +641,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "userWithMobileAlreadyExists": "A user with this mobile already exists",
+  "@userWithMobileAlreadyExists": {},
+  "userWithNationalCodeAlreadyExists": "A user with this national code already exists",
+  "@userWithNationalCodeAlreadyExists": {},
+  "fieldAlreadyExists": "This value already exists",
+  "@fieldAlreadyExists": {}
 }

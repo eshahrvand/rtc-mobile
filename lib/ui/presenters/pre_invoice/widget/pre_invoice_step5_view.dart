@@ -116,6 +116,12 @@ class PreInvoiceStep5View extends StatelessWidget {
                     ),
                     PreInvoiceSectionWidget(
                       title: S.current.financialSummaryTitle,
+                      border: const Border(
+                        top: BorderSide(
+                          color: Colors.black,
+                          width: 4.0,
+                        ),
+                      ),
                       icon: RtcImage(
                         image: '$baseImage/dollar.svg',
                         width: 16,
